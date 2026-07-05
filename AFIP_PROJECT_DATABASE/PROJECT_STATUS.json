@@ -1,11 +1,17 @@
 {
-  "project": "AFIP",
-  "latest_milestone": "Production Milestone B",
-  "latest_pack": "Pack 14",
-  "latest_commit": "136e7aa",
-  "status": "Pack 14 complete in incremental package",
-  "tests": "310 passed",
-  "quality_check": "PASS",
+  "current_milestone": "Production Milestone B",
   "financial_naming": "PASS",
-  "next_pack": "Production Milestone B Pack 15"
+  "financial_naming_status": "PASS",
+  "latest_commit": "136e7aa",
+  "latest_commit_base": "1b18628",
+  "latest_milestone": "Production Milestone B",
+  "latest_pack": 15,
+  "latest_pack_name": "Portfolio Equity Layer",
+  "next_pack": "Production Milestone B Pack 15",
+  "project": "AFIP",
+  "quality_check": "PASS",
+  "quality_status": "PASS",
+  "status": "Pack 14 complete in incremental package",
+  "test_count_expected": 318,
+  "tests": "310 passed"
 }

@@ -1,17 +1,19 @@
-# AFIP Handoff
+# AFIP Project Handoff
 
-## Latest Base
-- Latest user-confirmed GitHub commit before this package: `136e7aa`
-- Latest completed package in this handoff: Production Milestone B Pack 14
+## Current Base
 
-## Pack 14 Summary
-Pack 14 adds mark-to-market position valuation, unrealized PnL calculation, and valuation reconciliation controls.
+- Latest confirmed GitHub commit before Pack 15: `1b18628`
+- Latest completed pack: Production Milestone B Pack 15
+- Expected full test count after applying Pack 15: 318 passed
 
-## Validation
-- Pack 14 tests: 8 passed
-- Full pytest: 310 passed
-- Local quality check: PASS
-- Financial naming: PASS
+## Next Recommended Pack
 
-## Next Work
-Continue with Production Milestone B Pack 15 using incremental package format.
+Production Milestone B Pack 16 — Portfolio Risk Layer
+
+Recommended scope:
+
+- Portfolio exposure risk
+- Equity drawdown guard
+- Concentration limit
+- Portfolio risk reconciliation
+- Production portfolio risk runtime
