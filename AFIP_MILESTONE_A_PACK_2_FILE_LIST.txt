@@ -1,0 +1,7 @@
+afip/intelligence/adaptive_signal_calibrator.py
+afip/intelligence/market_regime_transition_intelligence.py
+afip/learning/adaptive_memory_store.py
+afip/runtime/production_milestone_a_enhanced_runtime.py
+tests/test_production_milestone_a_pack_2.py
+docs/PRODUCTION_MILESTONE_A_PACK_2.md
+README_MILESTONE_A_PACK_2.md
