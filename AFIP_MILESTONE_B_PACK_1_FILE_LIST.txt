@@ -1,0 +1,10 @@
+afip/fusion/__init__.py
+afip/fusion/intelligence_score_fusion.py
+afip/fusion/intelligence_priority_matrix.py
+afip/fusion/intelligence_conflict_resolution.py
+afip/fusion/intelligence_fusion_core.py
+afip/runtime/production_milestone_b_fusion_runtime.py
+docs/PRODUCTION_MILESTONE_B_PACK_1.md
+tests/test_production_milestone_b_pack_1.py
+README_MILESTONE_B_PACK_1.md
+AFIP_MILESTONE_B_PACK_1_FILE_LIST.txt
