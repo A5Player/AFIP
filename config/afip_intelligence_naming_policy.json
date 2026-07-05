@@ -1,0 +1,21 @@
+{
+  "official_product_name": "AFIP",
+  "official_full_name": "Automated Financial Intelligence Platform",
+  "legacy_product_names": ["AIF", "Automated Intelligent Finance"],
+  "preferred_term": "Intelligence",
+  "legacy_term": "Engine",
+  "new_architecture_terms": {
+    "decision": "Decision Intelligence",
+    "execution": "Execution Intelligence",
+    "risk": "Risk Intelligence",
+    "portfolio": "Portfolio Intelligence",
+    "market": "Market Intelligence",
+    "position": "Position Intelligence",
+    "strategy": "Strategy Intelligence",
+    "news": "News Intelligence",
+    "time": "Time Intelligence",
+    "research": "Research Intelligence"
+  },
+  "blocked_legacy_terms_policy": "All military or execution legacy labels are blocked from the new architecture. Use professional financial software and intelligence names only.",
+  "compatibility_rule": "Existing wrappers may keep legacy names only to avoid breaking imports. New files, docs, commands, and architecture must use Intelligence terminology."
+}

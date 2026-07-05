@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Pytest
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Backups
+backup/
+*.bak
+*.old
+
+# Python build
+build/
+dist/
+*.egg-info/
+
+# MT5 temporary
+MQL5/Logs/
+MQL5/Profiles/Tester/
+
+# Local configuration
+.env
