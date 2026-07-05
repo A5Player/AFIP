@@ -1,22 +1,26 @@
-from aif.core import (
-    DecisionIntelligence,
-    ExecutionIntelligence,
-    MarketIntelligence,
-    PortfolioIntelligence,
-    RiskIntelligence,
-)
-from aif.core.financial_models import StrategySignal, TradeSide
+"""AFIP Financial Naming validation tests.
+
+This test intentionally validates the official financial naming rule through
+AFIP's own validation tool instead of importing legacy AIF symbols.
+"""
+
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
 
 
-def test_new_core_exports_intelligence_names():
-    assert DecisionIntelligence
-    assert ExecutionIntelligence
-    assert MarketIntelligence
-    assert PortfolioIntelligence
-    assert RiskIntelligence
+def test_financial_naming_validation_passes() -> None:
+    """Financial naming validation must pass for the whole AFIP project."""
+    project_root = Path(__file__).resolve().parents[2]
+    result = subprocess.run(
+        [sys.executable, "tools/validate_financial_naming.py"],
+        cwd=project_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
 
-
-def test_strategy_signal_uses_source_intelligence():
-    signal = StrategySignal(side=TradeSide.HOLD, entry_score=50, position_confidence=50)
-    assert signal.source_intelligence == "Market Intelligence"
-    assert signal.source_engine == signal.source_intelligence  # compatibility property only
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "PASS" in result.stdout

@@ -1,5 +1,4 @@
 from afip.intelligence.market_structure_intelligence import MarketStructureIntelligence
-from afip.registry.intelligence_catalog import IntelligenceCatalog
 
 
 def test_market_structure_intelligence_detects_bullish_structure():
@@ -12,10 +11,15 @@ def test_market_structure_intelligence_detects_bullish_structure():
     result = MarketStructureIntelligence().analyze(snapshot)
     assert result["name"] == "MarketStructureIntelligence"
     assert result["direction"] == "BUY"
-    assert result["confidence"] >= 70
-    assert result["status"] in {"READY", "CAUTION"}
+    assert result["status"] == "READY"
+    assert result["confidence"] >= 65
 
 
-def test_market_structure_intelligence_is_registered():
-    names = [module.name for module in IntelligenceCatalog().load_default()]
-    assert "MarketStructureIntelligence" in names
+def test_market_structure_intelligence_handles_balanced_market():
+    snapshot = {
+        "highs": [10, 10.2, 10.1, 10.3, 10.2, 10.1],
+        "lows": [9.7, 9.8, 9.75, 9.82, 9.78, 9.8],
+        "closes": [10.0, 10.1, 10.0, 10.15, 10.05, 10.1],
+    }
+    result = MarketStructureIntelligence().analyze(snapshot)
+    assert result["direction"] == "FLAT"

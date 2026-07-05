@@ -10,6 +10,15 @@ FINANCIAL_DISPLAY_NAMES = {
 
 
 def _display_intelligence_name(name: str) -> str:
+    compatibility_names = {
+        "MomentumQualityIntelligence": "MomentumIntelligence",
+        "LiquidityQualityIntelligence": "LiquidityIntelligence",
+        "VolumeIntelligence": "VolumeAnalysisIntelligence",
+        "CorrelationIntelligence": "CrossAssetCorrelationIntelligence",
+        "VolatilityRiskIntelligence": "VolatilityIntelligence",
+    }
+    if name in compatibility_names:
+        return compatibility_names[name]
     return FINANCIAL_DISPLAY_NAMES.get(name, name)
 
 
