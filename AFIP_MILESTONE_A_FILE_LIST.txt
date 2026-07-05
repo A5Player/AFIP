@@ -1,0 +1,7 @@
+README_MILESTONE_A.md
+docs/PRODUCTION_MILESTONE_A.md
+afip/intelligence/adaptive_intelligence_core.py
+afip/intelligence/market_regime_intelligence_v2.py
+afip/learning/adaptive_learning_optimizer.py
+afip/runtime/production_milestone_a_runtime.py
+tests/test_production_milestone_a.py
