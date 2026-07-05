@@ -1,1 +1,1 @@
-"""AFIP — Automated Financial Intelligence Platform."""
+"""AFIP - Automated Financial Intelligence Platform."""
