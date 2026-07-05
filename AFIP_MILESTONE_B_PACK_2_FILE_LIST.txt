@@ -1,0 +1,9 @@
+AFIP_MILESTONE_B_PACK_2_FILE_LIST.txt
+README_MILESTONE_B_PACK_2.md
+afip/fusion/adaptive_weight_engine.py
+afip/fusion/regime_weight_profile.py
+afip/fusion/performance_weight_adjustment.py
+afip/fusion/intelligence_weight_matrix.py
+afip/runtime/production_milestone_b_weight_runtime.py
+docs/PRODUCTION_MILESTONE_B_PACK_2.md
+tests/test_production_milestone_b_pack_2.py
