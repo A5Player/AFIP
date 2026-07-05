@@ -1,0 +1,10 @@
+AFIP Production Milestone A Pack 7 File List
+
+README_MILESTONE_A_PACK_7.md
+AFIP_MILESTONE_A_PACK_7_FILE_LIST.txt
+afip/intelligence/capital_preservation_index.py
+afip/intelligence/market_participation_quality.py
+afip/learning/learning_confidence_interval.py
+afip/runtime/production_milestone_a_capital_runtime.py
+docs/PRODUCTION_MILESTONE_A_PACK_7.md
+tests/test_production_milestone_a_pack_7.py
