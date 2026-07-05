@@ -6,7 +6,6 @@ afip/accounting/position_ledger.py
 afip/accounting/exposure_reconciliation.py
 afip/runtime/production_milestone_b_position_runtime.py
 tests/test_production_milestone_b_pack_13.py
-AFIP_MILESTONE_B_PACK_13_FILE_LIST.txt
 AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
 AFIP_PROJECT_DATABASE/PACK_INDEX.md
 AFIP_PROJECT_DATABASE/HANDOFF.md
