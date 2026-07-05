@@ -1,0 +1,10 @@
+AFIP Production Milestone A Pack 4 file list
+
+afip/intelligence/signal_quality_auditor.py
+afip/intelligence/regime_risk_budget.py
+afip/learning/optimization_parameter_governor.py
+afip/runtime/production_milestone_a_production_control.py
+tests/test_production_milestone_a_pack_4.py
+docs/PRODUCTION_MILESTONE_A_PACK_4.md
+README_MILESTONE_A_PACK_4.md
+AFIP_MILESTONE_A_PACK_4_FILE_LIST.txt
