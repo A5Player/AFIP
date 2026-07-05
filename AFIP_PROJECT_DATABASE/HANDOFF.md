@@ -1,11 +1,17 @@
 # AFIP Handoff
 
-Current base after user validation:
+## Latest Base
+- Latest user-confirmed GitHub commit before this package: `136e7aa`
+- Latest completed package in this handoff: Production Milestone B Pack 14
 
-- GitHub commit: `966f234`
-- Production Milestone B Pack 12: PASS and pushed
-- Continue with Pack 13 incremental package
+## Pack 14 Summary
+Pack 14 adds mark-to-market position valuation, unrealized PnL calculation, and valuation reconciliation controls.
 
-Pack 13 adds position accounting entries, position ledger aggregation, exposure reconciliation, runtime integration, tests, documentation, and project database updates.
+## Validation
+- Pack 14 tests: 8 passed
+- Full pytest: 310 passed
+- Local quality check: PASS
+- Financial naming: PASS
 
-Next recommended pack: Portfolio accounting control layer.
+## Next Work
+Continue with Production Milestone B Pack 15 using incremental package format.

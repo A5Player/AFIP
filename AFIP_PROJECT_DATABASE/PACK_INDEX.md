@@ -1,11 +1,13 @@
 # AFIP Pack Index
 
-## Production Milestone B
+## Current
+- Production Milestone B Pack 14: Position Valuation Layer
 
-- Pack 11: Execution Approval Layer — COMPLETE
-- Pack 12: Order Lifecycle Settlement — COMPLETE
-- Pack 13: Position Accounting and Exposure Reconciliation — COMPLETE
+## Completed Milestone B Packs
+- Pack 11: Execution Approval Layer
+- Pack 12: Order Lifecycle Settlement Layer
+- Pack 13: Position Accounting Layer
+- Pack 14: Position Valuation Layer
 
 ## Next
-
-- Pack 14: Portfolio accounting control layer
+- Production Milestone B Pack 15
