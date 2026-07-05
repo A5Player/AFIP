@@ -13,6 +13,11 @@ from afip.intelligence.portfolio_intelligence import PortfolioIntelligence
 from afip.intelligence.execution_intelligence import ExecutionIntelligence
 from afip.intelligence.performance_intelligence import PerformanceIntelligence
 from afip.intelligence.learning_intelligence import LearningIntelligence
+from afip.intelligence.fair_value_gap_intelligence import FairValueGapIntelligence
+from afip.intelligence.imbalance_intelligence import ImbalanceIntelligence
+from afip.intelligence.order_block_intelligence import OrderBlockIntelligence
+from afip.intelligence.liquidity_sweep_intelligence import LiquiditySweepIntelligence
+from afip.intelligence.smart_money_concept_intelligence import SmartMoneyConceptIntelligence
 
 
 class IntelligenceCatalog:
@@ -33,4 +38,9 @@ class IntelligenceCatalog:
             ExecutionIntelligence(),
             PerformanceIntelligence(),
             LearningIntelligence(),
+            FairValueGapIntelligence(),
+            ImbalanceIntelligence(),
+            OrderBlockIntelligence(),
+            LiquiditySweepIntelligence(),
+            SmartMoneyConceptIntelligence(),
         ]

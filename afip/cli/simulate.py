@@ -9,6 +9,15 @@ FINANCIAL_DISPLAY_NAMES = {
 }
 
 
+INSTITUTIONAL_INTELLIGENCE_NAMES = [
+    "FairValueGapIntelligence",
+    "ImbalanceIntelligence",
+    "OrderBlockIntelligence",
+    "LiquiditySweepIntelligence",
+    "SmartMoneyConceptIntelligence",
+]
+
+
 def _display_intelligence_name(name: str) -> str:
     compatibility_names = {
         "MomentumQualityIntelligence": "MomentumIntelligence",
@@ -35,12 +44,38 @@ def _find_intelligence(modular: dict, name: str) -> dict:
     }
 
 
+def _print_institutional_intelligence(modular: dict) -> None:
+    print("Institutional Intelligence:")
+    for name in INSTITUTIONAL_INTELLIGENCE_NAMES:
+        item = _find_intelligence(modular, name)
+        display_name = _display_intelligence_name(item.get("name", name))
+        detail = item.get("institutional_bias")
+        if not detail:
+            detail = item.get("gap_state")
+        if not detail:
+            detail = item.get("imbalance_state")
+        if not detail:
+            detail = item.get("order_block_state")
+        if not detail:
+            detail = item.get("sweep_type")
+        if not detail:
+            detail = item.get("reason", "-")
+        print(
+            f" - {display_name}: "
+            f"{item.get('direction', '-')} "
+            f"{item.get('confidence', '-')} "
+            f"({item.get('status', '-')}) "
+            f"{detail}"
+        )
+    print("")
+
+
 def main():
     result = RuntimeV1().simulate()
     modular = result.get("modular_intelligence", {"module_count": 0, "intelligence": []})
     decision = result.get("decision", {})
 
-    print("=== AFIP Runtime V1 — Modular Intelligence ===")
+    print("=== AFIP Runtime V1 - Modular Intelligence ===")
     print(f"Status : {result.get('status', '-')}")
     print(f"Mode   : {result.get('mode', '-')}")
     print(f"Symbol : {result.get('symbol', '-')}")
@@ -81,6 +116,8 @@ def main():
     print(f" - Reason    : {liquidity.get('reason', '-')}")
     print("")
 
+    _print_institutional_intelligence(modular)
+
     print("Modular Intelligence:")
     print(f" - Intelligence : {modular.get('module_count', 0)}")
     print(f" - Action       : {decision.get('action', '-')}")
@@ -98,7 +135,12 @@ def main():
     )[:8]
     for item in ranked:
         display_name = _display_intelligence_name(item.get("name", "-"))
-        print(f" - {display_name}: {item.get('direction', '-')} {item.get('confidence', '-')} ({item.get('status', '-')})")
+        print(
+            f" - {display_name}: "
+            f"{item.get('direction', '-')} "
+            f"{item.get('confidence', '-')} "
+            f"({item.get('status', '-')})"
+        )
     print("")
 
     trading_cost = result.get("trading_cost_intelligence", {})
