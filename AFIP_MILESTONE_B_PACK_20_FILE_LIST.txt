@@ -1,0 +1,23 @@
+Production Milestone B Pack 20 — Production Portfolio Runtime
+
+Source:
+- afip/portfolio/production_portfolio.py
+- afip/portfolio/__init__.py
+
+Runtime:
+- afip/runtime/production_milestone_b_portfolio_runtime.py
+
+Tests:
+- tests/test_production_milestone_b_pack_20.py
+
+README:
+- README_MILESTONE_B_PACK_20.md
+
+File List:
+- AFIP_MILESTONE_B_PACK_20_FILE_LIST.txt
+
+AFIP_PROJECT_DATABASE:
+- AFIP_PROJECT_DATABASE/HANDOFF.md
+- AFIP_PROJECT_DATABASE/PACK_INDEX.md
+- AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
+- AFIP_PROJECT_DATABASE/QUALITY_RESULT_PACK_20.md

@@ -9,3 +9,5 @@ from afip.portfolio.risk_budget import RiskBudget, RiskBudgetResult
 from afip.portfolio.exposure_limit import ExposureLimit, ExposureLimitResult
 from afip.portfolio.concentration_risk import ConcentrationRisk, ConcentrationRiskResult
 from afip.portfolio.portfolio_risk import PortfolioRisk, PortfolioRiskSummary
+
+from afip.portfolio.production_portfolio import ProductionPortfolio, ProductionPortfolioResult
