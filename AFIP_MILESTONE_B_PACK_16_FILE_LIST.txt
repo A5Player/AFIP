@@ -1,0 +1,25 @@
+Production Milestone B Pack 16 — File List
+
+Source:
+- afip/portfolio/risk_budget.py
+- afip/portfolio/exposure_limit.py
+- afip/portfolio/concentration_risk.py
+- afip/portfolio/portfolio_risk.py
+- afip/portfolio/__init__.py
+
+Runtime:
+- afip/runtime/production_milestone_b_risk_runtime.py
+
+Tests:
+- tests/test_production_milestone_b_pack_16.py
+
+Documentation:
+- README_MILESTONE_B_PACK_16.md
+- docs/PRODUCTION_MILESTONE_B_PACK_16.md
+
+Database:
+- AFIP_PROJECT_DATABASE/QUALITY_RESULT_PACK_16.md
+- AFIP_PROJECT_DATABASE/PACK_INDEX.md
+- AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
+- AFIP_PROJECT_DATABASE/HANDOFF.md
+- PATCH_FILE_LIST.txt

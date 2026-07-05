@@ -7,7 +7,8 @@
 - Pack 13 — Position Accounting Layer
 - Pack 14 — Position Valuation Layer
 - Pack 15 — Portfolio Equity Layer
+- Pack 16 — Portfolio Risk Layer
 
 ## Latest
 
-Pack 15 adds equity snapshots, net asset value, portfolio equity summary, and equity reconciliation.
+Pack 16 adds portfolio risk budget, exposure limits, concentration risk, portfolio risk summary, and production risk runtime integration.
