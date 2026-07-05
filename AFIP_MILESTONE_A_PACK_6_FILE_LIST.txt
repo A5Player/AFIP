@@ -1,0 +1,8 @@
+README_MILESTONE_A_PACK_6.md
+AFIP_MILESTONE_A_PACK_6_FILE_LIST.txt
+docs/PRODUCTION_MILESTONE_A_PACK_6.md
+tests/test_production_milestone_a_pack_6.py
+afip/intelligence/portfolio_maturity_index.py
+afip/intelligence/market_regime_consistency_index.py
+afip/learning/optimization_drift_index.py
+afip/runtime/production_milestone_a_maturity_runtime.py
