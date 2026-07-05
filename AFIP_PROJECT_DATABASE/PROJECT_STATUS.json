@@ -1,21 +1,10 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone B",
-  "completed_milestone_a_packs": "1-12",
-  "completed_milestone_b_packs": "1-11",
-  "latest_reference_commit": "aa2dc5b",
-  "latest_pack": "Production Milestone B Pack 11",
-  "latest_pack_name": "Execution Approval Layer",
+  "completed_through": "Pack 12",
+  "latest_confirmed_commit": "1429ee3",
+  "pack_12_scope": "Order Lifecycle Settlement",
   "quality_status": "PASS",
-  "pytest_status": "286 passed",
-  "financial_naming_status": "PASS",
-  "required_pack_contents": [
-    "source",
-    "runtime",
-    "tests",
-    "README",
-    "file list"
-  ],
-  "terminology_policy": "financial terminology only",
-  "next_pack": "Production Milestone B Pack 12"
+  "test_status": "pending local confirmation after user applies pack",
+  "naming_policy": "financial terminology only"
 }

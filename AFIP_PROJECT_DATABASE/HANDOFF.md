@@ -1,32 +1,17 @@
-# AFIP Development Handoff
+# AFIP Project Handoff
 
-## Start Point for Next Session
+## Current State
 
-Continue from Production Milestone B Pack 12.
+Production Milestone B Pack 12 adds order lifecycle settlement after Pack 11 approval controls.
 
-## Last Completed Work
+## Next Recommended Pack
 
-Production Milestone B Pack 11 added an execution approval layer with deterministic approval, conditional review, rejection, audit, and runtime integration.
+Pack 13 should add position accounting reconciliation after settlement.
 
-## Verification Commands
+## Required Validation
 
-```bash
-python -m pytest tests/test_production_milestone_b_pack_11.py -q
-python -m pytest -q
+```powershell
+pytest tests/test_production_milestone_b_pack_12.py -v
+pytest
 python tools/afip_local_quality_check.py
 ```
-
-Expected latest result:
-
-```text
-8 passed for Pack 11
-286 passed full pytest
-AFIP Local Quality Summary: PASS
-```
-
-## Important Constraints
-
-- Keep terminology financial.
-- Do not introduce non-financial labels.
-- Include source, runtime, tests, README, and file list in every pack.
-- Maintain simulation-safe runtime behavior.
