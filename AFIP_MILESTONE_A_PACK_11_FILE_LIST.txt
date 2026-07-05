@@ -1,0 +1,8 @@
+AFIP_MILESTONE_A_PACK_11_FILE_LIST.txt
+README_MILESTONE_A_PACK_11.md
+afip/intelligence/adaptive_parameter_calibration.py
+afip/intelligence/dynamic_confidence_scaling.py
+afip/learning/learning_quality_evaluation.py
+afip/runtime/production_milestone_a_optimization_runtime.py
+docs/PRODUCTION_MILESTONE_A_PACK_11.md
+tests/test_production_milestone_a_pack_11.py
