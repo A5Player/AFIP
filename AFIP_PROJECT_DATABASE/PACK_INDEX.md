@@ -8,7 +8,8 @@
 - Pack 14 — Position Valuation Layer
 - Pack 15 — Portfolio Equity Layer
 - Pack 16 — Portfolio Risk Layer
+- Pack 17 — Capital Allocation Layer
 
 ## Latest
 
-Pack 16 adds portfolio risk budget, exposure limits, concentration risk, portfolio risk summary, and production risk runtime integration.
+Pack 17 adds capital reserve, allocation policy, capital distribution, capital utilization, capital allocation summary, and production capital runtime integration.

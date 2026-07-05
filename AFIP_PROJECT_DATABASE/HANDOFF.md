@@ -1,19 +1,16 @@
 # AFIP Project Handoff
 
-## Current Base
+## Current State
 
-- Latest confirmed GitHub commit before Pack 16: `2253823`
-- Latest completed pack: Production Milestone B Pack 16
-- Expected full test count after applying Pack 16: 326 passed
+Production Milestone B Pack 17 is complete as an incremental patch.
 
-## Next Recommended Pack
+## Latest Base
 
-Production Milestone B Pack 17 — Capital Allocation Layer
+- Base commit before Pack 17: `ef6ee6d`
+- Latest package: Production Milestone B Pack 17
+- Expected full pytest: 334 passed
+- Quality check: PASS
 
-Recommended scope:
+## Next Step
 
-- Account allocation weights
-- Available capital calculation
-- Risk-adjusted allocation
-- Allocation reconciliation
-- Production capital allocation runtime
+Continue with Production Milestone B Pack 18 — Performance Attribution Layer.
