@@ -1,16 +1,18 @@
 # AFIP Project Handoff
 
-## Current State
+## Current Status
 
-Production Milestone B Pack 17 is complete as an incremental patch.
+Production Milestone B Pack 18 is complete as an incremental package.
 
 ## Latest Base
 
-- Base commit before Pack 17: `ef6ee6d`
-- Latest package: Production Milestone B Pack 17
-- Expected full pytest: 334 passed
+- Previous committed base: `5f639ae`
+- Latest pack: Production Milestone B Pack 18
+- Layer: Performance Attribution Layer
+- Test target after applying pack: 342 passed
 - Quality check: PASS
+- Financial naming: PASS
 
 ## Next Step
 
-Continue with Production Milestone B Pack 18 — Performance Attribution Layer.
+Continue with Production Milestone B Pack 19: Portfolio Analytics Layer.

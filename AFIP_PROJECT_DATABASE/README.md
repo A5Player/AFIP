@@ -1,5 +1,10 @@
 # AFIP Project Database
 
-This directory stores project handoff, pack index, quality results, and production status for AFIP incremental development.
+This folder stores project handoff notes, pack index, project status, and quality results for AFIP incremental production packs.
 
-Latest package: Production Milestone B Pack 17 — Capital Allocation Layer.
+## Latest
+
+- Production Milestone B Pack 18
+- Performance Attribution Layer
+- Expected full pytest count: 342 passed
+- Quality status: PASS

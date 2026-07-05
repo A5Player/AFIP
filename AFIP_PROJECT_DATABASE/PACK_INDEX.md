@@ -9,7 +9,8 @@
 - Pack 15 — Portfolio Equity Layer
 - Pack 16 — Portfolio Risk Layer
 - Pack 17 — Capital Allocation Layer
+- Pack 18 — Performance Attribution Layer
 
 ## Latest
 
-Pack 17 adds capital reserve, allocation policy, capital distribution, capital utilization, capital allocation summary, and production capital runtime integration.
+Pack 18 adds portfolio return, risk-adjusted return, performance breakdown, benchmark comparison, performance summary, attribution coordination, and production performance runtime integration.
