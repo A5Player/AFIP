@@ -1,0 +1,8 @@
+README_MILESTONE_B_PACK_3.md
+afip/fusion/regime_transition_matrix.py
+afip/fusion/volatility_weight_profile.py
+afip/fusion/regime_allocation_blender.py
+afip/fusion/regime_weight_integration.py
+afip/runtime/production_milestone_b_regime_runtime.py
+docs/PRODUCTION_MILESTONE_B_PACK_3.md
+tests/test_production_milestone_b_pack_3.py
