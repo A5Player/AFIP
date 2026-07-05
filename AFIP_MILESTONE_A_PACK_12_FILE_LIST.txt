@@ -1,0 +1,9 @@
+afip/intelligence/production_readiness_assessment.py
+afip/intelligence/runtime_health_assessment.py
+afip/intelligence/portfolio_quality_assessment.py
+afip/learning/adaptive_integration_summary.py
+afip/runtime/production_milestone_a_readiness_runtime.py
+docs/PRODUCTION_MILESTONE_A_PACK_12.md
+tests/test_production_milestone_a_pack_12.py
+README_MILESTONE_A_PACK_12.md
+AFIP_MILESTONE_A_PACK_12_FILE_LIST.txt
