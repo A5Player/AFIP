@@ -12,3 +12,5 @@
 - Production Milestone B Pack 20 — Production Portfolio Runtime
 - Production Milestone C Pack 1 — Macro Intelligence Foundation
 - Production Milestone C Pack 2 — Economic Calendar Integration
+
+- Production Milestone C Pack 3 — News Intelligence Foundation
