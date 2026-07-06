@@ -35,7 +35,8 @@ Complete through Pack 20.
 
 - Pack 1: Runtime Wiring - Complete
 - Pack 2: Data Pipeline Integration - Complete
+- Pack 3: Decision-to-Execution Flow - Complete
 
 ## Next
 
-- Production Milestone D Pack 3: Decision-to-Execution Flow
+- Production Milestone D Pack 4: Safety and Audit Layer

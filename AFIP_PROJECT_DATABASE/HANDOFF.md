@@ -5,9 +5,9 @@
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
 - Production Milestone C: Complete through Pack 20
-- Production Milestone D: Complete through Pack 2
-- Latest Pack: Production Milestone D Pack 2 — Data Pipeline Integration
-- Latest confirmed Git commit before this patch: `2807b35`
+- Production Milestone D: Complete through Pack 3
+- Latest Pack: Production Milestone D Pack 3 — Decision-to-Execution Flow
+- Latest confirmed Git commit before this patch: `22adc38`
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
@@ -45,14 +45,6 @@ Pack 19 added Production Integration. AFIP can combine regime, decision, and exe
 
 Pack 20 completes Production Milestone C. AFIP now has a final completion evidence model, completion registry, completion policy, completion report, and deterministic closure runtime proving Packs 13 through 19 are complete, quality-passed, and sequenced correctly.
 
-## Latest Capability
-
-- Runtime component wiring audit.
-- Financial data pipeline normalization.
-- Market-regime-first data source sequence.
-- Data-derived completeness, liquidity, and readiness scoring.
-- Deterministic data pipeline integration report.
-
 ## Pack D1 Summary
 
 Pack D1 starts Production Milestone D with Runtime Wiring. AFIP can normalize runtime component states, enforce the market-regime-first financial sequence, block missing or non-ready components, and produce a deterministic audit report before integrated runtime flow is enabled.
@@ -61,9 +53,22 @@ Pack D1 starts Production Milestone D with Runtime Wiring. AFIP can normalize ru
 
 Pack D2 adds Data Pipeline Integration. AFIP can normalize financial data records, preserve the market-regime-first source sequence, validate completeness and liquidity, compute data-derived readiness, and produce a deterministic audit report before integrated runtime data is used.
 
+## Pack D3 Summary
+
+Pack D3 adds Decision-to-Execution Flow. AFIP can normalize decision-to-execution requests, require runtime wiring and data pipeline readiness, preserve market-regime-first sequencing, validate execution readiness and position capacity, and produce a deterministic execution proposal audit report.
+
+## Latest Capability
+
+- Runtime component wiring audit.
+- Financial data pipeline normalization.
+- Decision-to-execution request normalization.
+- Market-regime-first execution preparation sequence.
+- Data-derived decision confidence and execution readiness scoring.
+- Position capacity validation before execution preparation.
+
 ## Next Step
 
-Continue Production Milestone D Pack 3 — Decision-to-Execution Flow.
+Continue Production Milestone D Pack 4 — Safety and Audit Layer.
 
 ## Delivery Standard
 

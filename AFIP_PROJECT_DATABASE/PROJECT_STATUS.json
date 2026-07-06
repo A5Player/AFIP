@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone D",
-  "latest_pack": "Pack 2",
-  "latest_pack_name": "Data Pipeline Integration",
+  "latest_pack": "Pack 3",
+  "latest_pack_name": "Decision-to-Execution Flow",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "2807b35",
-  "next_pack": "Production Milestone D Pack 3 - Decision-to-Execution Flow"
+  "previous_commit": "22adc38",
+  "next_pack": "Production Milestone D Pack 4 - Safety and Audit Layer"
 }
