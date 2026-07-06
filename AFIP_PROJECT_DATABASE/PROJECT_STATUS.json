@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 19",
-  "latest_pack_name": "Production Integration",
+  "latest_pack": "Pack 20",
+  "latest_pack_name": "Milestone C Complete",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "ab3b737",
-  "next_pack": "Pack 20 - Milestone C Complete"
+  "previous_commit": "bfcdda1",
+  "next_pack": "Production Milestone D - To be defined"
 }
