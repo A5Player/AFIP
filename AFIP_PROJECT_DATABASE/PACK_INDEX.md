@@ -10,3 +10,4 @@
 - Production Milestone B Pack 18 — Performance Attribution Layer
 - Production Milestone B Pack 19 — Portfolio Analytics Layer
 - Production Milestone B Pack 20 — Production Portfolio Runtime
+- Production Milestone C Pack 1 — Macro Intelligence Foundation
