@@ -15,10 +15,11 @@
 - Production Milestone E Pack 3: Market Memory — Complete
 - Production Milestone E Pack 4: Confidence Calibration — Complete
 - Production Milestone E Pack 5: Dynamic Weight Engine — Complete
+- Production Milestone E Pack 6: Performance Attribution — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone E Pack 5
+Expected after user push: Production Milestone E Pack 6
 
 ## Latest Quality
 
@@ -41,7 +42,8 @@ Expected after user push: Production Milestone E Pack 5
 - Pack E3 adds market memory intelligence using regime-first historical similarity, recurrence, consistency, context freshness, execution cost, and deterministic memory context selection.
 - Pack E4 adds confidence calibration intelligence using raw confidence, realized accuracy, calibration error, confidence stability, confidence drift, execution cost, and deterministic calibrated confidence selection.
 - Pack E5 adds dynamic weight intelligence using contribution, accuracy, stability, recency, execution cost, conflict, and deterministic adaptive weight selection.
+- Pack E6 adds performance attribution intelligence using gross/net P&L, contribution, decision alignment, execution quality, drawdown impact, and deterministic attribution selection.
 
 ## Next
 
-Production Milestone E Pack 6 — Performance Attribution.
+Production Milestone E Pack 7 — Portfolio Intelligence.

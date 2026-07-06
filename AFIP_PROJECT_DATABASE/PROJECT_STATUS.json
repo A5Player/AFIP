@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone E",
-  "latest_pack": "Pack 5",
-  "latest_pack_name": "Dynamic Weight Engine",
+  "latest_pack": "Pack 6",
+  "latest_pack_name": "Performance Attribution",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "d8a23d3",
-  "next_pack": "Production Milestone E Pack 6 - Performance Attribution"
+  "previous_commit": "4b91f46",
+  "next_pack": "Production Milestone E Pack 7 - Portfolio Intelligence"
 }

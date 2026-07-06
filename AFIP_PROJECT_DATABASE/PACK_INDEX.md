@@ -46,7 +46,8 @@ Complete through Pack 20.
 - Pack 3: Market Memory - Complete
 - Pack 4: Confidence Calibration - Complete
 - Pack 5: Dynamic Weight Engine - Complete
+- Pack 6: Performance Attribution - Complete
 
 ## Next
 
-- Production Milestone E Pack 6: Performance Attribution
+- Production Milestone E Pack 7: Portfolio Intelligence
