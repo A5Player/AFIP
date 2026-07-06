@@ -13,10 +13,11 @@
 - Production Milestone E Pack 1: Session Intelligence — Complete
 - Production Milestone E Pack 2: Volatility Intelligence — Complete
 - Production Milestone E Pack 3: Market Memory — Complete
+- Production Milestone E Pack 4: Confidence Calibration — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone E Pack 3
+Expected after user push: Production Milestone E Pack 4
 
 ## Latest Quality
 
@@ -37,7 +38,8 @@ Expected after user push: Production Milestone E Pack 3
 - Pack E1 adds session intelligence using market-regime-first session observations, data-derived session profiles, and deterministic session context selection.
 - Pack E2 adds volatility intelligence using ATR, realized volatility, expected volatility, expansion/compression evidence, and deterministic volatility context selection.
 - Pack E3 adds market memory intelligence using regime-first historical similarity, recurrence, consistency, context freshness, execution cost, and deterministic memory context selection.
+- Pack E4 adds confidence calibration intelligence using raw confidence, realized accuracy, calibration error, confidence stability, confidence drift, execution cost, and deterministic calibrated confidence selection.
 
 ## Next
 
-Production Milestone E Pack 4 — Confidence Calibration.
+Production Milestone E Pack 5 — Dynamic Weight Engine.

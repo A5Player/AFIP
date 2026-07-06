@@ -44,7 +44,8 @@ Complete through Pack 20.
 - Pack 1: Session Intelligence - Complete
 - Pack 2: Volatility Intelligence - Complete
 - Pack 3: Market Memory - Complete
+- Pack 4: Confidence Calibration - Complete
 
 ## Next
 
-- Production Milestone E Pack 4: Confidence Calibration
+- Production Milestone E Pack 5: Dynamic Weight Engine

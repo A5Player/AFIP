@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone E",
-  "latest_pack": "Pack 3",
-  "latest_pack_name": "Market Memory",
+  "latest_pack": "Pack 4",
+  "latest_pack_name": "Confidence Calibration",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "1309b81",
-  "next_pack": "Production Milestone E Pack 4 - Confidence Calibration"
+  "previous_commit": "6fdd9e5",
+  "next_pack": "Production Milestone E Pack 5 - Dynamic Weight Engine"
 }
