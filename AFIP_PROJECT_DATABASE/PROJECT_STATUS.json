@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone E",
-  "latest_pack": "Pack 1",
-  "latest_pack_name": "Session Intelligence",
+  "latest_pack": "Pack 2",
+  "latest_pack_name": "Volatility Intelligence",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "df6f809",
-  "next_pack": "Production Milestone E Pack 2 - Volatility Intelligence"
+  "previous_commit": "6fbb984",
+  "next_pack": "Production Milestone E Pack 3 - Market Memory"
 }

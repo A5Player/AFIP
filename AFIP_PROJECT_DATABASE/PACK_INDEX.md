@@ -42,7 +42,8 @@ Complete through Pack 20.
 ## Production Milestone E
 
 - Pack 1: Session Intelligence - Complete
+- Pack 2: Volatility Intelligence - Complete
 
 ## Next
 
-- Production Milestone E Pack 2: Volatility Intelligence
+- Production Milestone E Pack 3: Market Memory
