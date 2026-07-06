@@ -11,3 +11,4 @@
 - Production Milestone B Pack 19 — Portfolio Analytics Layer
 - Production Milestone B Pack 20 — Production Portfolio Runtime
 - Production Milestone C Pack 1 — Macro Intelligence Foundation
+- Production Milestone C Pack 2 — Economic Calendar Integration
