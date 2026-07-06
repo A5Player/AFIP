@@ -64,3 +64,6 @@ __all__ += [
     "MacroMarketFactorState",
     "MacroMarketFactorRuntime",
 ]
+
+from .macro_market_consensus import MacroMarketConsensus, MacroMarketConsensusEngine
+from .macro_market_decision_profile import MacroMarketDecisionProfile, MacroMarketDecisionProfileEngine

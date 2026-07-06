@@ -1,17 +1,21 @@
 # AFIP Pack Index
 
-- Production Milestone B Pack 11 — Approval Layer
-- Production Milestone B Pack 12 — Settlement Layer
-- Production Milestone B Pack 13 — Accounting Layer
-- Production Milestone B Pack 14 — Valuation Layer
-- Production Milestone B Pack 15 — Portfolio Equity Layer
-- Production Milestone B Pack 16 — Portfolio Risk Layer
-- Production Milestone B Pack 17 — Capital Allocation Layer
-- Production Milestone B Pack 18 — Performance Attribution Layer
-- Production Milestone B Pack 19 — Portfolio Analytics Layer
-- Production Milestone B Pack 20 — Production Portfolio Runtime
-- Production Milestone C Pack 1 — Macro Intelligence Foundation
-- Production Milestone C Pack 2 — Economic Calendar Integration
+## Production Milestone A
 
-- Production Milestone C Pack 3 — News Intelligence Foundation
-- Production Milestone C Pack 4 — Macro Market Factors Foundation
+Complete.
+
+## Production Milestone B
+
+Complete through Pack 20.
+
+## Production Milestone C
+
+- Pack 1: Macro Intelligence Foundation - Complete
+- Pack 2: Economic Calendar Integration - Complete
+- Pack 3: News Intelligence Foundation - Complete
+- Pack 4: Macro Market Factors Foundation - Complete
+- Pack 5: Macro Market Consensus Integration - Complete
+
+## Next
+
+- Pack 6: Macro Dashboard and Reporting Integration
