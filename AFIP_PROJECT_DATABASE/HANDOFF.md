@@ -14,10 +14,11 @@
 - Production Milestone E Pack 2: Volatility Intelligence — Complete
 - Production Milestone E Pack 3: Market Memory — Complete
 - Production Milestone E Pack 4: Confidence Calibration — Complete
+- Production Milestone E Pack 5: Dynamic Weight Engine — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone E Pack 4
+Expected after user push: Production Milestone E Pack 5
 
 ## Latest Quality
 
@@ -39,7 +40,8 @@ Expected after user push: Production Milestone E Pack 4
 - Pack E2 adds volatility intelligence using ATR, realized volatility, expected volatility, expansion/compression evidence, and deterministic volatility context selection.
 - Pack E3 adds market memory intelligence using regime-first historical similarity, recurrence, consistency, context freshness, execution cost, and deterministic memory context selection.
 - Pack E4 adds confidence calibration intelligence using raw confidence, realized accuracy, calibration error, confidence stability, confidence drift, execution cost, and deterministic calibrated confidence selection.
+- Pack E5 adds dynamic weight intelligence using contribution, accuracy, stability, recency, execution cost, conflict, and deterministic adaptive weight selection.
 
 ## Next
 
-Production Milestone E Pack 5 — Dynamic Weight Engine.
+Production Milestone E Pack 6 — Performance Attribution.
