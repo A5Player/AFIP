@@ -17,10 +17,11 @@
 - Production Milestone E Pack 5: Dynamic Weight Engine — Complete
 - Production Milestone E Pack 6: Performance Attribution — Complete
 - Production Milestone E Pack 7: Portfolio Intelligence — Complete
+- Production Milestone E Pack 8: Macro Context — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone E Pack 7
+Expected after user push: Production Milestone E Pack 8
 
 ## Latest Quality
 
@@ -45,7 +46,8 @@ Expected after user push: Production Milestone E Pack 7
 - Pack E5 adds dynamic weight intelligence using contribution, accuracy, stability, recency, execution cost, conflict, and deterministic adaptive weight selection.
 - Pack E6 adds performance attribution intelligence using gross/net P&L, contribution, decision alignment, execution quality, drawdown impact, and deterministic attribution selection.
 - Pack E7 adds portfolio intelligence using exposure, correlation, risk budget, diversification, portfolio return, drawdown pressure, execution cost, and deterministic portfolio context selection.
+- Pack E8 adds macro context using DXY alignment, yield alignment, inflation surprise, labor pressure, policy rate bias, news risk, macro consensus, execution cost, and deterministic macro context selection.
 
 ## Next
 
-Production Milestone E Pack 8 — Macro Context.
+Production Milestone E Pack 9 — Adaptive Learning.

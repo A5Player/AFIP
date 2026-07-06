@@ -48,7 +48,8 @@ Complete through Pack 20.
 - Pack 5: Dynamic Weight Engine - Complete
 - Pack 6: Performance Attribution - Complete
 - Pack 7: Portfolio Intelligence - Complete
+- Pack 8: Macro Context - Complete
 
 ## Next
 
-- Production Milestone E Pack 8: Macro Context
+- Production Milestone E Pack 9: Adaptive Learning

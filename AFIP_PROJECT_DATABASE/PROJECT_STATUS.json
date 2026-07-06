@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone E",
-  "latest_pack": "Pack 7",
-  "latest_pack_name": "Portfolio Intelligence",
+  "latest_pack": "Pack 8",
+  "latest_pack_name": "Macro Context",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "a80263a",
-  "next_pack": "Production Milestone E Pack 8 - Macro Context"
+  "previous_commit": "0e75395",
+  "next_pack": "Production Milestone E Pack 9 - Adaptive Learning"
 }
