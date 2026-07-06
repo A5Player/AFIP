@@ -52,6 +52,10 @@ Complete through Pack 20.
 - Pack 9: Adaptive Learning - Complete
 - Pack 10: Milestone E Complete - Complete
 
+## Production Milestone F
+
+- Pack 1: Adaptive AI Foundation - Complete
+
 ## Next
 
-- Production Milestone F Pack 1: Adaptive AI Foundation
+- Production Milestone F Pack 2: Self Evaluation Engine
