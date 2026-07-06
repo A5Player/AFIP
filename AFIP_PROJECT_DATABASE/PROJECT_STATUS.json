@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 17",
-  "latest_pack_name": "Decision Intelligence Enhancement",
+  "latest_pack": "Pack 18",
+  "latest_pack_name": "Execution Readiness",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "492aa15",
-  "next_pack": "Pack 18 - Execution Readiness"
+  "previous_commit": "2540f8b",
+  "next_pack": "Pack 19 - Production Integration"
 }

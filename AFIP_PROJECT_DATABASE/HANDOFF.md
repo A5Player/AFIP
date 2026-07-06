@@ -4,9 +4,9 @@
 
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
-- Production Milestone C: Complete through Pack 17
-- Latest Pack: Production Milestone C Pack 17 — Decision Intelligence Enhancement
-- Latest confirmed Git commit before this patch: `492aa15`
+- Production Milestone C: Complete through Pack 18
+- Latest Pack: Production Milestone C Pack 18 — Execution Readiness
+- Latest confirmed Git commit before this patch: `2540f8b`
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
@@ -32,25 +32,29 @@ Pack 16 adds Market Regime Intelligence. AFIP can normalize regime evidence, bui
 
 Pack 17 adds Decision Intelligence Enhancement. AFIP can build a regime-aware decision context, aggregate decision evidence by active market regime before direction, rank data-derived decision candidates, and expose deterministic enhanced decision runtime output.
 
+## Pack 18 Summary
+
+Pack 18 adds Execution Readiness. AFIP can normalize decision-to-execution readiness input, evaluate cost, liquidity, risk, and position capacity, and expose a deterministic execution readiness runtime before any execution action is considered ready.
+
 ## Latest Capability
 
-- Regime-aware decision context builder.
-- Decision evidence normalization.
-- Active-regime evidence aggregation before direction.
-- Data-derived decision candidate ranking.
-- Deterministic decision selection policy.
-- Production decision enhancement runtime entrypoint.
+- Execution readiness input contract.
+- Cost readiness using spread versus learned spread limit.
+- Liquidity readiness check.
+- Risk and margin capacity readiness check.
+- Position capacity readiness check.
+- Deterministic execution readiness decision policy.
+- Production execution readiness runtime entrypoint.
 
 ## Next Pack
 
-Production Milestone C Pack 18 — Execution Readiness.
+Production Milestone C Pack 19 — Production Integration.
 
 Planned scope:
 
-- Execution readiness input contract.
-- Cost, liquidity, and risk readiness checks.
-- Decision-to-execution readiness summary.
-- Deterministic production runtime.
+- Integrate adaptive parameters, research, learning, regime, decision, and execution readiness states.
+- Production integration status contract.
+- Deterministic integrated runtime.
 - Tests and quality documentation.
 
 ## Delivery Standard
