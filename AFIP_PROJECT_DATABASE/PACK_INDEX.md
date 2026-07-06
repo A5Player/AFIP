@@ -19,7 +19,8 @@ Complete through Pack 20.
 - Pack 7: Market Knowledge Base Foundation - Complete
 - Pack 8: Institutional Positioning Foundation - Complete
 - Pack 9: Provider Management and Data Quality Foundation - Complete
+- Pack 10: Historical Market Database Foundation - Complete
 
 ## Next
 
-- Pack 10: Historical Market Database Foundation
+- Pack 11: Market Replay Foundation

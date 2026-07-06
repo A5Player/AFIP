@@ -1,8 +1,8 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 9",
-  "latest_pack_name": "Provider Management and Data Quality Foundation",
+  "latest_pack": "Pack 10",
+  "latest_pack_name": "Historical Market Database Foundation",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
