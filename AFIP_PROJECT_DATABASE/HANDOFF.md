@@ -18,10 +18,11 @@
 - Production Milestone E Pack 6: Performance Attribution — Complete
 - Production Milestone E Pack 7: Portfolio Intelligence — Complete
 - Production Milestone E Pack 8: Macro Context — Complete
+- Production Milestone E Pack 9: Adaptive Learning — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone E Pack 8
+Expected after user push: Production Milestone E Pack 9
 
 ## Latest Quality
 
@@ -47,7 +48,8 @@ Expected after user push: Production Milestone E Pack 8
 - Pack E6 adds performance attribution intelligence using gross/net P&L, contribution, decision alignment, execution quality, drawdown impact, and deterministic attribution selection.
 - Pack E7 adds portfolio intelligence using exposure, correlation, risk budget, diversification, portfolio return, drawdown pressure, execution cost, and deterministic portfolio context selection.
 - Pack E8 adds macro context using DXY alignment, yield alignment, inflation surprise, labor pressure, policy rate bias, news risk, macro consensus, execution cost, and deterministic macro context selection.
+- Pack E9 adds adaptive learning using reinforcement, adaptation, forgetting control, validation, stability, drift risk, execution cost, and deterministic adaptive learning selection.
 
 ## Next
 
-Production Milestone E Pack 9 — Adaptive Learning.
+Production Milestone E Pack 10 — Milestone E Complete.
