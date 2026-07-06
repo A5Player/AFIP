@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone E",
-  "latest_pack": "Pack 9",
-  "latest_pack_name": "Adaptive Learning",
+  "latest_pack": "Pack 10",
+  "latest_pack_name": "Milestone E Complete",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "deed5d7",
-  "next_pack": "Production Milestone E Pack 10 - Milestone E Complete"
+  "previous_commit": "c0eca22",
+  "next_pack": "Production Milestone F Pack 1 - Adaptive AI Foundation"
 }
