@@ -5,9 +5,9 @@
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
 - Production Milestone C: Complete through Pack 20
-- Production Milestone D: Complete through Pack 1
-- Latest Pack: Production Milestone D Pack 1 — Runtime Wiring
-- Latest confirmed Git commit before this patch: `3cef10d`
+- Production Milestone D: Complete through Pack 2
+- Latest Pack: Production Milestone D Pack 2 — Data Pipeline Integration
+- Latest confirmed Git commit before this patch: `2807b35`
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
@@ -47,19 +47,23 @@ Pack 20 completes Production Milestone C. AFIP now has a final completion eviden
 
 ## Latest Capability
 
-- Production Milestone C completion evidence.
-- Completion registry for Packs 13 through 19.
-- Quality and missing-pack completion policy.
-- Market regime before decision before execution before production integration audit.
-- Deterministic final Milestone C completion runtime.
+- Runtime component wiring audit.
+- Financial data pipeline normalization.
+- Market-regime-first data source sequence.
+- Data-derived completeness, liquidity, and readiness scoring.
+- Deterministic data pipeline integration report.
 
 ## Pack D1 Summary
 
 Pack D1 starts Production Milestone D with Runtime Wiring. AFIP can normalize runtime component states, enforce the market-regime-first financial sequence, block missing or non-ready components, and produce a deterministic audit report before integrated runtime flow is enabled.
 
+## Pack D2 Summary
+
+Pack D2 adds Data Pipeline Integration. AFIP can normalize financial data records, preserve the market-regime-first source sequence, validate completeness and liquidity, compute data-derived readiness, and produce a deterministic audit report before integrated runtime data is used.
+
 ## Next Step
 
-Continue Production Milestone D Pack 2 — Data Pipeline Integration.
+Continue Production Milestone D Pack 3 — Decision-to-Execution Flow.
 
 ## Delivery Standard
 
