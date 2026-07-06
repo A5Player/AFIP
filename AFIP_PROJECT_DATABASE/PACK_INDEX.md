@@ -24,8 +24,9 @@ Complete through Pack 20.
 - Pack 12: Trading Pattern Repository Foundation - Complete
 - Pack 13: Adaptive Parameter Foundation - Complete
 - Pack 14: Research Platform - Complete
+- Pack 15: Learning Foundation - Complete
 - Pack 16: Market Regime Intelligence - Complete
 
 ## Next
 
-- Pack 16: Market Regime Intelligence
+- Pack 17: Decision Intelligence Enhancement
