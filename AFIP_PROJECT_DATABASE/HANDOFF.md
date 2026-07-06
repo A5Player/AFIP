@@ -4,37 +4,40 @@
 
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
-- Production Milestone C: Complete through Pack 10
-- Latest Pack: Production Milestone C Pack 10 — Historical Market Database Foundation
+- Production Milestone C: Complete through Pack 11
+- Latest Pack: Production Milestone C Pack 11 — Market Replay Foundation
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
 - Local Quality Check: PASS
 
-## Pack 10 Summary
+## Pack 11 Summary
 
-Pack 10 added the historical market database foundation. AFIP can now store repeated market observations as compact aggregated records, preserve important market stages, aggregate daily and session periods, and track market signature history for later research and replay.
+Pack 11 added the market replay foundation. AFIP can now load historical snapshots, build replay timelines, validate replay quality, process replay sessions into the historical market runtime, and produce compact replay reports for research and dashboard use.
 
 ## Latest Capability
 
-- Historical market observation schema
-- Compact historical market database
-- Daily and session aggregation
-- Market signature history repository
-- Historical market runtime facade
-- Production Milestone C historical runtime
+- Historical replay provider contract
+- Replay snapshot schema
+- Replay timeline metrics
+- Replay validation engine
+- Replay session engine
+- Replay report builder
+- Production replay runtime
+- Historical market runtime integration
 
 ## Next Pack
 
-Production Milestone C Pack 11 — Market Replay Foundation.
+Production Milestone C Pack 12 — Trading Pattern Repository Foundation.
 
 Planned scope:
 
-- Historical sequence replay model
-- Replay cursor and step controls
-- Replay session summary
-- Market signature replay integration
-- Research-safe deterministic replay runtime
+- Trading pattern schema
+- Pattern outcome aggregation
+- Holding time statistics
+- MAE and MFE statistics
+- Session and market regime pattern ranking
+- Research-ready trading pattern runtime
 - Tests and quality documentation
 
 ## Delivery Standard

@@ -1,8 +1,8 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 10",
-  "latest_pack_name": "Historical Market Database Foundation",
+  "latest_pack": "Pack 11",
+  "latest_pack_name": "Market Replay Foundation",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
