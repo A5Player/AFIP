@@ -4,38 +4,37 @@
 
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
-- Production Milestone C: Complete through Pack 8
-- Latest Pack: Production Milestone C Pack 8 — Institutional Positioning Foundation
+- Production Milestone C: Complete through Pack 9
+- Latest Pack: Production Milestone C Pack 9 — Provider Management and Data Quality Foundation
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
 - Local Quality Check: PASS
 
-## Pack 8 Summary
+## Pack 9 Summary
 
-Pack 8 added institutional positioning foundations. AFIP can now normalize COT-style positioning, open interest, ETF gold flow, and COMEX inventory context into a single institutional positioning consensus. The pack remains provider-neutral so later free or paid data connectors can be added without changing decision-layer architecture.
+Pack 9 added provider management and data quality foundations. AFIP can now score financial data providers by latency, freshness, coverage, reliability, and availability, rank them, select the best route, and require review when provider or payload quality is insufficient.
 
 ## Latest Capability
 
-- Institutional data provider contract
-- COT positioning assessment
-- Open interest participation assessment
-- ETF gold flow assessment
-- COMEX inventory assessment
-- Institutional positioning consensus
-- Production Milestone C institutional runtime
+- Provider health record model
+- Provider quality scoring
+- Provider registry and ranking
+- Provider routing with fallback selection
+- Data quality assessment for normalized payloads
+- Production Milestone C provider management runtime
 
 ## Next Pack
 
-Production Milestone C Pack 9 — Provider Management and Failover.
+Production Milestone C Pack 10 — Historical Market Database Foundation.
 
 Planned scope:
 
-- Provider health scoring
-- Provider ranking
-- Provider fallback selection
-- Source freshness and coverage assessment
-- Data quality handoff into macro and institutional runtimes
+- Historical market observation schema
+- Compact historical storage model
+- Daily and session aggregation
+- Market signature history records
+- Macro and institutional history handoff
 - Tests and quality documentation
 
 ## Delivery Standard
