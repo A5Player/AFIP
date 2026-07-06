@@ -4,9 +4,9 @@
 
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
-- Production Milestone C: Complete through Pack 16
-- Latest Pack: Production Milestone C Pack 16 — Market Regime Intelligence
-- Latest confirmed Git commit before this patch: `e940278`
+- Production Milestone C: Complete through Pack 17
+- Latest Pack: Production Milestone C Pack 17 — Decision Intelligence Enhancement
+- Latest confirmed Git commit before this patch: `492aa15`
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
@@ -28,25 +28,28 @@ Pack 15 added the Learning Foundation. AFIP can normalize learning observations,
 
 Pack 16 adds Market Regime Intelligence. AFIP can normalize regime evidence, build market-regime-first profiles, learn classification thresholds from evidence, and classify the current market regime before signal evaluation.
 
+## Pack 17 Summary
+
+Pack 17 adds Decision Intelligence Enhancement. AFIP can build a regime-aware decision context, aggregate decision evidence by active market regime before direction, rank data-derived decision candidates, and expose deterministic enhanced decision runtime output.
+
 ## Latest Capability
 
-- Regime evidence normalization.
-- Regime-first profile repository.
-- Evidence-derived regime threshold learning.
-- Current market regime classification before signal.
-- Deterministic market regime runtime state.
-- Production market regime runtime entrypoint.
+- Regime-aware decision context builder.
+- Decision evidence normalization.
+- Active-regime evidence aggregation before direction.
+- Data-derived decision candidate ranking.
+- Deterministic decision selection policy.
+- Production decision enhancement runtime entrypoint.
 
 ## Next Pack
 
-Production Milestone C Pack 17 — Decision Intelligence Enhancement.
+Production Milestone C Pack 18 — Execution Readiness.
 
 Planned scope:
 
-- Decision intelligence input contract.
-- Regime-aware decision context.
-- Confidence adjustment from research, learning, and regime state.
-- Data-first decision trace output.
+- Execution readiness input contract.
+- Cost, liquidity, and risk readiness checks.
+- Decision-to-execution readiness summary.
 - Deterministic production runtime.
 - Tests and quality documentation.
 

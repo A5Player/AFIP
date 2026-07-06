@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 16",
-  "latest_pack_name": "Market Regime Intelligence",
+  "latest_pack": "Pack 17",
+  "latest_pack_name": "Decision Intelligence Enhancement",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "e940278",
-  "next_pack": "Pack 17 - Decision Intelligence Enhancement"
+  "previous_commit": "492aa15",
+  "next_pack": "Pack 18 - Execution Readiness"
 }

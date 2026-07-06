@@ -26,7 +26,8 @@ Complete through Pack 20.
 - Pack 14: Research Platform - Complete
 - Pack 15: Learning Foundation - Complete
 - Pack 16: Market Regime Intelligence - Complete
+- Pack 17: Decision Intelligence Enhancement - Complete
 
 ## Next
 
-- Pack 17: Decision Intelligence Enhancement
+- Pack 18: Execution Readiness
