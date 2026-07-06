@@ -4,8 +4,9 @@
 
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
-- Production Milestone C: Complete through Pack 13
-- Latest Pack: Production Milestone C Pack 13 — Adaptive Parameter Foundation
+- Production Milestone C: Complete through Pack 14
+- Latest Pack: Production Milestone C Pack 14 — Research Platform
+- Latest confirmed Git commit before this patch: `0d355bc`
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
@@ -13,33 +14,33 @@
 
 ## Pack 13 Summary
 
-Pack 13 added the Adaptive Parameter Foundation. AFIP can now convert observed market outcomes into regime-first parameter profiles, derive adaptive stop distance, profit objective, holding period, and confidence floor candidates, and assess whether those candidates are research-ready using profitability, sample depth, and execution cost.
+Pack 13 added the Adaptive Parameter Foundation. AFIP can now build deterministic market-regime-first adaptive parameter profiles from observations, evaluate profile quality, and expose a production runtime for adaptive parameter readiness.
+
+## Pack 14 Summary
+
+Pack 14 adds the Research Platform. AFIP can now normalize compact research samples, group results by market regime before signal family, compute data-derived research metrics, evaluate research hypotheses, and expose a deterministic production runtime for review-ready research profiles.
 
 ## Latest Capability
 
-- Parameter observation normalization
-- Market regime and volatility parameter grouping
-- Adaptive parameter repository
-- Candidate stop distance profile
-- Candidate profit objective profile
-- Candidate holding period profile
-- Confidence floor candidate
-- Execution cost-aware quality assessment
-- Deterministic adaptive parameter runtime
-- Production adaptive parameter runtime entrypoint
+- Regime-first research sample normalization
+- Deterministic research dataset grouping
+- Data-derived research summary metrics
+- Research hypothesis assessment
+- Execution cost-aware research filtering
+- Research platform runtime state
+- Production research platform entrypoint
 
 ## Next Pack
 
-Production Milestone C Pack 14 — Research Platform.
+Production Milestone C Pack 15 — Learning Foundation.
 
 Planned scope:
 
-- Research experiment record
-- Research hypothesis tracking
-- Research dataset summary
-- Backtest/replay research result aggregation
-- Research quality assessment
-- Deterministic research platform runtime
+- Learning sample ledger
+- Regime-aware learning memory
+- Parameter feedback integration
+- Research result promotion into learning candidates
+- Deterministic learning runtime
 - Tests and quality documentation
 
 ## Delivery Standard

@@ -1,10 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 13",
-  "latest_pack_name": "Adaptive Parameter Foundation",
+  "latest_pack": "Pack 14",
+  "latest_pack_name": "Research Platform",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
-  "local_quality_check": "PASS"
+  "local_quality_check": "PASS",
+  "previous_commit": "0d355bc",
+  "next_pack": "Pack 15 - Learning Foundation"
 }
