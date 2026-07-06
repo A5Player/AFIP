@@ -57,18 +57,23 @@ Pack D2 adds Data Pipeline Integration. AFIP can normalize financial data record
 
 Pack D3 adds Decision-to-Execution Flow. AFIP can normalize decision-to-execution requests, require runtime wiring and data pipeline readiness, preserve market-regime-first sequencing, validate execution readiness and position capacity, and produce a deterministic execution proposal audit report.
 
+## Pack D4 Summary
+
+Pack D4 adds Safety and Audit Layer. AFIP can normalize safety audit evidence, require market-regime-first safety sequencing, verify risk/cost/audit readiness, enforce traceability, compute data-derived audit scoring, and produce a deterministic production path approval report.
+
 ## Latest Capability
 
 - Runtime component wiring audit.
 - Financial data pipeline normalization.
 - Decision-to-execution request normalization.
-- Market-regime-first execution preparation sequence.
-- Data-derived decision confidence and execution readiness scoring.
-- Position capacity validation before execution preparation.
+- Safety and audit evidence normalization.
+- Market-regime-first execution and safety sequence.
+- Data-derived decision confidence, execution readiness, risk capacity, and cost quality scoring.
+- Traceability validation before production path approval.
 
 ## Next Step
 
-Continue Production Milestone D Pack 4 — Safety and Audit Layer.
+Continue Production Milestone D Pack 5 — End-to-End Dry Run.
 
 ## Delivery Standard
 
