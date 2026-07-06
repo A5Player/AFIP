@@ -10,10 +10,11 @@
 - Production Milestone D Pack 3: Decision-to-Execution Flow — Complete
 - Production Milestone D Pack 4: Safety and Audit Layer — Complete
 - Production Milestone D Pack 5: End-to-End Dry Run — Complete
+- Production Milestone E Pack 1: Session Intelligence — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone D Pack 5
+Expected after user push: Production Milestone E Pack 1
 
 ## Latest Quality
 
@@ -31,7 +32,8 @@ Expected after user push: Production Milestone D Pack 5
 - Market regime remains first in the production path.
 - Data quality and traceability are required before execution readiness can be accepted.
 - Pack 5 adds an end-to-end dry run layer that validates runtime wiring, data pipeline, decision-to-execution flow, and safety audit evidence as one integrated dry run contract.
+- Pack E1 adds session intelligence using market-regime-first session observations, data-derived session profiles, and deterministic session context selection.
 
 ## Next
 
-Production Milestone D Pack 6 — Runtime State Management.
+Production Milestone E Pack 2 — Volatility Intelligence.
