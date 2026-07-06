@@ -12,10 +12,11 @@
 - Production Milestone D Pack 5: End-to-End Dry Run — Complete
 - Production Milestone E Pack 1: Session Intelligence — Complete
 - Production Milestone E Pack 2: Volatility Intelligence — Complete
+- Production Milestone E Pack 3: Market Memory — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone E Pack 2
+Expected after user push: Production Milestone E Pack 3
 
 ## Latest Quality
 
@@ -35,7 +36,8 @@ Expected after user push: Production Milestone E Pack 2
 - Pack 5 adds an end-to-end dry run layer that validates runtime wiring, data pipeline, decision-to-execution flow, and safety audit evidence as one integrated dry run contract.
 - Pack E1 adds session intelligence using market-regime-first session observations, data-derived session profiles, and deterministic session context selection.
 - Pack E2 adds volatility intelligence using ATR, realized volatility, expected volatility, expansion/compression evidence, and deterministic volatility context selection.
+- Pack E3 adds market memory intelligence using regime-first historical similarity, recurrence, consistency, context freshness, execution cost, and deterministic memory context selection.
 
 ## Next
 
-Production Milestone E Pack 3 — Market Memory.
+Production Milestone E Pack 4 — Confidence Calibration.

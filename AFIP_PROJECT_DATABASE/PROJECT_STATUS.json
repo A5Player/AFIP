@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone E",
-  "latest_pack": "Pack 2",
-  "latest_pack_name": "Volatility Intelligence",
+  "latest_pack": "Pack 3",
+  "latest_pack_name": "Market Memory",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "6fbb984",
-  "next_pack": "Production Milestone E Pack 3 - Market Memory"
+  "previous_commit": "1309b81",
+  "next_pack": "Production Milestone E Pack 4 - Confidence Calibration"
 }
