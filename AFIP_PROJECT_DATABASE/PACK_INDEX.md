@@ -20,8 +20,9 @@ Complete through Pack 20.
 - Pack 8: Institutional Positioning Foundation - Complete
 - Pack 9: Provider Management and Data Quality Foundation - Complete
 - Pack 10: Historical Market Database Foundation - Complete
+- Pack 11: Market Replay Foundation - Complete
 - Pack 12: Trading Pattern Repository Foundation - Complete
 
 ## Next
 
-- Pack 12: Trading Pattern Repository Foundation
+- Pack 13: Adaptive Parameter Foundation

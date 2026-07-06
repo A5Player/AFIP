@@ -1,8 +1,8 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 11",
-  "latest_pack_name": "Market Replay Foundation",
+  "latest_pack": "Pack 12",
+  "latest_pack_name": "Trading Pattern Repository Foundation",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
