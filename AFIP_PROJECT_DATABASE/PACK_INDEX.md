@@ -14,3 +14,4 @@
 - Production Milestone C Pack 2 — Economic Calendar Integration
 
 - Production Milestone C Pack 3 — News Intelligence Foundation
+- Production Milestone C Pack 4 — Macro Market Factors Foundation
