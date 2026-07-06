@@ -31,6 +31,10 @@ Complete through Pack 20.
 - Pack 19: Production Integration - Complete
 - Pack 20: Milestone C Complete - Complete
 
+## Production Milestone D
+
+- Pack 1: Runtime Wiring - Complete
+
 ## Next
 
-- Production Milestone D: To be defined
+- Production Milestone D Pack 2: Data Pipeline Integration

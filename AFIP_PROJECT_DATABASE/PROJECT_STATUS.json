@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
-  "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 20",
-  "latest_pack_name": "Milestone C Complete",
+  "current_milestone": "Production Milestone D",
+  "latest_pack": "Pack 1",
+  "latest_pack_name": "Runtime Wiring",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "bfcdda1",
-  "next_pack": "Production Milestone D - To be defined"
+  "previous_commit": "3cef10d",
+  "next_pack": "Production Milestone D Pack 2 - Data Pipeline Integration"
 }
