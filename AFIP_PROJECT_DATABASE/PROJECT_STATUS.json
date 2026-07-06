@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 14",
-  "latest_pack_name": "Research Platform",
+  "latest_pack": "Pack 15",
+  "latest_pack_name": "Learning Foundation",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "0d355bc",
-  "next_pack": "Pack 15 - Learning Foundation"
+  "previous_commit": "212a549",
+  "next_pack": "Pack 16 - Market Regime Intelligence"
 }

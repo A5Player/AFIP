@@ -53,3 +53,23 @@ Planned scope:
 - README and file list included
 - AFIP_PROJECT_DATABASE updated every pack
 - HANDOFF updated every pack
+
+## Production Milestone C Pack 15 - Learning Foundation
+
+Status: Complete.
+
+Added deterministic learning foundation components:
+
+- Regime-first learning observations.
+- Learning profile repository grouped by market regime before signal family.
+- Learning governance for bounded parameter update candidates.
+- Production runtime adapter and pack validation tests.
+
+Quality gates:
+
+- Pack test PASS.
+- Full pytest PASS.
+- AFIP local quality check PASS.
+
+Next: Production Milestone C Pack 16 - Market Regime Intelligence.
+
