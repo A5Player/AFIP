@@ -4,41 +4,42 @@
 
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
-- Production Milestone C: Complete through Pack 12
-- Latest Pack: Production Milestone C Pack 12 — Trading Pattern Repository Foundation
+- Production Milestone C: Complete through Pack 13
+- Latest Pack: Production Milestone C Pack 13 — Adaptive Parameter Foundation
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
 - Local Quality Check: PASS
 
-## Pack 12 Summary
+## Pack 13 Summary
 
-Pack 12 added the Trading Pattern Repository Foundation. AFIP can now normalize trading outcomes into compact pattern records, aggregate repeated patterns and setup profiles, evaluate pattern quality, and expose a deterministic runtime for research-ready trading pattern summaries.
+Pack 13 added the Adaptive Parameter Foundation. AFIP can now convert observed market outcomes into regime-first parameter profiles, derive adaptive stop distance, profit objective, holding period, and confidence floor candidates, and assess whether those candidates are research-ready using profitability, sample depth, and execution cost.
 
 ## Latest Capability
 
-- Trading pattern record normalization
-- Compact trade outcome statistics
-- Trading pattern repository
-- Trading setup repository
-- Pattern quality assessment
-- Trading pattern runtime
-- Production trading pattern runtime entrypoint
-- Storage-efficient aggregation for repeated trading outcomes
+- Parameter observation normalization
+- Market regime and volatility parameter grouping
+- Adaptive parameter repository
+- Candidate stop distance profile
+- Candidate profit objective profile
+- Candidate holding period profile
+- Confidence floor candidate
+- Execution cost-aware quality assessment
+- Deterministic adaptive parameter runtime
+- Production adaptive parameter runtime entrypoint
 
 ## Next Pack
 
-Production Milestone C Pack 13 — Adaptive Parameter Foundation.
+Production Milestone C Pack 14 — Research Platform.
 
 Planned scope:
 
-- Adaptive stop distance profile
-- Adaptive profit objective profile
-- Holding period profile
-- Execution cost-aware parameter assessment
-- Market regime and volatility parameter grouping
-- Parameter candidate ranking
-- Research-ready adaptive parameter runtime
+- Research experiment record
+- Research hypothesis tracking
+- Research dataset summary
+- Backtest/replay research result aggregation
+- Research quality assessment
+- Deterministic research platform runtime
 - Tests and quality documentation
 
 ## Delivery Standard

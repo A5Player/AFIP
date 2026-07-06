@@ -22,7 +22,8 @@ Complete through Pack 20.
 - Pack 10: Historical Market Database Foundation - Complete
 - Pack 11: Market Replay Foundation - Complete
 - Pack 12: Trading Pattern Repository Foundation - Complete
+- Pack 13: Adaptive Parameter Foundation - Complete
 
 ## Next
 
-- Pack 13: Adaptive Parameter Foundation
+- Pack 14: Research Platform
