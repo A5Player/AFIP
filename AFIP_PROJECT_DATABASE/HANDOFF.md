@@ -4,39 +4,38 @@
 
 - Production Milestone A: Complete
 - Production Milestone B: Complete through Pack 20
-- Production Milestone C: Complete through Pack 7
-- Latest Pack: Production Milestone C Pack 7 — Market Knowledge Base Foundation
+- Production Milestone C: Complete through Pack 8
+- Latest Pack: Production Milestone C Pack 8 — Institutional Positioning Foundation
 - Quality Status: PASS
 - Financial Naming: PASS
 - Full Pytest: PASS
 - Local Quality Check: PASS
 
-## Pack 7 Summary
+## Pack 8 Summary
 
-Pack 7 added the compact market knowledge base foundation. AFIP can now aggregate repeated market signatures and patterns into statistical records instead of duplicating raw observations. The runtime also supports selective lifecycle snapshots and knowledge quality scoring based on sample confidence, freshness, and stability.
+Pack 8 added institutional positioning foundations. AFIP can now normalize COT-style positioning, open interest, ETF gold flow, and COMEX inventory context into a single institutional positioning consensus. The pack remains provider-neutral so later free or paid data connectors can be added without changing decision-layer architecture.
 
 ## Latest Capability
 
-- Market knowledge repository
-- Market pattern repository
-- Running market statistics
-- Selective market snapshot repository
-- Knowledge quality assessment
-- Market knowledge runtime
-- Production Milestone C knowledge runtime
+- Institutional data provider contract
+- COT positioning assessment
+- Open interest participation assessment
+- ETF gold flow assessment
+- COMEX inventory assessment
+- Institutional positioning consensus
+- Production Milestone C institutional runtime
 
 ## Next Pack
 
-Production Milestone C Pack 8 — Institutional Intelligence Foundation.
+Production Milestone C Pack 9 — Provider Management and Failover.
 
 Planned scope:
 
-- COT report provider contract
-- Open interest provider contract
-- ETF flow provider contract
-- COMEX inventory provider contract
-- Institutional positioning summary
-- Institutional market bias foundation
+- Provider health scoring
+- Provider ranking
+- Provider fallback selection
+- Source freshness and coverage assessment
+- Data quality handoff into macro and institutional runtimes
 - Tests and quality documentation
 
 ## Delivery Standard

@@ -1,8 +1,8 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 7",
-  "latest_pack_name": "Market Knowledge Base Foundation",
+  "latest_pack": "Pack 8",
+  "latest_pack_name": "Institutional Positioning Foundation",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
