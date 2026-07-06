@@ -2,11 +2,11 @@
 
 ## Current Status
 
-Production Milestone C Pack 5 completed in patch workspace.
+Production Milestone C Pack 6 completed in patch workspace.
 
 ## Latest Completed Pack
 
-Production Milestone C Pack 5 - Macro Market Consensus Integration.
+Production Milestone C Pack 6 - Macro Dashboard and Reporting Integration.
 
 ## Quality Gate
 
@@ -26,30 +26,31 @@ Completed Milestone C packs:
 3. News Intelligence Foundation
 4. Macro Market Factors Foundation
 5. Macro Market Consensus Integration
+6. Macro Dashboard and Reporting Integration
 
-## Pack 5 Summary
+## Pack 6 Summary
 
-Pack 5 added a unified macro market consensus layer that combines:
+Pack 6 added a dashboard-ready reporting layer that converts integrated macro consensus into:
 
-- Economic calendar risk
-- Macro event impact
-- Macro news confidence
-- DXY / Treasury / real yield factor bias
-- Conflict assessment
-- Financial exposure instruction
-- Intraday position horizon profile
+- Dashboard headline
+- Summary line
+- Exposure instruction
+- Position horizon
+- Component rows for calendar, news, and market factors
+- Key macro risks
+- Compact report lines for UI and runtime output
 
 ## Next Pack
 
-Production Milestone C Pack 6 - Macro Dashboard and Reporting Integration.
+Production Milestone C Pack 7 - Market Regime and Market Signature Integration.
 
 Recommended scope:
 
-- Unified macro dashboard snapshot
-- Calendar + news + market factor summary line
-- Decision profile report
-- Market regime summary fields
-- Dashboard-friendly serialization
+- Market regime summary model
+- Market signature aggregation refinement
+- Repeated condition occurrence tracking
+- Compact statistical storage model
+- Dashboard integration fields for regime and signature
 - Tests and quality evidence
 
 ## Important Standards

@@ -19,3 +19,5 @@ Complete through Pack 20.
 ## Next
 
 - Pack 6: Macro Dashboard and Reporting Integration
+
+- Production Milestone C Pack 6 - Macro Dashboard and Reporting Integration: PASS

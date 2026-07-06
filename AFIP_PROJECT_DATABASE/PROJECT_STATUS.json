@@ -1,12 +1,10 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 5",
-  "latest_pack_name": "Macro Market Consensus Integration",
-  "status": "PASS",
-  "pytest": "402 passed",
-  "local_quality_check": "PASS",
+  "latest_pack": "Pack 6",
+  "latest_pack_name": "Macro Dashboard and Reporting Integration",
+  "quality_status": "PASS",
   "financial_naming": "PASS",
-  "delivery_mode": "patch_only",
-  "next_pack": "Production Milestone C Pack 6 - Macro Dashboard and Reporting Integration"
+  "pytest_status": "PASS",
+  "local_quality_check": "PASS"
 }
