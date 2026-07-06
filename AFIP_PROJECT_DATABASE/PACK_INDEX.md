@@ -37,7 +37,8 @@ Complete through Pack 20.
 - Pack 2: Data Pipeline Integration - Complete
 - Pack 3: Decision-to-Execution Flow - Complete
 - Pack 4: Safety and Audit Layer - Complete
+- Pack 5: End-to-End Dry Run - Complete
 
 ## Next
 
-- Production Milestone D Pack 5: End-to-End Dry Run
+- Production Milestone D Pack 6: Runtime State Management

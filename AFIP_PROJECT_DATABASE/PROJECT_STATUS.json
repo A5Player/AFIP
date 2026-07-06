@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone D",
-  "latest_pack": "Pack 4",
-  "latest_pack_name": "Safety and Audit Layer",
+  "latest_pack": "Pack 5",
+  "latest_pack_name": "End-to-End Dry Run",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "987207f",
-  "next_pack": "Production Milestone D Pack 5 - End-to-End Dry Run"
+  "previous_commit": "11332ff",
+  "next_pack": "Production Milestone D Pack 6 - Runtime State Management"
 }
