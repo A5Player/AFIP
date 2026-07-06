@@ -16,10 +16,11 @@
 - Production Milestone E Pack 4: Confidence Calibration — Complete
 - Production Milestone E Pack 5: Dynamic Weight Engine — Complete
 - Production Milestone E Pack 6: Performance Attribution — Complete
+- Production Milestone E Pack 7: Portfolio Intelligence — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone E Pack 6
+Expected after user push: Production Milestone E Pack 7
 
 ## Latest Quality
 
@@ -43,7 +44,8 @@ Expected after user push: Production Milestone E Pack 6
 - Pack E4 adds confidence calibration intelligence using raw confidence, realized accuracy, calibration error, confidence stability, confidence drift, execution cost, and deterministic calibrated confidence selection.
 - Pack E5 adds dynamic weight intelligence using contribution, accuracy, stability, recency, execution cost, conflict, and deterministic adaptive weight selection.
 - Pack E6 adds performance attribution intelligence using gross/net P&L, contribution, decision alignment, execution quality, drawdown impact, and deterministic attribution selection.
+- Pack E7 adds portfolio intelligence using exposure, correlation, risk budget, diversification, portfolio return, drawdown pressure, execution cost, and deterministic portfolio context selection.
 
 ## Next
 
-Production Milestone E Pack 7 — Portfolio Intelligence.
+Production Milestone E Pack 8 — Macro Context.

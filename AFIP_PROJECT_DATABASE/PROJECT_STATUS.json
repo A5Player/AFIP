@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone E",
-  "latest_pack": "Pack 6",
-  "latest_pack_name": "Performance Attribution",
+  "latest_pack": "Pack 7",
+  "latest_pack_name": "Portfolio Intelligence",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
-  "previous_commit": "4b91f46",
-  "next_pack": "Production Milestone E Pack 7 - Portfolio Intelligence"
+  "previous_commit": "a80263a",
+  "next_pack": "Production Milestone E Pack 8 - Macro Context"
 }

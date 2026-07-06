@@ -47,7 +47,8 @@ Complete through Pack 20.
 - Pack 4: Confidence Calibration - Complete
 - Pack 5: Dynamic Weight Engine - Complete
 - Pack 6: Performance Attribution - Complete
+- Pack 7: Portfolio Intelligence - Complete
 
 ## Next
 
-- Production Milestone E Pack 7: Portfolio Intelligence
+- Production Milestone E Pack 8: Macro Context
