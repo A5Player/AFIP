@@ -1,8 +1,8 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone C",
-  "latest_pack": "Pack 6",
-  "latest_pack_name": "Macro Dashboard and Reporting Integration",
+  "latest_pack": "Pack 7",
+  "latest_pack_name": "Market Knowledge Base Foundation",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",

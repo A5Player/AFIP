@@ -2,62 +2,50 @@
 
 ## Current Status
 
-Production Milestone C Pack 6 completed in patch workspace.
+- Production Milestone A: Complete
+- Production Milestone B: Complete through Pack 20
+- Production Milestone C: Complete through Pack 7
+- Latest Pack: Production Milestone C Pack 7 — Market Knowledge Base Foundation
+- Quality Status: PASS
+- Financial Naming: PASS
+- Full Pytest: PASS
+- Local Quality Check: PASS
 
-## Latest Completed Pack
+## Pack 7 Summary
 
-Production Milestone C Pack 6 - Macro Dashboard and Reporting Integration.
+Pack 7 added the compact market knowledge base foundation. AFIP can now aggregate repeated market signatures and patterns into statistical records instead of duplicating raw observations. The runtime also supports selective lifecycle snapshots and knowledge quality scoring based on sample confidence, freshness, and stability.
 
-## Quality Gate
+## Latest Capability
 
-- Pack test: PASS
-- Full pytest: PASS
-- Local quality check: PASS
-- Financial naming: PASS
-
-## Current Architecture Focus
-
-Milestone C is building AFIP into a macro-aware financial intelligence platform for gold market analysis.
-
-Completed Milestone C packs:
-
-1. Macro Intelligence Foundation
-2. Economic Calendar Integration
-3. News Intelligence Foundation
-4. Macro Market Factors Foundation
-5. Macro Market Consensus Integration
-6. Macro Dashboard and Reporting Integration
-
-## Pack 6 Summary
-
-Pack 6 added a dashboard-ready reporting layer that converts integrated macro consensus into:
-
-- Dashboard headline
-- Summary line
-- Exposure instruction
-- Position horizon
-- Component rows for calendar, news, and market factors
-- Key macro risks
-- Compact report lines for UI and runtime output
+- Market knowledge repository
+- Market pattern repository
+- Running market statistics
+- Selective market snapshot repository
+- Knowledge quality assessment
+- Market knowledge runtime
+- Production Milestone C knowledge runtime
 
 ## Next Pack
 
-Production Milestone C Pack 7 - Market Regime and Market Signature Integration.
+Production Milestone C Pack 8 — Institutional Intelligence Foundation.
 
-Recommended scope:
+Planned scope:
 
-- Market regime summary model
-- Market signature aggregation refinement
-- Repeated condition occurrence tracking
-- Compact statistical storage model
-- Dashboard integration fields for regime and signature
-- Tests and quality evidence
+- COT report provider contract
+- Open interest provider contract
+- ETF flow provider contract
+- COMEX inventory provider contract
+- Institutional positioning summary
+- Institutional market bias foundation
+- Tests and quality documentation
 
-## Important Standards
+## Delivery Standard
 
-- Patch only delivery.
-- Include only new or modified files.
-- Always include run scripts.
-- Always include README, file list, quality result, project database, and handoff.
-- Use financial terminology only.
-- Do not use non-financial naming patterns.
+- Patch only
+- Financial terminology only
+- Clean architecture
+- Production quality
+- RUN scripts included
+- README and file list included
+- AFIP_PROJECT_DATABASE updated every pack
+- HANDOFF updated every pack
