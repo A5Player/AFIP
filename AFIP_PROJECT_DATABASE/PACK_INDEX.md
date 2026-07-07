@@ -65,6 +65,10 @@ Complete through Pack 20.
 - Pack 9: Production Readiness - Complete
 - Pack 10: Milestone F Complete - Complete
 
+## Production Milestone G
+
+- Pack 1: Runtime Observability Foundation - Complete
+
 ## Next
 
-- Production Milestone G Planning
+- Production Milestone G Pack 2: Production Event Log

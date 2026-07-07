@@ -1,17 +1,18 @@
 {
   "project": "AFIP",
-  "current_milestone": "Production Milestone F",
-  "current_pack": 10,
-  "current_pack_name": "Milestone F Complete",
-  "latest_pack": "Pack 10",
-  "latest_pack_name": "Milestone F Complete",
-  "latest_completed_pack": "Production Milestone F Pack 10",
-  "next_pack": "Production Milestone G Planning",
-  "previous_commit": "066ea4d",
+  "current_milestone": "Production Milestone G",
+  "current_pack": 1,
+  "current_pack_name": "Runtime Observability Foundation",
+  "latest_pack": "Pack 1",
+  "latest_pack_name": "Runtime Observability Foundation",
+  "latest_completed_pack": "Production Milestone G Pack 1",
+  "next_pack": "Production Milestone G Pack 2 Production Event Log",
+  "previous_commit": "3539d3f",
   "pytest_status": "PASS",
-  "pytest_total_expected": 791,
+  "pytest_total_expected": 797,
   "financial_naming": "PASS",
   "local_quality_check": "PASS",
   "quality_status": "PASS",
-  "milestone_f_status": "COMPLETE"
+  "milestone_f_status": "COMPLETE",
+  "milestone_g_status": "IN_PROGRESS"
 }

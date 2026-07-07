@@ -128,3 +128,20 @@ Validation target:
 - `pytest tests/test_production_milestone_f_pack_10.py -v`
 - `pytest`
 - `python tools/afip_local_quality_check.py`
+
+## Production Milestone G Pack 1 - Runtime Observability Foundation
+
+Status: Complete.
+
+Added a compact production observability layer without expanding AI decision logic. The pack provides deterministic runtime metrics scoring and explainability reporting so the existing AFIP intelligence stack can be inspected, measured, and reviewed before live hardening.
+
+Changed files are limited to the runtime observability package, one runtime entry point, one test file, run scripts, README, file list, and AFIP project database updates.
+
+Validation commands:
+
+- `pytest tests/test_production_milestone_g_pack_1.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+
+Next recommended pack: Production Milestone G Pack 2 - Production Event Log.
+
