@@ -26,10 +26,13 @@
 - Production Milestone F Pack 4: Experience Knowledge Engine — Complete
 - Production Milestone F Pack 5: Strategy Evolution — Complete
 - Production Milestone F Pack 6: Runtime Adaptation — Complete
+- Production Milestone F Pack 7: AI Integration — Complete
+- Production Milestone F Pack 8: Validation — Complete
+- Production Milestone F Pack 7: AI Integration — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone F Pack 6
+Expected after user push: Production Milestone F Pack 8
 
 ## Latest Quality
 
@@ -63,10 +66,12 @@ Expected after user push: Production Milestone F Pack 6
 - Pack F4 adds Experience Knowledge Engine using closed experience, adaptive confidence, self evaluation, data quality, knowledge quality, recency, realized result, and deterministic experience knowledge readiness before runtime use.
 - Pack F5 adds Strategy Evolution using experience knowledge profiles, expectancy, positive rate, evidence quality, current strategy weight, and deterministic strategy weight candidates without runtime writes.
 - Pack F6 adds Runtime Adaptation using strategy evolution candidates, current runtime weight, adaptation quality, stability, execution cost, and deterministic runtime adaptation plans without automatic runtime writes.
+- Pack F7 adds AI Integration using runtime adaptation evidence, explainability, data quality, knowledge quality, and deterministic AI assist planning without autonomous execution or output writes.
+- Pack F8 adds Validation using AI integration evidence, validation sample quality, consistency, risk control, and deterministic readiness before production readiness review.
 
 ## Next
 
-Production Milestone F Pack 7 — AI Integration.
+Production Milestone F Pack 9 — Production Readiness.
 
 ## Production Milestone F Pack 7 - AI Integration
 
@@ -83,3 +88,15 @@ Validation target:
 - `pytest`
 - `python tools/afip_local_quality_check.py`
 
+
+## Production Milestone F Pack 8 - Validation
+
+Status: Complete.
+
+Added deterministic validation before production readiness review. The package keeps Market Regime before Signal Context, Data First Architecture, Knowledge First Architecture, financial terminology only, deterministic runtime, and no production writes from validation output. Pack 9 should continue with Production Readiness.
+
+Validation target:
+
+- `pytest tests/test_production_milestone_f_pack_8.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
