@@ -21,10 +21,11 @@
 - Production Milestone E Pack 9: Adaptive Learning — Complete
 - Production Milestone E Pack 10: Milestone E Complete — Complete
 - Production Milestone F Pack 1: Adaptive AI Foundation — Complete
+- Production Milestone F Pack 2: Self Evaluation Engine — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone F Pack 1
+Expected after user push: Production Milestone F Pack 2
 
 ## Latest Quality
 
@@ -53,7 +54,8 @@ Expected after user push: Production Milestone F Pack 1
 - Pack E9 adds adaptive learning using reinforcement, adaptation, forgetting control, validation, stability, drift risk, execution cost, and deterministic adaptive learning selection.
 - Pack E10 closes Milestone E with deterministic completion evidence, capability registry, quality policy, knowledge-first audit, and final completion report.
 - Pack F1 adds Adaptive AI Foundation using regime-first adaptive profiles, data-derived readiness scoring, knowledge quality weighting, and deterministic readiness policy.
+- Pack F2 adds Self Evaluation Engine using closed decision evidence, confidence alignment, outcome review, data quality review, and deterministic review readiness before adaptive learning is accepted.
 
 ## Next
 
-Production Milestone F Pack 2 — Self Evaluation Engine.
+Production Milestone F Pack 3 — Adaptive Confidence Engine.

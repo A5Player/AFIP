@@ -55,7 +55,8 @@ Complete through Pack 20.
 ## Production Milestone F
 
 - Pack 1: Adaptive AI Foundation - Complete
+- Pack 2: Self Evaluation Engine - Complete
 
 ## Next
 
-- Production Milestone F Pack 2: Self Evaluation Engine
+- Production Milestone F Pack 3: Adaptive Confidence Engine

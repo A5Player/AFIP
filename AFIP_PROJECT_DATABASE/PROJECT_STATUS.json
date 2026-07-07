@@ -1,12 +1,12 @@
 {
   "project": "AFIP",
   "current_milestone": "Production Milestone F",
-  "latest_pack": "Pack 1",
-  "latest_pack_name": "Adaptive AI Foundation",
+  "latest_pack": "Pack 2",
+  "latest_pack_name": "Self Evaluation Engine",
   "quality_status": "PASS",
   "financial_naming": "PASS",
   "pytest_status": "PASS",
   "local_quality_check": "PASS",
   "previous_commit": "b03c6ae",
-  "next_pack": "Production Milestone F Pack 2 - Self Evaluation Engine"
+  "next_pack": "Production Milestone F Pack 3 - Adaptive Confidence Engine"
 }
