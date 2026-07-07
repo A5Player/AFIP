@@ -145,3 +145,20 @@ Validation commands:
 
 Next recommended pack: Production Milestone G Pack 2 - Production Event Log.
 
+
+
+## Production Milestone G Pack 2 - Production Event Log
+
+Status: Complete.
+
+Added a compact production event log and configuration version evidence layer. The pack keeps Market Regime before Signal Context, records deterministic runtime event evidence, tracks current and previous configuration versions, checks rollback readiness, and produces an audit-ready event report. It does not add a new AI decision layer, does not change production execution, and does not write runtime configuration automatically.
+
+Changed files are limited to the production event log package, one runtime entry point, one test file, run scripts, README, file list, and AFIP project database updates.
+
+Validation commands:
+
+- `pytest tests/test_production_milestone_g_pack_2.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+
+Next recommended pack: Production Milestone G Pack 3 - Feature Flag Framework.

@@ -68,7 +68,11 @@ Complete through Pack 20.
 ## Production Milestone G
 
 - Pack 1: Runtime Observability Foundation - Complete
+- Pack 2: Production Event Log - Complete
 
 ## Next
 
-- Production Milestone G Pack 2: Production Event Log
+- Production Milestone G Pack 3: Feature Flag Framework
+
+- Pack G1 adds Runtime Observability Foundation using deterministic runtime metrics and explainability reporting without expanding AI decision logic.
+- Pack G2 adds Production Event Log using regime-first event records, configuration version evidence, rollback readiness checks, and deterministic audit reports without changing execution behavior.
