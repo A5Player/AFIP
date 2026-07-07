@@ -56,7 +56,9 @@ Complete through Pack 20.
 
 - Pack 1: Adaptive AI Foundation - Complete
 - Pack 2: Self Evaluation Engine - Complete
+- Pack 3: Adaptive Confidence Engine - Complete
+- Pack 4: Experience Knowledge Engine - Complete
 
 ## Next
 
-- Production Milestone F Pack 3: Adaptive Confidence Engine
+- Production Milestone F Pack 5: Strategy Evolution
