@@ -58,7 +58,8 @@ Complete through Pack 20.
 - Pack 2: Self Evaluation Engine - Complete
 - Pack 3: Adaptive Confidence Engine - Complete
 - Pack 4: Experience Knowledge Engine - Complete
+- Pack 5: Strategy Evolution - Complete
 
 ## Next
 
-- Production Milestone F Pack 5: Strategy Evolution
+- Production Milestone F Pack 6: Runtime Adaptation

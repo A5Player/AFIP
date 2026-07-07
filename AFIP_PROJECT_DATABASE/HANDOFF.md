@@ -24,10 +24,11 @@
 - Production Milestone F Pack 2: Self Evaluation Engine — Complete
 - Production Milestone F Pack 3: Adaptive Confidence Engine — Complete
 - Production Milestone F Pack 4: Experience Knowledge Engine — Complete
+- Production Milestone F Pack 5: Strategy Evolution — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone F Pack 4
+Expected after user push: Production Milestone F Pack 5
 
 ## Latest Quality
 
@@ -59,7 +60,8 @@ Expected after user push: Production Milestone F Pack 4
 - Pack F2 adds Self Evaluation Engine using closed decision evidence, confidence alignment, outcome review, data quality review, and deterministic review readiness before adaptive learning is accepted.
 - Pack F3 adds Adaptive Confidence Engine using regime-first confidence profiles, self evaluation evidence, data quality, knowledge quality, stability, and deterministic confidence readiness before runtime use.
 - Pack F4 adds Experience Knowledge Engine using closed experience, adaptive confidence, self evaluation, data quality, knowledge quality, recency, realized result, and deterministic experience knowledge readiness before runtime use.
+- Pack F5 adds Strategy Evolution using experience knowledge profiles, expectancy, positive rate, evidence quality, current strategy weight, and deterministic strategy weight candidates without runtime writes.
 
 ## Next
 
-Production Milestone F Pack 5 — Strategy Evolution.
+Production Milestone F Pack 6 — Runtime Adaptation.
