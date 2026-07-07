@@ -67,3 +67,19 @@ Expected after user push: Production Milestone F Pack 6
 ## Next
 
 Production Milestone F Pack 7 — AI Integration.
+
+## Production Milestone F Pack 7 - AI Integration
+
+Status: Complete.
+
+Added deterministic AI integration planning from runtime adaptation evidence.
+The package keeps Market Regime before Signal Context, Data First Architecture,
+Knowledge First Architecture, financial terminology only, and no autonomous
+execution or AI output writes. Pack 8 should continue with Validation.
+
+Validation target:
+
+- `pytest tests/test_production_milestone_f_pack_7.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+
