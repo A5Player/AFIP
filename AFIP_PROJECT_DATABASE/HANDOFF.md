@@ -29,10 +29,15 @@
 - Production Milestone F Pack 7: AI Integration — Complete
 - Production Milestone F Pack 8: Validation — Complete
 - Production Milestone F Pack 9: Production Readiness — Complete
+- Production Milestone F Pack 10: Milestone F Complete — Complete
+- Production Milestone G Pack 1: Runtime Observability Foundation — Complete
+- Production Milestone G Pack 2: Production Event Log — Complete
+- Production Milestone G Pack 3: Feature Flag Framework — Complete
+- Production Milestone G Pack 4: Runtime Metrics Integration — Complete
 
 ## Latest Commit
 
-Expected after user push: Production Milestone F Pack 9
+Expected after user push: Production Milestone G Pack 4
 
 ## Latest Quality
 
@@ -73,7 +78,7 @@ Expected after user push: Production Milestone F Pack 9
 
 ## Next
 
-Production Milestone F is complete. Next step: Production Milestone G Planning.
+Production Milestone G is in progress. Next step: Production Milestone G Pack 5 - Integration and Production Hardening.
 
 ## Production Milestone F Pack 7 - AI Integration
 
@@ -178,3 +183,19 @@ Validation commands:
 - `python tools/afip_local_quality_check.py`
 
 Next recommended pack: Production Milestone G Pack 4 - Runtime Metrics Integration.
+
+## Production Milestone G Pack 4 - Runtime Metrics Integration
+
+Status: Complete.
+
+Added deterministic runtime metrics integration for production hardening review. The pack keeps Market Regime before Signal Context, uses feature flag, production event log, runtime observability, measurement quality, latency, memory, and cache evidence, and produces deterministic performance and resource reports. It does not add a new AI decision layer, does not change production execution, and does not write runtime configuration automatically.
+
+Changed files are limited to the runtime metrics integration package, one runtime entry point, one test file, run scripts, README, file list, and AFIP project database updates.
+
+Validation commands:
+
+- `pytest tests/test_production_milestone_g_pack_4.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+
+Next recommended pack: Production Milestone G Pack 5 - Integration and Production Hardening.
