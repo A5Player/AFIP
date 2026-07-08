@@ -1,18 +1,9 @@
 {
-  "project": "AFIP",
-  "current_milestone": "Production Milestone G",
-  "current_pack": 8,
-  "current_pack_name": "Production Release Candidate",
-  "latest_pack": "Pack 8",
-  "latest_pack_name": "Production Release Candidate",
-  "latest_completed_pack": "Production Milestone G Pack 8",
-  "next_pack": "Production Milestone G Complete / Production Runtime Review",
-  "previous_commit": "a0fea0f",
-  "pytest_status": "PASS",
-  "pytest_total_expected": 839,
-  "financial_naming": "PASS",
-  "local_quality_check": "PASS",
+  "current_phase": "Production Freeze",
+  "current_pack": "P1",
+  "latest_completed": "Production Freeze P1 Architecture Audit",
   "quality_status": "PASS",
-  "milestone_f_status": "COMPLETE",
-  "milestone_g_status": "COMPLETE"
+  "full_pytest": 845,
+  "runtime": "DETERMINISTIC",
+  "execution": "LOCKED_SIMULATION_ONLY"
 }
