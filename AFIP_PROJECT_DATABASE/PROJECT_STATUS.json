@@ -1,9 +1,13 @@
 {
-  "current_phase": "Production Freeze",
   "current_pack": "P2",
-  "latest_completed": "Production Freeze P2 Production Acceptance Test",
-  "quality_status": "PASS",
+  "current_phase": "Production Freeze",
+  "execution": "LOCKED_SIMULATION_ONLY",
   "full_pytest": 851,
-  "runtime": "DETERMINISTIC",
-  "execution": "LOCKED_SIMULATION_ONLY"
+  "latest_completed": "Production Freeze P2 Production Acceptance Test",
+  "latest_pack": "Production Freeze P3",
+  "latest_tests_passed": 857,
+  "local_quality": "PASS",
+  "production_freeze_p3": "complete",
+  "quality_status": "PASS",
+  "runtime": "DETERMINISTIC"
 }
