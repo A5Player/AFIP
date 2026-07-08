@@ -20,3 +20,8 @@
 ## Notes
 
 P4 adds deployment and operations readiness documentation and deterministic review objects. It does not alter trading logic, runtime execution, strategy behavior, risk policy, or broker integration.
+
+
+## Production Freeze P5 — Walk-Forward Historical Paper Simulation
+
+Status: Completed. Adds no-lookahead historical paper simulation readiness gate for building AFIP trading standards before automated real-trading adjustment.

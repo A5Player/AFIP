@@ -148,3 +148,5 @@ Complete through Pack 20.
 - Purpose: VPS, MT5, startup, backup, restore, rollback, and operating readiness review.
 - Tests: `tests/test_production_freeze_p4_operations.py`
 - Quality: PASS
+
+- Production Freeze P5 — Walk-Forward Historical Paper Simulation: completed.

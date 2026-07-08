@@ -4,11 +4,16 @@
   "execution": "LOCKED_SIMULATION_ONLY",
   "full_pytest": 863,
   "latest_completed": "Production Freeze P4 Deployment and Operations",
-  "latest_pack": "Production Freeze P4",
+  "latest_pack": "Production Freeze P5",
+  "latest_pack_name": "Walk-Forward Historical Paper Simulation",
   "latest_tests_passed": 863,
+  "latest_verified_tests": 869,
   "local_quality": "PASS",
+  "lookahead_bias_gate": "enabled",
   "production_freeze_p3": "complete",
   "production_freeze_p4": "complete",
+  "production_freeze_p5": "completed",
   "quality_status": "PASS",
-  "runtime": "DETERMINISTIC"
+  "runtime": "DETERMINISTIC",
+  "walk_forward_historical_paper_simulation": "ready"
 }
