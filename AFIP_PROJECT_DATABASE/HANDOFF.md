@@ -215,3 +215,22 @@ Validation commands:
 - `python tools/afip_local_quality_check.py`
 
 Next recommended pack: Production Milestone G Pack 6 - Paper Trading Framework.
+
+## Production Milestone G Pack 6 — Paper Trading Framework
+
+Status: COMPLETE
+
+Pack 6 adds a paper trading framework that evaluates simulated trading readiness without live execution. It keeps the runtime deterministic and preserves market-regime-first ordering.
+
+Added modules:
+
+- `afip.paper_trading`
+- `afip.runtime.production_milestone_g_paper_trading_runtime`
+
+Validation:
+
+- `pytest tests/test_production_milestone_g_pack_6.py -v` — PASS
+- `pytest -q` — PASS, 827 passed
+- `python tools/afip_local_quality_check.py` — PASS
+
+Next recommended pack: Production Milestone G Pack 7 — Long-run Stability Testing.

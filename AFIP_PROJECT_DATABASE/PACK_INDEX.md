@@ -97,3 +97,11 @@ Complete through Pack 20.
 - README: `README_MILESTONE_G_PACK_5.md`
 - File list: `FILE_LIST_MILESTONE_G_PACK_5.md`
 - Run scripts: `RUN_MILESTONE_G_PACK_5.ps1`, `RUN_MILESTONE_G_PACK_5.bat`
+
+## Production Milestone G Pack 6 — Paper Trading Framework
+
+- Status: COMPLETE
+- Adds deterministic paper trading readiness review.
+- Keeps execution locked to simulation/paper mode.
+- Does not create live orders or alter trading decision logic.
+- Validation: 827 passed, local quality PASS.
