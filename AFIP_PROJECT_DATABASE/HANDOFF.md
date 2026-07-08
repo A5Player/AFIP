@@ -1,29 +1,18 @@
 # AFIP Handoff
 
-## Latest State
+Current stage: Production Milestone H Pack 2 — Configuration Center.
 
-- Phase: Production Freeze
-- Latest Pack: P6 — Version 1 Production Freeze
-- Latest commit expected: Production Freeze P6 Version 1 Production Freeze
-- Full pytest: 875 passed
-- Local quality check: PASS
-- Execution: LOCKED_SIMULATION_ONLY
-- Version: 1.0.0
-- Version 1 status: VERSION1_PRODUCTION_FREEZE_READY
+Latest completed baseline before this patch:
+- Version 1 Production Freeze completed.
+- Milestone H Pack 1 Dashboard Foundation completed.
 
-## Current Production Freeze Progress
+Pack 2 adds dashboard-facing configuration metadata for broker accounts, risk, walk-forward, dashboard preferences, and AFIP Bank / Capital settings.
 
-- P1 Architecture Audit: Complete
-- P2 Production Acceptance Test: Complete
-- P3 Production Documentation: Complete
-- P4 Deployment and Operations: Complete
-- P5 Walk-Forward Historical Paper Simulation: Complete
-- P6 Version 1 Production Freeze: Complete
+Safety notes:
+- No trading logic changed.
+- Live execution is blocked in this pack.
+- Market regime remains required before signal context.
+- Login values are masked for display.
 
-## Notes
-
-P6 closes AFIP Version 1 as a deterministic production freeze baseline. It does not alter trading logic, runtime execution, strategy behavior, risk policy, or broker integration. Future work should be introduced as a new version or a production stability fix.
-
-## Production Milestone H Pack 1 — Dashboard Foundation
-
-Added a patch-only dashboard foundation for bilingual intelligence and engine cards, status icons, top ranking summaries, and deterministic dashboard reports. This pack is presentation-only and does not change trading logic, risk logic, or execution behavior.
+Next recommended pack:
+- H3 Runtime Dashboard: show current system state, account status, MT5 readiness, and runtime health.
