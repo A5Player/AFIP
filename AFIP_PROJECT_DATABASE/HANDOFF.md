@@ -276,3 +276,23 @@ Next recommended work: Production Runtime Review, deployment documentation, and 
 ## Production Freeze P1 — Production Architecture Audit
 
 Added deterministic architecture audit readiness checks for module boundaries, dependency alignment, runtime flow, configuration, naming, documentation traceability, and unresolved architecture findings. No trading logic changed.
+
+
+## Production Freeze P2 — Production Acceptance Test
+
+Status: COMPLETE
+
+Pack P2 adds a deterministic Production Acceptance Test layer. It checks production-style scenarios without changing trading decision logic or enabling live execution. The acceptance review keeps Market Regime before Signal Context and evaluates spread quality, margin quality, data continuity, engine agreement, confidence quality, risk gate quality, decision consistency, blocked execution events, and unresolved scenarios.
+
+Added modules:
+
+- `afip.production_acceptance_test`
+- `afip.runtime.production_freeze_p2_acceptance_test_runtime`
+
+Validation:
+
+- `pytest tests/test_production_freeze_p2_acceptance_test.py -v` — PASS
+- `pytest -q` — PASS, 851 passed
+- `python tools/afip_local_quality_check.py` — PASS
+
+Next recommended pack: Production Freeze P3 — Documentation.
