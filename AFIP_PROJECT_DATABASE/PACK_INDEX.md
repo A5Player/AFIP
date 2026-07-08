@@ -105,3 +105,12 @@ Complete through Pack 20.
 - Keeps execution locked to simulation/paper mode.
 - Does not create live orders or alter trading decision logic.
 - Validation: 827 passed, local quality PASS.
+
+
+## Production Milestone G Pack 7 — Long-run Stability Testing
+
+- Status: COMPLETE
+- Adds deterministic long-run stability testing for repeated simulated runtime evidence.
+- Verifies deterministic consistency, state integrity, resource trend quality, anomaly rate, and drawdown.
+- Does not create live orders or alter trading decision logic.
+- Validation: 833 passed, local quality PASS.

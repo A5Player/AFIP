@@ -234,3 +234,23 @@ Validation:
 - `python tools/afip_local_quality_check.py` — PASS
 
 Next recommended pack: Production Milestone G Pack 7 — Long-run Stability Testing.
+
+
+## Production Milestone G Pack 7 — Long-run Stability Testing
+
+Status: COMPLETE
+
+Pack 7 adds long-run stability testing for repeated simulated runtime evidence. It keeps the runtime deterministic, preserves market-regime-first ordering, blocks live execution mode, and evaluates deterministic consistency, state integrity, resource trend quality, anomaly rate, and drawdown without changing trading decision logic.
+
+Added modules:
+
+- `afip.long_run_stability`
+- `afip.runtime.production_milestone_g_long_run_stability_runtime`
+
+Validation:
+
+- `pytest tests/test_production_milestone_g_pack_7.py -v` — PASS
+- `pytest -q` — PASS, 833 passed
+- `python tools/afip_local_quality_check.py` — PASS
+
+Next recommended pack: Production Milestone G Pack 8 — Production Release Candidate.
