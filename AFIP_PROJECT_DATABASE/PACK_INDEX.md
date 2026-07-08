@@ -141,3 +141,10 @@ Complete through Pack 20.
 - Adds English and Thai production manuals, runtime flow, and troubleshooting documents.
 - Keeps execution locked to simulation and does not alter trading logic.
 - Validation: 857 passed, local quality PASS.
+
+## Production Freeze P4 — Deployment and Operations
+
+- Status: Complete
+- Purpose: VPS, MT5, startup, backup, restore, rollback, and operating readiness review.
+- Tests: `tests/test_production_freeze_p4_operations.py`
+- Quality: PASS

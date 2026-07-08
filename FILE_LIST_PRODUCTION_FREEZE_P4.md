@@ -1,0 +1,23 @@
+# File List — Production Freeze P4
+
+- afip/production_operations/__init__.py
+- afip/production_operations/operations_observation.py
+- afip/production_operations/operations_policy.py
+- afip/production_operations/operations_profile.py
+- afip/production_operations/operations_report.py
+- afip/production_operations/operations_repository.py
+- afip/production_operations/operations_runtime.py
+- afip/runtime/production_freeze_p4_operations_runtime.py
+- docs/production/AFIP_DEPLOYMENT_GUIDE.md
+- docs/production/AFIP_OPERATIONS_CHECKLIST.md
+- docs/production/AFIP_BACKUP_RESTORE.md
+- docs/production/AFIP_ROLLBACK_GUIDE.md
+- tests/test_production_freeze_p4_operations.py
+- README_PRODUCTION_FREEZE_P4.md
+- FILE_LIST_PRODUCTION_FREEZE_P4.md
+- RUN_PRODUCTION_FREEZE_P4.bat
+- RUN_PRODUCTION_FREEZE_P4.ps1
+- AFIP_PROJECT_DATABASE/QUALITY_RESULT_PRODUCTION_FREEZE_P4.md
+- AFIP_PROJECT_DATABASE/HANDOFF.md
+- AFIP_PROJECT_DATABASE/PACK_INDEX.md
+- AFIP_PROJECT_DATABASE/PROJECT_STATUS.json

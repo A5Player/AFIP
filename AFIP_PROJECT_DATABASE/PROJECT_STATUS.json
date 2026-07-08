@@ -1,13 +1,14 @@
 {
-  "current_pack": "P2",
+  "current_pack": "P4",
   "current_phase": "Production Freeze",
   "execution": "LOCKED_SIMULATION_ONLY",
-  "full_pytest": 851,
-  "latest_completed": "Production Freeze P2 Production Acceptance Test",
-  "latest_pack": "Production Freeze P3",
-  "latest_tests_passed": 857,
+  "full_pytest": 863,
+  "latest_completed": "Production Freeze P4 Deployment and Operations",
+  "latest_pack": "Production Freeze P4",
+  "latest_tests_passed": 863,
   "local_quality": "PASS",
   "production_freeze_p3": "complete",
+  "production_freeze_p4": "complete",
   "quality_status": "PASS",
   "runtime": "DETERMINISTIC"
 }
