@@ -23,3 +23,7 @@
 ## Notes
 
 P6 closes AFIP Version 1 as a deterministic production freeze baseline. It does not alter trading logic, runtime execution, strategy behavior, risk policy, or broker integration. Future work should be introduced as a new version or a production stability fix.
+
+## Production Milestone H Pack 1 — Dashboard Foundation
+
+Added a patch-only dashboard foundation for bilingual intelligence and engine cards, status icons, top ranking summaries, and deterministic dashboard reports. This pack is presentation-only and does not change trading logic, risk logic, or execution behavior.
