@@ -254,3 +254,20 @@ Validation:
 - `python tools/afip_local_quality_check.py` — PASS
 
 Next recommended pack: Production Milestone G Pack 8 — Production Release Candidate.
+
+
+## Production Milestone G Pack 8 — Production Release Candidate
+
+Status: COMPLETE
+
+Pack G8 closes Milestone G with a deterministic Release Candidate gate. It evaluates release readiness using existing production hardening, paper trading, long-run stability, observability, feature flag, event log, deployment checklist, rollback plan, and operator handoff evidence.
+
+No trading logic was changed. No live execution was enabled. Runtime behavior remains deterministic and simulation-locked.
+
+Latest validation:
+
+- `pytest tests/test_production_milestone_g_pack_8.py -v`: 6 passed
+- `pytest -q`: 839 passed
+- `python tools/afip_local_quality_check.py`: PASS
+
+Next recommended work: Production Runtime Review, deployment documentation, and controlled paper trading runbook before any real-money operation.
