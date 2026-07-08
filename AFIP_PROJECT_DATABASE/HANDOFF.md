@@ -199,3 +199,19 @@ Validation commands:
 - `python tools/afip_local_quality_check.py`
 
 Next recommended pack: Production Milestone G Pack 5 - Integration and Production Hardening.
+
+## Production Milestone G Pack 5 - Integration and Production Hardening
+
+Status: Complete.
+
+Added deterministic production hardening integration for the existing Milestone G support layers. The pack keeps Market Regime before Signal Context, reviews runtime observability, production event log, feature flag, runtime metrics, dependency alignment, rollback readiness, and monitoring coverage together, and produces a production hardening readiness gate. It does not add a new AI decision layer, does not change production execution, and does not write runtime configuration automatically.
+
+Changed files are limited to the production hardening package, one runtime entry point, one test file, run scripts, README, file list, and AFIP project database updates.
+
+Validation commands:
+
+- `pytest tests/test_production_milestone_g_pack_5.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+
+Next recommended pack: Production Milestone G Pack 6 - Paper Trading Framework.
