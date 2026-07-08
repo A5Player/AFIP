@@ -1,0 +1,16 @@
+{
+  "product": "AFIP",
+  "full_name": "Automated Financial Intelligence Platform",
+  "version": "1.0.0",
+  "phase": "Production Freeze",
+  "final_pack": "P6 Version 1 Production Freeze",
+  "execution_safety": "LOCKED_SIMULATION_ONLY",
+  "runtime": "DETERMINISTIC",
+  "financial_naming": "PASS",
+  "primary_initial_symbol": "GOLD#",
+  "completed_milestones": ["A", "B", "C", "D", "E", "F", "G"],
+  "completed_freeze_packs": ["P1", "P2", "P3", "P4", "P5", "P6"],
+  "walk_forward_no_lookahead": true,
+  "trading_logic_changed_in_p6": false,
+  "status": "VERSION1_PRODUCTION_FREEZE_READY"
+}
