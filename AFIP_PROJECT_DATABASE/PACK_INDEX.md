@@ -76,3 +76,10 @@ Complete through Pack 20.
 
 - Pack G1 adds Runtime Observability Foundation using deterministic runtime metrics and explainability reporting without expanding AI decision logic.
 - Pack G2 adds Production Event Log using regime-first event records, configuration version evidence, rollback readiness checks, and deterministic audit reports without changing execution behavior.
+- Pack 3: Feature Flag Framework - Complete
+
+## Next
+
+- Production Milestone G Pack 4: Runtime Metrics Integration
+
+- Pack G3 adds Feature Flag Framework using regime-first feature records, configuration version evidence, rollout readiness checks, rollback readiness checks, dependency checks, and deterministic audit reports without writing runtime configuration automatically.

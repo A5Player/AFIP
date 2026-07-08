@@ -162,3 +162,19 @@ Validation commands:
 - `python tools/afip_local_quality_check.py`
 
 Next recommended pack: Production Milestone G Pack 3 - Feature Flag Framework.
+
+## Production Milestone G Pack 3 - Feature Flag Framework
+
+Status: Complete.
+
+Added a compact feature flag framework for controlled production rollout review. The pack keeps Market Regime before Signal Context, uses production event evidence and runtime observability evidence, checks rollout quality, rollback quality, dependency quality, operator review quality, and audit quality, and produces deterministic feature flag reports. It does not add a new AI decision layer, does not change production execution, and does not write runtime configuration automatically.
+
+Changed files are limited to the feature flag package, one runtime entry point, one test file, run scripts, README, file list, and AFIP project database updates.
+
+Validation commands:
+
+- `pytest tests/test_production_milestone_g_pack_3.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+
+Next recommended pack: Production Milestone G Pack 4 - Runtime Metrics Integration.
