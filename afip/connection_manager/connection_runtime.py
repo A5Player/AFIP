@@ -6,7 +6,7 @@ from typing import Any, Mapping
 
 from .connection_report import ConnectionManagerReport
 
-_SAFE_EXECUTION_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "LOCKED_SIMULATION_ONLY"}
+_SAFE_EXECUTION_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "DEMO", "DEMO_TRADING", "LOCKED_SIMULATION_ONLY"}
 
 
 def _int(value: Any, default: int = 0) -> int:

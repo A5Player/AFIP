@@ -1,8 +1,8 @@
 {
   "project": "AFIP",
   "phase": "Production Milestone H",
-  "pack": "Pack 9",
-  "name": "Dashboard Intelligence Integration",
+  "pack": "Pack 10",
+  "name": "Production Readiness and VPS Demo Workflow",
   "status": "patch_ready",
   "version1_freeze": "completed",
   "dashboard_foundation": "completed",
@@ -16,15 +16,25 @@
   "paper_trading_engine": "completed",
   "dashboard_ui_launcher": "completed",
   "dashboard_intelligence_integration": "completed",
-  "engine_row_model": "completed",
-  "decision_explainability_model": "completed",
-  "research_live_statistics_separation": "completed",
+  "production_readiness": "completed",
+  "vps_demo_workflow": "completed",
+  "demo_trading_readiness": "completed_no_live_execution",
   "trading_logic_changed": false,
   "live_execution_enabled": false,
-  "expected_total_tests_after_patch": 936,
+  "expected_total_tests_after_patch": 943,
   "broker_policy": "XM_ONLY",
   "symbol_policy": "GOLD#_ONLY",
   "multi_broker": "DISABLED_VERSION_1",
   "unit_system": "1_UNIT_EQUALS_0.01_LOT",
-  "paper_trading_mode": "PAPER_ONLY_NO_LIVE_EXECUTION"
+  "paper_trading_mode": "PAPER_ONLY_NO_LIVE_EXECUTION",
+  "demo_trading_mode": "DEMO_READY_NO_LIVE_EXECUTION",
+  "next_workflow": [
+    "deploy_to_windows_vps",
+    "download_historical_data",
+    "run_walk_forward",
+    "run_research",
+    "run_paper_trading",
+    "run_demo_trading",
+    "do_not_enable_live_trading"
+  ]
 }

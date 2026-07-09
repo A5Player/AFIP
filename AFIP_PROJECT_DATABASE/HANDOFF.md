@@ -1,43 +1,60 @@
-# AFIP Handoff — Production Milestone H Pack 9
+# AFIP Handoff — Production Milestone H Pack 10
 
-Current Commit Before User Push: ff7d2d9
+## Current Status
 
-## Completed
+Production Milestone H Pack 10 is patch-ready.
 
-- Production Milestone H Pack 9 patch created.
-- Added Dashboard Intelligence Integration runtime.
-- Added dashboard-ready engine rows with status icon, English name, Thai name, description, input, output, confidence, accuracy, win rate, runtime, waiting reason, dependency, health, research statistics, and live statistics.
-- Added decision explainability model for waiting, entry, holding, stop loss, break even, trailing, partial close, exit, rejected entry, rejected exit, alternative decision, current AI reasoning, expected next action, risk status, and estimated next review.
-- Integrated Dashboard Intelligence panel into visible Dashboard UI.
-- Preserved Pack 8 navigation order for backward compatibility.
-- Version 1 policy remains XM only, GOLD# only, multi-broker disabled.
-- Live execution remains disabled.
+- Pack 1 Dashboard Foundation: completed
+- Pack 2 Configuration Center: completed
+- Pack 3 Profile Manager / Setup Wizard / Connection / Historical Runtime: completed
+- Pack 4 Runtime Service Manager: completed
+- Pack 5 Historical Data Download Quality Pipeline: completed
+- Pack 6 Research Center: completed
+- Pack 7 Paper Trading Engine: completed
+- Pack 8 Dashboard UI Launcher: completed
+- Pack 9 Dashboard Intelligence Integration: completed
+- Pack 10 Production Readiness and VPS Demo Workflow: completed
 
-## Validation
+## Latest Verification
 
-- Pack 9 tests: 7 passed
-- Full pytest: 936 passed
+- Pack 10 test: 7 passed
+- Full pytest: 943 passed
 - AFIP Local Quality Check: PASS
+- Dashboard generated: runtime/dashboard/afip_dashboard.html
 
-## Next Pack
+## Production Policy
 
-Production Milestone H Pack 10 should add Production Readiness and VPS Deployment workflow for historical download, walk forward, research, paper trading, and demo readiness while keeping Live Trading disabled.
+- Broker: XM only
+- Symbol: GOLD# only
+- Multi broker: disabled for Version 1
+- Live trading: disabled
+- Demo trading: readiness workflow only
+- Unit system: 1 Unit = 0.01 lot
+- Trading logic changed: false
 
-Recommended command after applying patch:
+## VPS Workflow
 
-```powershell
-pytest tests/test_production_milestone_h_pack_9.py -v
-if ($LASTEXITCODE -ne 0) { exit }
+Recommended next operational sequence:
 
-pytest
-if ($LASTEXITCODE -ne 0) { exit }
+1. Deploy AFIP to Windows VPS.
+2. Configure XM MT5 terminal path.
+3. Download historical data.
+4. Validate missing, duplicate, and invalid bars.
+5. Run Walk Forward.
+6. Run Research.
+7. Run Paper Trading.
+8. Run Demo Trading.
+9. Keep Live Trading disabled until a later explicit production approval pack.
 
-python tools/afip_local_quality_check.py
-if ($LASTEXITCODE -ne 0) { exit }
+## Pack 10 Additions
 
-python -m afip.dashboard_ui
+- Production Readiness Runtime
+- Demo Trading Readiness Model
+- VPS Deployment Step Model
+- Dashboard Production Readiness Panel
+- Backward-compatible legacy Production Readiness exports
+- Pack 10 documentation, tests, file list, and run scripts
 
-git add .
-git commit -m "Production Milestone H Pack 9 Dashboard Intelligence Integration"
-git push
-```
+## Safety Notes
+
+AFIP remains locked away from live execution. Pack 10 prepares release-candidate readiness for VPS demo workflow only.

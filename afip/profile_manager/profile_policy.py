@@ -7,7 +7,7 @@ from typing import Any, Mapping
 from .profile_models import TradingProfile
 from .profile_report import ProfileManagerReport
 
-_SAFE_EXECUTION_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "LOCKED_SIMULATION_ONLY"}
+_SAFE_EXECUTION_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "DEMO", "DEMO_TRADING", "LOCKED_SIMULATION_ONLY"}
 
 
 def build_profile_report(record: Mapping[str, Any]) -> ProfileManagerReport:

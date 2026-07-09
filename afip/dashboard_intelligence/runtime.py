@@ -15,7 +15,7 @@ from .models import DashboardDecisionExplanation, DashboardEngineRow, DashboardI
 
 VERSION1_BROKER = "XM"
 VERSION1_SYMBOL = "GOLD#"
-_ALLOWED_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "LOCKED_SIMULATION_ONLY"}
+_ALLOWED_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "DEMO", "DEMO_TRADING", "LOCKED_SIMULATION_ONLY"}
 
 
 def _text(value: Any, default: str = "") -> str:

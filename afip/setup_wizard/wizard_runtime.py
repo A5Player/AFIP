@@ -6,7 +6,7 @@ from typing import Any, Mapping
 
 from .wizard_report import SetupWizardReport, SetupWizardStep
 
-_SAFE_EXECUTION_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "LOCKED_SIMULATION_ONLY"}
+_SAFE_EXECUTION_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "DEMO", "DEMO_TRADING", "LOCKED_SIMULATION_ONLY"}
 
 
 class SetupWizardRuntime:

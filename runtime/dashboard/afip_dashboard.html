@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AFIP Dashboard — Milestone H Pack 9</title>
+<title>AFIP Dashboard — Milestone H Pack 10</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 24px; background: #f7f7f7; color: #222; }
 header, section { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
@@ -17,11 +17,11 @@ small { color: #555; }
 </head>
 <body>
 <header>
-<h1>AFIP Dashboard — Milestone H Pack 9</h1>
-<p class="status">Status: WAITING — dashboard_ui_waiting_for_runtime_dependency</p>
-<p>Profile: Balanced | Broker: XM | Symbol: GOLD# | Mode: PAPER | Live Execution: False</p>
+<h1>AFIP Dashboard — Milestone H Pack 10</h1>
+<p class="status">Status: BLOCKED — dashboard_ui_blocked_by_runtime_dependency</p>
+<p>Profile: Balanced | Broker: XM | Symbol: GOLD# | Mode: DEMO | Live Execution: False</p>
 <small>Presentation layer only. No trading logic changed. Live trading remains disabled.</small>
-<nav><ul><li>Runtime</li><li>Intelligence</li><li>Trading</li><li>Analytics</li><li>AFIP Bank</li><li>Research</li><li>System</li><li>Market</li><li>Order Center</li></ul></nav>
+<nav><ul><li>Runtime</li><li>Intelligence</li><li>Trading</li><li>Analytics</li><li>AFIP Bank</li><li>Research</li><li>System</li><li>Market</li><li>Order Center</li><li>Production Readiness</li></ul></nav>
 </header>
 <div class="grid">
 <section id="runtime">
@@ -51,7 +51,7 @@ small { color: #555; }
 <tr><td>✅ Profile Manager</td><td>READY | ตัวจัดการโปรไฟล์ | confidence=0.0 | waiting=no_waiting_reason</td></tr>
 <tr><td>⏳ Historical Data Manager</td><td>WAITING | ตัวจัดการข้อมูลย้อนหลัง | confidence=0.0 | waiting=no_waiting_reason</td></tr>
 <tr><td>✅ Historical Download Pipeline</td><td>READY | กระบวนการดาวน์โหลดข้อมูลย้อนหลัง | confidence=0.0 | waiting=no_waiting_reason</td></tr>
-<tr><td>⏳ Research Center</td><td>WAITING | ศูนย์วิจัย | confidence=0.0 | waiting=no_waiting_reason</td></tr>
+<tr><td>✅ Research Center</td><td>READY | ศูนย์วิจัย | confidence=0.0 | waiting=no_waiting_reason</td></tr>
 <tr><td>✅ Paper Trading Engine</td><td>READY | ระบบเทรดจำลอง | confidence=0.0 | waiting=no_waiting_reason</td></tr></table>
 </section>
 <section id="intelligence">
@@ -79,12 +79,12 @@ small { color: #555; }
 </section>
 <section id="analytics">
 <h2>Dashboard Analytics / สถิติและการวิเคราะห์</h2>
-<p class="status">WAITING</p>
+<p class="status">READY</p>
 <p>Separates research and live statistics.<br><small>แยกสถิติ Research และ Live ออกจากกัน</small></p>
 <table><tr><td>Research Scope</td><td>RESEARCH_ONLY</td></tr>
 <tr><td>Live Scope</td><td>LIVE_SEPARATE_NOT_USED_FOR_RESEARCH_RANKING</td></tr>
 <tr><td>Completed Research Orders</td><td>120</td></tr>
-<tr><td>Standard Learning</td><td>False</td></tr>
+<tr><td>Standard Learning</td><td>True</td></tr>
 <tr><td>Policy</td><td>temporary_standard_every_100_orders_permanent_standard_every_1000_orders_only_if_quality_improves</td></tr></table>
 </section>
 <section id="afip_bank">
@@ -101,7 +101,7 @@ small { color: #555; }
 </section>
 <section id="research">
 <h2>Research Center / ศูนย์วิจัย</h2>
-<p class="status">WAITING</p>
+<p class="status">READY</p>
 <p>Displays required research groups.<br><small>แสดงกลุ่มสถิติวิจัยที่จำเป็น</small></p>
 <table><tr><td>Top 10 Trading Hours</td><td>available</td></tr>
 <tr><td>Top 10 Trading Sessions</td><td>available</td></tr>
@@ -143,6 +143,20 @@ small { color: #555; }
 <tr><td>PAPER-DEMO-1 Holding Reason</td><td>hold_while_market_reason_and_risk_remain_valid</td></tr>
 <tr><td>PAPER-DEMO-1 Expected Next Action</td><td>continue_paper_trading_review</td></tr>
 <tr><td>PAPER-DEMO-1 Risk</td><td>risk_pass</td></tr></table>
+</section>
+<section id="production_readiness">
+<h2>Production Readiness / ความพร้อมก่อนใช้งานจริง</h2>
+<p class="status">READY</p>
+<p>Shows VPS, historical data, walk forward, research, paper, and demo readiness while live trading remains disabled.<br><small>แสดงความพร้อมของ VPS ข้อมูลย้อนหลัง Walk Forward Research Paper และ Demo โดยยังไม่เปิดเงินจริง</small></p>
+<table><tr><td>Release Stage</td><td>VERSION_1_RELEASE_CANDIDATE</td></tr>
+<tr><td>Reason</td><td>milestone_h_pack_10_release_candidate_ready_for_vps_demo_workflow</td></tr>
+<tr><td>VPS</td><td>True</td></tr>
+<tr><td>Historical Data</td><td>True</td></tr>
+<tr><td>Walk Forward</td><td>True</td></tr>
+<tr><td>Research</td><td>True</td></tr>
+<tr><td>Paper Trading</td><td>True</td></tr>
+<tr><td>Demo Trading</td><td>True</td></tr>
+<tr><td>Live Execution</td><td>False</td></tr></table>
 </section>
 </div>
 </body>

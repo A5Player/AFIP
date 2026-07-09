@@ -10,13 +10,14 @@ from afip.dashboard_center import DashboardFoundationRuntime, DashboardRuntimeSt
 from afip.dashboard_intelligence import DashboardIntelligenceRuntime
 from afip.paper_trading import PaperTradingEngineRuntime
 from afip.research_center import ResearchCenterRuntime
+from afip.production_readiness import ProductionReadinessRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
 
 VERSION1_BROKER = "XM"
 VERSION1_SYMBOL = "GOLD#"
-_ALLOWED_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "LOCKED_SIMULATION_ONLY"}
+_ALLOWED_MODES = {"SIMULATION", "PAPER", "PAPER_TRADING", "DEMO", "DEMO_TRADING", "LOCKED_SIMULATION_ONLY"}
 
 
 def _text(value: Any, default: str = "") -> str:
@@ -41,6 +42,8 @@ class DashboardUIRuntime:
         paper = PaperTradingEngineRuntime().evaluate_one(record)
         research = ResearchCenterRuntime().evaluate_one(record)
         integrated = DashboardIntelligenceRuntime().evaluate_one(record)
+        production_requested = bool(record.get("production_readiness_requested", False)) or mode in {"DEMO", "DEMO_TRADING"}
+        production = ProductionReadinessRuntime().evaluate_one(record) if production_requested else None
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -70,19 +73,21 @@ class DashboardUIRuntime:
             _market_panel(record),
             _order_center_panel(paper),
         )
+        if production is not None:
+            panels = panels + (_production_readiness_panel(production),)
         if validation_items:
             panels = (_policy_panel(validation_items),) + panels
         return DashboardUIReport(
             status=status,
             reason=reason,
-            page_title="AFIP Dashboard — Milestone H Pack 9",
+            page_title="AFIP Dashboard — Milestone H Pack 10" if production is not None else "AFIP Dashboard — Milestone H Pack 9",
             profile_name=profile_name,
             broker=broker,
             symbol=symbol,
             mode=mode,
             live_execution_enabled=False,
             panels=panels,
-            navigation_sections=("Runtime", "Intelligence", "Trading", "Analytics", "AFIP Bank", "Research", "System", "Market", "Order Center"),
+            navigation_sections=("Runtime", "Intelligence", "Trading", "Analytics", "AFIP Bank", "Research", "System", "Market", "Order Center") + (("Production Readiness",) if production is not None else ()),
             visible_dashboard_ready=ready,
         )
 
@@ -260,3 +265,25 @@ def _panel_html(panel: DashboardPanel) -> str:
 <p>{escape(panel.description_en)}<br><small>{escape(panel.description_th)}</small></p>
 <table>{rows}</table>
 </section>"""
+
+
+def _production_readiness_panel(production: Any) -> DashboardPanel:
+    return DashboardPanel(
+        "production_readiness",
+        "Production Readiness",
+        "ความพร้อมก่อนใช้งานจริง",
+        production.status,
+        "Shows VPS, historical data, walk forward, research, paper, and demo readiness while live trading remains disabled.",
+        "แสดงความพร้อมของ VPS ข้อมูลย้อนหลัง Walk Forward Research Paper และ Demo โดยยังไม่เปิดเงินจริง",
+        (
+            ("Release Stage", production.release_stage),
+            ("Reason", production.reason),
+            ("VPS", str(production.vps_ready)),
+            ("Historical Data", str(production.historical_data_ready)),
+            ("Walk Forward", str(production.walk_forward_ready)),
+            ("Research", str(production.research_ready)),
+            ("Paper Trading", str(production.paper_trading_ready)),
+            ("Demo Trading", str(production.demo_trading_ready)),
+            ("Live Execution", str(production.live_execution_enabled)),
+        ),
+    )
