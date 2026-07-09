@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AFIP Dashboard — Milestone H Pack 8</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 24px; background: #f7f7f7; color: #222; }
+header, section { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.status { font-weight: bold; }
+table { width: 100%; border-collapse: collapse; }
+td { border-top: 1px solid #eee; padding: 6px 4px; vertical-align: top; }
+td:first-child { font-weight: bold; width: 42%; }
+small { color: #555; }
+</style>
+</head>
+<body>
+<header>
+<h1>AFIP Dashboard — Milestone H Pack 8</h1>
+<p class="status">Status: WAITING — dashboard_ui_waiting_for_runtime_dependency</p>
+<p>Profile: Balanced | Broker: XM | Symbol: GOLD# | Mode: PAPER | Live Execution: False</p>
+<small>Presentation layer only. No trading logic changed. Live trading remains disabled.</small>
+<nav><ul><li>Runtime</li><li>Intelligence</li><li>Trading</li><li>Analytics</li><li>AFIP Bank</li><li>Research</li><li>System</li><li>Market</li><li>Order Center</li></ul></nav>
+</header>
+<div class="grid">
+<section id="runtime">
+<h2>Dashboard Runtime / สถานะระบบ</h2>
+<p class="status">WAITING</p>
+<p>Shows runtime, dependency, and waiting status.<br><small>แสดงสถานะ Runtime และเหตุผลที่รอ</small></p>
+<table><tr><td>Runtime Gate</td><td>WAITING</td></tr>
+<tr><td>Reason</td><td>dashboard_runtime_waiting_for_dependency</td></tr>
+<tr><td>Profile</td><td>READY</td></tr>
+<tr><td>Connection</td><td>READY</td></tr>
+<tr><td>Historical Data</td><td>WAITING</td></tr>
+<tr><td>Runtime Service</td><td>READY</td></tr></table>
+</section>
+<section id="intelligence">
+<h2>Dashboard Intelligence / ปัญญาระบบ</h2>
+<p class="status">READY</p>
+<p>Displays engine input, output, confidence, and health.<br><small>แสดงข้อมูลเข้า ผลลัพธ์ ความมั่นใจ และสุขภาพของ Engine</small></p>
+<table><tr><td>Market Regime</td><td>TRENDING</td></tr>
+<tr><td>Input</td><td>MT5 OHLC multi-timeframe data</td></tr>
+<tr><td>Output</td><td>paper_trading_decision_context</td></tr>
+<tr><td>Confidence</td><td>0</td></tr>
+<tr><td>Waiting Reason</td><td>waiting_for_complete_runtime_review</td></tr>
+<tr><td>Health</td><td>READY</td></tr></table>
+</section>
+<section id="trading">
+<h2>Dashboard Trading / การเทรดจำลอง</h2>
+<p class="status">READY</p>
+<p>Displays paper trading state without broker execution.<br><small>แสดงสถานะ Paper Trading โดยไม่ส่งคำสั่งจริง</small></p>
+<table><tr><td>Order Count</td><td>1</td></tr>
+<tr><td>Waiting</td><td>0</td></tr>
+<tr><td>Ready</td><td>0</td></tr>
+<tr><td>Opened</td><td>0</td></tr>
+<tr><td>Managing</td><td>1</td></tr>
+<tr><td>Closed</td><td>0</td></tr>
+<tr><td>Current Units</td><td>1</td></tr></table>
+</section>
+<section id="analytics">
+<h2>Dashboard Analytics / สถิติและการวิเคราะห์</h2>
+<p class="status">WAITING</p>
+<p>Separates research and live statistics.<br><small>แยกสถิติ Research และ Live ออกจากกัน</small></p>
+<table><tr><td>Research Scope</td><td>RESEARCH_ONLY</td></tr>
+<tr><td>Live Scope</td><td>LIVE_SEPARATE_NOT_USED_FOR_RESEARCH_RANKING</td></tr>
+<tr><td>Completed Research Orders</td><td>120</td></tr>
+<tr><td>Standard Learning</td><td>False</td></tr>
+<tr><td>Policy</td><td>temporary_standard_every_100_orders_permanent_standard_every_1000_orders_only_if_quality_improves</td></tr></table>
+</section>
+<section id="afip_bank">
+<h2>AFIP Bank / ธนาคาร AFIP</h2>
+<p class="status">READY</p>
+<p>Displays paper balance, equity, reserve, ROI, and allocation.<br><small>แสดง Balance, Equity, Reserve, ROI และ Allocation</small></p>
+<table><tr><td>Balance</td><td>1000.0</td></tr>
+<tr><td>Equity</td><td>1003.0</td></tr>
+<tr><td>Reserve</td><td>200.0</td></tr>
+<tr><td>Allocation</td><td>803.0</td></tr>
+<tr><td>ROI</td><td>0.3%</td></tr>
+<tr><td>Floating Profit</td><td>3.0</td></tr>
+<tr><td>Closed Profit</td><td>0.0</td></tr></table>
+</section>
+<section id="research">
+<h2>Research Center / ศูนย์วิจัย</h2>
+<p class="status">WAITING</p>
+<p>Displays required research groups.<br><small>แสดงกลุ่มสถิติวิจัยที่จำเป็น</small></p>
+<table><tr><td>Top 10 Trading Hours</td><td>available</td></tr>
+<tr><td>Top 10 Trading Sessions</td><td>available</td></tr>
+<tr><td>Top 10 Market Regimes</td><td>available</td></tr>
+<tr><td>Top 10 Entry Plans</td><td>available</td></tr>
+<tr><td>Top 10 Exit Plans</td><td>available</td></tr>
+<tr><td>Top 10 Patterns</td><td>available</td></tr>
+<tr><td>Top 10 Engine Combinations</td><td>available</td></tr>
+<tr><td>Top 10 Profit Reasons</td><td>available</td></tr>
+<tr><td>Top 10 Loss Reasons</td><td>available</td></tr></table>
+</section>
+<section id="system">
+<h2>Dashboard System / ระบบ</h2>
+<p class="status">WAITING</p>
+<p>Displays VPS and connectivity status.<br><small>แสดงสถานะ VPS และการเชื่อมต่อ</small></p>
+<table><tr><td>Internet Status</td><td>READY</td></tr>
+<tr><td>MT5 Status</td><td>READY</td></tr>
+<tr><td>Broker Status</td><td>READY</td></tr>
+<tr><td>CPU</td><td>not_collected_yet</td></tr>
+<tr><td>RAM</td><td>not_collected_yet</td></tr>
+<tr><td>Disk</td><td>not_collected_yet</td></tr></table>
+</section>
+<section id="market">
+<h2>Dashboard Market / ตลาด</h2>
+<p class="status">READY</p>
+<p>Displays market session and open/close status.<br><small>แสดงสถานะตลาดและช่วงเวลาเทรด</small></p>
+<table><tr><td>Market Open / Close</td><td>market_status_pending_live_calendar</td></tr>
+<tr><td>Trading Session</td><td>session_pending_runtime_clock</td></tr>
+<tr><td>Symbol</td><td>GOLD#</td></tr>
+<tr><td>Broker</td><td>XM</td></tr></table>
+</section>
+<section id="order_center">
+<h2>Order Center / ศูนย์คำสั่ง</h2>
+<p class="status">READY</p>
+<p>Explains waiting, holding, risk, and next action for each paper order.<br><small>อธิบายเหตุผลของการรอ ถือ ความเสี่ยง และการกระทำถัดไปของคำสั่งจำลอง</small></p>
+<table><tr><td>Close Reason</td><td>paper_trading_runtime_ready</td></tr>
+<tr><td>Order Quality</td><td>paper_order_quality_visible</td></tr>
+<tr><td>PAPER-DEMO-1 Status</td><td>MANAGING</td></tr>
+<tr><td>PAPER-DEMO-1 Holding Reason</td><td>hold_while_market_reason_and_risk_remain_valid</td></tr>
+<tr><td>PAPER-DEMO-1 Expected Next Action</td><td>continue_paper_trading_review</td></tr>
+<tr><td>PAPER-DEMO-1 Risk</td><td>risk_pass</td></tr></table>
+</section>
+</div>
+</body>
+</html>
