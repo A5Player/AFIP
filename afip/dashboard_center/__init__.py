@@ -21,6 +21,9 @@ __all__ = [
     "status_icon",
     "DashboardRuntimeStatus",
     "DashboardRuntimeStatusReport",
+    "RuntimeServiceManager",
 ]
+
+from afip.runtime_service_manager import RuntimeServiceManager
 
 from .dashboard_runtime_status import DashboardRuntimeStatus, DashboardRuntimeStatusReport

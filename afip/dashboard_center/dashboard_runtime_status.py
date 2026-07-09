@@ -8,6 +8,7 @@ from typing import Any, Mapping
 from afip.connection_manager import ConnectionManagerRuntime
 from afip.historical_data_manager import HistoricalDataManagerRuntime
 from afip.profile_manager import ProfileManagerRuntime
+from afip.runtime_service_manager import RuntimeServiceManager
 from afip.setup_wizard import SetupWizardRuntime
 
 
@@ -20,6 +21,7 @@ class DashboardRuntimeStatusReport:
     setup_status: str
     connection_status: str
     historical_data_status: str
+    runtime_service_status: str
     order_center_sections: tuple[str, ...]
     dashboard_sections: tuple[str, ...]
     decision_explainability_sections: tuple[str, ...]
@@ -39,6 +41,7 @@ class DashboardRuntimeStatusReport:
             f"Setup: {self.setup_status}\n"
             f"Connection: {self.connection_status}\n"
             f"Historical Data: {self.historical_data_status}"
+            f"\nRuntime Service: {self.runtime_service_status}"
         )
 
 
@@ -50,17 +53,18 @@ class DashboardRuntimeStatus:
         setup = SetupWizardRuntime().evaluate_one(record)
         connection = ConnectionManagerRuntime().evaluate_one(record)
         history = HistoricalDataManagerRuntime().evaluate_one(record)
+        runtime_service = RuntimeServiceManager().evaluate_one(record)
         sections = ("runtime", "intelligence", "engine", "trading", "analytics", "afip_bank", "research", "system", "market")
         order_sections = ("waiting", "reason", "ready", "opened", "managing", "closing", "closed", "close_reason", "order_quality")
         explainability = ("waiting", "entry", "holding", "trailing_stop", "break_even", "stop_loss_move", "partial_close", "final_close", "rejected_entry", "rejected_exit", "alternative_decision", "current_ai_reasoning")
-        statuses = (profile.status, setup.status, connection.status, history.status)
+        statuses = (profile.status, setup.status, connection.status, history.status, runtime_service.status)
         if "BLOCKED" in statuses:
             status, reason, gate = "BLOCKED", "dashboard_runtime_blocked_by_dependency", "BLOCKED"
-        elif any(item in {"WAITING", "REVIEW"} for item in statuses):
+        elif any(item in {"WAITING", "REVIEW", "RECOVERING"} for item in statuses):
             status, reason, gate = "WAITING", "dashboard_runtime_waiting_for_dependency", "WAITING"
         else:
             status, reason, gate = "READY", "dashboard_runtime_ready", "DASHBOARD_RUNTIME_READY"
-        return DashboardRuntimeStatusReport(status, reason, gate, profile.status, setup.status, connection.status, history.status, order_sections, sections, explainability)
+        return DashboardRuntimeStatusReport(status, reason, gate, profile.status, setup.status, connection.status, history.status, runtime_service.status, order_sections, sections, explainability)
 
     def explain_one(self, record: Mapping[str, Any]) -> DashboardRuntimeStatusReport:
         return self.evaluate_one(record)
