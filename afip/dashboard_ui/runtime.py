@@ -12,6 +12,7 @@ from afip.paper_trading import PaperTradingEngineRuntime
 from afip.research_center import ResearchCenterRuntime
 from afip.production_readiness import ProductionReadinessRuntime
 from afip.vps_health_monitor import VPSHealthMonitorRuntime
+from afip.mt5_live_account import MT5LiveAccountRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -46,6 +47,7 @@ class DashboardUIRuntime:
         production_requested = bool(record.get("production_readiness_requested", False)) or mode in {"DEMO", "DEMO_TRADING"}
         production = ProductionReadinessRuntime().evaluate_one(record) if production_requested else None
         vps_health = VPSHealthMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
+        mt5_account = MT5LiveAccountRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -71,7 +73,8 @@ class DashboardUIRuntime:
             _analytics_panel(research),
             _bank_panel(paper),
             _research_panel(research),
-            _system_panel(record, runtime, vps_health),
+            _system_panel(record, runtime, vps_health, mt5_account),
+            _mt5_account_panel(mt5_account),
             _market_panel(record),
             _order_center_panel(paper),
         )
@@ -229,12 +232,16 @@ def _research_panel(research: Any) -> DashboardPanel:
     return DashboardPanel("research", "Research Center", "ศูนย์วิจัย", research.status, "Displays required research groups.", "แสดงกลุ่มสถิติวิจัยที่จำเป็น", tuple((group, "available") for group in groups))
 
 
-def _system_panel(record: Mapping[str, Any], runtime: Any, vps_health: Any) -> DashboardPanel:
+def _system_panel(record: Mapping[str, Any], runtime: Any, vps_health: Any, mt5_account: Any) -> DashboardPanel:
     status = "READY" if runtime.status in {"READY", "WAITING"} and vps_health.status in {"READY", "REVIEW"} else runtime.status
     return DashboardPanel("system", "Dashboard System", "ระบบ", status, "Displays live VPS health and connectivity status.", "แสดงสุขภาพ VPS สดและสถานะการเชื่อมต่อ", (
         ("Internet Status", _text(record.get("internet_status", "READY"), "READY")),
         ("MT5 Status", runtime.connection_status),
-        ("Broker Status", _text(record.get("broker_status", "READY"), "READY")),
+        ("Broker Status", mt5_account.status if mt5_account.status in {"READY", "REVIEW"} else _text(record.get("broker_status", "READY"), "READY")),
+        ("MT5 Account", mt5_account.status),
+        ("MT5 Server", mt5_account.server),
+        ("MT5 Equity", str(mt5_account.equity)),
+        ("MT5 Spread", f"{mt5_account.spread_points} pts"),
         ("VPS Health", vps_health.status),
         ("VPS Reason", vps_health.reason),
         ("Hostname", vps_health.hostname),
@@ -245,6 +252,36 @@ def _system_panel(record: Mapping[str, Any], runtime: Any, vps_health: Any) -> D
         ("RAM", f"{vps_health.ram_percent}%"),
         ("Disk", f"{vps_health.disk_percent}% used / {vps_health.disk_free_gb} GB free"),
     ))
+
+
+def _mt5_account_panel(mt5_account: Any) -> DashboardPanel:
+    return DashboardPanel(
+        "mt5_account",
+        "MT5 Live Account",
+        "บัญชี MT5 สด",
+        mt5_account.status,
+        "Displays read-only MT5 account, broker, balance, equity, margin, and tick data without enabling live execution.",
+        "แสดงบัญชี MT5, Broker, Balance, Equity, Margin และ Tick แบบอ่านอย่างเดียวโดยไม่เปิดเงินจริง",
+        (
+            ("Reason", mt5_account.reason),
+            ("Broker", mt5_account.broker),
+            ("Server", mt5_account.server),
+            ("Login", mt5_account.login),
+            ("Account Name", mt5_account.account_name),
+            ("Currency", mt5_account.currency),
+            ("Balance", str(mt5_account.balance)),
+            ("Equity", str(mt5_account.equity)),
+            ("Margin", str(mt5_account.margin)),
+            ("Free Margin", str(mt5_account.free_margin)),
+            ("Leverage", mt5_account.leverage),
+            ("Symbol", mt5_account.symbol),
+            ("Bid", str(mt5_account.bid)),
+            ("Ask", str(mt5_account.ask)),
+            ("Spread", f"{mt5_account.spread_points} pts"),
+            ("Last Tick", mt5_account.last_tick_time),
+            ("Gate", mt5_account.account_gate),
+        ),
+    )
 
 
 def _market_panel(record: Mapping[str, Any]) -> DashboardPanel:

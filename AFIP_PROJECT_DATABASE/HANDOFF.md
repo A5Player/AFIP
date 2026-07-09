@@ -1,47 +1,50 @@
-# AFIP Handoff — Production Bring-up Pack 1
+# AFIP Handoff — Production Bring-up Pack 2
 
 ## Current Status
 
-Production Milestone H Pack 10 is completed and deployed to Windows VPS.
+Production Bring-up Pack 1 has been completed and pushed by the user.
 
-VPS verification from the user:
+Latest user verification:
 
-- Git commit: e22f43f
-- Python virtual environment: ready
-- pytest: 943 passed
+- pytest: 950 passed
 - AFIP Local Quality Check: PASS
-- MetaTrader5 Python package: installed
-- MT5 check: READY
-- Account: XMGlobal-MT5 5
-- Symbol: GOLD#
-- Timeframes: M1, M5, M15, H1, H4, D1
 - Dashboard generated: runtime/dashboard/afip_dashboard.html
+- Git push: completed
+- Commit: b85e240
 
-## Production Bring-up Pack 1
+## Production Bring-up Pack 2
 
-Pack 1 adds VPS Health Monitor telemetry and dashboard system integration.
+Pack 2 adds MT5 Live Account Dashboard integration.
 
 ### Added
 
-- VPSHealthMonitorRuntime
-- VPSHealthReport
-- Dashboard System panel live VPS health values
-- Deterministic tests for READY, REVIEW, and live-execution BLOCKED states
+- MT5LiveAccountRuntime
+- MT5LiveAccountReport
+- Read-only MT5 account telemetry panel
+- Dashboard System rows for MT5 Account, MT5 Server, MT5 Equity, and MT5 Spread
+- Deterministic tests for READY, WAITING, REVIEW, and BLOCKED states
 - Documentation, file list, run scripts, and quality result file
 
 ### Dashboard Values
 
-The Dashboard System panel can now show:
+The MT5 Live Account panel can now show:
 
-- VPS Health
-- VPS Reason
-- Hostname
-- Windows version
-- Python version
-- Uptime seconds
-- CPU percent
-- RAM percent
-- Disk percent and free GB
+- Broker
+- Server
+- Masked Login
+- Account Name
+- Currency
+- Balance
+- Equity
+- Margin
+- Free Margin
+- Leverage
+- Symbol
+- Bid
+- Ask
+- Spread
+- Last Tick
+- Gate
 
 ## Safety Policy
 
@@ -49,7 +52,8 @@ The Dashboard System panel can now show:
 - Trading logic changed: false.
 - Version 1 remains XM + GOLD# only.
 - Multi-broker remains disabled for Version 1.
+- The MT5 Live Account runtime is read-only and never sends orders.
 
 ## Next Step
 
-After Pack 1 passes on VPS, continue to Production Bring-up Pack 2: MT5 Live Account Dashboard integration.
+After Pack 2 passes on VPS, continue to Production Bring-up Pack 3: Internet and Broker Latency Monitor.

@@ -1,0 +1,17 @@
+Production Bring-up Pack 2 — MT5 Live Account Dashboard
+
+New files:
+- afip/mt5_live_account/__init__.py
+- afip/mt5_live_account/models.py
+- afip/mt5_live_account/runtime.py
+- tests/test_production_bringup_pack_2.py
+- docs/PRODUCTION_BRINGUP_PACK_2.md
+- AFIP_PROJECT_DATABASE/QUALITY_RESULT_PRODUCTION_BRINGUP_PACK_2.md
+- RUN_PRODUCTION_BRINGUP_PACK_2.bat
+- RUN_PRODUCTION_BRINGUP_PACK_2.ps1
+
+Modified files:
+- afip/dashboard_ui/runtime.py
+- afip/dashboard_ui/launcher.py
+- AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
+- AFIP_PROJECT_DATABASE/HANDOFF.md
