@@ -1,0 +1,13 @@
+AFIP_PROJECT_DATABASE/HANDOFF.md
+AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
+AFIP_PROJECT_DATABASE/QUALITY_RESULT_MILESTONE_H_PACK_7.md
+AFIP_MILESTONE_H_PACK_7_FILE_LIST.txt
+RUN_MILESTONE_H_PACK_7.bat
+RUN_MILESTONE_H_PACK_7.ps1
+afip/dashboard_center/__init__.py
+afip/dashboard_center/dashboard_runtime_status.py
+afip/paper_trading/__init__.py
+afip/paper_trading/paper_models.py
+afip/paper_trading/paper_runtime.py
+docs/PRODUCTION_MILESTONE_H_PACK_7.md
+tests/test_production_milestone_h_pack_7.py

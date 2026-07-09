@@ -24,6 +24,7 @@ __all__ = [
     "RuntimeServiceManager",
     "HistoricalDataDownloadPipeline",
     "ResearchCenterRuntime",
+    "PaperTradingEngineRuntime",
 ]
 
 
@@ -34,3 +35,5 @@ from .dashboard_runtime_status import DashboardRuntimeStatus, DashboardRuntimeSt
 from afip.historical_data_manager import HistoricalDataDownloadPipeline
 
 from afip.research_center import ResearchCenterRuntime
+
+from afip.paper_trading import PaperTradingEngineRuntime

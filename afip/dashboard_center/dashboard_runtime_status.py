@@ -10,6 +10,7 @@ from afip.historical_data_manager import HistoricalDataDownloadPipeline, Histori
 from afip.profile_manager import ProfileManagerRuntime
 from afip.runtime_service_manager import RuntimeServiceManager
 from afip.research_center import ResearchCenterRuntime
+from afip.paper_trading import PaperTradingEngineRuntime
 from afip.setup_wizard import SetupWizardRuntime
 
 
@@ -25,6 +26,7 @@ class DashboardRuntimeStatusReport:
     runtime_service_status: str
     historical_download_status: str
     research_center_status: str
+    paper_trading_status: str
     order_center_sections: tuple[str, ...]
     dashboard_sections: tuple[str, ...]
     decision_explainability_sections: tuple[str, ...]
@@ -47,6 +49,7 @@ class DashboardRuntimeStatusReport:
             f"\nRuntime Service: {self.runtime_service_status}"
             f"\nHistorical Download: {self.historical_download_status}"
             f"\nResearch Center: {self.research_center_status}"
+            f"\nPaper Trading: {self.paper_trading_status}"
         )
 
 
@@ -61,17 +64,18 @@ class DashboardRuntimeStatus:
         runtime_service = RuntimeServiceManager().evaluate_one(record)
         historical_download = HistoricalDataDownloadPipeline().evaluate_one(record)
         research_center = ResearchCenterRuntime().evaluate_one(record)
+        paper_trading = PaperTradingEngineRuntime().evaluate_one(record)
         sections = ("runtime", "intelligence", "engine", "trading", "analytics", "afip_bank", "research", "system", "market")
-        order_sections = ("waiting", "reason", "ready", "opened", "managing", "closing", "closed", "close_reason", "order_quality")
+        order_sections = ("order_center", "waiting", "reason", "ready", "opened", "managing", "closing", "closed", "close_reason", "order_quality")
         explainability = ("waiting", "entry", "holding", "trailing_stop", "break_even", "stop_loss_move", "partial_close", "final_close", "rejected_entry", "rejected_exit", "alternative_decision", "current_ai_reasoning")
-        statuses = (profile.status, setup.status, connection.status, history.status, runtime_service.status, historical_download.status, research_center.status)
+        statuses = (profile.status, setup.status, connection.status, history.status, runtime_service.status, historical_download.status, research_center.status, paper_trading.status)
         if "BLOCKED" in statuses:
             status, reason, gate = "BLOCKED", "dashboard_runtime_blocked_by_dependency", "BLOCKED"
         elif any(item in {"WAITING", "REVIEW", "RECOVERING"} for item in statuses):
             status, reason, gate = "WAITING", "dashboard_runtime_waiting_for_dependency", "WAITING"
         else:
             status, reason, gate = "READY", "dashboard_runtime_ready", "DASHBOARD_RUNTIME_READY"
-        return DashboardRuntimeStatusReport(status, reason, gate, profile.status, setup.status, connection.status, history.status, runtime_service.status, historical_download.status, research_center.status, order_sections, sections, explainability)
+        return DashboardRuntimeStatusReport(status, reason, gate, profile.status, setup.status, connection.status, history.status, runtime_service.status, historical_download.status, research_center.status, paper_trading.status, order_sections, sections, explainability)
 
     def explain_one(self, record: Mapping[str, Any]) -> DashboardRuntimeStatusReport:
         return self.evaluate_one(record)
