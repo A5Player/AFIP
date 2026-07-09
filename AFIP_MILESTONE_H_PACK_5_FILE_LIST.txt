@@ -1,0 +1,12 @@
+AFIP_MILESTONE_H_PACK_5_FILE_LIST.txt
+AFIP_PROJECT_DATABASE/HANDOFF.md
+AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
+AFIP_PROJECT_DATABASE/QUALITY_RESULT_MILESTONE_H_PACK_5.md
+RUN_MILESTONE_H_PACK_5.bat
+RUN_MILESTONE_H_PACK_5.ps1
+afip/dashboard_center/__init__.py
+afip/dashboard_center/dashboard_runtime_status.py
+afip/historical_data_manager/__init__.py
+afip/historical_data_manager/download_pipeline.py
+docs/PRODUCTION_MILESTONE_H_PACK_5.md
+tests/test_production_milestone_h_pack_5.py
