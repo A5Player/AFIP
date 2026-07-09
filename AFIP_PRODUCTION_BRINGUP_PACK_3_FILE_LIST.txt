@@ -1,0 +1,17 @@
+Production Bring-up Pack 3 Patch File List
+
+New files:
+- afip/internet_monitor/__init__.py
+- afip/internet_monitor/models.py
+- afip/internet_monitor/runtime.py
+- tests/test_production_bringup_pack_3.py
+- docs/PRODUCTION_BRINGUP_PACK_3.md
+- AFIP_PRODUCTION_BRINGUP_PACK_3_FILE_LIST.txt
+- AFIP_PROJECT_DATABASE/QUALITY_RESULT_PRODUCTION_BRINGUP_PACK_3.md
+- RUN_PRODUCTION_BRINGUP_PACK_3.bat
+- RUN_PRODUCTION_BRINGUP_PACK_3.ps1
+
+Modified files:
+- afip/dashboard_ui/runtime.py
+- AFIP_PROJECT_DATABASE/HANDOFF.md
+- AFIP_PROJECT_DATABASE/PROJECT_STATUS.json

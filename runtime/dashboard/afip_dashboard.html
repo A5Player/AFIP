@@ -118,8 +118,14 @@ small { color: #555; }
 <p class="status">READY</p>
 <p>Displays live VPS health and connectivity status.<br><small>แสดงสุขภาพ VPS สดและสถานะการเชื่อมต่อ</small></p>
 <table><tr><td>Internet Status</td><td>READY</td></tr>
+<tr><td>Internet Gate</td><td>INTERNET_CONNECTIVITY_READY</td></tr>
+<tr><td>Internet Latency</td><td>0.0 ms</td></tr>
+<tr><td>Disconnect Count</td><td>0</td></tr>
+<tr><td>Reconnect Count</td><td>0</td></tr>
+<tr><td>Disconnect Duration</td><td>0 sec</td></tr>
 <tr><td>MT5 Status</td><td>READY</td></tr>
 <tr><td>Broker Status</td><td>READY</td></tr>
+<tr><td>Broker Latency</td><td>0.0 ms</td></tr>
 <tr><td>MT5 Account</td><td>READY</td></tr>
 <tr><td>MT5 Server</td><td>XMGlobal-MT5 5</td></tr>
 <tr><td>MT5 Equity</td><td>1003.0</td></tr>
@@ -155,6 +161,23 @@ small { color: #555; }
 <tr><td>Spread</td><td>24.0 pts</td></tr>
 <tr><td>Last Tick</td><td>dashboard_sample_tick</td></tr>
 <tr><td>Gate</td><td>MT5_LIVE_ACCOUNT_READY</td></tr></table>
+</section>
+<section id="internet_monitor">
+<h2>Internet Monitor / ตัวตรวจสอบอินเทอร์เน็ต</h2>
+<p class="status">READY</p>
+<p>Displays internet, DNS, broker reachability, latency, disconnect count, and reconnect count without enabling live execution.<br><small>แสดงอินเทอร์เน็ต DNS การเชื่อมต่อโบรกเกอร์ ความหน่วง จำนวนครั้งที่หลุด และจำนวนครั้งที่เชื่อมต่อใหม่ โดยไม่เปิดเงินจริง</small></p>
+<table><tr><td>Reason</td><td>internet_and_broker_connectivity_ready</td></tr>
+<tr><td>Internet Status</td><td>READY</td></tr>
+<tr><td>DNS Status</td><td>READY</td></tr>
+<tr><td>DNS Latency</td><td>0.0 ms</td></tr>
+<tr><td>Broker Status</td><td>READY</td></tr>
+<tr><td>Broker Host</td><td>google.com</td></tr>
+<tr><td>Broker Port</td><td>443</td></tr>
+<tr><td>Broker Latency</td><td>0.0 ms</td></tr>
+<tr><td>Disconnect Count</td><td>0</td></tr>
+<tr><td>Reconnect Count</td><td>0</td></tr>
+<tr><td>Disconnect Duration</td><td>0 sec</td></tr>
+<tr><td>Gate</td><td>INTERNET_CONNECTIVITY_READY</td></tr></table>
 </section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>

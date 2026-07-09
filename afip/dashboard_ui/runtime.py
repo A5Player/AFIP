@@ -13,6 +13,7 @@ from afip.research_center import ResearchCenterRuntime
 from afip.production_readiness import ProductionReadinessRuntime
 from afip.vps_health_monitor import VPSHealthMonitorRuntime
 from afip.mt5_live_account import MT5LiveAccountRuntime
+from afip.internet_monitor import InternetMonitorRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -48,6 +49,7 @@ class DashboardUIRuntime:
         production = ProductionReadinessRuntime().evaluate_one(record) if production_requested else None
         vps_health = VPSHealthMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
         mt5_account = MT5LiveAccountRuntime().evaluate_one({**dict(record), "mode": mode})
+        internet = InternetMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -73,8 +75,9 @@ class DashboardUIRuntime:
             _analytics_panel(research),
             _bank_panel(paper),
             _research_panel(research),
-            _system_panel(record, runtime, vps_health, mt5_account),
+            _system_panel(record, runtime, vps_health, mt5_account, internet),
             _mt5_account_panel(mt5_account),
+            _internet_panel(internet),
             _market_panel(record),
             _order_center_panel(paper),
         )
@@ -232,12 +235,18 @@ def _research_panel(research: Any) -> DashboardPanel:
     return DashboardPanel("research", "Research Center", "ศูนย์วิจัย", research.status, "Displays required research groups.", "แสดงกลุ่มสถิติวิจัยที่จำเป็น", tuple((group, "available") for group in groups))
 
 
-def _system_panel(record: Mapping[str, Any], runtime: Any, vps_health: Any, mt5_account: Any) -> DashboardPanel:
+def _system_panel(record: Mapping[str, Any], runtime: Any, vps_health: Any, mt5_account: Any, internet: Any) -> DashboardPanel:
     status = "READY" if runtime.status in {"READY", "WAITING"} and vps_health.status in {"READY", "REVIEW"} else runtime.status
     return DashboardPanel("system", "Dashboard System", "ระบบ", status, "Displays live VPS health and connectivity status.", "แสดงสุขภาพ VPS สดและสถานะการเชื่อมต่อ", (
-        ("Internet Status", _text(record.get("internet_status", "READY"), "READY")),
+        ("Internet Status", internet.internet_status),
+        ("Internet Gate", internet.connection_gate),
+        ("Internet Latency", f"{internet.dns_latency_ms} ms"),
+        ("Disconnect Count", str(internet.disconnect_count)),
+        ("Reconnect Count", str(internet.reconnect_count)),
+        ("Disconnect Duration", f"{internet.disconnect_duration_seconds} sec"),
         ("MT5 Status", runtime.connection_status),
-        ("Broker Status", mt5_account.status if mt5_account.status in {"READY", "REVIEW"} else _text(record.get("broker_status", "READY"), "READY")),
+        ("Broker Status", internet.broker_status if internet.broker_status in {"READY", "REVIEW", "ONLINE", "CONNECTED"} else mt5_account.status),
+        ("Broker Latency", f"{internet.broker_latency_ms} ms"),
         ("MT5 Account", mt5_account.status),
         ("MT5 Server", mt5_account.server),
         ("MT5 Equity", str(mt5_account.equity)),
@@ -280,6 +289,31 @@ def _mt5_account_panel(mt5_account: Any) -> DashboardPanel:
             ("Spread", f"{mt5_account.spread_points} pts"),
             ("Last Tick", mt5_account.last_tick_time),
             ("Gate", mt5_account.account_gate),
+        ),
+    )
+
+
+def _internet_panel(internet: Any) -> DashboardPanel:
+    return DashboardPanel(
+        "internet_monitor",
+        "Internet Monitor",
+        "ตัวตรวจสอบอินเทอร์เน็ต",
+        internet.status,
+        "Displays internet, DNS, broker reachability, latency, disconnect count, and reconnect count without enabling live execution.",
+        "แสดงอินเทอร์เน็ต DNS การเชื่อมต่อโบรกเกอร์ ความหน่วง จำนวนครั้งที่หลุด และจำนวนครั้งที่เชื่อมต่อใหม่ โดยไม่เปิดเงินจริง",
+        (
+            ("Reason", internet.reason),
+            ("Internet Status", internet.internet_status),
+            ("DNS Status", internet.dns_status),
+            ("DNS Latency", f"{internet.dns_latency_ms} ms"),
+            ("Broker Status", internet.broker_status),
+            ("Broker Host", internet.broker_host),
+            ("Broker Port", str(internet.broker_port)),
+            ("Broker Latency", f"{internet.broker_latency_ms} ms"),
+            ("Disconnect Count", str(internet.disconnect_count)),
+            ("Reconnect Count", str(internet.reconnect_count)),
+            ("Disconnect Duration", f"{internet.disconnect_duration_seconds} sec"),
+            ("Gate", internet.connection_gate),
         ),
     )
 
