@@ -11,6 +11,7 @@ from afip.dashboard_intelligence import DashboardIntelligenceRuntime
 from afip.paper_trading import PaperTradingEngineRuntime
 from afip.research_center import ResearchCenterRuntime
 from afip.production_readiness import ProductionReadinessRuntime
+from afip.vps_health_monitor import VPSHealthMonitorRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -44,6 +45,7 @@ class DashboardUIRuntime:
         integrated = DashboardIntelligenceRuntime().evaluate_one(record)
         production_requested = bool(record.get("production_readiness_requested", False)) or mode in {"DEMO", "DEMO_TRADING"}
         production = ProductionReadinessRuntime().evaluate_one(record) if production_requested else None
+        vps_health = VPSHealthMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -69,7 +71,7 @@ class DashboardUIRuntime:
             _analytics_panel(research),
             _bank_panel(paper),
             _research_panel(research),
-            _system_panel(record, runtime),
+            _system_panel(record, runtime, vps_health),
             _market_panel(record),
             _order_center_panel(paper),
         )
@@ -227,14 +229,21 @@ def _research_panel(research: Any) -> DashboardPanel:
     return DashboardPanel("research", "Research Center", "ศูนย์วิจัย", research.status, "Displays required research groups.", "แสดงกลุ่มสถิติวิจัยที่จำเป็น", tuple((group, "available") for group in groups))
 
 
-def _system_panel(record: Mapping[str, Any], runtime: Any) -> DashboardPanel:
-    return DashboardPanel("system", "Dashboard System", "ระบบ", runtime.status, "Displays VPS and connectivity status.", "แสดงสถานะ VPS และการเชื่อมต่อ", (
+def _system_panel(record: Mapping[str, Any], runtime: Any, vps_health: Any) -> DashboardPanel:
+    status = "READY" if runtime.status in {"READY", "WAITING"} and vps_health.status in {"READY", "REVIEW"} else runtime.status
+    return DashboardPanel("system", "Dashboard System", "ระบบ", status, "Displays live VPS health and connectivity status.", "แสดงสุขภาพ VPS สดและสถานะการเชื่อมต่อ", (
         ("Internet Status", _text(record.get("internet_status", "READY"), "READY")),
         ("MT5 Status", runtime.connection_status),
         ("Broker Status", _text(record.get("broker_status", "READY"), "READY")),
-        ("CPU", _text(record.get("cpu", "not_collected_yet"), "not_collected_yet")),
-        ("RAM", _text(record.get("ram", "not_collected_yet"), "not_collected_yet")),
-        ("Disk", _text(record.get("disk", "not_collected_yet"), "not_collected_yet")),
+        ("VPS Health", vps_health.status),
+        ("VPS Reason", vps_health.reason),
+        ("Hostname", vps_health.hostname),
+        ("Windows", vps_health.windows_version),
+        ("Python", vps_health.python_version),
+        ("Uptime Seconds", str(vps_health.uptime_seconds)),
+        ("CPU", f"{vps_health.cpu_percent}%"),
+        ("RAM", f"{vps_health.ram_percent}%"),
+        ("Disk", f"{vps_health.disk_percent}% used / {vps_health.disk_free_gb} GB free"),
     ))
 
 

@@ -36,6 +36,15 @@ def default_dashboard_record() -> dict[str, Any]:
         "password": "configured",
         "mt5_terminal_path": "configured",
         "completed_research_orders": 120,
+        "hostname": "DESKTOP-CLPP7LQ",
+        "windows_version": "Windows VPS",
+        "python_version": "3.14.6",
+        "uptime_seconds": 3600,
+        "cpu_percent": 14.0,
+        "ram_percent": 37.0,
+        "disk_percent": 18.0,
+        "disk_total_gb": 80.0,
+        "disk_free_gb": 65.6,
         "paper_orders": [
             {
                 "order_id": "PAPER-DEMO-1",

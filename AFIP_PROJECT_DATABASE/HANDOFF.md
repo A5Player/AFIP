@@ -1,60 +1,55 @@
-# AFIP Handoff — Production Milestone H Pack 10
+# AFIP Handoff — Production Bring-up Pack 1
 
 ## Current Status
 
-Production Milestone H Pack 10 is patch-ready.
+Production Milestone H Pack 10 is completed and deployed to Windows VPS.
 
-- Pack 1 Dashboard Foundation: completed
-- Pack 2 Configuration Center: completed
-- Pack 3 Profile Manager / Setup Wizard / Connection / Historical Runtime: completed
-- Pack 4 Runtime Service Manager: completed
-- Pack 5 Historical Data Download Quality Pipeline: completed
-- Pack 6 Research Center: completed
-- Pack 7 Paper Trading Engine: completed
-- Pack 8 Dashboard UI Launcher: completed
-- Pack 9 Dashboard Intelligence Integration: completed
-- Pack 10 Production Readiness and VPS Demo Workflow: completed
+VPS verification from the user:
 
-## Latest Verification
-
-- Pack 10 test: 7 passed
-- Full pytest: 943 passed
+- Git commit: e22f43f
+- Python virtual environment: ready
+- pytest: 943 passed
 - AFIP Local Quality Check: PASS
+- MetaTrader5 Python package: installed
+- MT5 check: READY
+- Account: XMGlobal-MT5 5
+- Symbol: GOLD#
+- Timeframes: M1, M5, M15, H1, H4, D1
 - Dashboard generated: runtime/dashboard/afip_dashboard.html
 
-## Production Policy
+## Production Bring-up Pack 1
 
-- Broker: XM only
-- Symbol: GOLD# only
-- Multi broker: disabled for Version 1
-- Live trading: disabled
-- Demo trading: readiness workflow only
-- Unit system: 1 Unit = 0.01 lot
-- Trading logic changed: false
+Pack 1 adds VPS Health Monitor telemetry and dashboard system integration.
 
-## VPS Workflow
+### Added
 
-Recommended next operational sequence:
+- VPSHealthMonitorRuntime
+- VPSHealthReport
+- Dashboard System panel live VPS health values
+- Deterministic tests for READY, REVIEW, and live-execution BLOCKED states
+- Documentation, file list, run scripts, and quality result file
 
-1. Deploy AFIP to Windows VPS.
-2. Configure XM MT5 terminal path.
-3. Download historical data.
-4. Validate missing, duplicate, and invalid bars.
-5. Run Walk Forward.
-6. Run Research.
-7. Run Paper Trading.
-8. Run Demo Trading.
-9. Keep Live Trading disabled until a later explicit production approval pack.
+### Dashboard Values
 
-## Pack 10 Additions
+The Dashboard System panel can now show:
 
-- Production Readiness Runtime
-- Demo Trading Readiness Model
-- VPS Deployment Step Model
-- Dashboard Production Readiness Panel
-- Backward-compatible legacy Production Readiness exports
-- Pack 10 documentation, tests, file list, and run scripts
+- VPS Health
+- VPS Reason
+- Hostname
+- Windows version
+- Python version
+- Uptime seconds
+- CPU percent
+- RAM percent
+- Disk percent and free GB
 
-## Safety Notes
+## Safety Policy
 
-AFIP remains locked away from live execution. Pack 10 prepares release-candidate readiness for VPS demo workflow only.
+- Live trading remains disabled.
+- Trading logic changed: false.
+- Version 1 remains XM + GOLD# only.
+- Multi-broker remains disabled for Version 1.
+
+## Next Step
+
+After Pack 1 passes on VPS, continue to Production Bring-up Pack 2: MT5 Live Account Dashboard integration.

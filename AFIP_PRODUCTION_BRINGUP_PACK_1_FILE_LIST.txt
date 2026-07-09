@@ -1,0 +1,18 @@
+Production Bring-up Pack 1 — VPS Health Monitor
+
+New files:
+- afip/vps_health_monitor/__init__.py
+- afip/vps_health_monitor/models.py
+- afip/vps_health_monitor/runtime.py
+- tests/test_production_bringup_pack_1.py
+- docs/PRODUCTION_BRINGUP_PACK_1.md
+- AFIP_PRODUCTION_BRINGUP_PACK_1_FILE_LIST.txt
+- AFIP_PROJECT_DATABASE/QUALITY_RESULT_PRODUCTION_BRINGUP_PACK_1.md
+- RUN_PRODUCTION_BRINGUP_PACK_1.bat
+- RUN_PRODUCTION_BRINGUP_PACK_1.ps1
+
+Modified files:
+- afip/dashboard_ui/runtime.py
+- afip/dashboard_ui/launcher.py
+- AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
+- AFIP_PROJECT_DATABASE/HANDOFF.md
