@@ -1,12 +1,22 @@
 {
   "project": "AFIP",
   "phase": "Production Milestone H",
-  "pack": "Pack 2",
-  "name": "Configuration Center",
+  "pack": "Pack 3",
+  "name": "Profile Manager Setup Wizard Connection Manager Historical Data Manager Dashboard Runtime",
   "status": "patch_ready",
   "version1_freeze": "completed",
   "dashboard_foundation": "completed",
   "trading_logic_changed": false,
   "live_execution_enabled": false,
-  "expected_total_tests_after_patch": 887
+  "expected_total_tests_after_patch": 894,
+  "configuration_center": "completed",
+  "profile_manager": "completed",
+  "setup_wizard": "completed",
+  "connection_manager": "completed",
+  "historical_data_manager": "completed",
+  "dashboard_runtime": "completed",
+  "broker_policy": "XM_ONLY",
+  "symbol_policy": "GOLD#_ONLY",
+  "multi_broker": "DISABLED_VERSION_1",
+  "unit_system": "1_UNIT_EQUALS_0.01_LOT"
 }

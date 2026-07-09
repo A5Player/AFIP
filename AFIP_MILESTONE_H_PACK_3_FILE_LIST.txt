@@ -1,0 +1,28 @@
+Production Milestone H Pack 3 — Patch File List
+
+New files:
+- afip/profile_manager/__init__.py
+- afip/profile_manager/profile_models.py
+- afip/profile_manager/profile_report.py
+- afip/profile_manager/profile_policy.py
+- afip/profile_manager/profile_runtime.py
+- afip/setup_wizard/__init__.py
+- afip/setup_wizard/wizard_report.py
+- afip/setup_wizard/wizard_runtime.py
+- afip/connection_manager/__init__.py
+- afip/connection_manager/connection_report.py
+- afip/connection_manager/connection_runtime.py
+- afip/historical_data_manager/__init__.py
+- afip/historical_data_manager/history_report.py
+- afip/historical_data_manager/history_runtime.py
+- afip/dashboard_center/dashboard_runtime_status.py
+- tests/test_production_milestone_h_pack_3.py
+- docs/PRODUCTION_MILESTONE_H_PACK_3.md
+- AFIP_PROJECT_DATABASE/QUALITY_RESULT_MILESTONE_H_PACK_3.md
+- RUN_MILESTONE_H_PACK_3.ps1
+- RUN_MILESTONE_H_PACK_3.bat
+
+Modified files:
+- afip/dashboard_center/__init__.py
+- AFIP_PROJECT_DATABASE/HANDOFF.md
+- AFIP_PROJECT_DATABASE/PROJECT_STATUS.json

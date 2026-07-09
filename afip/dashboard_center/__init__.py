@@ -19,4 +19,8 @@ __all__ = [
     "default_intelligence_catalog",
     "normalize_status",
     "status_icon",
+    "DashboardRuntimeStatus",
+    "DashboardRuntimeStatusReport",
 ]
+
+from .dashboard_runtime_status import DashboardRuntimeStatus, DashboardRuntimeStatusReport
