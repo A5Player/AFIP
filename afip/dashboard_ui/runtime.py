@@ -14,6 +14,7 @@ from afip.production_readiness import ProductionReadinessRuntime
 from afip.vps_health_monitor import VPSHealthMonitorRuntime
 from afip.mt5_live_account import MT5LiveAccountRuntime
 from afip.internet_monitor import InternetMonitorRuntime
+from afip.market_calendar import MarketCalendarRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -50,6 +51,7 @@ class DashboardUIRuntime:
         vps_health = VPSHealthMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
         mt5_account = MT5LiveAccountRuntime().evaluate_one({**dict(record), "mode": mode})
         internet = InternetMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
+        market_calendar = MarketCalendarRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -78,7 +80,8 @@ class DashboardUIRuntime:
             _system_panel(record, runtime, vps_health, mt5_account, internet),
             _mt5_account_panel(mt5_account),
             _internet_panel(internet),
-            _market_panel(record),
+            _market_calendar_panel(market_calendar),
+            _market_panel(record, market_calendar),
             _order_center_panel(paper),
         )
         if production is not None:
@@ -318,10 +321,42 @@ def _internet_panel(internet: Any) -> DashboardPanel:
     )
 
 
-def _market_panel(record: Mapping[str, Any]) -> DashboardPanel:
-    return DashboardPanel("market", "Dashboard Market", "ตลาด", "READY", "Displays market session and open/close status.", "แสดงสถานะตลาดและช่วงเวลาเทรด", (
-        ("Market Open / Close", _text(record.get("market_status", "market_status_pending_live_calendar"), "market_status_pending_live_calendar")),
-        ("Trading Session", _text(record.get("trading_session", "session_pending_runtime_clock"), "session_pending_runtime_clock")),
+def _market_calendar_panel(calendar: Any) -> DashboardPanel:
+    return DashboardPanel(
+        "market_calendar",
+        "Market Session & Trading Calendar",
+        "ปฏิทินตลาดและช่วงเวลาเทรด",
+        calendar.status,
+        "Explains market open, market close, weekend, holiday, session, trading permission, and block reason without enabling live execution.",
+        "อธิบายตลาดเปิด ปิด เสาร์อาทิตย์ วันหยุด ช่วงเวลาเทรด การอนุญาตเทรด และเหตุผลที่บล็อก โดยไม่เปิดเงินจริง",
+        (
+            ("Current Time UTC", calendar.current_time_utc),
+            ("Market Open", str(calendar.market_open)),
+            ("Market Closed", str(calendar.market_closed)),
+            ("Weekend", str(calendar.weekend)),
+            ("Holiday", str(calendar.holiday)),
+            ("Holiday Name", calendar.holiday_name),
+            ("Asia Session", str(calendar.asia_session)),
+            ("London Session", str(calendar.london_session)),
+            ("New York Session", str(calendar.new_york_session)),
+            ("Active Sessions", ", ".join(calendar.active_sessions) if calendar.active_sessions else "none"),
+            ("Primary Session", calendar.primary_session),
+            ("Trading Allowed", str(calendar.trading_allowed)),
+            ("Trading Block Reason", calendar.trading_block_reason),
+            ("Dashboard Live Market Status", calendar.dashboard_market_status),
+            ("Next Review Time", calendar.next_review_time_utc),
+            ("Gate", calendar.calendar_gate),
+        ),
+    )
+
+
+def _market_panel(record: Mapping[str, Any], calendar: Any) -> DashboardPanel:
+    return DashboardPanel("market", "Dashboard Market", "ตลาด", calendar.status, "Displays live market session and open/close status.", "แสดงสถานะตลาดสดและช่วงเวลาเทรด", (
+        ("Market Open / Close", calendar.dashboard_market_status),
+        ("Trading Session", calendar.primary_session),
+        ("Trading Allowed", str(calendar.trading_allowed)),
+        ("Trading Block Reason", calendar.trading_block_reason),
+        ("Next Review Time", calendar.next_review_time_utc),
         ("Symbol", _upper(record.get("symbol", VERSION1_SYMBOL), VERSION1_SYMBOL)),
         ("Broker", _upper(record.get("broker", VERSION1_BROKER), VERSION1_BROKER)),
     ))

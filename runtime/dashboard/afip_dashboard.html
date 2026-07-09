@@ -179,12 +179,36 @@ small { color: #555; }
 <tr><td>Disconnect Duration</td><td>0 sec</td></tr>
 <tr><td>Gate</td><td>INTERNET_CONNECTIVITY_READY</td></tr></table>
 </section>
+<section id="market_calendar">
+<h2>Market Session &amp; Trading Calendar / ปฏิทินตลาดและช่วงเวลาเทรด</h2>
+<p class="status">READY</p>
+<p>Explains market open, market close, weekend, holiday, session, trading permission, and block reason without enabling live execution.<br><small>อธิบายตลาดเปิด ปิด เสาร์อาทิตย์ วันหยุด ช่วงเวลาเทรด การอนุญาตเทรด และเหตุผลที่บล็อก โดยไม่เปิดเงินจริง</small></p>
+<table><tr><td>Current Time UTC</td><td>2026-07-10T14:30:00+00:00</td></tr>
+<tr><td>Market Open</td><td>True</td></tr>
+<tr><td>Market Closed</td><td>False</td></tr>
+<tr><td>Weekend</td><td>False</td></tr>
+<tr><td>Holiday</td><td>False</td></tr>
+<tr><td>Holiday Name</td><td>none</td></tr>
+<tr><td>Asia Session</td><td>False</td></tr>
+<tr><td>London Session</td><td>True</td></tr>
+<tr><td>New York Session</td><td>True</td></tr>
+<tr><td>Active Sessions</td><td>London, New York</td></tr>
+<tr><td>Primary Session</td><td>New York</td></tr>
+<tr><td>Trading Allowed</td><td>True</td></tr>
+<tr><td>Trading Block Reason</td><td>trading_allowed</td></tr>
+<tr><td>Dashboard Live Market Status</td><td>OPEN / New York session</td></tr>
+<tr><td>Next Review Time</td><td>2026-07-10T14:45:00+00:00</td></tr>
+<tr><td>Gate</td><td>TRADING_ALLOWED</td></tr></table>
+</section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>
 <p class="status">READY</p>
-<p>Displays market session and open/close status.<br><small>แสดงสถานะตลาดและช่วงเวลาเทรด</small></p>
-<table><tr><td>Market Open / Close</td><td>market_status_pending_live_calendar</td></tr>
-<tr><td>Trading Session</td><td>session_pending_runtime_clock</td></tr>
+<p>Displays live market session and open/close status.<br><small>แสดงสถานะตลาดสดและช่วงเวลาเทรด</small></p>
+<table><tr><td>Market Open / Close</td><td>OPEN / New York session</td></tr>
+<tr><td>Trading Session</td><td>New York</td></tr>
+<tr><td>Trading Allowed</td><td>True</td></tr>
+<tr><td>Trading Block Reason</td><td>trading_allowed</td></tr>
+<tr><td>Next Review Time</td><td>2026-07-10T14:45:00+00:00</td></tr>
 <tr><td>Symbol</td><td>GOLD#</td></tr>
 <tr><td>Broker</td><td>XM</td></tr></table>
 </section>

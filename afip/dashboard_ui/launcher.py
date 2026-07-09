@@ -48,6 +48,7 @@ def default_dashboard_record() -> dict[str, Any]:
         "mt5_account_info": {"available": True, "login": "12345678", "server": "XMGlobal-MT5 5", "name": "AFIP VPS Demo", "balance": 1000.0, "equity": 1003.0, "margin": 0.0, "free_margin": 1003.0, "leverage": "1:500", "currency": "USD"},
         "mt5_tick": {"available": True, "bid": 2300.12, "ask": 2300.36, "time": "dashboard_sample_tick"},
         "mt5_symbol_info": {"available": True, "point": 0.01, "digits": 2},
+        "current_time_utc": "2026-07-10T14:30:00+00:00",
         "paper_orders": [
             {
                 "order_id": "PAPER-DEMO-1",
