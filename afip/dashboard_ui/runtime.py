@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from afip.dashboard_center import DashboardFoundationRuntime, DashboardRuntimeStatus
+from afip.dashboard_intelligence import DashboardIntelligenceRuntime
 from afip.paper_trading import PaperTradingEngineRuntime
 from afip.research_center import ResearchCenterRuntime
 
@@ -39,6 +40,7 @@ class DashboardUIRuntime:
         foundation = DashboardFoundationRuntime().evaluate_one({**dict(record), "market_regime": record.get("market_regime", "TRENDING"), "execution_mode": mode})
         paper = PaperTradingEngineRuntime().evaluate_one(record)
         research = ResearchCenterRuntime().evaluate_one(record)
+        integrated = DashboardIntelligenceRuntime().evaluate_one(record)
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -58,6 +60,7 @@ class DashboardUIRuntime:
             status, reason, ready = "READY", "dashboard_ui_visible_launcher_ready", True
         panels = (
             _runtime_panel(runtime),
+            _integrated_intelligence_panel(integrated),
             _intelligence_panel(record),
             _trading_panel(paper),
             _analytics_panel(research),
@@ -72,7 +75,7 @@ class DashboardUIRuntime:
         return DashboardUIReport(
             status=status,
             reason=reason,
-            page_title="AFIP Dashboard — Milestone H Pack 8",
+            page_title="AFIP Dashboard — Milestone H Pack 9",
             profile_name=profile_name,
             broker=broker,
             symbol=symbol,
@@ -143,6 +146,30 @@ def _runtime_panel(runtime: Any) -> DashboardPanel:
         ("Runtime Service", runtime.runtime_service_status),
     ))
 
+
+
+def _integrated_intelligence_panel(integrated: Any) -> DashboardPanel:
+    rows: list[tuple[str, str]] = [
+        ("Integration Status", integrated.status),
+        ("Reason", integrated.reason),
+        ("Research Statistics", integrated.research_statistics_scope),
+        ("Live Statistics", integrated.live_statistics_scope),
+        ("Decision Waiting", integrated.decision_explanation.waiting_reason),
+        ("Decision Holding", integrated.decision_explanation.holding_reason),
+        ("Expected Next Action", integrated.decision_explanation.expected_next_action),
+        ("Risk Status", integrated.decision_explanation.risk_status),
+    ]
+    for row in integrated.engine_rows:
+        rows.append((f"{row.status_icon} {row.english_name}", f"{row.status} | {row.thai_name} | confidence={row.confidence} | waiting={row.waiting_reason}"))
+    return DashboardPanel(
+        "dashboard_intelligence",
+        "Dashboard Intelligence Integration",
+        "การรวมข้อมูลอัจฉริยะของแดชบอร์ด",
+        integrated.status,
+        "Combines existing runtime, profile, research, paper trading, AFIP Bank, market, and order explainability into one observable dashboard data model.",
+        "รวมข้อมูล Runtime, Profile, Research, Paper Trading, AFIP Bank, Market และเหตุผลของคำสั่งไว้ในโมเดลแดชบอร์ดเดียว",
+        tuple(rows),
+    )
 
 def _intelligence_panel(record: Mapping[str, Any]) -> DashboardPanel:
     rows = (

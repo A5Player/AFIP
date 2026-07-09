@@ -1,4 +1,4 @@
-"""Visible Dashboard UI exports for Production Milestone H Pack 8."""
+"""Visible Dashboard UI exports for Production Milestone H Pack 9."""
 
 from .launcher import default_dashboard_record, launch_dashboard
 from .models import DashboardPanel, DashboardUIReport

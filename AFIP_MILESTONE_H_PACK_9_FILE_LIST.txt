@@ -1,0 +1,13 @@
+AFIP_PROJECT_DATABASE/HANDOFF.md
+AFIP_PROJECT_DATABASE/PROJECT_STATUS.json
+AFIP_PROJECT_DATABASE/QUALITY_RESULT_MILESTONE_H_PACK_9.md
+AFIP_MILESTONE_H_PACK_9_FILE_LIST.txt
+RUN_MILESTONE_H_PACK_9.bat
+RUN_MILESTONE_H_PACK_9.ps1
+afip/dashboard_intelligence/__init__.py
+afip/dashboard_intelligence/models.py
+afip/dashboard_intelligence/runtime.py
+afip/dashboard_ui/__init__.py
+afip/dashboard_ui/runtime.py
+docs/PRODUCTION_MILESTONE_H_PACK_9.md
+tests/test_production_milestone_h_pack_9.py

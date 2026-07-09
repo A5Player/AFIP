@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AFIP Dashboard — Milestone H Pack 8</title>
+<title>AFIP Dashboard — Milestone H Pack 9</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 24px; background: #f7f7f7; color: #222; }
 header, section { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
@@ -17,7 +17,7 @@ small { color: #555; }
 </head>
 <body>
 <header>
-<h1>AFIP Dashboard — Milestone H Pack 8</h1>
+<h1>AFIP Dashboard — Milestone H Pack 9</h1>
 <p class="status">Status: WAITING — dashboard_ui_waiting_for_runtime_dependency</p>
 <p>Profile: Balanced | Broker: XM | Symbol: GOLD# | Mode: PAPER | Live Execution: False</p>
 <small>Presentation layer only. No trading logic changed. Live trading remains disabled.</small>
@@ -34,6 +34,25 @@ small { color: #555; }
 <tr><td>Connection</td><td>READY</td></tr>
 <tr><td>Historical Data</td><td>WAITING</td></tr>
 <tr><td>Runtime Service</td><td>READY</td></tr></table>
+</section>
+<section id="dashboard_intelligence">
+<h2>Dashboard Intelligence Integration / การรวมข้อมูลอัจฉริยะของแดชบอร์ด</h2>
+<p class="status">WAITING</p>
+<p>Combines existing runtime, profile, research, paper trading, AFIP Bank, market, and order explainability into one observable dashboard data model.<br><small>รวมข้อมูล Runtime, Profile, Research, Paper Trading, AFIP Bank, Market และเหตุผลของคำสั่งไว้ในโมเดลแดชบอร์ดเดียว</small></p>
+<table><tr><td>Integration Status</td><td>WAITING</td></tr>
+<tr><td>Reason</td><td>dashboard_intelligence_waiting_for_dependency</td></tr>
+<tr><td>Research Statistics</td><td>RESEARCH_ONLY</td></tr>
+<tr><td>Live Statistics</td><td>LIVE_SEPARATE_NOT_USED_FOR_RESEARCH_RANKING</td></tr>
+<tr><td>Decision Waiting</td><td>paper_dashboard_sample_holding_reason</td></tr>
+<tr><td>Decision Holding</td><td>hold_while_market_reason_and_risk_remain_valid</td></tr>
+<tr><td>Expected Next Action</td><td>continue_paper_trading_review</td></tr>
+<tr><td>Risk Status</td><td>risk_pass</td></tr>
+<tr><td>✅ Runtime Service Manager</td><td>READY | ตัวจัดการ Runtime | confidence=0.0 | waiting=no_waiting_reason</td></tr>
+<tr><td>✅ Profile Manager</td><td>READY | ตัวจัดการโปรไฟล์ | confidence=0.0 | waiting=no_waiting_reason</td></tr>
+<tr><td>⏳ Historical Data Manager</td><td>WAITING | ตัวจัดการข้อมูลย้อนหลัง | confidence=0.0 | waiting=no_waiting_reason</td></tr>
+<tr><td>✅ Historical Download Pipeline</td><td>READY | กระบวนการดาวน์โหลดข้อมูลย้อนหลัง | confidence=0.0 | waiting=no_waiting_reason</td></tr>
+<tr><td>⏳ Research Center</td><td>WAITING | ศูนย์วิจัย | confidence=0.0 | waiting=no_waiting_reason</td></tr>
+<tr><td>✅ Paper Trading Engine</td><td>READY | ระบบเทรดจำลอง | confidence=0.0 | waiting=no_waiting_reason</td></tr></table>
 </section>
 <section id="intelligence">
 <h2>Dashboard Intelligence / ปัญญาระบบ</h2>
