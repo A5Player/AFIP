@@ -1,8 +1,8 @@
 {
   "project": "AFIP",
   "phase": "Production Milestone H",
-  "pack": "Pack 5",
-  "name": "Historical Data Download Quality Pipeline Walk Forward Research Dataset Readiness",
+  "pack": "Pack 6",
+  "name": "Research Center Research Live Statistics Separation Standard Learning Gate",
   "status": "patch_ready",
   "version1_freeze": "completed",
   "dashboard_foundation": "completed",
@@ -20,9 +20,13 @@
   "runtime_service_manager": "completed",
   "trading_logic_changed": false,
   "live_execution_enabled": false,
-  "expected_total_tests_after_patch": 908,
+  "expected_total_tests_after_patch": 915,
   "broker_policy": "XM_ONLY",
   "symbol_policy": "GOLD#_ONLY",
   "multi_broker": "DISABLED_VERSION_1",
-  "unit_system": "1_UNIT_EQUALS_0.01_LOT"
+  "unit_system": "1_UNIT_EQUALS_0.01_LOT",
+  "research_center": "completed",
+  "research_statistics_scope": "RESEARCH_ONLY",
+  "live_statistics_scope": "LIVE_SEPARATE",
+  "standard_learning_candidate_gate": "completed"
 }

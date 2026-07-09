@@ -46,3 +46,17 @@ Safety notes:
 
 Next recommended pack:
 - H6 Research Center for separated Research, Demo, and Live analytics and Top 10 statistics.
+
+## Production Milestone H Pack 6 — Research Center
+
+Status: Completed as patch.
+
+Added Research Center runtime with separated Research and Live statistics, dashboard-ready Top 10 analytics, and Standard Learning candidate gate. Live execution remains disabled. Trading logic was not changed.
+
+Validation:
+
+- Pack test: 7 passed
+- Full pytest: 915 passed
+- AFIP Local Quality Check: PASS
+
+Next recommended pack: Milestone H Pack 7 — Paper Trading Runtime and Order Timeline Explainability.

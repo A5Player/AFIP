@@ -23,6 +23,7 @@ __all__ = [
     "DashboardRuntimeStatusReport",
     "RuntimeServiceManager",
     "HistoricalDataDownloadPipeline",
+    "ResearchCenterRuntime",
 ]
 
 
@@ -31,3 +32,5 @@ from afip.runtime_service_manager import RuntimeServiceManager
 from .dashboard_runtime_status import DashboardRuntimeStatus, DashboardRuntimeStatusReport
 
 from afip.historical_data_manager import HistoricalDataDownloadPipeline
+
+from afip.research_center import ResearchCenterRuntime
