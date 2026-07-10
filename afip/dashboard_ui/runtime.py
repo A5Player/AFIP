@@ -61,6 +61,7 @@ from afip.paper_performance_certification import PaperPerformanceCertificationRu
 from afip.shadow_execution_observation import ShadowExecutionObservationRuntime
 from afip.demo_execution_certification import DemoExecutionCertificationRuntime
 from afip.version1_release_candidate import Version1ReleaseCandidateRuntime
+from afip.production_readiness_complete import ProductionReadinessCompleteRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -556,6 +557,29 @@ class DashboardUIRuntime:
             "broker_request_created": False,
             "order_transmission_attempted": False,
         })
+        production_readiness_complete = ProductionReadinessCompleteRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker, "symbol": symbol,
+            "release_candidate_ready": production_release_candidate.release_candidate_approved,
+            "release_candidate_id": production_release_candidate.release_candidate_id,
+            "all_milestone_l_packs_ready": production_release_candidate.all_pack_dependencies_ready,
+            "production_health_monitor_ready": production_release_candidate.production_health_monitor_ready,
+            "emergency_safety_system_ready": production_release_candidate.emergency_safety_system_ready,
+            "production_report_ready": production_release_candidate.production_report_ready,
+            "decision_ledger_ready": production_release_candidate.decision_ledger_ready,
+            "data_quality_certified": production_release_candidate.data_quality_certified,
+            "knowledge_versioning_ready": production_release_candidate.knowledge_versioning_ready,
+            "feature_flags_ready": production_release_candidate.feature_flags_ready,
+            "operation_manual_en_ready": production_release_candidate.operation_manual_en_ready,
+            "operation_manual_th_ready": production_release_candidate.operation_manual_th_ready,
+            "audit_chain_ready": production_release_candidate.audit_chain_ready,
+            "independent_trade_plan_valid": True, "protected_runner_exposure_included": True,
+            "traditional_dca_enabled": False, "averaging_down_enabled": False,
+            "lot_per_unit": 0.01, "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT", "direct_execution": False,
+            "live_execution_enabled": False, "broker_request_created": False,
+            "order_transmission_attempted": False,
+        })
         panels = (
             _runtime_panel(runtime),
             _integrated_intelligence_panel(integrated),
@@ -612,6 +636,7 @@ class DashboardUIRuntime:
             _shadow_execution_observation_panel(shadow_execution_observation),
             _demo_execution_certification_panel(demo_execution_certification),
             _production_release_candidate_panel(production_release_candidate),
+            _production_readiness_complete_panel(production_readiness_complete),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1926,4 +1951,37 @@ def _production_release_candidate_panel(report: Any) -> DashboardPanel:
         "production_release_candidate", "Production Release Candidate", "ผู้สมัครรุ่น Production", report.status,
         "Aggregates Milestone L evidence and operational controls into a deterministic Version 1.0 release-candidate gate without enabling execution.",
         "รวมหลักฐาน Milestone L และระบบควบคุมการปฏิบัติงานเป็นเกณฑ์ Version 1.0 Release Candidate แบบ Deterministic โดยไม่เปิด Execution", rows,
+    )
+
+
+def _production_readiness_complete_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Readiness / ความพร้อม", report.readiness),
+        ("Completion ID / รหัส", report.completion_id),
+        ("Release Candidate ID / รหัส Candidate", report.release_candidate_id),
+        ("Candidate Ready / Candidate พร้อม", str(report.release_candidate_ready)),
+        ("Milestone L Packs / Pack ครบ", str(report.all_milestone_l_packs_ready)),
+        ("Operational Safety / ความปลอดภัย", f"health={report.production_health_monitor_ready} | emergency={report.emergency_safety_system_ready}"),
+        ("Report and Ledger / รายงานและ Ledger", f"report={report.production_report_ready} | ledger={report.decision_ledger_ready}"),
+        ("Data and Knowledge / ข้อมูลและความรู้", f"data={report.data_quality_certified} | versioning={report.knowledge_versioning_ready}"),
+        ("Feature Flags / Feature Flags", str(report.feature_flags_ready)),
+        ("Operation Manuals / คู่มือ", f"EN={report.operation_manual_en_ready} | TH={report.operation_manual_th_ready}"),
+        ("Audit Chain / สาย Audit", str(report.audit_chain_ready)),
+        ("Independent Plan / แผนอิสระ", str(report.independent_trade_plan_valid)),
+        ("Runner Exposure / Exposure ของ Runner", str(report.protected_runner_exposure_included)),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Milestone L Complete / ปิด Milestone L", str(report.milestone_l_complete)),
+        ("Ready for Milestone M / พร้อม Milestone M", str(report.ready_for_milestone_m)),
+        ("Production Certified / รับรอง Production", str(report.production_certified)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Completion Reason EN", report.completion_reason_en),
+        ("Completion Reason TH", report.completion_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "production_readiness_complete", "Production Readiness Complete", "ความพร้อม Production ครบถ้วน", report.status,
+        "Closes Milestone L after every readiness and safety gate passes while production certification and order transmission remain disabled.",
+        "ปิด Milestone L หลังเกณฑ์ความพร้อมและความปลอดภัยผ่านทั้งหมด โดยยังคงปิด Production Certification และการส่งคำสั่งซื้อขาย", rows,
     )
