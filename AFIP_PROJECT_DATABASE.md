@@ -135,3 +135,11 @@
 - XM only, GOLD# only, 1 Unit = 0.01 Lot.
 - LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution disabled, NO_ORDER_SENT.
 - Next: Milestone L Pack 3.
+
+## Milestone L Pack 3 — Paper Decision Ledger
+- Status: COMPLETE
+- Adds deterministic decision IDs and paper-decision audit records.
+- Records approved action, position state, direction, units, independent trade plan, market context, news context, confidence evidence, rejected alternatives, version context, and outcome-tracking readiness.
+- Protected runners may be excluded from the new-entry ticket count only when protected; all positions remain included in total exposure and risk.
+- Traditional DCA and averaging down remain disabled.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.

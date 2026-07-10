@@ -928,7 +928,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:32:40.002676+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:38:05.476411+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -954,7 +954,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:36:40.002825+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:42:05.476556+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -980,7 +980,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:36:40.002917+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:42:05.476695+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">
@@ -1009,6 +1009,37 @@ small { color: #555; }
 <tr><td>Holding Reason TH</td><td>สังเกตแต่ละ Independent Trade Plan และ Protected Runner แยกกัน โดยไม่รวมสถานะเป็น DCA</td></tr>
 <tr><td>Expected Next Action EN</td><td>Record the next deterministic paper decision and its market outcome without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>บันทึกการตัดสินใจแบบ Paper ครั้งถัดไปและผลตลาด โดยไม่ส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:31:00+00:00</td></tr>
+<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="paper_decision_ledger">
+<h2>Paper Decision Ledger / บัญชีบันทึกการตัดสินใจแบบ Paper</h2>
+<p class="status">READY</p>
+<p>Records every paper decision, evidence, rejected alternative, version context, and future outcome link without transmitting an order.<br><small>บันทึกทุกการตัดสินใจแบบ Paper หลักฐาน ทางเลือกที่ปฏิเสธ บริบทเวอร์ชัน และการเชื่อมผลลัพธ์ในอนาคต โดยไม่ส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Ledger Readiness / ความพร้อม Ledger</td><td>PAPER_DECISION_LEDGER_READY</td></tr>
+<tr><td>Decision ID / รหัสการตัดสินใจ</td><td>L03-18426096C14E575C</td></tr>
+<tr><td>Session Ready / Session พร้อม</td><td>True</td></tr>
+<tr><td>Decision Recorded / บันทึกแล้ว</td><td>True</td></tr>
+<tr><td>Approved Action / Action ที่อนุมัติ</td><td>HOLD</td></tr>
+<tr><td>Position State / สถานะ Position</td><td>FLAT</td></tr>
+<tr><td>Direction / ทิศทาง</td><td>NONE</td></tr>
+<tr><td>Units / จำนวน Unit</td><td>0/0</td></tr>
+<tr><td>Trade Plan / แผนการซื้อขาย</td><td>PAPER-PLAN-UNASSIGNED</td></tr>
+<tr><td>Independent Plan / แผนอิสระ</td><td>True</td></tr>
+<tr><td>Protected Runner / Runner ที่ป้องกันแล้ว</td><td>False</td></tr>
+<tr><td>Runner Excluded from New Entry Count / ไม่นับโควตาไม้ใหม่</td><td>False</td></tr>
+<tr><td>Total Exposure Included / นับ Exposure รวม</td><td>True</td></tr>
+<tr><td>Context / บริบท</td><td>market=True | news=True | confidence=True</td></tr>
+<tr><td>Audit Context / บริบทตรวจสอบ</td><td>rejected=True | versions=True | outcome=True</td></tr>
+<tr><td>No DCA / ปิด DCA</td><td>traditional=True | averaging_down=True</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>NONE</td></tr>
+<tr><td>Decision Reason EN</td><td>The paper decision, its evidence, rejected alternatives, versions, and outcome-tracking context are recorded without transmitting an order.</td></tr>
+<tr><td>Decision Reason TH</td><td>บันทึกการตัดสินใจแบบ Paper พร้อมหลักฐาน ทางเลือกที่ปฏิเสธ เวอร์ชัน และบริบทติดตามผล โดยไม่ส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Holding Reason EN</td><td>Manage every position independently; protected runners may be excluded from the new-entry ticket count but remain included in total exposure and risk.</td></tr>
+<tr><td>Holding Reason TH</td><td>บริหารแต่ละ Position แยกกัน โดย Protected Runner อาจไม่นับในโควตาไม้ใหม่ แต่ยังนับใน Exposure และความเสี่ยงรวม</td></tr>
+<tr><td>Expected Next Action EN</td><td>Track the market outcome and attach it to this deterministic decision ID.</td></tr>
+<tr><td>Expected Next Action TH</td><td>ติดตามผลลัพธ์ตลาดและเชื่อมผลเข้ากับ Decision ID แบบกำหนดแน่นอนนี้</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
 <tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:31:00+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>

@@ -54,6 +54,7 @@ from afip.runtime_execution_certification import RuntimeExecutionCertificationRu
 from afip.execution_intelligence_complete import ExecutionIntelligenceCompleteRuntime
 from afip.paper_execution_foundation import PaperExecutionFoundationRuntime
 from afip.paper_execution_session import PaperExecutionSessionRuntime
+from afip.paper_decision_ledger import PaperDecisionLedgerRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -351,6 +352,25 @@ class DashboardUIRuntime:
             "averaging_down_enabled": False,
             "independent_trade_plan_required": True,
         })
+        paper_decision_ledger = PaperDecisionLedgerRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "paper_execution_session_status": paper_execution_session.status,
+            "approved_action": record.get("approved_action", "HOLD"),
+            "position_state": record.get("position_state", "FLAT"),
+            "direction": record.get("direction", "NONE"),
+            "requested_units": record.get("requested_units", 0),
+            "trade_plan_id": record.get("trade_plan_id", "PAPER-PLAN-UNASSIGNED"),
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "total_exposure_included": True,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -417,6 +437,7 @@ class DashboardUIRuntime:
             _execution_intelligence_complete_panel(execution_intelligence_complete),
             _paper_execution_foundation_panel(paper_execution_foundation),
             _paper_execution_session_panel(paper_execution_session),
+            _paper_decision_ledger_panel(paper_decision_ledger),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1497,4 +1518,40 @@ def _paper_execution_session_panel(report: Any) -> DashboardPanel:
         "paper_execution_session", "Paper Execution Session Monitor", "ระบบติดตาม Paper Execution Session", report.status,
         "Certifies a deterministic paper observation session using data freshness, spread, latency, time, risk, audit, and execution-safety checks.",
         "รับรอง Paper Observation Session แบบกำหนดแน่นอนด้วยการตรวจความสดใหม่ของข้อมูล Spread, Latency, เวลา, ความเสี่ยง, Audit และความปลอดภัยของ Execution", rows,
+    )
+
+
+def _paper_decision_ledger_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Ledger Readiness / ความพร้อม Ledger", report.ledger_readiness),
+        ("Decision ID / รหัสการตัดสินใจ", report.decision_id),
+        ("Session Ready / Session พร้อม", str(report.session_ready)),
+        ("Decision Recorded / บันทึกแล้ว", str(report.decision_recorded)),
+        ("Approved Action / Action ที่อนุมัติ", report.approved_action),
+        ("Position State / สถานะ Position", report.position_state),
+        ("Direction / ทิศทาง", report.direction),
+        ("Units / จำนวน Unit", f"{report.recorded_units}/{report.requested_units}"),
+        ("Trade Plan / แผนการซื้อขาย", report.trade_plan_id),
+        ("Independent Plan / แผนอิสระ", str(report.independent_trade_plan_valid)),
+        ("Protected Runner / Runner ที่ป้องกันแล้ว", str(report.protected_runner)),
+        ("Runner Excluded from New Entry Count / ไม่นับโควตาไม้ใหม่", str(report.protected_runner_excluded_from_new_entry_count)),
+        ("Total Exposure Included / นับ Exposure รวม", str(report.total_exposure_included)),
+        ("Context / บริบท", f"market={report.market_context_recorded} | news={report.news_context_recorded} | confidence={report.confidence_breakdown_recorded}"),
+        ("Audit Context / บริบทตรวจสอบ", f"rejected={report.rejected_alternatives_recorded} | versions={report.version_context_recorded} | outcome={report.outcome_tracking_ready}"),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Decision Reason EN", report.decision_reason_en),
+        ("Decision Reason TH", report.decision_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "paper_decision_ledger", "Paper Decision Ledger", "บัญชีบันทึกการตัดสินใจแบบ Paper", report.status,
+        "Records every paper decision, evidence, rejected alternative, version context, and future outcome link without transmitting an order.",
+        "บันทึกทุกการตัดสินใจแบบ Paper หลักฐาน ทางเลือกที่ปฏิเสธ บริบทเวอร์ชัน และการเชื่อมผลลัพธ์ในอนาคต โดยไม่ส่งคำสั่งซื้อขาย", rows,
     )
