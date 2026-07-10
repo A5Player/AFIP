@@ -56,3 +56,6 @@ Partial Close Intelligence completed. Install this patch after Milestone K Pack 
 
 ## Latest: Milestone K Pack 8
 Execution Supervisor completed. Install after Milestone K Pack 7. Validate with `pytest tests/test_milestone_k_pack_8.py -v`, full pytest, local quality check, and dashboard generation. The supervisor resolves competing execution-intelligence proposals into one simulation-only instruction and never sends an order. Continue next with Milestone K Pack 9 — Runtime Execution Certification.
+
+## Latest: Milestone K Pack 9
+Runtime Execution Certification completed. Install after Milestone K Pack 8. Validate with `pytest tests/test_milestone_k_pack_9.py -v`, full pytest, local quality check, and dashboard generation. Certification is deterministic and simulation-only; it never sends an order. Continue next with Milestone K Pack 10 — Execution Intelligence Complete.

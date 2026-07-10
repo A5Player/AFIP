@@ -100,3 +100,10 @@
 - Validates position state, fixed Unit policy, risk, timing, trading cost, Market Structure, Market Regime, and dependency reports.
 - Produces one simulation-only approved action with rejected-action visibility and EN/TH explanations.
 - XM only, GOLD# only, 1 Unit = 0.01 lot, LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution disabled, NO_ORDER_SENT.
+
+## Milestone K Pack 9 — Runtime Execution Certification
+- Status: completed as an incremental production-quality patch.
+- Added deterministic certification after Execution Supervisor.
+- Certifies all Execution Intelligence dependencies, approved-action consistency, Position State, fixed Unit policy, XM/GOLD# policy, simulation lock, live/direct execution guards, and NO_ORDER_SENT.
+- Added deterministic certification ID, audit readiness, block reasons, confidence, next review time, and EN/TH dashboard explainability.
+- XM only, GOLD# only, 1 Unit = 0.01 lot, LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution disabled, NO_ORDER_SENT.

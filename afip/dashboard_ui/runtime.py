@@ -50,6 +50,7 @@ from afip.dynamic_take_profit import DynamicTakeProfitRuntime
 from afip.trailing_stop import TrailingStopRuntime
 from afip.partial_close import PartialCloseRuntime
 from afip.execution_supervisor import ExecutionSupervisorRuntime
+from afip.runtime_execution_certification import RuntimeExecutionCertificationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -280,6 +281,23 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
         })
+        runtime_execution_certification = RuntimeExecutionCertificationRuntime().evaluate_one({
+            **execution_supervisor.as_dict(),
+            "broker": broker,
+            "symbol": symbol,
+            "approved_action": execution_supervisor.approved_action,
+            "supervisor_status": execution_supervisor.status,
+            "supervisor_readiness": execution_supervisor.supervisor_readiness,
+            "position_state": execution_supervisor.position_state,
+            "current_units": execution_supervisor.current_units,
+            "approved_units": execution_supervisor.approved_units,
+            "simulation_instruction_ready": execution_supervisor.simulation_instruction_ready,
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -342,6 +360,7 @@ class DashboardUIRuntime:
             _trailing_stop_panel(trailing_stop),
             _partial_close_panel(partial_close),
             _execution_supervisor_panel(execution_supervisor),
+            _runtime_execution_certification_panel(runtime_execution_certification),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1265,6 +1284,38 @@ def _entry_validation_panel(report: Any) -> DashboardPanel:
         rows.append((f"{item.opportunity_id} / {item.direction}", f"approved={item.approved} | units={item.allocated_units} | regime={item.market_regime_ready} | conflict={item.conflict_allowed} | score={item.trade_score_allowed} | risk={item.risk_allowed} | timing={item.timing_allowed} | spread={item.spread_allowed} | allocation={item.allocation_allowed} | blocks={','.join(item.block_reasons)} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
     return DashboardPanel("entry_validation", "Entry Validation Engine", "กลไกตรวจสอบจุดเข้า", report.status, "Validates regime, conflict, score, risk, timing, spread, and fixed-unit allocation before paper/demo execution review. Validation never sends orders.", "ตรวจสอบ Market Regime ความขัดแย้ง คะแนน ความเสี่ยง เวลา Spread และการจัดสรร Unit คงที่ก่อน paper/demo execution โดยไม่ส่งคำสั่งซื้อขาย", tuple(rows))
 
+
+
+def _runtime_execution_certification_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Certification / การรับรอง", report.certification_readiness),
+        ("Certification ID / รหัสรับรอง", report.certification_id),
+        ("Approved Action / Action ที่อนุมัติ", report.approved_action),
+        ("Supervisor / Supervisor", f"{report.supervisor_status} | {report.supervisor_readiness}"),
+        ("Dependencies Certified / Dependency ผ่าน", str(report.dependencies_certified)),
+        ("Action Consistent / Action สอดคล้อง", str(report.action_consistent)),
+        ("Position State Consistent / Position สอดคล้อง", str(report.position_state_consistent)),
+        ("Policy / นโยบาย", f"broker={report.broker_policy_certified} | symbol={report.symbol_policy_certified} | unit={report.unit_policy_certified}"),
+        ("Execution Locks / การล็อกส่งคำสั่ง", f"simulation={report.simulation_lock_certified} | direct_blocked={report.direct_execution_blocked} | live_blocked={report.live_execution_blocked}"),
+        ("NO_ORDER_SENT Certified / รับรองไม่ส่งคำสั่ง", str(report.no_order_sent_certified)),
+        ("Runtime Integrity / ความสมบูรณ์ Runtime", str(report.runtime_integrity_certified)),
+        ("Audit Ready / พร้อมบันทึกตรวจสอบ", str(report.audit_record_ready)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Certification Reason EN", report.certification_reason_en),
+        ("Certification Reason TH", report.certification_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "runtime_execution_certification", "Runtime Execution Certification", "การรับรอง Runtime Execution", report.status,
+        "Certifies dependency, action, position, policy, and execution-safety integrity for supervised paper/demo instructions only.",
+        "รับรองความสมบูรณ์ของ Dependency, Action, Position, นโยบาย และความปลอดภัยสำหรับคำแนะนำ Paper/Demo ที่ผ่าน Supervisor เท่านั้น", rows,
+    )
 
 def _execution_supervisor_panel(report: Any) -> DashboardPanel:
     rows = (
