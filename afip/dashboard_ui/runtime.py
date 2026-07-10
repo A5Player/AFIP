@@ -55,6 +55,7 @@ from afip.execution_intelligence_complete import ExecutionIntelligenceCompleteRu
 from afip.paper_execution_foundation import PaperExecutionFoundationRuntime
 from afip.paper_execution_session import PaperExecutionSessionRuntime
 from afip.paper_decision_ledger import PaperDecisionLedgerRuntime
+from afip.paper_outcome_evaluation import PaperOutcomeEvaluationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -371,6 +372,32 @@ class DashboardUIRuntime:
             "averaging_down_enabled": False,
             "total_exposure_included": True,
         })
+        paper_outcome_evaluation = PaperOutcomeEvaluationRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "paper_decision_status": paper_decision_ledger.status,
+            "decision_id": paper_decision_ledger.decision_id,
+            "direction": record.get("direction", "NONE"),
+            "outcome_state": record.get("outcome_state", "TRACKING"),
+            "entry_price": record.get("entry_price", record.get("current_price", 1.0)),
+            "current_price": record.get("current_price", record.get("entry_price", 1.0)),
+            "exit_price": record.get("exit_price", 0.0),
+            "maximum_favorable_excursion": record.get("maximum_favorable_excursion", 0.0),
+            "maximum_adverse_excursion": record.get("maximum_adverse_excursion", 0.0),
+            "gross_profit": record.get("gross_profit", 0.0),
+            "trading_cost": record.get("trading_cost", 0.0),
+            "swap_cost": record.get("swap_cost", 0.0),
+            "planned_risk_amount": record.get("planned_risk_amount", 0.0),
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "protected_runner_exposure_included": True,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -438,6 +465,7 @@ class DashboardUIRuntime:
             _paper_execution_foundation_panel(paper_execution_foundation),
             _paper_execution_session_panel(paper_execution_session),
             _paper_decision_ledger_panel(paper_decision_ledger),
+            _paper_outcome_evaluation_panel(paper_outcome_evaluation),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1555,3 +1583,40 @@ def _paper_decision_ledger_panel(report: Any) -> DashboardPanel:
         "Records every paper decision, evidence, rejected alternative, version context, and future outcome link without transmitting an order.",
         "บันทึกทุกการตัดสินใจแบบ Paper หลักฐาน ทางเลือกที่ปฏิเสธ บริบทเวอร์ชัน และการเชื่อมผลลัพธ์ในอนาคต โดยไม่ส่งคำสั่งซื้อขาย", rows,
     )
+
+def _paper_outcome_evaluation_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Outcome Readiness / ความพร้อมผลลัพธ์", report.outcome_readiness),
+        ("Outcome ID / รหัสผลลัพธ์", report.outcome_id),
+        ("Decision ID / รหัสการตัดสินใจ", report.decision_id),
+        ("Decision Link / การเชื่อม Decision", str(report.decision_link_valid)),
+        ("Outcome State / สถานะผลลัพธ์", report.outcome_state),
+        ("Direction / ทิศทาง", report.direction),
+        ("Prices / ราคา", f"entry={report.entry_price} | current={report.current_price} | exit={report.exit_price}"),
+        ("MFE / MAE", f"{report.maximum_favorable_excursion} / {report.maximum_adverse_excursion}"),
+        ("Profit / กำไร", f"gross={report.gross_profit} | cost={report.trading_cost} | swap={report.swap_cost} | net={report.net_profit}"),
+        ("Risk and R / ความเสี่ยงและ R", f"risk={report.planned_risk_amount} | realized_R={report.realized_r_multiple}"),
+        ("Classification / การจัดประเภท", report.outcome_classification),
+        ("Exit Quality / คุณภาพการออก", report.exit_quality),
+        ("Failure Reason / สาเหตุความล้มเหลว", report.failure_reason),
+        ("Data / ข้อมูล", f"complete={report.data_complete} | chronology={report.chronological_order_valid} | no_future_leakage={report.future_leakage_blocked}"),
+        ("Independent Lifecycle / วงจรอิสระ", str(report.independent_position_lifecycle_valid)),
+        ("Runner Exposure Included / นับ Exposure ของ Runner", str(report.protected_runner_exposure_included)),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Evaluation Reason EN", report.evaluation_reason_en),
+        ("Evaluation Reason TH", report.evaluation_reason_th),
+        ("Learning Value EN", report.learning_value_en),
+        ("Learning Value TH", report.learning_value_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "paper_outcome_evaluation", "Paper Outcome Evaluation", "การประเมินผลลัพธ์แบบ Paper", report.status,
+        "Links each paper decision to its chronological market outcome, costs, risk, MFE, MAE, realized R, exit quality, and failure reason without transmitting an order.",
+        "เชื่อมแต่ละ Paper Decision กับผลลัพธ์ตลาดตามลำดับเวลา ต้นทุน ความเสี่ยง MFE, MAE, Realized R, คุณภาพการออก และสาเหตุความล้มเหลว โดยไม่ส่งคำสั่งซื้อขาย", rows,
+    )
+

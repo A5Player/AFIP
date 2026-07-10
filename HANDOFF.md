@@ -71,3 +71,6 @@ Paper Execution Session Monitor completed. Install after Milestone L Pack 1. Val
 
 ## Latest: Milestone L Pack 3
 Paper Decision Ledger completed. Install after Milestone L Pack 2. Validate with `pytest tests/test_milestone_l_pack_3.py -v`, full pytest, local quality check, and dashboard generation. Every paper action is recorded with deterministic identity, evidence, rejected alternatives, version context, and outcome-tracking readiness. Protected runners remain included in total exposure even when excluded from a new-entry ticket count. Traditional DCA and averaging down remain prohibited. Continue next with Milestone L Pack 4 while all live-execution locks remain mandatory.
+
+## Latest: Milestone L Pack 4
+Paper Outcome Evaluation completed. Install after Milestone L Pack 3. Validate with `pytest tests/test_milestone_l_pack_4.py -v`, full pytest, local quality check, and dashboard generation. The evaluator links deterministic paper decisions to chronological outcomes with MFE, MAE, costs, net profit, realized R, exit quality, and failure reason while blocking future leakage. Blocked outcomes never enter performance statistics or production knowledge. Traditional DCA and averaging down remain prohibited. Continue next with Milestone L Pack 5 while all live-execution locks remain mandatory.

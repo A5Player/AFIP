@@ -143,3 +143,12 @@
 - Protected runners may be excluded from the new-entry ticket count only when protected; all positions remain included in total exposure and risk.
 - Traditional DCA and averaging down remain disabled.
 - Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone L Pack 4 — Paper Outcome Evaluation
+- Status: COMPLETE
+- Links each accepted Pack 3 paper decision to a deterministic outcome identity.
+- Records chronological market outcome, MFE, MAE, gross profit, trading cost, swap cost, net profit, planned risk, realized R, exit quality, and failure reason.
+- Blocks future leakage, invalid chronology, incomplete data, missing decision linkage, missing closed-outcome risk, and excluded protected-runner exposure.
+- Blocked outcomes do not enter performance statistics or production knowledge.
+- Independent position lifecycles remain mandatory; traditional DCA and averaging down remain disabled.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
