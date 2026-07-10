@@ -76,3 +76,11 @@
 - Status: completed
 - Scope: simulation-only take-profit review and bilingual dashboard explainability
 - Policy: XM only, GOLD# only, 1 Unit = 0.01 Lot, live/direct execution disabled
+
+## Milestone K Pack 6 — Trailing Stop Intelligence
+- Status: completed as an incremental production-quality patch.
+- Added deterministic trailing-stop readiness, break-even detection, profit locking, and multi-stage trailing.
+- Validates BUY/SELL geometry, current and proposed stop loss, minimum locked profit, trading cost, risk, timing, and market structure.
+- Added holding reason, trailing-stop reason, expected next action, confidence, next review time, and EN/TH dashboard explainability.
+- XM only, GOLD# only, 1 Unit = 0.01 Lot.
+- Execution remains LOCKED_SIMULATION_ONLY; Direct Execution is False; Live Execution is disabled; NO_ORDER_SENT.

@@ -47,6 +47,7 @@ from afip.smart_entry import SmartEntryRuntime
 from afip.smart_exit import SmartExitRuntime
 from afip.dynamic_stop_loss import DynamicStopLossRuntime
 from afip.dynamic_take_profit import DynamicTakeProfitRuntime
+from afip.trailing_stop import TrailingStopRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -237,6 +238,21 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
         })
+        trailing_stop = TrailingStopRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "position_side": record.get("position_side", record.get("direction", "BUY")),
+            "current_units": record.get("current_units", record.get("position_units", 0)),
+            "entry_price": record.get("entry_price", 0.0),
+            "current_price": record.get("current_price", record.get("market_price", 0.0)),
+            "current_stop_loss": record.get("current_stop_loss", record.get("stop_loss_price", 0.0)),
+            "proposed_trailing_stop": record.get("proposed_trailing_stop", record.get("current_stop_loss", record.get("stop_loss_price", 0.0))),
+            "trailing_stop_action": record.get("trailing_stop_action", "HOLD"),
+            "lot_per_unit": 0.01,
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -296,6 +312,7 @@ class DashboardUIRuntime:
             _smart_exit_panel(smart_exit),
             _dynamic_stop_loss_panel(dynamic_stop_loss),
             _dynamic_take_profit_panel(dynamic_take_profit),
+            _trailing_stop_panel(trailing_stop),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -859,6 +876,48 @@ def _dynamic_take_profit_panel(report: Any) -> DashboardPanel:
     )
     return DashboardPanel("dynamic_take_profit", "Dynamic Take Profit Intelligence", "ระบบวิเคราะห์ Take Profit แบบปรับตามสถานการณ์", report.status, "Reviews a take-profit proposal for paper/demo simulation while preserving reward/risk and never modifying a live position.", "ทบทวนข้อเสนอ Take Profit สำหรับการจำลองโดยรักษา Reward/Risk และไม่แก้ไขสถานะจริง", rows)
 
+
+
+def _trailing_stop_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Readiness / ความพร้อม", report.trailing_stop_readiness),
+        ("Reason / เหตุผล", report.reason),
+        ("Action / การดำเนินการ", report.action),
+        ("Side / ทิศทาง", report.position_side),
+        ("Break-even Detected / พบจุดคุ้มทุน", str(report.break_even_detected)),
+        ("Profit Lock / ล็อกกำไร", str(report.profit_lock_active)),
+        ("Trailing Stage / ระยะ Trailing", f"{report.trailing_stage} - {report.trailing_stage_name}"),
+        ("Current Stop Loss / Stop Loss ปัจจุบัน", str(report.current_stop_loss)),
+        ("Proposed Trailing Stop / Trailing Stop ที่เสนอ", str(report.proposed_trailing_stop)),
+        ("Minimum Locked Profit / กำไรล็อกขั้นต่ำ", str(report.minimum_locked_profit)),
+        ("Estimated Locked Profit / กำไรที่คาดว่าจะล็อก", str(report.estimated_locked_profit)),
+        ("Trading Cost Valid / ต้นทุนผ่าน", str(report.trading_cost_valid)),
+        ("Risk Valid / ความเสี่ยงผ่าน", str(report.risk_valid)),
+        ("Timing Valid / เวลาผ่าน", str(report.timing_valid)),
+        ("Market Structure / โครงสร้างตลาด", str(report.market_structure_confirmed)),
+        ("Side Validation / ตรวจ BUY-SELL", str(report.side_validation_passed)),
+        ("Change Approved / อนุมัติการเลื่อน", str(report.change_approved)),
+        ("Simulation Ready / พร้อมจำลอง", str(report.simulation_instruction_ready)),
+        ("Order Status / สถานะคำสั่ง", report.order_status),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Trailing Stop Reason EN", report.trailing_stop_reason_en),
+        ("Trailing Stop Reason TH", report.trailing_stop_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+    )
+    return DashboardPanel(
+        "trailing_stop",
+        "Trailing Stop Intelligence",
+        "ระบบวิเคราะห์ Trailing Stop",
+        report.status,
+        "Validates break-even, profit locking, and multi-stage trailing for paper/demo positions without sending an order.",
+        "ตรวจ Break-even การล็อกกำไร และ Trailing หลายระยะสำหรับสถานะจำลองโดยไม่ส่งคำสั่ง",
+        rows,
+    )
 
 def _market_panel(record: Mapping[str, Any], calendar: Any) -> DashboardPanel:
     return DashboardPanel("market", "Dashboard Market", "ตลาด", calendar.status, "Displays live market session and open/close status.", "แสดงสถานะตลาดสดและช่วงเวลาเทรด", (

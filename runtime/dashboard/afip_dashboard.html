@@ -810,6 +810,39 @@ small { color: #555; }
 <tr><td>Expected Next Action TH</td><td>แก้ไขเหตุผลที่ถูกบล็อก แล้วประเมินข้อเสนอ Take Profit อีกครั้ง</td></tr>
 <tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr></table>
 </section>
+<section id="trailing_stop">
+<h2>Trailing Stop Intelligence / ระบบวิเคราะห์ Trailing Stop</h2>
+<p class="status">BLOCKED</p>
+<p>Validates break-even, profit locking, and multi-stage trailing for paper/demo positions without sending an order.<br><small>ตรวจ Break-even การล็อกกำไร และ Trailing หลายระยะสำหรับสถานะจำลองโดยไม่ส่งคำสั่ง</small></p>
+<table><tr><td>Readiness / ความพร้อม</td><td>NOT_READY</td></tr>
+<tr><td>Reason / เหตุผล</td><td>open_position_missing</td></tr>
+<tr><td>Action / การดำเนินการ</td><td>HOLD</td></tr>
+<tr><td>Side / ทิศทาง</td><td>BUY</td></tr>
+<tr><td>Break-even Detected / พบจุดคุ้มทุน</td><td>False</td></tr>
+<tr><td>Profit Lock / ล็อกกำไร</td><td>False</td></tr>
+<tr><td>Trailing Stage / ระยะ Trailing</td><td>0 - PRE_BREAK_EVEN</td></tr>
+<tr><td>Current Stop Loss / Stop Loss ปัจจุบัน</td><td>0.0</td></tr>
+<tr><td>Proposed Trailing Stop / Trailing Stop ที่เสนอ</td><td>0.0</td></tr>
+<tr><td>Minimum Locked Profit / กำไรล็อกขั้นต่ำ</td><td>0.0</td></tr>
+<tr><td>Estimated Locked Profit / กำไรที่คาดว่าจะล็อก</td><td>0.0</td></tr>
+<tr><td>Trading Cost Valid / ต้นทุนผ่าน</td><td>True</td></tr>
+<tr><td>Risk Valid / ความเสี่ยงผ่าน</td><td>True</td></tr>
+<tr><td>Timing Valid / เวลาผ่าน</td><td>True</td></tr>
+<tr><td>Market Structure / โครงสร้างตลาด</td><td>True</td></tr>
+<tr><td>Side Validation / ตรวจ BUY-SELL</td><td>False</td></tr>
+<tr><td>Change Approved / อนุมัติการเลื่อน</td><td>False</td></tr>
+<tr><td>Simulation Ready / พร้อมจำลอง</td><td>False</td></tr>
+<tr><td>Order Status / สถานะคำสั่ง</td><td>NO_ORDER_SENT</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>open_position_missing, entry_price_missing, current_price_missing, current_stop_loss_missing</td></tr>
+<tr><td>Holding Reason EN</td><td>Keep the current stop loss unchanged while the trailing-stop proposal is blocked.</td></tr>
+<tr><td>Holding Reason TH</td><td>คง Stop Loss ปัจจุบันไว้ก่อน ระหว่างที่ข้อเสนอ Trailing Stop ยังถูกบล็อก</td></tr>
+<tr><td>Trailing Stop Reason EN</td><td>The proposal must pass break-even, profit-lock, cost, risk, timing, side, and market-structure validation.</td></tr>
+<tr><td>Trailing Stop Reason TH</td><td>ข้อเสนอต้องผ่านการตรวจ Break-even การล็อกกำไร ต้นทุน ความเสี่ยง เวลา ทิศทาง และโครงสร้างตลาด</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct the listed block reasons and evaluate the trailing-stop proposal again.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไขเหตุผลที่ถูกบล็อก แล้วประเมินข้อเสนอ Trailing Stop อีกครั้ง</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>49.0</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr></table>
+</section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>
 <p class="status">READY</p>
