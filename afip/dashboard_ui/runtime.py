@@ -59,6 +59,7 @@ from afip.paper_outcome_evaluation import PaperOutcomeEvaluationRuntime
 from afip.paper_performance_analytics import PaperPerformanceAnalyticsRuntime
 from afip.paper_performance_certification import PaperPerformanceCertificationRuntime
 from afip.shadow_execution_observation import ShadowExecutionObservationRuntime
+from afip.demo_execution_certification import DemoExecutionCertificationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -498,6 +499,26 @@ class DashboardUIRuntime:
             status, reason, ready = "WAITING", "dashboard_ui_waiting_for_runtime_dependency", True
         else:
             status, reason, ready = "READY", "dashboard_ui_visible_launcher_ready", True
+        demo_execution_certification = DemoExecutionCertificationRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "performance_certification_id": paper_performance_certification.certification_id,
+            "shadow_observations": record.get("shadow_observations", (shadow_execution_observation.as_dict(),)),
+            "minimum_observations_required": record.get("minimum_shadow_observations_required", 20),
+            "minimum_readiness_rate_percent": record.get("minimum_shadow_readiness_rate_percent", 90.0),
+            "minimum_spread_pass_rate_percent": record.get("minimum_shadow_spread_pass_rate_percent", 95.0),
+            "minimum_latency_pass_rate_percent": record.get("minimum_shadow_latency_pass_rate_percent", 95.0),
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "broker_request_created": False,
+            "order_transmission_attempted": False,
+        })
         panels = (
             _runtime_panel(runtime),
             _integrated_intelligence_panel(integrated),
@@ -552,6 +573,7 @@ class DashboardUIRuntime:
             _paper_performance_analytics_panel(paper_performance_analytics),
             _paper_performance_certification_panel(paper_performance_certification),
             _shadow_execution_observation_panel(shadow_execution_observation),
+            _demo_execution_certification_panel(demo_execution_certification),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1802,4 +1824,36 @@ def _shadow_execution_observation_panel(report: Any) -> DashboardPanel:
         "shadow_execution_observation", "Shadow Execution Observation", "การสังเกตการดำเนินการแบบ Shadow", report.status,
         "Observes a certified decision against current execution conditions without creating or transmitting a broker request.",
         "สังเกต Decision ที่ผ่านการรับรองเทียบกับสภาวะ Execution ปัจจุบัน โดยไม่สร้างหรือส่งคำขอไปยัง Broker", rows,
+    )
+
+
+def _demo_execution_certification_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Certification Readiness / ความพร้อม", report.certification_readiness),
+        ("Demo Certification ID / รหัส", report.demo_certification_id),
+        ("Pack 6 Certification / การรับรอง Pack 6", report.performance_certification_id),
+        ("Shadow Sample / ตัวอย่าง Shadow", f"eligible={report.eligible_observations} | required={report.minimum_observations_required} | sufficient={report.sample_sufficient}"),
+        ("Readiness Rate / อัตราความพร้อม", f"actual={report.readiness_rate_percent}% | minimum={report.minimum_readiness_rate_percent}%"),
+        ("Spread Pass Rate / อัตราผ่าน Spread", f"actual={report.spread_pass_rate_percent}% | minimum={report.minimum_spread_pass_rate_percent}%"),
+        ("Latency Pass Rate / อัตราผ่าน Latency", f"actual={report.latency_pass_rate_percent}% | minimum={report.minimum_latency_pass_rate_percent}%"),
+        ("Market Quality / คุณภาพตลาด", str(report.market_quality_valid)),
+        ("Risk / Timing / Structure", f"risk={report.risk_validation_valid} | timing={report.timing_validation_valid} | structure={report.market_structure_valid}"),
+        ("Independent Plan / แผนอิสระ", str(report.independent_trade_plan_valid)),
+        ("Runner Exposure / Exposure ของ Runner", str(report.protected_runner_exposure_included)),
+        ("Evidence Integrity / ความสมบูรณ์หลักฐาน", f"chronological={report.chronological_integrity_valid} | unique_ids={report.unique_observation_ids_valid} | lineage={report.certification_lineage_valid}"),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Demo Observation / การสังเกต Demo", str(report.certified_for_demo_observation)),
+        ("Demo Execution / การส่งคำสั่ง Demo", str(report.certified_for_demo_execution)),
+        ("Broker Request / คำขอ Broker", f"created={report.broker_request_created} | transmission={report.order_transmission_attempted}"),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Certification Reason EN", report.certification_reason_en),
+        ("Certification Reason TH", report.certification_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "demo_execution_certification", "Demo Execution Certification", "การรับรองการดำเนินการแบบ Demo", report.status,
+        "Certifies chronological shadow evidence for controlled demo observation while broker requests and order transmission remain disabled.",
+        "รับรองหลักฐาน Shadow ตามลำดับเวลาสำหรับการสังเกตแบบ Demo ที่ควบคุมไว้ โดยยังคงปิดคำขอ Broker และการส่งคำสั่งซื้อขาย", rows,
     )

@@ -184,3 +184,16 @@
 - Does not create a broker request and does not attempt order transmission.
 - XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
 - Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone L Pack 8 — Demo Execution Certification
+- Status: COMPLETE
+- Aggregates chronological Pack 7 Shadow Observation evidence.
+- Preserves Pack 6 Performance Certification lineage.
+- Validates minimum sample, readiness rate, spread pass rate, latency pass rate, market quality, risk, timing, and market structure.
+- Requires unique Shadow Observation IDs and chronological integrity.
+- Requires Independent Trade Plans and includes Protected Runner positions in total exposure.
+- Traditional DCA and averaging down remain disabled.
+- Creates a deterministic Demo Certification ID with bilingual dashboard explainability.
+- READY certifies controlled demo observation only; demo order transmission remains disabled.
+- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.

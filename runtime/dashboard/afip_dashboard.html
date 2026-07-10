@@ -928,7 +928,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:00:04.578871+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:11:10.583532+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -954,7 +954,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:04:04.579044+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:15:10.583677+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -980,7 +980,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:04:04.579146+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:15:10.583772+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">
@@ -1156,6 +1156,33 @@ small { color: #555; }
 <tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมด แล้วประเมิน Decision เดิมใหม่โดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>92.31</td></tr>
 <tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:31:00+00:00</td></tr>
+<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="demo_execution_certification">
+<h2>Demo Execution Certification / การรับรองการดำเนินการแบบ Demo</h2>
+<p class="status">BLOCKED</p>
+<p>Certifies chronological shadow evidence for controlled demo observation while broker requests and order transmission remain disabled.<br><small>รับรองหลักฐาน Shadow ตามลำดับเวลาสำหรับการสังเกตแบบ Demo ที่ควบคุมไว้ โดยยังคงปิดคำขอ Broker และการส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Certification Readiness / ความพร้อม</td><td>DEMO_CERTIFICATION_BLOCKED</td></tr>
+<tr><td>Demo Certification ID / รหัส</td><td>L08-88E69096D8DF7B2E</td></tr>
+<tr><td>Pack 6 Certification / การรับรอง Pack 6</td><td>L06-FC08DCEFEF363929</td></tr>
+<tr><td>Shadow Sample / ตัวอย่าง Shadow</td><td>eligible=1 | required=20 | sufficient=False</td></tr>
+<tr><td>Readiness Rate / อัตราความพร้อม</td><td>actual=0.0% | minimum=90.0%</td></tr>
+<tr><td>Spread Pass Rate / อัตราผ่าน Spread</td><td>actual=100.0% | minimum=95.0%</td></tr>
+<tr><td>Latency Pass Rate / อัตราผ่าน Latency</td><td>actual=100.0% | minimum=95.0%</td></tr>
+<tr><td>Market Quality / คุณภาพตลาด</td><td>True</td></tr>
+<tr><td>Risk / Timing / Structure</td><td>risk=True | timing=True | structure=True</td></tr>
+<tr><td>Independent Plan / แผนอิสระ</td><td>True</td></tr>
+<tr><td>Runner Exposure / Exposure ของ Runner</td><td>True</td></tr>
+<tr><td>Evidence Integrity / ความสมบูรณ์หลักฐาน</td><td>chronological=True | unique_ids=True | lineage=True</td></tr>
+<tr><td>No DCA / ปิด DCA</td><td>traditional=True | averaging_down=True</td></tr>
+<tr><td>Demo Observation / การสังเกต Demo</td><td>False</td></tr>
+<tr><td>Demo Execution / การส่งคำสั่ง Demo</td><td>False</td></tr>
+<tr><td>Broker Request / คำขอ Broker</td><td>created=False | transmission=False</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>shadow_observation_sample_insufficient, readiness_rate_below_minimum</td></tr>
+<tr><td>Certification Reason EN</td><td>Demo certification was blocked because shadow evidence, policy, data integrity, or execution-safety requirements failed.</td></tr>
+<tr><td>Certification Reason TH</td><td>บล็อกการรับรอง Demo เพราะหลักฐาน Shadow นโยบาย ความสมบูรณ์ของข้อมูล หรือข้อกำหนดความปลอดภัยของ Execution ไม่ผ่าน</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct every block reason, collect additional chronological shadow evidence, and re-run certification without transmitting an order.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมด เก็บหลักฐาน Shadow ตามลำดับเวลาเพิ่ม และรับรองใหม่โดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="market">
