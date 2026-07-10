@@ -1,19 +1,19 @@
 # AFIP Handoff
 
 ## Current work
-Production Bring-up Pack 8 — Dashboard Live Runtime
+Production Bring-up Pack 9 — Runtime Supervisor
 
 ## Base
 - User-verified GitHub commit before queued patches: `826552a`
-- Pack 5, Pack 6, and Pack 7 must be installed and validated before Pack 8.
-- Patch delivery is incremental and must be applied in order.
+- Packs 5 through 8 must be installed and validated before Pack 9.
+- Apply queued patches in numerical order.
 
-## Pack 8 scope
-- Read-only dashboard refresh readiness
-- Snapshot freshness and sequence visibility
-- Dependency readiness
-- Bilingual waiting reason and expected next action
-- Dashboard panel integration
+## Pack 9 scope
+- Read-only runtime health aggregation
+- Healthy, warning, and critical dependency counts
+- Bilingual recovery guidance and next review explanation
+- Supervisor confidence
+- Dashboard panel integration without navigation changes
 
 ## Policy
 - Broker: XM only
@@ -21,15 +21,15 @@ Production Bring-up Pack 8 — Dashboard Live Runtime
 - Live execution: disabled
 - Execution: LOCKED_SIMULATION_ONLY
 - Patch only and backward compatible
-- No trading decision or order placement logic changed
+- No trading decision or order-placement logic changed
 
 ## Validation order
-1. Run targeted Pack 8 tests.
+1. Run targeted Pack 9 tests.
 2. Run full pytest.
 3. Run AFIP Local Quality Check.
 4. Generate the dashboard.
-5. Verify the Dashboard Live Runtime panel.
+5. Verify the Runtime Supervisor panel.
 6. Commit and push only after all checks pass.
 
 ## Next work
-Production Bring-up Pack 9 — Runtime Supervisor
+Production Bring-up Pack 10 — Production Certification

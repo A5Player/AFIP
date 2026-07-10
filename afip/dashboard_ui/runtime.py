@@ -19,6 +19,7 @@ from afip.explainable_order_center import ExplainableOrderCenterRuntime
 from afip.afip_bank_live import AFIPBankLiveRuntime
 from afip.historical_data_manager import HistoricalDataLiveRuntime
 from afip.dashboard_live_runtime import DashboardLiveRuntime
+from afip.runtime_supervisor import RuntimeSupervisorRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -60,6 +61,7 @@ class DashboardUIRuntime:
         afip_bank = AFIPBankLiveRuntime().evaluate_one({**dict(record), "mode": mode, "closed_profit": paper.closed_profit, "floating_profit": paper.floating_profit})
         historical_data = HistoricalDataLiveRuntime().evaluate_one({**dict(record), "mode": mode})
         dashboard_live = DashboardLiveRuntime().evaluate_one({**dict(record), "mode": mode})
+        runtime_supervisor = RuntimeSupervisorRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -91,6 +93,7 @@ class DashboardUIRuntime:
             _market_calendar_panel(market_calendar),
             _historical_data_panel(historical_data),
             _dashboard_live_runtime_panel(dashboard_live),
+            _runtime_supervisor_panel(runtime_supervisor),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -404,6 +407,29 @@ def _dashboard_live_runtime_panel(report: Any) -> DashboardPanel:
             ("Expected Next Action EN", report.expected_next_action_en),
             ("Expected Next Action TH", report.expected_next_action_th),
             ("Live Execution", str(report.live_execution_enabled)),
+        ),
+    )
+
+
+def _runtime_supervisor_panel(supervisor: Any) -> DashboardPanel:
+    return DashboardPanel(
+        "runtime_supervisor",
+        "Runtime Supervisor",
+        "ระบบกำกับ Runtime",
+        supervisor.status,
+        "Aggregates health, warnings, critical dependencies, recovery guidance, confidence, and the next review time.",
+        "รวมสุขภาพระบบ คำเตือน ส่วนประกอบวิกฤต แนวทางกู้คืน ความมั่นใจ และเวลาตรวจครั้งถัดไป",
+        (
+            ("Runtime Health", supervisor.runtime_health),
+            ("Healthy Modules", str(supervisor.healthy_modules)),
+            ("Warning Modules", str(supervisor.warning_modules)),
+            ("Critical Modules", str(supervisor.critical_modules)),
+            ("Recovery Action EN", supervisor.recovery_action_en),
+            ("Recovery Action TH", supervisor.recovery_action_th),
+            ("Expected Next Check EN", supervisor.expected_next_check_en),
+            ("Expected Next Check TH", supervisor.expected_next_check_th),
+            ("Supervisor Confidence", str(supervisor.supervisor_confidence)),
+            ("Live Execution", str(supervisor.live_execution_enabled)),
         ),
     )
 

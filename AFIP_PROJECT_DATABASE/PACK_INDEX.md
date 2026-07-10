@@ -29,3 +29,8 @@
 Status: PATCH_READY_FOR_USER_VALIDATION
 Documentation: English + Thai
 Live execution: disabled
+
+## Production Bring-up Pack 9 — Runtime Supervisor
+Status: PATCH_READY_FOR_USER_VALIDATION
+Documentation: English + Thai
+Live execution: disabled
