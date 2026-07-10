@@ -20,6 +20,7 @@ from afip.afip_bank_live import AFIPBankLiveRuntime
 from afip.historical_data_manager import HistoricalDataLiveRuntime
 from afip.dashboard_live_runtime import DashboardLiveRuntime
 from afip.runtime_supervisor import RuntimeSupervisorRuntime
+from afip.production_certification import ProductionCertificationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -62,6 +63,7 @@ class DashboardUIRuntime:
         historical_data = HistoricalDataLiveRuntime().evaluate_one({**dict(record), "mode": mode})
         dashboard_live = DashboardLiveRuntime().evaluate_one({**dict(record), "mode": mode})
         runtime_supervisor = RuntimeSupervisorRuntime().evaluate_one({**dict(record), "mode": mode})
+        production_certification = ProductionCertificationRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -94,6 +96,7 @@ class DashboardUIRuntime:
             _historical_data_panel(historical_data),
             _dashboard_live_runtime_panel(dashboard_live),
             _runtime_supervisor_panel(runtime_supervisor),
+            _production_certification_panel(production_certification),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -430,6 +433,28 @@ def _runtime_supervisor_panel(supervisor: Any) -> DashboardPanel:
             ("Expected Next Check TH", supervisor.expected_next_check_th),
             ("Supervisor Confidence", str(supervisor.supervisor_confidence)),
             ("Live Execution", str(supervisor.live_execution_enabled)),
+        ),
+    )
+
+
+def _production_certification_panel(report: Any) -> DashboardPanel:
+    return DashboardPanel(
+        "production_certification",
+        "Production Certification",
+        "การรับรอง Production",
+        report.status,
+        report.certification_summary_en,
+        report.certification_summary_th,
+        (
+            ("Certification Level", report.certification_level),
+            ("Passed Checks", str(report.passed_checks)),
+            ("Total Checks", str(report.total_checks)),
+            ("Failed Checks", ", ".join(report.failed_checks) if report.failed_checks else "NONE"),
+            ("Market Intelligence Ready", str(report.market_intelligence_ready)),
+            ("Next Action EN", report.next_action_en),
+            ("Next Action TH", report.next_action_th),
+            ("Execution", report.execution_status),
+            ("Live Execution", str(report.live_execution_enabled)),
         ),
     )
 

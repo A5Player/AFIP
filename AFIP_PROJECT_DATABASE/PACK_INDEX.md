@@ -34,3 +34,10 @@ Live execution: disabled
 Status: PATCH_READY_FOR_USER_VALIDATION
 Documentation: English + Thai
 Live execution: disabled
+
+## Production Bring-up Pack 10 — Production Certification
+Status: PATCH_READY_FOR_USER_VALIDATION
+Documentation: English + Thai
+Live execution: disabled
+Production Bring-up: certification pending user validation
+Next: Milestone I Pack 1 — Economic Calendar Intelligence

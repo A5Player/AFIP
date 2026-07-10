@@ -1,19 +1,19 @@
 # AFIP Handoff
 
 ## Current work
-Production Bring-up Pack 9 — Runtime Supervisor
+Production Bring-up Pack 10 — Production Certification
 
 ## Base
 - User-verified GitHub commit before queued patches: `826552a`
-- Packs 5 through 8 must be installed and validated before Pack 9.
+- Packs 5 through 9 must be installed and validated before Pack 10.
 - Apply queued patches in numerical order.
 
-## Pack 9 scope
-- Read-only runtime health aggregation
-- Healthy, warning, and critical dependency counts
-- Bilingual recovery guidance and next review explanation
-- Supervisor confidence
-- Dashboard panel integration without navigation changes
+## Pack 10 scope
+- Read-only certification of Production Bring-up Packs 1–9
+- Deterministic component and Version 1 policy checks
+- Bilingual certification summary and next action
+- Dashboard certification panel without navigation changes
+- Market Intelligence readiness gate
 
 ## Policy
 - Broker: XM only
@@ -24,12 +24,12 @@ Production Bring-up Pack 9 — Runtime Supervisor
 - No trading decision or order-placement logic changed
 
 ## Validation order
-1. Run targeted Pack 9 tests.
-2. Run full pytest.
-3. Run AFIP Local Quality Check.
-4. Generate the dashboard.
-5. Verify the Runtime Supervisor panel.
+1. Install queued Packs 5–10 in order.
+2. Run targeted Pack 10 tests.
+3. Run full pytest.
+4. Run AFIP Local Quality Check.
+5. Generate and inspect the dashboard certification panel.
 6. Commit and push only after all checks pass.
 
 ## Next work
-Production Bring-up Pack 10 — Production Certification
+Milestone I Pack 1 — Economic Calendar Intelligence
