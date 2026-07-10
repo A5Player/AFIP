@@ -48,6 +48,7 @@ from afip.smart_exit import SmartExitRuntime
 from afip.dynamic_stop_loss import DynamicStopLossRuntime
 from afip.dynamic_take_profit import DynamicTakeProfitRuntime
 from afip.trailing_stop import TrailingStopRuntime
+from afip.partial_close import PartialCloseRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -253,6 +254,18 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
         })
+        partial_close = PartialCloseRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "position_side": record.get("position_side", record.get("direction", "BUY")),
+            "current_units": record.get("current_units", record.get("position_units", 0)),
+            "requested_close_units": record.get("requested_close_units", record.get("partial_close_units", 0)),
+            "partial_close_action": record.get("partial_close_action", "HOLD"),
+            "lot_per_unit": 0.01,
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -313,6 +326,7 @@ class DashboardUIRuntime:
             _dynamic_stop_loss_panel(dynamic_stop_loss),
             _dynamic_take_profit_panel(dynamic_take_profit),
             _trailing_stop_panel(trailing_stop),
+            _partial_close_panel(partial_close),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -918,6 +932,51 @@ def _trailing_stop_panel(report: Any) -> DashboardPanel:
         "ตรวจ Break-even การล็อกกำไร และ Trailing หลายระยะสำหรับสถานะจำลองโดยไม่ส่งคำสั่ง",
         rows,
     )
+
+def _partial_close_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Readiness / ความพร้อม", report.partial_close_readiness),
+        ("Reason / เหตุผล", report.reason),
+        ("Action / การดำเนินการ", report.action),
+        ("Side / ทิศทาง", report.position_side),
+        ("Current Units / Unit ปัจจุบัน", str(report.current_units)),
+        ("Requested Close Units / Unit ที่ขอปิด", str(report.requested_close_units)),
+        ("Approved Close Units / Unit ที่อนุมัติ", str(report.approved_close_units)),
+        ("Remaining Runner Units / Runner ที่เหลือ", str(report.remaining_units)),
+        ("Minimum Runner Units / Runner ขั้นต่ำ", str(report.minimum_remaining_units)),
+        ("Close Ratio / สัดส่วนปิด", str(report.close_ratio)),
+        ("Open Profit Distance / ระยะกำไร", str(report.open_profit_distance)),
+        ("Estimated Net Realized Profit / กำไรสุทธิที่คาดว่าจะรับรู้", str(report.estimated_net_realized_profit)),
+        ("Trading Cost Valid / ต้นทุนผ่าน", str(report.trading_cost_valid)),
+        ("Profit Valid / กำไรผ่าน", str(report.profit_valid)),
+        ("Unit Policy / นโยบาย Unit", str(report.unit_policy_valid)),
+        ("Runner Policy / นโยบาย Runner", str(report.runner_policy_valid)),
+        ("Risk Valid / ความเสี่ยงผ่าน", str(report.risk_valid)),
+        ("Timing Valid / เวลาผ่าน", str(report.timing_valid)),
+        ("Market Structure / โครงสร้างตลาด", str(report.market_structure_confirmed)),
+        ("Partial Close Approved / อนุมัติ Partial Close", str(report.partial_close_approved)),
+        ("Simulation Ready / พร้อมจำลอง", str(report.simulation_instruction_ready)),
+        ("Order Status / สถานะคำสั่ง", report.order_status),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Partial Close Reason EN", report.partial_close_reason_en),
+        ("Partial Close Reason TH", report.partial_close_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+    )
+    return DashboardPanel(
+        "partial_close",
+        "Partial Close Intelligence",
+        "ระบบวิเคราะห์การปิดบางส่วน",
+        report.status,
+        "Validates fixed-unit position reduction and preserves a runner in paper/demo simulation without closing a live position.",
+        "ตรวจการลดสถานะแบบ Fixed Unit และคง Runner ใน Paper/Demo Simulation โดยไม่ปิดสถานะจริง",
+        rows,
+    )
+
 
 def _market_panel(record: Mapping[str, Any], calendar: Any) -> DashboardPanel:
     return DashboardPanel("market", "Dashboard Market", "ตลาด", calendar.status, "Displays live market session and open/close status.", "แสดงสถานะตลาดสดและช่วงเวลาเทรด", (

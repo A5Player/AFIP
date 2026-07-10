@@ -50,3 +50,6 @@ Dynamic Take Profit Intelligence completed. Continue from Milestone K Pack 6 —
 
 ## Latest: Milestone K Pack 6
 Trailing Stop Intelligence completed. Install this patch after Milestone K Pack 5. Validate with `pytest tests/test_milestone_k_pack_6.py -v`, full pytest, local quality check, and dashboard generation. No real order or live position modification is permitted. Continue next with Milestone K Pack 7 — Partial Close Intelligence.
+
+## Latest: Milestone K Pack 7
+Partial Close Intelligence completed. Install this patch after Milestone K Pack 6. Validate with `pytest tests/test_milestone_k_pack_7.py -v`, full pytest, local quality check, and dashboard generation. Partial close is fixed-unit simulation only, preserves the configured runner, and never closes a live position. Continue next with Milestone K Pack 8 — Execution Supervisor.

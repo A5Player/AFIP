@@ -84,3 +84,11 @@
 - Added holding reason, trailing-stop reason, expected next action, confidence, next review time, and EN/TH dashboard explainability.
 - XM only, GOLD# only, 1 Unit = 0.01 Lot.
 - Execution remains LOCKED_SIMULATION_ONLY; Direct Execution is False; Live Execution is disabled; NO_ORDER_SENT.
+
+## Milestone K Pack 7 — Partial Close Intelligence
+- Status: completed as an incremental production-quality patch.
+- Added deterministic fixed-unit partial-close readiness for paper/demo simulation.
+- Validates BUY/SELL profit direction, requested and remaining Units, minimum runner, profit, trading cost, risk, timing, and market structure.
+- 1 Unit remains fixed at 0.01 lot; partial close cannot increase lot size or close all Units.
+- Added holding reason, partial-close reason, expected next action, confidence, next review time, and EN/TH dashboard explainability.
+- XM only, GOLD# only, LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution disabled, NO_ORDER_SENT.

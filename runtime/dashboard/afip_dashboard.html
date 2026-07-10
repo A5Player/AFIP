@@ -843,6 +843,42 @@ small { color: #555; }
 <tr><td>Confidence / ความมั่นใจ</td><td>49.0</td></tr>
 <tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr></table>
 </section>
+<section id="partial_close">
+<h2>Partial Close Intelligence / ระบบวิเคราะห์การปิดบางส่วน</h2>
+<p class="status">BLOCKED</p>
+<p>Validates fixed-unit position reduction and preserves a runner in paper/demo simulation without closing a live position.<br><small>ตรวจการลดสถานะแบบ Fixed Unit และคง Runner ใน Paper/Demo Simulation โดยไม่ปิดสถานะจริง</small></p>
+<table><tr><td>Readiness / ความพร้อม</td><td>NOT_READY</td></tr>
+<tr><td>Reason / เหตุผล</td><td>partial_close_requires_multiple_units</td></tr>
+<tr><td>Action / การดำเนินการ</td><td>HOLD</td></tr>
+<tr><td>Side / ทิศทาง</td><td>BUY</td></tr>
+<tr><td>Current Units / Unit ปัจจุบัน</td><td>0</td></tr>
+<tr><td>Requested Close Units / Unit ที่ขอปิด</td><td>0</td></tr>
+<tr><td>Approved Close Units / Unit ที่อนุมัติ</td><td>0</td></tr>
+<tr><td>Remaining Runner Units / Runner ที่เหลือ</td><td>0</td></tr>
+<tr><td>Minimum Runner Units / Runner ขั้นต่ำ</td><td>1</td></tr>
+<tr><td>Close Ratio / สัดส่วนปิด</td><td>0.0</td></tr>
+<tr><td>Open Profit Distance / ระยะกำไร</td><td>0.0</td></tr>
+<tr><td>Estimated Net Realized Profit / กำไรสุทธิที่คาดว่าจะรับรู้</td><td>0.0</td></tr>
+<tr><td>Trading Cost Valid / ต้นทุนผ่าน</td><td>True</td></tr>
+<tr><td>Profit Valid / กำไรผ่าน</td><td>False</td></tr>
+<tr><td>Unit Policy / นโยบาย Unit</td><td>True</td></tr>
+<tr><td>Runner Policy / นโยบาย Runner</td><td>False</td></tr>
+<tr><td>Risk Valid / ความเสี่ยงผ่าน</td><td>True</td></tr>
+<tr><td>Timing Valid / เวลาผ่าน</td><td>True</td></tr>
+<tr><td>Market Structure / โครงสร้างตลาด</td><td>True</td></tr>
+<tr><td>Partial Close Approved / อนุมัติ Partial Close</td><td>False</td></tr>
+<tr><td>Simulation Ready / พร้อมจำลอง</td><td>False</td></tr>
+<tr><td>Order Status / สถานะคำสั่ง</td><td>NO_ORDER_SENT</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>partial_close_requires_multiple_units, entry_price_missing, current_price_missing</td></tr>
+<tr><td>Holding Reason EN</td><td>Keep all current Units open while the partial-close proposal is blocked.</td></tr>
+<tr><td>Holding Reason TH</td><td>คง Unit ที่ถืออยู่ทั้งหมดไว้ก่อน ระหว่างที่ข้อเสนอ Partial Close ยังถูกบล็อก</td></tr>
+<tr><td>Partial Close Reason EN</td><td>The proposal must preserve the minimum runner and pass profit, cost, risk, timing, side, and market-structure validation.</td></tr>
+<tr><td>Partial Close Reason TH</td><td>ข้อเสนอต้องเหลือ Runner ขั้นต่ำ และผ่านการตรวจผลกำไร ต้นทุน ความเสี่ยง เวลา ทิศทาง และโครงสร้างตลาด</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct the listed block reasons and evaluate the partial-close proposal again.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไขเหตุผลที่ถูกบล็อก แล้วประเมินข้อเสนอ Partial Close อีกครั้ง</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>49.0</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr></table>
+</section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>
 <p class="status">READY</p>
