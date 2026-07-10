@@ -879,6 +879,31 @@ small { color: #555; }
 <tr><td>Confidence / ความมั่นใจ</td><td>49.0</td></tr>
 <tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr></table>
 </section>
+<section id="execution_supervisor">
+<h2>Execution Supervisor / ระบบควบคุมการดำเนินการ</h2>
+<p class="status">READY</p>
+<p>Selects one highest-priority validated paper/demo instruction and prevents conflicting execution actions.<br><small>เลือกคำแนะนำ Paper/Demo ที่ผ่านการตรวจและมีลำดับสูงสุดเพียงรายการเดียว พร้อมป้องกัน Action ที่ขัดแย้งกัน</small></p>
+<table><tr><td>Readiness / ความพร้อม</td><td>MONITORING</td></tr>
+<tr><td>Requested Actions / Action ที่เสนอ</td><td>HOLD</td></tr>
+<tr><td>Approved Action / Action ที่อนุมัติ</td><td>HOLD</td></tr>
+<tr><td>Rejected Actions / Action ที่ปฏิเสธ</td><td>NONE</td></tr>
+<tr><td>Conflict / ความขัดแย้ง</td><td>False</td></tr>
+<tr><td>Resolution / วิธีตัดสิน</td><td>no_action_conflict</td></tr>
+<tr><td>Position State / สถานะ Position</td><td>FLAT</td></tr>
+<tr><td>Current Units / Unit ปัจจุบัน</td><td>0</td></tr>
+<tr><td>Approved Units / Unit ที่อนุมัติ</td><td>0</td></tr>
+<tr><td>Simulation Instruction / คำแนะนำ Simulation</td><td>False</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>NONE</td></tr>
+<tr><td>Supervision Reason EN</td><td>All supervisory controls are available, but no executable simulation action has priority.</td></tr>
+<tr><td>Supervision Reason TH</td><td>ระบบควบคุมพร้อมใช้งาน แต่ยังไม่มี Action สำหรับการจำลองที่มีลำดับความสำคัญ</td></tr>
+<tr><td>Holding Reason EN</td><td>Maintain the current position state and continue monitoring.</td></tr>
+<tr><td>Holding Reason TH</td><td>คงสถานะ Position ปัจจุบันและติดตามต่อ</td></tr>
+<tr><td>Expected Next Action EN</td><td>Review again when a validated execution-intelligence proposal changes.</td></tr>
+<tr><td>Expected Next Action TH</td><td>ทบทวนอีกครั้งเมื่อข้อเสนอจาก Execution Intelligence ที่ผ่านการตรวจเปลี่ยนแปลง</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:31:00+00:00</td></tr>
+<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+</section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>
 <p class="status">READY</p>

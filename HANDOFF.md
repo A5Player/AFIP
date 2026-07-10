@@ -53,3 +53,6 @@ Trailing Stop Intelligence completed. Install this patch after Milestone K Pack 
 
 ## Latest: Milestone K Pack 7
 Partial Close Intelligence completed. Install this patch after Milestone K Pack 6. Validate with `pytest tests/test_milestone_k_pack_7.py -v`, full pytest, local quality check, and dashboard generation. Partial close is fixed-unit simulation only, preserves the configured runner, and never closes a live position. Continue next with Milestone K Pack 8 — Execution Supervisor.
+
+## Latest: Milestone K Pack 8
+Execution Supervisor completed. Install after Milestone K Pack 7. Validate with `pytest tests/test_milestone_k_pack_8.py -v`, full pytest, local quality check, and dashboard generation. The supervisor resolves competing execution-intelligence proposals into one simulation-only instruction and never sends an order. Continue next with Milestone K Pack 9 — Runtime Execution Certification.

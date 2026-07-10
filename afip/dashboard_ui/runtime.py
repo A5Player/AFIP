@@ -49,6 +49,7 @@ from afip.dynamic_stop_loss import DynamicStopLossRuntime
 from afip.dynamic_take_profit import DynamicTakeProfitRuntime
 from afip.trailing_stop import TrailingStopRuntime
 from afip.partial_close import PartialCloseRuntime
+from afip.execution_supervisor import ExecutionSupervisorRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -266,6 +267,19 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
         })
+        execution_supervisor = ExecutionSupervisorRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "position_side": record.get("position_side", record.get("direction", "BUY")),
+            "position_state": record.get("position_state", "OPEN" if int(record.get("current_units", record.get("position_units", 0)) or 0) > 0 else "FLAT"),
+            "current_units": record.get("current_units", record.get("position_units", 0)),
+            "lot_per_unit": 0.01,
+            "risk_allowed": getattr(portfolio_decision, "portfolio_risk_status", "READY") not in {"BLOCKED", "HIGH"},
+            "timing_allowed": market_calendar.trading_allowed,
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -327,6 +341,7 @@ class DashboardUIRuntime:
             _dynamic_take_profit_panel(dynamic_take_profit),
             _trailing_stop_panel(trailing_stop),
             _partial_close_panel(partial_close),
+            _execution_supervisor_panel(execution_supervisor),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1249,3 +1264,33 @@ def _entry_validation_panel(report: Any) -> DashboardPanel:
     for item in report.validations[:10]:
         rows.append((f"{item.opportunity_id} / {item.direction}", f"approved={item.approved} | units={item.allocated_units} | regime={item.market_regime_ready} | conflict={item.conflict_allowed} | score={item.trade_score_allowed} | risk={item.risk_allowed} | timing={item.timing_allowed} | spread={item.spread_allowed} | allocation={item.allocation_allowed} | blocks={','.join(item.block_reasons)} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
     return DashboardPanel("entry_validation", "Entry Validation Engine", "กลไกตรวจสอบจุดเข้า", report.status, "Validates regime, conflict, score, risk, timing, spread, and fixed-unit allocation before paper/demo execution review. Validation never sends orders.", "ตรวจสอบ Market Regime ความขัดแย้ง คะแนน ความเสี่ยง เวลา Spread และการจัดสรร Unit คงที่ก่อน paper/demo execution โดยไม่ส่งคำสั่งซื้อขาย", tuple(rows))
+
+
+def _execution_supervisor_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Readiness / ความพร้อม", report.supervisor_readiness),
+        ("Requested Actions / Action ที่เสนอ", ", ".join(report.requested_actions)),
+        ("Approved Action / Action ที่อนุมัติ", report.approved_action),
+        ("Rejected Actions / Action ที่ปฏิเสธ", ", ".join(report.rejected_actions) or "NONE"),
+        ("Conflict / ความขัดแย้ง", str(report.conflict_detected)),
+        ("Resolution / วิธีตัดสิน", report.conflict_resolution),
+        ("Position State / สถานะ Position", report.position_state),
+        ("Current Units / Unit ปัจจุบัน", str(report.current_units)),
+        ("Approved Units / Unit ที่อนุมัติ", str(report.approved_units)),
+        ("Simulation Instruction / คำแนะนำ Simulation", str(report.simulation_instruction_ready)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Supervision Reason EN", report.supervision_reason_en),
+        ("Supervision Reason TH", report.supervision_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "execution_supervisor", "Execution Supervisor", "ระบบควบคุมการดำเนินการ", report.status,
+        "Selects one highest-priority validated paper/demo instruction and prevents conflicting execution actions.",
+        "เลือกคำแนะนำ Paper/Demo ที่ผ่านการตรวจและมีลำดับสูงสุดเพียงรายการเดียว พร้อมป้องกัน Action ที่ขัดแย้งกัน", rows,
+    )

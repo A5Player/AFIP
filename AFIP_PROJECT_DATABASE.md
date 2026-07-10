@@ -92,3 +92,11 @@
 - 1 Unit remains fixed at 0.01 lot; partial close cannot increase lot size or close all Units.
 - Added holding reason, partial-close reason, expected next action, confidence, next review time, and EN/TH dashboard explainability.
 - XM only, GOLD# only, LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution disabled, NO_ORDER_SENT.
+
+## Milestone K Pack 8 — Execution Supervisor
+- Status: completed as an incremental production-quality patch.
+- Added deterministic central supervision across entry and open-position management proposals.
+- Resolves conflicting actions using financial-risk priority: emergency/full exit, partial close, trailing stop, stop-loss move, take-profit change, entry, then hold.
+- Validates position state, fixed Unit policy, risk, timing, trading cost, Market Structure, Market Regime, and dependency reports.
+- Produces one simulation-only approved action with rejected-action visibility and EN/TH explanations.
+- XM only, GOLD# only, 1 Unit = 0.01 lot, LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution disabled, NO_ORDER_SENT.
