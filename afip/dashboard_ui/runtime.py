@@ -52,6 +52,7 @@ from afip.partial_close import PartialCloseRuntime
 from afip.execution_supervisor import ExecutionSupervisorRuntime
 from afip.runtime_execution_certification import RuntimeExecutionCertificationRuntime
 from afip.execution_intelligence_complete import ExecutionIntelligenceCompleteRuntime
+from afip.paper_execution_foundation import PaperExecutionFoundationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -313,6 +314,25 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
         })
+        paper_execution_foundation = PaperExecutionFoundationRuntime().evaluate_one({
+            **execution_intelligence_complete.as_dict(),
+            "broker": broker,
+            "symbol": symbol,
+            "milestone_k_status": execution_intelligence_complete.status,
+            "milestone_k_complete": execution_intelligence_complete.milestone_k_complete,
+            "runtime_certification_status": runtime_execution_certification.status,
+            "audit_record_ready": runtime_execution_certification.audit_record_ready,
+            "dashboard_explainability_ready": True,
+            "paper_account_connected": bool(record.get("paper_account_connected", True)),
+            "market_data_ready": bool(record.get("market_data_ready", True)),
+            "historical_data_ready": bool(record.get("historical_data_ready", True)),
+            "risk_limits_configured": bool(record.get("risk_limits_configured", True)),
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -377,6 +397,7 @@ class DashboardUIRuntime:
             _execution_supervisor_panel(execution_supervisor),
             _runtime_execution_certification_panel(runtime_execution_certification),
             _execution_intelligence_complete_panel(execution_intelligence_complete),
+            _paper_execution_foundation_panel(paper_execution_foundation),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1391,4 +1412,35 @@ def _execution_intelligence_complete_panel(report: Any) -> DashboardPanel:
         "execution_intelligence_complete", "Execution Intelligence Complete", "Execution Intelligence เสร็จสมบูรณ์", report.status,
         "Closes Milestone K only after Packs 1-9, runtime certification, explainability, audit, and all execution-safety gates pass.",
         "ปิด Milestone K เมื่อ Pack 1-9, Runtime Certification, Explainability, Audit และ Execution Safety Gate ทั้งหมดผ่านเท่านั้น", rows,
+    )
+
+
+def _paper_execution_foundation_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Readiness / ความพร้อม", report.paper_execution_readiness),
+        ("Foundation ID / รหัส Foundation", report.foundation_id),
+        ("Milestone K Complete / Milestone K เสร็จ", str(report.milestone_k_complete)),
+        ("Runtime Certified / Runtime ผ่าน", str(report.runtime_certified)),
+        ("Paper Account / บัญชี Paper", str(report.paper_account_connected)),
+        ("Market Data / ข้อมูลตลาด", str(report.market_data_ready)),
+        ("Historical Data / ข้อมูลย้อนหลัง", str(report.historical_data_ready)),
+        ("Risk Limits / ขีดจำกัดความเสี่ยง", str(report.risk_limits_configured)),
+        ("Audit / Audit พร้อม", str(report.audit_record_ready)),
+        ("Policy / นโยบาย", f"broker={report.broker_policy_valid} | symbol={report.symbol_policy_valid} | unit={report.unit_policy_valid}"),
+        ("Execution Locks / การล็อก", f"simulation={report.simulation_lock_valid} | direct_blocked={report.direct_execution_blocked} | live_blocked={report.live_execution_blocked}"),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Readiness Reason EN", report.readiness_reason_en),
+        ("Readiness Reason TH", report.readiness_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "paper_execution_foundation", "Paper Execution Foundation", "รากฐานการดำเนินการแบบ Paper", report.status,
+        "Starts Milestone L with deterministic paper-execution readiness while preserving every live-execution safety lock.",
+        "เริ่ม Milestone L ด้วยการตรวจความพร้อม Paper Execution แบบกำหนดแน่นอน โดยคงการล็อก Live Execution ทุกชั้น", rows,
     )

@@ -116,3 +116,11 @@
 - XM Only; GOLD# Only; 1 Unit = 0.01 Lot.
 - LOCKED_SIMULATION_ONLY; Direct Execution=False; Live Execution Disabled; NO_ORDER_SENT.
 - Next: Milestone L Pack 1.
+
+## Milestone L Pack 1 — Paper Execution Foundation
+- Status: completed as an incremental production-quality patch.
+- Opens Milestone L only after Milestone K completion and runtime certification.
+- Validates paper-account connectivity, market data, historical data, risk limits, audit, and dashboard explainability readiness.
+- Adds deterministic Paper Execution Foundation ID and EN/TH dashboard explanations.
+- XM only, GOLD# only, and 1 Unit = 0.01 lot remain mandatory.
+- Execution remains LOCKED_SIMULATION_ONLY; Direct Execution is False; Live Execution is disabled; NO_ORDER_SENT remains mandatory.

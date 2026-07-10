@@ -62,3 +62,6 @@ Runtime Execution Certification completed. Install after Milestone K Pack 8. Val
 
 ## Latest: Milestone K Pack 10
 Execution Intelligence Complete added. Install after Milestone K Pack 9. Validate with `pytest tests/test_milestone_k_pack_10.py -v`, full pytest, local quality check, and dashboard generation. When all gates pass, Milestone K is complete. Live and direct execution remain disabled and NO_ORDER_SENT remains mandatory. Continue next with Milestone L Pack 1.
+
+## Latest: Milestone L Pack 1
+Paper Execution Foundation completed. Install after Milestone K Pack 10. Validate with `pytest tests/test_milestone_l_pack_1.py -v`, full pytest, local quality check, and dashboard generation. This pack opens controlled paper/demo observation readiness only; it never transmits an order. Continue next with Milestone L Pack 2 while XM-only, GOLD#-only, fixed 0.01-lot Unit, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT policies remain mandatory.
