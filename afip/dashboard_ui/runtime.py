@@ -15,6 +15,7 @@ from afip.vps_health_monitor import VPSHealthMonitorRuntime
 from afip.mt5_live_account import MT5LiveAccountRuntime
 from afip.internet_monitor import InternetMonitorRuntime
 from afip.market_calendar import MarketCalendarRuntime
+from afip.explainable_order_center import ExplainableOrderCenterRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -52,6 +53,7 @@ class DashboardUIRuntime:
         mt5_account = MT5LiveAccountRuntime().evaluate_one({**dict(record), "mode": mode})
         internet = InternetMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
         market_calendar = MarketCalendarRuntime().evaluate_one({**dict(record), "mode": mode})
+        explainable_orders = ExplainableOrderCenterRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -83,6 +85,7 @@ class DashboardUIRuntime:
             _market_calendar_panel(market_calendar),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
+            _explainable_order_center_panel(explainable_orders),
         )
         if production is not None:
             panels = panels + (_production_readiness_panel(production),)
@@ -370,6 +373,35 @@ def _order_center_panel(paper: Any) -> DashboardPanel:
         rows.append((f"{order.order_id} Expected Next Action", order.expected_next_action))
         rows.append((f"{order.order_id} Risk", order.risk_status))
     return DashboardPanel("order_center", "Order Center", "ศูนย์คำสั่ง", paper.status, "Explains waiting, holding, risk, and next action for each paper order.", "อธิบายเหตุผลของการรอ ถือ ความเสี่ยง และการกระทำถัดไปของคำสั่งจำลอง", tuple(rows))
+
+
+def _explainable_order_center_panel(report: Any) -> DashboardPanel:
+    rows: list[tuple[str, str]] = [
+        ("Reason", report.reason),
+        ("Live Execution", str(report.live_execution_enabled)),
+        ("Order Count", str(report.order_count)),
+        ("Visible Fields", ", ".join(report.visible_explanation_fields)),
+    ]
+    if not report.orders:
+        rows.append(("Waiting Reason / เหตุผลที่รอ", "explainable_order_center_waiting_for_paper_orders"))
+    for order in report.orders[:5]:
+        prefix = f"{order.order_id} {order.status}"
+        rows.append((f"{prefix} Units", f"{order.units} unit(s) / {order.total_lot:.2f} lot"))
+        rows.append((f"{prefix} Confidence / ความมั่นใจ", str(order.confidence)))
+        rows.append((f"{prefix} Risk / ความเสี่ยง", order.risk_status))
+        rows.append((f"{prefix} Expected Next Action / การกระทำถัดไป", order.expected_next_action))
+        rows.append((f"{prefix} Next Review Time / เวลาตรวจสอบครั้งถัดไป", order.next_review_time))
+        for item in order.explanations:
+            rows.append((f"{prefix} {item.title_en} / {item.title_th}", f"{item.value} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel(
+        "explainable_order_center",
+        "Explainable Order Center",
+        "ศูนย์คำสั่งแบบอธิบายได้",
+        report.status,
+        "Displays bilingual order explanations for waiting, entry, holding, stop loss, take profit, trailing, partial close, exit, confidence, risk, and next review time.",
+        "แสดงเหตุผลคำสั่งสองภาษา ครอบคลุมการรอ เข้าเทรด ถือสถานะ Stop Loss Take Profit Trailing ปิดบางส่วน ออกจากสถานะ ความมั่นใจ ความเสี่ยง และเวลาตรวจสอบถัดไป",
+        tuple(rows),
+    )
 
 
 def _panel_html(panel: DashboardPanel) -> str:

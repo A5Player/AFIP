@@ -19,4 +19,5 @@
 - Pack 1 — VPS Health Monitor: completed.
 - Pack 2 — MT5 Live Account Dashboard: completed.
 - Pack 3 — Internet and Broker Latency Monitor: completed.
-- Pack 4 — Market Session and Trading Calendar Monitor: patch ready.
+- Pack 4 — Market Session and Trading Calendar Monitor: completed.
+- Pack 5 — Explainable Order Center: patch ready.

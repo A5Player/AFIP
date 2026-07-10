@@ -1,43 +1,48 @@
-# AFIP Handoff — Production Bring-up Pack 4
+# AFIP Handoff — Production Bring-up Pack 5
 
 ## Current Status
 
-Production Bring-up Pack 4 has been prepared as an incremental patch on top of the attached AFIP.zip authoritative repository state.
+Production Bring-up Pack 5 has been prepared as an incremental patch after Pack 4 was verified and pushed.
 
-Latest user baseline before this patch:
+Latest verified user result before this patch:
 
-- GitHub commit: 8d045ac
-- Production Bring-up Pack 3: completed and pushed
-- pytest: 964 passed
+- GitHub commit: 826552a
+- Production Bring-up Pack 4: completed and pushed
+- Pack 4 targeted test: 6 passed
+- Full pytest: 970 passed
 - AFIP Local Quality Check: PASS
-- Dashboard: PASS
-- MT5: READY
-- Windows VPS: READY
-- Broker policy: XM only
-- Symbol policy: GOLD# only
+- Dashboard generation: PASS
+- MT5 Data Check: READY
 - Execution: LOCKED_SIMULATION_ONLY
 - Live execution: DISABLED
 
-## Production Bring-up Pack 4
+## Production Bring-up Pack 5
 
-Pack 4 adds Market Session and Trading Calendar Monitor integration.
+Pack 5 adds Explainable Order Center integration with bilingual English and Thai explanations.
 
 ### Added
 
-- MarketCalendarRuntime
-- MarketCalendarReport
-- Market open / close detection
-- Weekend detection for gold market closure window
-- Configurable holiday detection
-- Asia, London, and New York session flags
-- Trading allowed flag
-- Trading block reason
-- Dashboard Live Market Status
-- Next review time
-- Read-only Market Calendar dashboard panel
-- Dashboard Market panel now uses calendar telemetry
-- Deterministic tests for READY, WAITING, HOLIDAY, WEEKEND, BLOCKED, and dashboard render states
-- Documentation, file list, run scripts, and quality result file
+- ExplainableOrderCenterRuntime
+- ExplainableOrderCenterReport
+- ExplainableOrderItem
+- BilingualExplanation
+- Waiting Reason explanation
+- Entry Reason explanation
+- Holding Reason explanation
+- Stop Loss Move Reason explanation
+- Take Profit Change Reason explanation
+- Trailing Stop Reason explanation
+- Partial Close Reason explanation
+- Exit Reason explanation
+- Expected Next Action explanation
+- Confidence explanation
+- Risk explanation
+- Next Review Time explanation
+- Dashboard Explainable Order Center panel
+- English README
+- Thai README
+- Run scripts
+- Deterministic tests
 
 ## Safety Policy
 
@@ -45,15 +50,15 @@ Pack 4 adds Market Session and Trading Calendar Monitor integration.
 - Trading logic changed: false.
 - Version 1 remains XM + GOLD# only.
 - Multi-broker remains disabled for Version 1.
-- The Market Calendar Monitor is read-only dashboard telemetry and never sends orders.
-- Trading permission is explanatory only and does not enable execution.
+- The Explainable Order Center is read-only dashboard telemetry and never sends orders.
+- Lot size is not increased directly; unit count is displayed and converted to total lot using 1 unit = 0.01 lot.
 
 ## Required Validation
 
 Run on VPS:
 
 ```powershell
-pytest tests/test_production_bringup_pack_4.py -v
+pytest tests/test_production_bringup_pack_5.py -v
 if ($LASTEXITCODE -ne 0) { exit }
 
 pytest
@@ -63,12 +68,13 @@ python tools/afip_local_quality_check.py
 if ($LASTEXITCODE -ne 0) { exit }
 
 python -m afip.dashboard_ui
+if ($LASTEXITCODE -ne 0) { exit }
 
 git add .
-git commit -m "Production Bring-up Pack 4 Market Session Trading Calendar"
+git commit -m "Production Bring-up Pack 5 Explainable Order Center"
 git push
 ```
 
 ## Next Step
 
-After Pack 4 passes on VPS, continue to Production Bring-up Pack 5: Explainable Order Center.
+After Pack 5 passes on VPS, continue to Production Bring-up Pack 6: AFIP Bank Live.
