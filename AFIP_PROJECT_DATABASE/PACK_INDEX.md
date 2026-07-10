@@ -22,3 +22,5 @@
 - Pack 4 — Market Session and Trading Calendar Monitor: completed.
 - Pack 5 — Explainable Order Center: patch ready.
 - Pack 6 — AFIP Bank Live: patch ready.
+
+- Production Bring-up Pack 7 — Historical Data Manager (EN/TH, read-only)

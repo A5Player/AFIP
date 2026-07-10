@@ -42,3 +42,7 @@ Adds a deterministic read-only capital ledger with bilingual dashboard explanati
 ## Next Step
 
 After Pack 6 passes on the user's VPS, continue to Production Bring-up Pack 7 — Historical Data Manager.
+
+# AFIP Handoff — Production Bring-up Pack 7
+
+Adds a bilingual, read-only Historical Data Manager dashboard panel. It preserves the existing Milestone H historical modules and adds production visibility for timeframe coverage, data quality, research readiness, walk-forward readiness and next action. XM and GOLD# remain the only Version 1 policy. Live execution remains disabled. Install after Pack 6. Next: Production Bring-up Pack 8 — Dashboard Live Runtime.

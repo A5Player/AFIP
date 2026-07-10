@@ -17,6 +17,7 @@ from afip.internet_monitor import InternetMonitorRuntime
 from afip.market_calendar import MarketCalendarRuntime
 from afip.explainable_order_center import ExplainableOrderCenterRuntime
 from afip.afip_bank_live import AFIPBankLiveRuntime
+from afip.historical_data_manager import HistoricalDataLiveRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -56,6 +57,7 @@ class DashboardUIRuntime:
         market_calendar = MarketCalendarRuntime().evaluate_one({**dict(record), "mode": mode})
         explainable_orders = ExplainableOrderCenterRuntime().evaluate_one({**dict(record), "mode": mode})
         afip_bank = AFIPBankLiveRuntime().evaluate_one({**dict(record), "mode": mode, "closed_profit": paper.closed_profit, "floating_profit": paper.floating_profit})
+        historical_data = HistoricalDataLiveRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -85,6 +87,7 @@ class DashboardUIRuntime:
             _mt5_account_panel(mt5_account),
             _internet_panel(internet),
             _market_calendar_panel(market_calendar),
+            _historical_data_panel(historical_data),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -364,6 +367,12 @@ def _market_calendar_panel(calendar: Any) -> DashboardPanel:
         ),
     )
 
+
+
+def _historical_data_panel(report: Any) -> DashboardPanel:
+    rows = [("Source", report.source), ("Total Bars", str(report.total_bars)), ("Missing Bars", str(report.missing_bars)), ("Duplicate Bars", str(report.duplicate_bars)), ("Quality Score", str(report.quality_score)), ("Storage", report.storage_status), ("Research Ready", str(report.research_ready)), ("Walk Forward Ready", str(report.walk_forward_ready)), ("Next Action EN", report.next_action_en), ("Next Action TH", report.next_action_th)]
+    rows.extend((f"{tf} Bars", str(count)) for tf, count in report.timeframe_bars)
+    return DashboardPanel("historical_data", "Historical Data Manager", "ตัวจัดการข้อมูลย้อนหลัง", report.status, "Shows read-only historical coverage, quality, readiness, and next action.", "แสดงความครอบคลุม คุณภาพ ความพร้อม และขั้นตอนถัดไปของข้อมูลย้อนหลังแบบอ่านอย่างเดียว", tuple(rows))
 
 def _market_panel(record: Mapping[str, Any], calendar: Any) -> DashboardPanel:
     return DashboardPanel("market", "Dashboard Market", "ตลาด", calendar.status, "Displays live market session and open/close status.", "แสดงสถานะตลาดสดและช่วงเวลาเทรด", (

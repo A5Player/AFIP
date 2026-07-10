@@ -53,5 +53,8 @@
   "trading_logic_changed": false,
   "unit_system": "1_UNIT_EQUALS_0.01_LOT",
   "vps_deployment": "ready",
-  "vps_health_monitor": "completed"
+  "vps_health_monitor": "completed",
+  "production_bringup_pack": 7,
+  "production_bringup_status": "PACK_7_QUEUED_FOR_USER_VALIDATION",
+  "latest_feature": "Historical Data Manager Live Dashboard"
 }
