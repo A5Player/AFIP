@@ -928,7 +928,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:48:26.676001+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:55:22.240081+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -954,7 +954,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:52:26.676197+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:59:22.240219+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -980,7 +980,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:52:26.676332+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:59:22.240307+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">
@@ -1100,6 +1100,33 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Correct every block reason and re-run analytics using only accepted Pack 4 outcomes.</td></tr>
 <tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมดและวิเคราะห์ใหม่โดยใช้เฉพาะผลลัพธ์จาก Pack 4 ที่ผ่านการรับรอง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr>
+<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="paper_performance_certification">
+<h2>Paper Performance Certification / การรับรองผลงานแบบ Paper</h2>
+<p class="status">BLOCKED</p>
+<p>Certifies the Pack 5 paper-performance baseline against sample, expectancy, profit factor, drawdown, cost, data-integrity, and execution-safety gates without transmitting an order.<br><small>รับรองค่าฐานผลงาน Paper จาก Pack 5 ด้วยเกณฑ์จำนวนตัวอย่าง Expectancy, Profit Factor, Drawdown, ต้นทุน คุณภาพข้อมูล และความปลอดภัยของ Execution โดยไม่ส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Certification Readiness / ความพร้อมรับรอง</td><td>PAPER_PERFORMANCE_CERTIFICATION_BLOCKED</td></tr>
+<tr><td>Certification ID / รหัสรับรอง</td><td>L06-FC08DCEFEF363929</td></tr>
+<tr><td>Pack 5 Analytics / การวิเคราะห์ Pack 5</td><td>BLOCKED | L05-558B5123A3BAC2BA</td></tr>
+<tr><td>Sample / จำนวนตัวอย่าง</td><td>0/30 | sufficient=False</td></tr>
+<tr><td>Expectancy R</td><td>actual=0.0 | minimum=0.05 | valid=False</td></tr>
+<tr><td>Profit Factor</td><td>actual=0.0 | minimum=1.1 | valid=False</td></tr>
+<tr><td>Drawdown / Drawdown</td><td>actual=0.0 | maximum=100.0 | valid=True</td></tr>
+<tr><td>Cost Ratio / สัดส่วนต้นทุน</td><td>actual=0.0% | maximum=35.0% | valid=True</td></tr>
+<tr><td>Net Profit / กำไรสุทธิ</td><td>0.0 | valid=False</td></tr>
+<tr><td>Data Integrity / คุณภาพข้อมูล</td><td>valid=True | future_safe=True | complete=True</td></tr>
+<tr><td>Shadow Observation / การสังเกต Shadow</td><td>False</td></tr>
+<tr><td>Demo Execution / การดำเนินการ Demo</td><td>False</td></tr>
+<tr><td>Runner Exposure / Exposure ของ Runner</td><td>True</td></tr>
+<tr><td>No DCA / ปิด DCA</td><td>traditional=True | averaging_down=True</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>analytics_not_ready, sample_insufficient, expectancy_below_minimum, profit_factor_below_minimum, net_profit_not_positive</td></tr>
+<tr><td>Certification Reason EN</td><td>Paper performance certification was blocked because one or more statistical, data-quality, policy, or execution-safety gates failed.</td></tr>
+<tr><td>Certification Reason TH</td><td>บล็อกการรับรองผลงาน Paper เพราะเกณฑ์ด้านสถิติ คุณภาพข้อมูล นโยบาย หรือความปลอดภัยของ Execution อย่างน้อยหนึ่งรายการไม่ผ่าน</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct every block reason, collect more accepted outcomes when required, and re-run Pack 5 analytics before certification.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมด เก็บผลลัพธ์ที่ผ่านการรับรองเพิ่มเมื่อจำเป็น และรันการวิเคราะห์ Pack 5 ใหม่ก่อนรับรอง</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>75.0</td></tr>
 <tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>

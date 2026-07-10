@@ -77,3 +77,6 @@ Paper Outcome Evaluation completed. Install after Milestone L Pack 3. Validate w
 
 ## Latest: Milestone L Pack 5
 Paper Performance Analytics completed. Install after Milestone L Pack 4. Validate with `pytest tests/test_milestone_l_pack_5.py -v`, full pytest, local quality check, and dashboard generation. The analytics runtime accepts only complete, chronological, future-safe Pack 4 outcomes and calculates auditable performance, risk, cost, and sample-quality statistics. Small samples remain explicitly uncertified. Traditional DCA and averaging down remain prohibited. Continue next with Milestone L Pack 6 while all live-execution locks remain mandatory.
+
+## Latest: Milestone L Pack 6
+Paper Performance Certification completed. Install after Milestone L Pack 5. Validate with `pytest tests/test_milestone_l_pack_6.py -v`, full pytest, local quality check, and dashboard generation. The certification runtime checks sample sufficiency, expectancy, profit factor, drawdown, cost ratio, positive net profit, data integrity, position policy, and execution safety. Passing certification permits controlled shadow observation only; demo and live execution remain disabled. Continue next with Milestone L Pack 7 while XM-only, GOLD#-only, fixed 0.01-lot Unit, No-DCA, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT remain mandatory.

@@ -162,3 +162,13 @@
 - Independent position lifecycles remain mandatory; protected runners remain included in total exposure and risk.
 - Traditional DCA and averaging down remain disabled.
 - Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone L Pack 6 — Paper Performance Certification
+- Status: COMPLETE
+- Certifies the Pack 5 paper-performance baseline against minimum sample, expectancy, profit factor, drawdown, cost ratio, positive net profit, and data-integrity gates.
+- Produces a deterministic certification ID and bilingual explainability.
+- Certification permits controlled shadow observation only; demo execution remains separately gated and disabled.
+- Independent position lifecycles remain mandatory; protected runners remain included in total exposure and risk.
+- Traditional DCA and averaging down remain disabled.
+- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.

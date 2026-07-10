@@ -57,6 +57,7 @@ from afip.paper_execution_session import PaperExecutionSessionRuntime
 from afip.paper_decision_ledger import PaperDecisionLedgerRuntime
 from afip.paper_outcome_evaluation import PaperOutcomeEvaluationRuntime
 from afip.paper_performance_analytics import PaperPerformanceAnalyticsRuntime
+from afip.paper_performance_certification import PaperPerformanceCertificationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -415,6 +416,33 @@ class DashboardUIRuntime:
             "independent_position_lifecycle_valid": True,
             "protected_runner_exposure_included": True,
         })
+        paper_performance_certification = PaperPerformanceCertificationRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "analytics_status": paper_performance_analytics.status,
+            "analytics_id": paper_performance_analytics.analytics_id,
+            "eligible_outcomes": paper_performance_analytics.eligible_outcomes,
+            "minimum_sample_required": paper_performance_analytics.minimum_sample_required,
+            "sample_sufficient": paper_performance_analytics.sample_sufficient,
+            "expectancy_r": paper_performance_analytics.expectancy_r,
+            "profit_factor": paper_performance_analytics.profit_factor,
+            "maximum_drawdown": paper_performance_analytics.maximum_drawdown,
+            "cost_to_gross_profit_percent": paper_performance_analytics.cost_to_gross_profit_percent,
+            "net_profit": paper_performance_analytics.net_profit,
+            "future_leakage_blocked": paper_performance_analytics.future_leakage_blocked,
+            "incomplete_data_blocked": paper_performance_analytics.incomplete_data_blocked,
+            "data_integrity_valid": True,
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "independent_position_lifecycle_valid": True,
+            "protected_runner_exposure_included": True,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -484,6 +512,7 @@ class DashboardUIRuntime:
             _paper_decision_ledger_panel(paper_decision_ledger),
             _paper_outcome_evaluation_panel(paper_outcome_evaluation),
             _paper_performance_analytics_panel(paper_performance_analytics),
+            _paper_performance_certification_panel(paper_performance_certification),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1669,4 +1698,36 @@ def _paper_performance_analytics_panel(report: Any) -> DashboardPanel:
         "paper_performance_analytics", "Paper Performance Analytics", "การวิเคราะห์ผลงานแบบ Paper", report.status,
         "Aggregates only accepted paper outcomes into performance, risk, cost, and sample-quality statistics without transmitting an order.",
         "รวมเฉพาะผลลัพธ์ Paper ที่ผ่านการรับรองเป็นสถิติผลงาน ความเสี่ยง ต้นทุน และคุณภาพตัวอย่าง โดยไม่ส่งคำสั่งซื้อขาย", rows,
+    )
+
+
+def _paper_performance_certification_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Certification Readiness / ความพร้อมรับรอง", report.certification_readiness),
+        ("Certification ID / รหัสรับรอง", report.certification_id),
+        ("Pack 5 Analytics / การวิเคราะห์ Pack 5", f"{report.analytics_status} | {report.analytics_id}"),
+        ("Sample / จำนวนตัวอย่าง", f"{report.eligible_outcomes}/{report.minimum_sample_required} | sufficient={report.sample_sufficient}"),
+        ("Expectancy R", f"actual={report.expectancy_r} | minimum={report.minimum_expectancy_r} | valid={report.expectancy_valid}"),
+        ("Profit Factor", f"actual={report.profit_factor} | minimum={report.minimum_profit_factor} | valid={report.profit_factor_valid}"),
+        ("Drawdown / Drawdown", f"actual={report.maximum_drawdown} | maximum={report.maximum_allowed_drawdown} | valid={report.drawdown_valid}"),
+        ("Cost Ratio / สัดส่วนต้นทุน", f"actual={report.cost_to_gross_profit_percent}% | maximum={report.maximum_cost_ratio_percent}% | valid={report.cost_ratio_valid}"),
+        ("Net Profit / กำไรสุทธิ", f"{report.net_profit} | valid={report.net_profit_valid}"),
+        ("Data Integrity / คุณภาพข้อมูล", f"valid={report.data_integrity_valid} | future_safe={report.future_leakage_blocked} | complete={report.incomplete_data_blocked}"),
+        ("Shadow Observation / การสังเกต Shadow", str(report.certified_for_shadow_observation)),
+        ("Demo Execution / การดำเนินการ Demo", str(report.certified_for_demo_execution)),
+        ("Runner Exposure / Exposure ของ Runner", str(report.protected_runner_exposure_included)),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Certification Reason EN", report.certification_reason_en),
+        ("Certification Reason TH", report.certification_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "paper_performance_certification", "Paper Performance Certification", "การรับรองผลงานแบบ Paper", report.status,
+        "Certifies the Pack 5 paper-performance baseline against sample, expectancy, profit factor, drawdown, cost, data-integrity, and execution-safety gates without transmitting an order.",
+        "รับรองค่าฐานผลงาน Paper จาก Pack 5 ด้วยเกณฑ์จำนวนตัวอย่าง Expectancy, Profit Factor, Drawdown, ต้นทุน คุณภาพข้อมูล และความปลอดภัยของ Execution โดยไม่ส่งคำสั่งซื้อขาย", rows,
     )
