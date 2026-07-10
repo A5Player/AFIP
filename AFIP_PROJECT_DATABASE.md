@@ -152,3 +152,13 @@
 - Blocked outcomes do not enter performance statistics or production knowledge.
 - Independent position lifecycles remain mandatory; traditional DCA and averaging down remain disabled.
 - Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone L Pack 5 — Paper Performance Analytics
+- Status: COMPLETE
+- Aggregates only accepted, chronological Pack 4 paper outcomes.
+- Calculates sample counts, win rate, gross profit, gross loss, net profit, profit factor, average realized R, expectancy R, maximum drawdown, trading cost, swap cost, and cost ratio.
+- Rejects future-information, incomplete, unlinked, non-closed, or blocked outcomes from performance statistics.
+- Tracks minimum sample sufficiency without treating a small sample as production proof.
+- Independent position lifecycles remain mandatory; protected runners remain included in total exposure and risk.
+- Traditional DCA and averaging down remain disabled.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.

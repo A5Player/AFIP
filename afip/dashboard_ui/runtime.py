@@ -56,6 +56,7 @@ from afip.paper_execution_foundation import PaperExecutionFoundationRuntime
 from afip.paper_execution_session import PaperExecutionSessionRuntime
 from afip.paper_decision_ledger import PaperDecisionLedgerRuntime
 from afip.paper_outcome_evaluation import PaperOutcomeEvaluationRuntime
+from afip.paper_performance_analytics import PaperPerformanceAnalyticsRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -398,6 +399,22 @@ class DashboardUIRuntime:
             "averaging_down_enabled": False,
             "protected_runner_exposure_included": True,
         })
+        paper_performance_analytics = PaperPerformanceAnalyticsRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "outcomes": record.get("paper_outcomes", (paper_outcome_evaluation.as_dict(),)),
+            "minimum_sample_required": record.get("minimum_sample_required", 30),
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "independent_position_lifecycle_valid": True,
+            "protected_runner_exposure_included": True,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -466,6 +483,7 @@ class DashboardUIRuntime:
             _paper_execution_session_panel(paper_execution_session),
             _paper_decision_ledger_panel(paper_decision_ledger),
             _paper_outcome_evaluation_panel(paper_outcome_evaluation),
+            _paper_performance_analytics_panel(paper_performance_analytics),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1620,3 +1638,35 @@ def _paper_outcome_evaluation_panel(report: Any) -> DashboardPanel:
         "เชื่อมแต่ละ Paper Decision กับผลลัพธ์ตลาดตามลำดับเวลา ต้นทุน ความเสี่ยง MFE, MAE, Realized R, คุณภาพการออก และสาเหตุความล้มเหลว โดยไม่ส่งคำสั่งซื้อขาย", rows,
     )
 
+
+
+def _paper_performance_analytics_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Analytics Readiness / ความพร้อมวิเคราะห์", report.analytics_readiness),
+        ("Analytics ID / รหัสการวิเคราะห์", report.analytics_id),
+        ("Outcomes / ผลลัพธ์", f"eligible={report.eligible_outcomes} | rejected={report.rejected_outcomes} | closed={report.closed_outcomes}"),
+        ("Win/Loss/BE", f"{report.winning_outcomes}/{report.losing_outcomes}/{report.break_even_outcomes}"),
+        ("Win Rate / อัตราชนะ", f"{report.win_rate_percent}%"),
+        ("Profit / กำไร", f"gross_profit={report.gross_profit} | gross_loss={report.gross_loss} | net={report.net_profit}"),
+        ("Profit Factor", str(report.profit_factor)),
+        ("R Statistics / สถิติ R", f"average={report.average_r_multiple} | expectancy={report.expectancy_r}"),
+        ("Maximum Drawdown / Drawdown สูงสุด", str(report.maximum_drawdown)),
+        ("Costs / ต้นทุน", f"trading={report.trading_cost} | swap={report.swap_cost} | ratio={report.cost_to_gross_profit_percent}%"),
+        ("Sample / จำนวนตัวอย่าง", f"{report.eligible_outcomes}/{report.minimum_sample_required} | sufficient={report.sample_sufficient}"),
+        ("Data Controls / การควบคุมข้อมูล", f"future_safe={report.future_leakage_blocked} | complete={report.incomplete_data_blocked}"),
+        ("Runner Exposure / Exposure ของ Runner", str(report.protected_runner_exposure_included)),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Performance Reason EN", report.performance_reason_en),
+        ("Performance Reason TH", report.performance_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "paper_performance_analytics", "Paper Performance Analytics", "การวิเคราะห์ผลงานแบบ Paper", report.status,
+        "Aggregates only accepted paper outcomes into performance, risk, cost, and sample-quality statistics without transmitting an order.",
+        "รวมเฉพาะผลลัพธ์ Paper ที่ผ่านการรับรองเป็นสถิติผลงาน ความเสี่ยง ต้นทุน และคุณภาพตัวอย่าง โดยไม่ส่งคำสั่งซื้อขาย", rows,
+    )

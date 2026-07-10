@@ -74,3 +74,6 @@ Paper Decision Ledger completed. Install after Milestone L Pack 2. Validate with
 
 ## Latest: Milestone L Pack 4
 Paper Outcome Evaluation completed. Install after Milestone L Pack 3. Validate with `pytest tests/test_milestone_l_pack_4.py -v`, full pytest, local quality check, and dashboard generation. The evaluator links deterministic paper decisions to chronological outcomes with MFE, MAE, costs, net profit, realized R, exit quality, and failure reason while blocking future leakage. Blocked outcomes never enter performance statistics or production knowledge. Traditional DCA and averaging down remain prohibited. Continue next with Milestone L Pack 5 while all live-execution locks remain mandatory.
+
+## Latest: Milestone L Pack 5
+Paper Performance Analytics completed. Install after Milestone L Pack 4. Validate with `pytest tests/test_milestone_l_pack_5.py -v`, full pytest, local quality check, and dashboard generation. The analytics runtime accepts only complete, chronological, future-safe Pack 4 outcomes and calculates auditable performance, risk, cost, and sample-quality statistics. Small samples remain explicitly uncertified. Traditional DCA and averaging down remain prohibited. Continue next with Milestone L Pack 6 while all live-execution locks remain mandatory.
