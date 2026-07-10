@@ -86,3 +86,6 @@ Shadow Execution Observation completed. Install after Milestone L Pack 6. Valida
 
 ## Latest: Milestone L Pack 8
 Demo Execution Certification completed. Install after Milestone L Pack 7. Validate with `pytest tests/test_milestone_l_pack_8.py -v`, full pytest, local quality check, and dashboard generation. A READY result certifies controlled demo observation only; it does not permit broker requests or order transmission. Continue next with Milestone L Pack 9 — Production Release Candidate while XM-only, GOLD#-only, fixed 0.01-lot Unit, No-DCA, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT remain mandatory.
+
+## Latest: Milestone L Pack 9
+Production Release Candidate completed. Install after Milestone L Pack 8. Validate with `pytest tests/test_milestone_l_pack_9.py -v`, full pytest, local quality check, and dashboard generation. A READY result approves the Version 1.0 release candidate only; it does not enable demo or live execution and does not complete Production Certification. Continue next with Milestone L Pack 10 — Production Readiness Complete while XM-only, GOLD#-only, fixed 0.01-lot Unit, No-DCA, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT remain mandatory.

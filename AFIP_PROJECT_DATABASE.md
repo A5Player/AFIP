@@ -197,3 +197,14 @@
 - READY certifies controlled demo observation only; demo order transmission remains disabled.
 - XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
 - Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone L Pack 9 — Production Release Candidate
+- Status: COMPLETE
+- Aggregates readiness from Milestone L Packs 1-8 into a deterministic Version 1.0 Production Release Candidate gate.
+- Requires Demo Execution Certification lineage, all Pack dependencies, Production Health Monitor, Emergency Safety System, Production Report, Decision Ledger, Data Quality Certification, Knowledge Versioning, Feature Flags, bilingual Operation Manuals, and audit-chain readiness.
+- Requires Independent Trade Plans and includes Protected Runner positions in total exposure and risk.
+- Traditional DCA and averaging down remain disabled.
+- Produces a deterministic Release Candidate ID and bilingual Dashboard explainability.
+- A READY result approves a release candidate only; Production Certification remains False.
+- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.

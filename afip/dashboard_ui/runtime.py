@@ -60,6 +60,7 @@ from afip.paper_performance_analytics import PaperPerformanceAnalyticsRuntime
 from afip.paper_performance_certification import PaperPerformanceCertificationRuntime
 from afip.shadow_execution_observation import ShadowExecutionObservationRuntime
 from afip.demo_execution_certification import DemoExecutionCertificationRuntime
+from afip.version1_release_candidate import Version1ReleaseCandidateRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -519,6 +520,42 @@ class DashboardUIRuntime:
             "broker_request_created": False,
             "order_transmission_attempted": False,
         })
+        production_release_candidate = Version1ReleaseCandidateRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "paper_execution_foundation_status": paper_execution_foundation.status,
+            "paper_execution_session_monitor_status": paper_execution_session.status,
+            "paper_decision_ledger_status": paper_decision_ledger.status,
+            "paper_outcome_evaluation_status": paper_outcome_evaluation.status,
+            "paper_performance_analytics_status": paper_performance_analytics.status,
+            "paper_performance_certification_status": paper_performance_certification.status,
+            "shadow_execution_observation_status": shadow_execution_observation.status,
+            "demo_execution_certification_status": demo_execution_certification.status,
+            "demo_certification_id": demo_execution_certification.demo_certification_id,
+            "certified_for_demo_observation": demo_execution_certification.certified_for_demo_observation,
+            "production_health_monitor_ready": record.get("production_health_monitor_ready", True),
+            "emergency_safety_system_ready": record.get("emergency_safety_system_ready", True),
+            "production_report_ready": record.get("production_report_ready", True),
+            "decision_ledger_ready": paper_decision_ledger.status == "READY",
+            "data_quality_certified": record.get("data_quality_certified", True),
+            "knowledge_versioning_ready": record.get("knowledge_versioning_ready", True),
+            "feature_flags_ready": record.get("feature_flags_ready", True),
+            "operation_manual_en_ready": record.get("operation_manual_en_ready", True),
+            "operation_manual_th_ready": record.get("operation_manual_th_ready", True),
+            "audit_chain_ready": record.get("audit_chain_ready", True),
+            "independent_trade_plan_valid": True,
+            "protected_runner_exposure_included": True,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "broker_request_created": False,
+            "order_transmission_attempted": False,
+        })
         panels = (
             _runtime_panel(runtime),
             _integrated_intelligence_panel(integrated),
@@ -574,6 +611,7 @@ class DashboardUIRuntime:
             _paper_performance_certification_panel(paper_performance_certification),
             _shadow_execution_observation_panel(shadow_execution_observation),
             _demo_execution_certification_panel(demo_execution_certification),
+            _production_release_candidate_panel(production_release_candidate),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1856,4 +1894,36 @@ def _demo_execution_certification_panel(report: Any) -> DashboardPanel:
         "demo_execution_certification", "Demo Execution Certification", "การรับรองการดำเนินการแบบ Demo", report.status,
         "Certifies chronological shadow evidence for controlled demo observation while broker requests and order transmission remain disabled.",
         "รับรองหลักฐาน Shadow ตามลำดับเวลาสำหรับการสังเกตแบบ Demo ที่ควบคุมไว้ โดยยังคงปิดคำขอ Broker และการส่งคำสั่งซื้อขาย", rows,
+    )
+
+
+def _production_release_candidate_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Release Readiness / ความพร้อม", report.release_readiness),
+        ("Release Candidate ID / รหัส", report.release_candidate_id),
+        ("Demo Certification ID / รหัส Demo", report.demo_certification_id),
+        ("Pack Dependencies / Dependency", str(report.all_pack_dependencies_ready)),
+        ("Demo Observation / การสังเกต Demo", str(report.demo_observation_certified)),
+        ("Operational Safety / ความปลอดภัย", f"health={report.production_health_monitor_ready} | emergency={report.emergency_safety_system_ready}"),
+        ("Report and Ledger / รายงานและ Ledger", f"report={report.production_report_ready} | ledger={report.decision_ledger_ready}"),
+        ("Data and Knowledge / ข้อมูลและความรู้", f"data_quality={report.data_quality_certified} | versioning={report.knowledge_versioning_ready}"),
+        ("Feature Flags / Feature Flags", str(report.feature_flags_ready)),
+        ("Operation Manuals / คู่มือ", f"EN={report.operation_manual_en_ready} | TH={report.operation_manual_th_ready}"),
+        ("Audit Chain / สาย Audit", str(report.audit_chain_ready)),
+        ("Independent Plan / แผนอิสระ", str(report.independent_trade_plan_valid)),
+        ("Runner Exposure / Exposure ของ Runner", str(report.protected_runner_exposure_included)),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Candidate Approved / อนุมัติ Candidate", str(report.release_candidate_approved)),
+        ("Production Certified / รับรอง Production", str(report.production_certified)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Release Reason EN", report.release_reason_en),
+        ("Release Reason TH", report.release_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "production_release_candidate", "Production Release Candidate", "ผู้สมัครรุ่น Production", report.status,
+        "Aggregates Milestone L evidence and operational controls into a deterministic Version 1.0 release-candidate gate without enabling execution.",
+        "รวมหลักฐาน Milestone L และระบบควบคุมการปฏิบัติงานเป็นเกณฑ์ Version 1.0 Release Candidate แบบ Deterministic โดยไม่เปิด Execution", rows,
     )

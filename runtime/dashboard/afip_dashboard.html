@@ -928,7 +928,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:11:10.583532+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:16:09.902359+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -954,7 +954,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:15:10.583677+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:20:09.902503+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -980,7 +980,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:15:10.583772+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:20:09.902598+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">
@@ -1183,6 +1183,33 @@ small { color: #555; }
 <tr><td>Certification Reason TH</td><td>บล็อกการรับรอง Demo เพราะหลักฐาน Shadow นโยบาย ความสมบูรณ์ของข้อมูล หรือข้อกำหนดความปลอดภัยของ Execution ไม่ผ่าน</td></tr>
 <tr><td>Expected Next Action EN</td><td>Correct every block reason, collect additional chronological shadow evidence, and re-run certification without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมด เก็บหลักฐาน Shadow ตามลำดับเวลาเพิ่ม และรับรองใหม่โดยไม่ส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="production_release_candidate">
+<h2>Production Release Candidate / ผู้สมัครรุ่น Production</h2>
+<p class="status">BLOCKED</p>
+<p>Aggregates Milestone L evidence and operational controls into a deterministic Version 1.0 release-candidate gate without enabling execution.<br><small>รวมหลักฐาน Milestone L และระบบควบคุมการปฏิบัติงานเป็นเกณฑ์ Version 1.0 Release Candidate แบบ Deterministic โดยไม่เปิด Execution</small></p>
+<table><tr><td>Release Readiness / ความพร้อม</td><td>PRODUCTION_RELEASE_CANDIDATE_BLOCKED</td></tr>
+<tr><td>Release Candidate ID / รหัส</td><td>L09-BE7C8CE7EA20BB15</td></tr>
+<tr><td>Demo Certification ID / รหัส Demo</td><td>L08-88E69096D8DF7B2E</td></tr>
+<tr><td>Pack Dependencies / Dependency</td><td>False</td></tr>
+<tr><td>Demo Observation / การสังเกต Demo</td><td>False</td></tr>
+<tr><td>Operational Safety / ความปลอดภัย</td><td>health=True | emergency=True</td></tr>
+<tr><td>Report and Ledger / รายงานและ Ledger</td><td>report=True | ledger=True</td></tr>
+<tr><td>Data and Knowledge / ข้อมูลและความรู้</td><td>data_quality=True | versioning=True</td></tr>
+<tr><td>Feature Flags / Feature Flags</td><td>True</td></tr>
+<tr><td>Operation Manuals / คู่มือ</td><td>EN=True | TH=True</td></tr>
+<tr><td>Audit Chain / สาย Audit</td><td>True</td></tr>
+<tr><td>Independent Plan / แผนอิสระ</td><td>True</td></tr>
+<tr><td>Runner Exposure / Exposure ของ Runner</td><td>True</td></tr>
+<tr><td>No DCA / ปิด DCA</td><td>traditional=True | averaging_down=True</td></tr>
+<tr><td>Candidate Approved / อนุมัติ Candidate</td><td>False</td></tr>
+<tr><td>Production Certified / รับรอง Production</td><td>False</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>milestone_l_dependency_not_ready, demo_observation_not_certified</td></tr>
+<tr><td>Release Reason EN</td><td>The release candidate is blocked by an incomplete dependency, operational control, documentation, policy, or safety gate.</td></tr>
+<tr><td>Release Reason TH</td><td>Release Candidate ถูกบล็อกโดย Dependency ระบบควบคุม เอกสาร นโยบาย หรือเกณฑ์ความปลอดภัยที่ยังไม่ครบ</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct every block reason and re-run the review without creating or transmitting an order.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมดและทบทวนใหม่โดยไม่สร้างหรือส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="market">
