@@ -51,6 +51,7 @@ from afip.trailing_stop import TrailingStopRuntime
 from afip.partial_close import PartialCloseRuntime
 from afip.execution_supervisor import ExecutionSupervisorRuntime
 from afip.runtime_execution_certification import RuntimeExecutionCertificationRuntime
+from afip.execution_intelligence_complete import ExecutionIntelligenceCompleteRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -298,6 +299,20 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
         })
+        execution_intelligence_complete = ExecutionIntelligenceCompleteRuntime().evaluate_one({
+            **runtime_execution_certification.as_dict(),
+            "broker": broker,
+            "symbol": symbol,
+            "runtime_certification_status": runtime_execution_certification.status,
+            "runtime_integrity_certified": runtime_execution_certification.runtime_integrity_certified,
+            "audit_record_ready": runtime_execution_certification.audit_record_ready,
+            "dashboard_explainability_ready": True,
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -361,6 +376,7 @@ class DashboardUIRuntime:
             _partial_close_panel(partial_close),
             _execution_supervisor_panel(execution_supervisor),
             _runtime_execution_certification_panel(runtime_execution_certification),
+            _execution_intelligence_complete_panel(execution_intelligence_complete),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1344,4 +1360,35 @@ def _execution_supervisor_panel(report: Any) -> DashboardPanel:
         "execution_supervisor", "Execution Supervisor", "ระบบควบคุมการดำเนินการ", report.status,
         "Selects one highest-priority validated paper/demo instruction and prevents conflicting execution actions.",
         "เลือกคำแนะนำ Paper/Demo ที่ผ่านการตรวจและมีลำดับสูงสุดเพียงรายการเดียว พร้อมป้องกัน Action ที่ขัดแย้งกัน", rows,
+    )
+
+
+def _execution_intelligence_complete_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Completion / การปิด Milestone", report.completion_readiness),
+        ("Completion ID / รหัสรับรอง", report.completion_id),
+        ("Packs Complete / Pack ที่เสร็จ", f"{report.completed_pack_count}/{report.required_pack_count}"),
+        ("All Packs Complete / Pack ครบ", str(report.all_packs_complete)),
+        ("Runtime Certified / Runtime ผ่าน", str(report.runtime_certified)),
+        ("Dashboard Explainability / Dashboard อธิบายได้", str(report.dashboard_explainability_ready)),
+        ("Audit Chain / Audit พร้อม", str(report.audit_chain_ready)),
+        ("Policy / นโยบาย", f"broker={report.broker_policy_certified} | symbol={report.symbol_policy_certified} | unit={report.unit_policy_certified}"),
+        ("Execution Locks / การล็อก", f"simulation={report.simulation_lock_certified} | direct_blocked={report.direct_execution_blocked} | live_blocked={report.live_execution_blocked}"),
+        ("NO_ORDER_SENT / ไม่ส่งคำสั่ง", str(report.no_order_sent_certified)),
+        ("Milestone K Complete / Milestone K เสร็จ", str(report.milestone_k_complete)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Completion Reason EN", report.completion_reason_en),
+        ("Completion Reason TH", report.completion_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "execution_intelligence_complete", "Execution Intelligence Complete", "Execution Intelligence เสร็จสมบูรณ์", report.status,
+        "Closes Milestone K only after Packs 1-9, runtime certification, explainability, audit, and all execution-safety gates pass.",
+        "ปิด Milestone K เมื่อ Pack 1-9, Runtime Certification, Explainability, Audit และ Execution Safety Gate ทั้งหมดผ่านเท่านั้น", rows,
     )

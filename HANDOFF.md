@@ -59,3 +59,6 @@ Execution Supervisor completed. Install after Milestone K Pack 7. Validate with 
 
 ## Latest: Milestone K Pack 9
 Runtime Execution Certification completed. Install after Milestone K Pack 8. Validate with `pytest tests/test_milestone_k_pack_9.py -v`, full pytest, local quality check, and dashboard generation. Certification is deterministic and simulation-only; it never sends an order. Continue next with Milestone K Pack 10 — Execution Intelligence Complete.
+
+## Latest: Milestone K Pack 10
+Execution Intelligence Complete added. Install after Milestone K Pack 9. Validate with `pytest tests/test_milestone_k_pack_10.py -v`, full pytest, local quality check, and dashboard generation. When all gates pass, Milestone K is complete. Live and direct execution remain disabled and NO_ORDER_SENT remains mandatory. Continue next with Milestone L Pack 1.
