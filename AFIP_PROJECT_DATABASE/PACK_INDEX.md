@@ -24,3 +24,8 @@
 - Pack 6 — AFIP Bank Live: patch ready.
 
 - Production Bring-up Pack 7 — Historical Data Manager (EN/TH, read-only)
+
+## Production Bring-up Pack 8 — Dashboard Live Runtime
+Status: PATCH_READY_FOR_USER_VALIDATION
+Documentation: English + Thai
+Live execution: disabled

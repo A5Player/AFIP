@@ -18,6 +18,7 @@ from afip.market_calendar import MarketCalendarRuntime
 from afip.explainable_order_center import ExplainableOrderCenterRuntime
 from afip.afip_bank_live import AFIPBankLiveRuntime
 from afip.historical_data_manager import HistoricalDataLiveRuntime
+from afip.dashboard_live_runtime import DashboardLiveRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -58,6 +59,7 @@ class DashboardUIRuntime:
         explainable_orders = ExplainableOrderCenterRuntime().evaluate_one({**dict(record), "mode": mode})
         afip_bank = AFIPBankLiveRuntime().evaluate_one({**dict(record), "mode": mode, "closed_profit": paper.closed_profit, "floating_profit": paper.floating_profit})
         historical_data = HistoricalDataLiveRuntime().evaluate_one({**dict(record), "mode": mode})
+        dashboard_live = DashboardLiveRuntime().evaluate_one({**dict(record), "mode": mode})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -88,6 +90,7 @@ class DashboardUIRuntime:
             _internet_panel(internet),
             _market_calendar_panel(market_calendar),
             _historical_data_panel(historical_data),
+            _dashboard_live_runtime_panel(dashboard_live),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -373,6 +376,36 @@ def _historical_data_panel(report: Any) -> DashboardPanel:
     rows = [("Source", report.source), ("Total Bars", str(report.total_bars)), ("Missing Bars", str(report.missing_bars)), ("Duplicate Bars", str(report.duplicate_bars)), ("Quality Score", str(report.quality_score)), ("Storage", report.storage_status), ("Research Ready", str(report.research_ready)), ("Walk Forward Ready", str(report.walk_forward_ready)), ("Next Action EN", report.next_action_en), ("Next Action TH", report.next_action_th)]
     rows.extend((f"{tf} Bars", str(count)) for tf, count in report.timeframe_bars)
     return DashboardPanel("historical_data", "Historical Data Manager", "ตัวจัดการข้อมูลย้อนหลัง", report.status, "Shows read-only historical coverage, quality, readiness, and next action.", "แสดงความครอบคลุม คุณภาพ ความพร้อม และขั้นตอนถัดไปของข้อมูลย้อนหลังแบบอ่านอย่างเดียว", tuple(rows))
+
+
+def _dashboard_live_runtime_panel(report: Any) -> DashboardPanel:
+    return DashboardPanel(
+        "dashboard_live_runtime",
+        "Dashboard Live Runtime",
+        "ระบบ Dashboard แบบสด",
+        report.status,
+        "Shows refresh state, snapshot freshness, dependency readiness, waiting reason, and expected next action without enabling live execution.",
+        "แสดงสถานะการรีเฟรช ความสดของ Snapshot ความพร้อมของส่วนประกอบ เหตุผลที่รอ และการกระทำถัดไป โดยไม่เปิดเงินจริง",
+        (
+            ("Reason", report.reason),
+            ("Runtime State", report.runtime_state),
+            ("Data State", report.data_state),
+            ("Refresh Interval", f"{report.refresh_interval_seconds} sec"),
+            ("Last Refresh UTC", report.last_refresh_utc),
+            ("Next Refresh UTC", report.next_refresh_utc),
+            ("Snapshot Sequence", str(report.snapshot_sequence)),
+            ("Data Age", f"{report.data_age_seconds} sec"),
+            ("Stale After", f"{report.stale_after_seconds} sec"),
+            ("Data Fresh", str(report.data_fresh)),
+            ("Dependency Ready", str(report.dependency_ready)),
+            ("Dashboard Live Ready", str(report.dashboard_live_ready)),
+            ("Waiting Reason EN", report.waiting_reason_en),
+            ("Waiting Reason TH", report.waiting_reason_th),
+            ("Expected Next Action EN", report.expected_next_action_en),
+            ("Expected Next Action TH", report.expected_next_action_th),
+            ("Live Execution", str(report.live_execution_enabled)),
+        ),
+    )
 
 def _market_panel(record: Mapping[str, Any], calendar: Any) -> DashboardPanel:
     return DashboardPanel("market", "Dashboard Market", "ตลาด", calendar.status, "Displays live market session and open/close status.", "แสดงสถานะตลาดสดและช่วงเวลาเทรด", (

@@ -231,6 +231,28 @@ small { color: #555; }
 <tr><td>H4 Bars</td><td>20</td></tr>
 <tr><td>D1 Bars</td><td>20</td></tr></table>
 </section>
+<section id="dashboard_live_runtime">
+<h2>Dashboard Live Runtime / ระบบ Dashboard แบบสด</h2>
+<p class="status">READY</p>
+<p>Shows refresh state, snapshot freshness, dependency readiness, waiting reason, and expected next action without enabling live execution.<br><small>แสดงสถานะการรีเฟรช ความสดของ Snapshot ความพร้อมของส่วนประกอบ เหตุผลที่รอ และการกระทำถัดไป โดยไม่เปิดเงินจริง</small></p>
+<table><tr><td>Reason</td><td>dashboard_live_runtime_refresh_ready</td></tr>
+<tr><td>Runtime State</td><td>RUNNING</td></tr>
+<tr><td>Data State</td><td>FRESH</td></tr>
+<tr><td>Refresh Interval</td><td>5 sec</td></tr>
+<tr><td>Last Refresh UTC</td><td>not_recorded</td></tr>
+<tr><td>Next Refresh UTC</td><td>scheduled_by_launcher</td></tr>
+<tr><td>Snapshot Sequence</td><td>1</td></tr>
+<tr><td>Data Age</td><td>0 sec</td></tr>
+<tr><td>Stale After</td><td>30 sec</td></tr>
+<tr><td>Data Fresh</td><td>True</td></tr>
+<tr><td>Dependency Ready</td><td>True</td></tr>
+<tr><td>Dashboard Live Ready</td><td>True</td></tr>
+<tr><td>Waiting Reason EN</td><td>No blocking condition. Dashboard data is fresh.</td></tr>
+<tr><td>Waiting Reason TH</td><td>ไม่มีเงื่อนไขบล็อก ข้อมูล Dashboard ยังสด</td></tr>
+<tr><td>Expected Next Action EN</td><td>Continue the scheduled read-only refresh cycle.</td></tr>
+<tr><td>Expected Next Action TH</td><td>ดำเนินรอบรีเฟรชแบบอ่านอย่างเดียวตามกำหนดต่อไป</td></tr>
+<tr><td>Live Execution</td><td>False</td></tr></table>
+</section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>
 <p class="status">READY</p>
