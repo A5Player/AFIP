@@ -928,7 +928,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T15:37:51.267618+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:32:40.002676+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -954,7 +954,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T15:41:51.267764+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:36:40.002825+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -980,7 +980,37 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T15:41:51.267857+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:36:40.002917+00:00</td></tr>
+<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="paper_execution_session">
+<h2>Paper Execution Session Monitor / ระบบติดตาม Paper Execution Session</h2>
+<p class="status">READY</p>
+<p>Certifies a deterministic paper observation session using data freshness, spread, latency, time, risk, audit, and execution-safety checks.<br><small>รับรอง Paper Observation Session แบบกำหนดแน่นอนด้วยการตรวจความสดใหม่ของข้อมูล Spread, Latency, เวลา, ความเสี่ยง, Audit และความปลอดภัยของ Execution</small></p>
+<table><tr><td>Session Readiness / ความพร้อม Session</td><td>PAPER_SESSION_READY</td></tr>
+<tr><td>Observation ID / รหัสการสังเกต</td><td>L02-AD61528452DB8E37</td></tr>
+<tr><td>Foundation / รากฐาน</td><td>True</td></tr>
+<tr><td>Paper Account / บัญชี Paper</td><td>True</td></tr>
+<tr><td>Market Session / ช่วงตลาด</td><td>True</td></tr>
+<tr><td>Market Data Fresh / ข้อมูลสดใหม่</td><td>True</td></tr>
+<tr><td>Spread / สเปรด</td><td>0.0/80.0</td></tr>
+<tr><td>Latency ms / ความหน่วง</td><td>0.0/1000.0</td></tr>
+<tr><td>Data Age s / อายุข้อมูล</td><td>0.0/120.0</td></tr>
+<tr><td>Clock Sync / ซิงก์เวลา</td><td>True</td></tr>
+<tr><td>Risk / ความเสี่ยง</td><td>True</td></tr>
+<tr><td>Audit / การตรวจย้อนหลัง</td><td>True</td></tr>
+<tr><td>Independent Plan / แผนอิสระ</td><td>True</td></tr>
+<tr><td>Traditional DCA Disabled / ปิด DCA</td><td>True</td></tr>
+<tr><td>Averaging Down Disabled / ปิดการถัวขาดทุน</td><td>True</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>NONE</td></tr>
+<tr><td>Session Reason EN</td><td>Paper account, fresh market data, spread, latency, time synchronization, risk, audit, and safety policies are ready for observation.</td></tr>
+<tr><td>Session Reason TH</td><td>บัญชี Paper, ข้อมูลตลาดสดใหม่, Spread, Latency, การซิงก์เวลา, ความเสี่ยง, Audit และนโยบายความปลอดภัยพร้อมสำหรับการสังเกต</td></tr>
+<tr><td>Holding Reason EN</td><td>Observe each independent trade plan and protected runner without combining positions as DCA.</td></tr>
+<tr><td>Holding Reason TH</td><td>สังเกตแต่ละ Independent Trade Plan และ Protected Runner แยกกัน โดยไม่รวมสถานะเป็น DCA</td></tr>
+<tr><td>Expected Next Action EN</td><td>Record the next deterministic paper decision and its market outcome without transmitting an order.</td></tr>
+<tr><td>Expected Next Action TH</td><td>บันทึกการตัดสินใจแบบ Paper ครั้งถัดไปและผลตลาด โดยไม่ส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:31:00+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="market">

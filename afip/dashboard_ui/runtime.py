@@ -53,6 +53,7 @@ from afip.execution_supervisor import ExecutionSupervisorRuntime
 from afip.runtime_execution_certification import RuntimeExecutionCertificationRuntime
 from afip.execution_intelligence_complete import ExecutionIntelligenceCompleteRuntime
 from afip.paper_execution_foundation import PaperExecutionFoundationRuntime
+from afip.paper_execution_session import PaperExecutionSessionRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -333,6 +334,23 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
         })
+        paper_execution_session = PaperExecutionSessionRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "paper_execution_foundation_status": paper_execution_foundation.status,
+            "paper_account_connected": paper_execution_foundation.paper_account_connected,
+            "risk_limits_valid": paper_execution_foundation.risk_limits_configured,
+            "audit_record_ready": paper_execution_foundation.audit_record_ready,
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "independent_trade_plan_required": True,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -398,6 +416,7 @@ class DashboardUIRuntime:
             _runtime_execution_certification_panel(runtime_execution_certification),
             _execution_intelligence_complete_panel(execution_intelligence_complete),
             _paper_execution_foundation_panel(paper_execution_foundation),
+            _paper_execution_session_panel(paper_execution_session),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1443,4 +1462,39 @@ def _paper_execution_foundation_panel(report: Any) -> DashboardPanel:
         "paper_execution_foundation", "Paper Execution Foundation", "รากฐานการดำเนินการแบบ Paper", report.status,
         "Starts Milestone L with deterministic paper-execution readiness while preserving every live-execution safety lock.",
         "เริ่ม Milestone L ด้วยการตรวจความพร้อม Paper Execution แบบกำหนดแน่นอน โดยคงการล็อก Live Execution ทุกชั้น", rows,
+    )
+
+
+def _paper_execution_session_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Session Readiness / ความพร้อม Session", report.session_readiness),
+        ("Observation ID / รหัสการสังเกต", report.observation_id),
+        ("Foundation / รากฐาน", str(report.foundation_ready)),
+        ("Paper Account / บัญชี Paper", str(report.paper_account_connected)),
+        ("Market Session / ช่วงตลาด", str(report.market_session_available)),
+        ("Market Data Fresh / ข้อมูลสดใหม่", str(report.market_data_fresh)),
+        ("Spread / สเปรด", f"{report.spread_points}/{report.maximum_spread_points}"),
+        ("Latency ms / ความหน่วง", f"{report.latency_ms}/{report.maximum_latency_ms}"),
+        ("Data Age s / อายุข้อมูล", f"{report.data_age_seconds}/{report.maximum_data_age_seconds}"),
+        ("Clock Sync / ซิงก์เวลา", str(report.clock_sync_valid)),
+        ("Risk / ความเสี่ยง", str(report.risk_limits_valid)),
+        ("Audit / การตรวจย้อนหลัง", str(report.audit_record_ready)),
+        ("Independent Plan / แผนอิสระ", str(report.independent_trade_plan_required)),
+        ("Traditional DCA Disabled / ปิด DCA", str(report.traditional_dca_disabled)),
+        ("Averaging Down Disabled / ปิดการถัวขาดทุน", str(report.averaging_down_disabled)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Session Reason EN", report.session_reason_en),
+        ("Session Reason TH", report.session_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "paper_execution_session", "Paper Execution Session Monitor", "ระบบติดตาม Paper Execution Session", report.status,
+        "Certifies a deterministic paper observation session using data freshness, spread, latency, time, risk, audit, and execution-safety checks.",
+        "รับรอง Paper Observation Session แบบกำหนดแน่นอนด้วยการตรวจความสดใหม่ของข้อมูล Spread, Latency, เวลา, ความเสี่ยง, Audit และความปลอดภัยของ Execution", rows,
     )

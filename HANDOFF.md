@@ -65,3 +65,6 @@ Execution Intelligence Complete added. Install after Milestone K Pack 9. Validat
 
 ## Latest: Milestone L Pack 1
 Paper Execution Foundation completed. Install after Milestone K Pack 10. Validate with `pytest tests/test_milestone_l_pack_1.py -v`, full pytest, local quality check, and dashboard generation. This pack opens controlled paper/demo observation readiness only; it never transmits an order. Continue next with Milestone L Pack 2 while XM-only, GOLD#-only, fixed 0.01-lot Unit, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT policies remain mandatory.
+
+## Latest: Milestone L Pack 2
+Paper Execution Session Monitor completed. Install after Milestone L Pack 1. Validate with `pytest tests/test_milestone_l_pack_2.py -v`, full pytest, local quality check, and dashboard generation. The session monitor certifies data freshness, spread, latency, clock synchronization, risk, audit, and the permanent No-DCA policy. It records observations only and never transmits an order. Continue next with Milestone L Pack 3 while XM-only, GOLD#-only, fixed 0.01-lot Unit, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT remain mandatory.

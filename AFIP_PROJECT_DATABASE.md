@@ -124,3 +124,14 @@
 - Adds deterministic Paper Execution Foundation ID and EN/TH dashboard explanations.
 - XM only, GOLD# only, and 1 Unit = 0.01 lot remain mandatory.
 - Execution remains LOCKED_SIMULATION_ONLY; Direct Execution is False; Live Execution is disabled; NO_ORDER_SENT remains mandatory.
+
+## Milestone L Pack 2 — Paper Execution Session Monitor
+- Status: completed as an incremental production-quality patch.
+- Adds deterministic paper-session readiness after Milestone L Pack 1.
+- Certifies paper account connectivity, market-session availability, data freshness, spread, latency, clock synchronization, risk limits, and audit readiness.
+- Requires Independent Trade Plans and permanently disables Traditional DCA and averaging down.
+- Old profitable protected runners may be managed independently in future packs, but all positions remain included in total exposure and risk.
+- Adds bilingual dashboard explainability, deterministic Observation ID, block reasons, confidence, and next review time.
+- XM only, GOLD# only, 1 Unit = 0.01 Lot.
+- LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution disabled, NO_ORDER_SENT.
+- Next: Milestone L Pack 3.
