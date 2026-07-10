@@ -21,6 +21,7 @@ from afip.historical_data_manager import HistoricalDataLiveRuntime
 from afip.dashboard_live_runtime import DashboardLiveRuntime
 from afip.runtime_supervisor import RuntimeSupervisorRuntime
 from afip.production_certification import ProductionCertificationRuntime
+from afip.profile_customization import ProfileCustomizationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -64,6 +65,7 @@ class DashboardUIRuntime:
         dashboard_live = DashboardLiveRuntime().evaluate_one({**dict(record), "mode": mode})
         runtime_supervisor = RuntimeSupervisorRuntime().evaluate_one({**dict(record), "mode": mode})
         production_certification = ProductionCertificationRuntime().evaluate_one({**dict(record), "mode": mode})
+        profile_customization = ProfileCustomizationRuntime(record.get("profile_storage_path", "runtime/profiles/profiles.json")).preview(record)
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -97,6 +99,7 @@ class DashboardUIRuntime:
             _dashboard_live_runtime_panel(dashboard_live),
             _runtime_supervisor_panel(runtime_supervisor),
             _production_certification_panel(production_certification),
+            _profile_customization_panel(profile_customization),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -538,4 +541,14 @@ def _production_readiness_panel(production: Any) -> DashboardPanel:
             ("Demo Trading", str(production.demo_trading_ready)),
             ("Live Execution", str(production.live_execution_enabled)),
         ),
+    )
+
+
+def _profile_customization_panel(report: Any) -> DashboardPanel:
+    p = report.profile
+    return DashboardPanel(
+        "profile_customization", "Profile Customization", "การปรับแต่งโปรไฟล์", report.status,
+        "Create, rename, duplicate, activate, archive, and assign reusable profiles with deterministic validation and version history.",
+        "สร้าง เปลี่ยนชื่อ คัดลอก เปิดใช้งาน เก็บถาวร และกำหนดบัญชีให้โปรไฟล์ พร้อมการตรวจสอบและประวัติเวอร์ชัน",
+        (("Profile Name / ชื่อโปรไฟล์", p.profile_name), ("Profile ID", p.profile_id), ("Base Profile / โปรไฟล์ต้นแบบ", p.base_profile), ("Risk / ความเสี่ยง", p.risk_level), ("Maximum Units / จำนวน Unit สูงสุด", str(p.maximum_units)), ("Capital per Unit / เงินทุนต่อ Unit", str(p.capital_per_unit)), ("Active / ใช้งานอยู่", str(p.active)), ("Archived / เก็บถาวร", str(p.archived)), ("Assigned Account / บัญชีที่กำหนด", p.assigned_account_id or "-"), ("Validation / การตรวจสอบ", ", ".join(report.validation_items) or "PASS"), ("Next Action / ขั้นตอนถัดไป", report.expected_next_action_en + " / " + report.expected_next_action_th), ("Live Execution", str(report.live_execution_enabled))),
     )

@@ -33,3 +33,13 @@ Production Bring-up Pack 10 — Production Certification
 
 ## Next work
 Milestone I Pack 1 — Economic Calendar Intelligence
+
+## Milestone I Pack 0 — Profile Customization Completion
+- Custom naming, preset copy, editing, activation, duplication, archive, delete, and account assignment
+- Atomic JSON persistence with version history
+- Dashboard EN/TH profile customization explainability
+- Profile remains separate from Account and MT5
+- Live execution disabled; trading logic unchanged
+- Next: Milestone I Pack 1 Economic Calendar Intelligence
+
+- Quality result: targeted 6 passed; full pytest 1012 passed; Local Quality Check PASS; Dashboard PASS.

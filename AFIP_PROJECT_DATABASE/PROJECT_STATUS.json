@@ -20,9 +20,9 @@
   "dashboard_live_market_status": "completed",
   "documentation_policy": "EN_TH_README_FROM_PACK_5",
   "execution": "LOCKED_SIMULATION_ONLY",
-  "expected_total_tests_after_patch": 1006,
+  "expected_total_tests_after_patch": 1012,
   "internet_broker_latency_monitor": "completed",
-  "latest_expected_pytest": "1006 passed after Pack 10 patch",
+  "latest_expected_pytest": "1012 passed after Milestone I Pack 0 patch",
   "live_execution": "DISABLED",
   "live_execution_enabled": false,
   "market_session_trading_calendar_monitor": "completed",
@@ -31,13 +31,12 @@
   "multi_broker": "DISABLED_VERSION_1",
   "name": "Production Certification",
   "next_workflow": [
-    "install_packs_5_through_10_in_order",
-    "validate_each_pack",
-    "run_pack_10_test",
+    "install_milestone_i_pack_0",
+    "run_targeted_test",
     "run_full_pytest",
     "run_afip_local_quality_check",
     "regenerate_dashboard",
-    "continue_to_milestone_i_pack_1_economic_calendar_intelligence"
+    "continue_milestone_i_pack_1_economic_calendar_intelligence"
   ],
   "pack": "Pack 10",
   "phase": "Production Bring-up",
@@ -54,11 +53,14 @@
   "vps_health_monitor": "completed",
   "production_bringup_pack": 10,
   "production_bringup_status": "PACK_10_QUEUED_FOR_USER_VALIDATION",
-  "latest_feature": "Production Certification",
+  "latest_feature": "Profile Customization Completion",
   "production_bringup_pack_8": "patch_ready",
   "dashboard_live_runtime": "patch_ready",
   "production_bringup_pack_9": "patch_ready",
   "runtime_supervisor": "patch_ready",
   "production_bringup_pack_10": "patch_ready",
-  "production_certification": "patch_ready"
+  "production_certification": "patch_ready",
+  "milestone_i_pack_0": "patch_ready",
+  "profile_customization": "custom_name_edit_save_activate_duplicate_archive_account_assignment",
+  "profile_storage": "atomic_json_with_version_history"
 }
