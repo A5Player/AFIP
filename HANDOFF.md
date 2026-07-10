@@ -80,3 +80,6 @@ Paper Performance Analytics completed. Install after Milestone L Pack 4. Validat
 
 ## Latest: Milestone L Pack 6
 Paper Performance Certification completed. Install after Milestone L Pack 5. Validate with `pytest tests/test_milestone_l_pack_6.py -v`, full pytest, local quality check, and dashboard generation. The certification runtime checks sample sufficiency, expectancy, profit factor, drawdown, cost ratio, positive net profit, data integrity, position policy, and execution safety. Passing certification permits controlled shadow observation only; demo and live execution remain disabled. Continue next with Milestone L Pack 7 while XM-only, GOLD#-only, fixed 0.01-lot Unit, No-DCA, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT remain mandatory.
+
+## Latest: Milestone L Pack 7
+Shadow Execution Observation completed. Install after Milestone L Pack 6. Validate with `pytest tests/test_milestone_l_pack_7.py -v`, full pytest, local quality check, and dashboard generation. Pack 7 observes certified decisions against live market-quality conditions without creating a broker request or transmitting an order. Traditional DCA and averaging down remain prohibited. Continue next with Milestone L Pack 8 while XM-only, GOLD#-only, fixed 0.01-lot Unit, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT remain mandatory.

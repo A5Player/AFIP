@@ -928,7 +928,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:55:22.240081+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:00:04.578871+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -954,7 +954,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:59:22.240219+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:04:04.579044+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -980,7 +980,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T16:59:22.240307+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:04:04.579146+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">
@@ -1128,6 +1128,34 @@ small { color: #555; }
 <tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมด เก็บผลลัพธ์ที่ผ่านการรับรองเพิ่มเมื่อจำเป็น และรันการวิเคราะห์ Pack 5 ใหม่ก่อนรับรอง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>75.0</td></tr>
 <tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr>
+<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="shadow_execution_observation">
+<h2>Shadow Execution Observation / การสังเกตการดำเนินการแบบ Shadow</h2>
+<p class="status">BLOCKED</p>
+<p>Observes a certified decision against current execution conditions without creating or transmitting a broker request.<br><small>สังเกต Decision ที่ผ่านการรับรองเทียบกับสภาวะ Execution ปัจจุบัน โดยไม่สร้างหรือส่งคำขอไปยัง Broker</small></p>
+<table><tr><td>Observation Readiness / ความพร้อม</td><td>SHADOW_OBSERVATION_BLOCKED</td></tr>
+<tr><td>Shadow Observation ID / รหัส</td><td>L07-5A113E7868178D1B</td></tr>
+<tr><td>Pack 6 Certification / การรับรอง Pack 6</td><td>BLOCKED | L06-FC08DCEFEF363929</td></tr>
+<tr><td>Decision ID / รหัส Decision</td><td>L03-18426096C14E575C</td></tr>
+<tr><td>Action / การตัดสินใจ</td><td>HOLD | FLAT | NONE | units=0</td></tr>
+<tr><td>Intended / Observed Price</td><td>entry=0.0 | market=0.0</td></tr>
+<tr><td>SL / TP</td><td>SL=0.0 | TP=0.0 | geometry=True</td></tr>
+<tr><td>Spread / สเปรด</td><td>actual=0.0 | maximum=80.0 | valid=True</td></tr>
+<tr><td>Latency / เวลาแฝง</td><td>actual=0.0 ms | maximum=500.0 ms | valid=True</td></tr>
+<tr><td>Market Quality / คุณภาพตลาด</td><td>fresh=True | open=True</td></tr>
+<tr><td>Validation / การตรวจสอบ</td><td>risk=True | timing=True | structure=True</td></tr>
+<tr><td>Independent Plan / แผนอิสระ</td><td>True</td></tr>
+<tr><td>Runner Exposure / Exposure ของ Runner</td><td>True</td></tr>
+<tr><td>No DCA / ปิด DCA</td><td>traditional=True | averaging_down=True</td></tr>
+<tr><td>Broker Request / คำขอ Broker</td><td>created=False | transmission=False</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>performance_certification_not_ready, shadow_certification_missing</td></tr>
+<tr><td>Observation Reason EN</td><td>Shadow observation was blocked because certification, market quality, policy, risk, or execution-safety requirements failed.</td></tr>
+<tr><td>Observation Reason TH</td><td>บล็อก Shadow Observation เพราะเงื่อนไขการรับรอง คุณภาพตลาด นโยบาย ความเสี่ยง หรือความปลอดภัยของ Execution ไม่ผ่าน</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct every block reason and re-evaluate the same decision without transmitting an order.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมด แล้วประเมิน Decision เดิมใหม่โดยไม่ส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>92.31</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T14:31:00+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="market">

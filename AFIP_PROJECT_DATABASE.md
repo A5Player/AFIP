@@ -172,3 +172,15 @@
 - Traditional DCA and averaging down remain disabled.
 - XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
 - Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone L Pack 7 — Shadow Execution Observation
+- Status: COMPLETE
+- Observes a Pack 6-certified decision against current market and execution conditions.
+- Links Pack 6 certification and Pack 3 Decision IDs.
+- Validates BUY/SELL geometry, data freshness, market session, spread, latency, risk, timing, and market structure.
+- Creates a deterministic Shadow Observation ID with bilingual dashboard explainability.
+- Requires Independent Trade Plans and includes Protected Runner positions in total exposure.
+- Traditional DCA and averaging down remain disabled.
+- Does not create a broker request and does not attempt order transmission.
+- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.

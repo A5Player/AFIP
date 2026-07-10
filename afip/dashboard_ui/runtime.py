@@ -58,6 +58,7 @@ from afip.paper_decision_ledger import PaperDecisionLedgerRuntime
 from afip.paper_outcome_evaluation import PaperOutcomeEvaluationRuntime
 from afip.paper_performance_analytics import PaperPerformanceAnalyticsRuntime
 from afip.paper_performance_certification import PaperPerformanceCertificationRuntime
+from afip.shadow_execution_observation import ShadowExecutionObservationRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -443,6 +444,43 @@ class DashboardUIRuntime:
             "independent_position_lifecycle_valid": True,
             "protected_runner_exposure_included": True,
         })
+        shadow_execution_observation = ShadowExecutionObservationRuntime().evaluate_one({
+            **dict(record),
+            "broker": broker,
+            "symbol": symbol,
+            "performance_certification_status": paper_performance_certification.status,
+            "performance_certification_id": paper_performance_certification.certification_id,
+            "certified_for_shadow_observation": paper_performance_certification.certified_for_shadow_observation,
+            "decision_id": paper_decision_ledger.decision_id,
+            "approved_action": record.get("approved_action", "HOLD"),
+            "position_state": record.get("position_state", "FLAT"),
+            "direction": record.get("direction", "NONE"),
+            "requested_units": record.get("requested_units", 0),
+            "intended_entry_price": record.get("intended_entry_price", 0.0),
+            "observed_market_price": record.get("observed_market_price", record.get("current_price", 0.0)),
+            "intended_stop_loss": record.get("intended_stop_loss", 0.0),
+            "intended_take_profit": record.get("intended_take_profit", 0.0),
+            "observed_spread_points": record.get("spread_points", 0.0),
+            "maximum_spread_points": record.get("maximum_spread_points", 80.0),
+            "observed_latency_ms": record.get("latency_ms", 0.0),
+            "maximum_latency_ms": record.get("maximum_latency_ms", 500.0),
+            "market_data_fresh": record.get("market_data_fresh", True),
+            "market_session_open": record.get("market_session_open", True),
+            "risk_validation_valid": record.get("risk_validation_valid", True),
+            "timing_validation_valid": record.get("timing_validation_valid", True),
+            "market_structure_confirmed": record.get("market_structure_confirmed", True),
+            "independent_trade_plan_valid": True,
+            "protected_runner_exposure_included": True,
+            "traditional_dca_enabled": False,
+            "averaging_down_enabled": False,
+            "lot_per_unit": 0.01,
+            "execution_status": "LOCKED_SIMULATION_ONLY",
+            "order_status": "NO_ORDER_SENT",
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "broker_request_created": False,
+            "order_transmission_attempted": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -513,6 +551,7 @@ class DashboardUIRuntime:
             _paper_outcome_evaluation_panel(paper_outcome_evaluation),
             _paper_performance_analytics_panel(paper_performance_analytics),
             _paper_performance_certification_panel(paper_performance_certification),
+            _shadow_execution_observation_panel(shadow_execution_observation),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1730,4 +1769,37 @@ def _paper_performance_certification_panel(report: Any) -> DashboardPanel:
         "paper_performance_certification", "Paper Performance Certification", "การรับรองผลงานแบบ Paper", report.status,
         "Certifies the Pack 5 paper-performance baseline against sample, expectancy, profit factor, drawdown, cost, data-integrity, and execution-safety gates without transmitting an order.",
         "รับรองค่าฐานผลงาน Paper จาก Pack 5 ด้วยเกณฑ์จำนวนตัวอย่าง Expectancy, Profit Factor, Drawdown, ต้นทุน คุณภาพข้อมูล และความปลอดภัยของ Execution โดยไม่ส่งคำสั่งซื้อขาย", rows,
+    )
+
+
+def _shadow_execution_observation_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Observation Readiness / ความพร้อม", report.observation_readiness),
+        ("Shadow Observation ID / รหัส", report.shadow_observation_id),
+        ("Pack 6 Certification / การรับรอง Pack 6", f"{report.performance_certification_status} | {report.performance_certification_id}"),
+        ("Decision ID / รหัส Decision", report.decision_id),
+        ("Action / การตัดสินใจ", f"{report.approved_action} | {report.position_state} | {report.direction} | units={report.requested_units}"),
+        ("Intended / Observed Price", f"entry={report.intended_entry_price} | market={report.observed_market_price}"),
+        ("SL / TP", f"SL={report.intended_stop_loss} | TP={report.intended_take_profit} | geometry={report.action_geometry_valid}"),
+        ("Spread / สเปรด", f"actual={report.observed_spread_points} | maximum={report.maximum_spread_points} | valid={report.spread_valid}"),
+        ("Latency / เวลาแฝง", f"actual={report.observed_latency_ms} ms | maximum={report.maximum_latency_ms} ms | valid={report.latency_valid}"),
+        ("Market Quality / คุณภาพตลาด", f"fresh={report.market_data_fresh} | open={report.market_session_open}"),
+        ("Validation / การตรวจสอบ", f"risk={report.risk_validation_valid} | timing={report.timing_validation_valid} | structure={report.market_structure_confirmed}"),
+        ("Independent Plan / แผนอิสระ", str(report.independent_trade_plan_valid)),
+        ("Runner Exposure / Exposure ของ Runner", str(report.protected_runner_exposure_included)),
+        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
+        ("Broker Request / คำขอ Broker", f"created={report.broker_request_created} | transmission={report.order_transmission_attempted}"),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Observation Reason EN", report.observation_reason_en),
+        ("Observation Reason TH", report.observation_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Confidence / ความมั่นใจ", str(report.confidence)),
+        ("Next Review UTC / ทบทวนครั้งถัดไป", report.next_review_time_utc),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel(
+        "shadow_execution_observation", "Shadow Execution Observation", "การสังเกตการดำเนินการแบบ Shadow", report.status,
+        "Observes a certified decision against current execution conditions without creating or transmitting a broker request.",
+        "สังเกต Decision ที่ผ่านการรับรองเทียบกับสภาวะ Execution ปัจจุบัน โดยไม่สร้างหรือส่งคำขอไปยัง Broker", rows,
     )
