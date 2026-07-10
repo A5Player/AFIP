@@ -88,16 +88,26 @@ small { color: #555; }
 <tr><td>Policy</td><td>temporary_standard_every_100_orders_permanent_standard_every_1000_orders_only_if_quality_improves</td></tr></table>
 </section>
 <section id="afip_bank">
-<h2>AFIP Bank / ธนาคาร AFIP</h2>
+<h2>AFIP Bank Live / ธนาคาร AFIP แบบสด</h2>
 <p class="status">READY</p>
-<p>Displays paper balance, equity, reserve, ROI, and allocation.<br><small>แสดง Balance, Equity, Reserve, ROI และ Allocation</small></p>
-<table><tr><td>Balance</td><td>1000.0</td></tr>
+<p>Read-only capital ledger showing deposits, withdrawals, trading profit, reserve, balance, equity and available allocation.<br><small>บัญชีเงินทุนแบบอ่านอย่างเดียว แสดงเงินฝาก เงินถอน กำไรจากการเทรด เงินสำรอง ยอดคงเหลือ Equity และเงินที่จัดสรรได้</small></p>
+<table><tr><td>Currency</td><td>USD</td></tr>
+<tr><td>Initial Capital</td><td>1000.0</td></tr>
+<tr><td>Deposits</td><td>0.0</td></tr>
+<tr><td>Withdrawals</td><td>0.0</td></tr>
+<tr><td>Balance</td><td>1000.0</td></tr>
 <tr><td>Equity</td><td>1003.0</td></tr>
 <tr><td>Reserve</td><td>200.0</td></tr>
 <tr><td>Allocation</td><td>803.0</td></tr>
 <tr><td>ROI</td><td>0.3%</td></tr>
 <tr><td>Floating Profit</td><td>3.0</td></tr>
-<tr><td>Closed Profit</td><td>0.0</td></tr></table>
+<tr><td>Closed Profit</td><td>0.0</td></tr>
+<tr><td>Transactions</td><td>0</td></tr>
+<tr><td>Reason</td><td>afip_bank_live_read_only_ledger_ready</td></tr>
+<tr><td>คำอธิบายภาษาไทย</td><td>บัญชีเงินทุนแบบอ่านอย่างเดียว แสดงเงินฝาก เงินถอน กำไรจากการเทรด เงินสำรอง ยอดคงเหลือ Equity และเงินที่จัดสรรได้</td></tr>
+<tr><td>เงินฝาก</td><td>0.0</td></tr>
+<tr><td>เงินถอน</td><td>0.0</td></tr>
+<tr><td>เงินที่จัดสรรได้</td><td>803.0</td></tr></table>
 </section>
 <section id="research">
 <h2>Research Center / ศูนย์วิจัย</h2>
@@ -222,6 +232,32 @@ small { color: #555; }
 <tr><td>PAPER-DEMO-1 Holding Reason</td><td>hold_while_market_reason_and_risk_remain_valid</td></tr>
 <tr><td>PAPER-DEMO-1 Expected Next Action</td><td>continue_paper_trading_review</td></tr>
 <tr><td>PAPER-DEMO-1 Risk</td><td>risk_pass</td></tr></table>
+</section>
+<section id="explainable_order_center">
+<h2>Explainable Order Center / ศูนย์คำสั่งแบบอธิบายได้</h2>
+<p class="status">READY</p>
+<p>Displays bilingual order explanations for waiting, entry, holding, stop loss, take profit, trailing, partial close, exit, confidence, risk, and next review time.<br><small>แสดงเหตุผลคำสั่งสองภาษา ครอบคลุมการรอ เข้าเทรด ถือสถานะ Stop Loss Take Profit Trailing ปิดบางส่วน ออกจากสถานะ ความมั่นใจ ความเสี่ยง และเวลาตรวจสอบถัดไป</small></p>
+<table><tr><td>Reason</td><td>explainable_order_center_ready</td></tr>
+<tr><td>Live Execution</td><td>False</td></tr>
+<tr><td>Order Count</td><td>1</td></tr>
+<tr><td>Visible Fields</td><td>waiting_reason, entry_reason, holding_reason, stop_loss_move_reason, take_profit_change_reason, trailing_stop_reason, partial_close_reason, exit_reason, expected_next_action, confidence, risk, next_review_time</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Units</td><td>1 unit(s) / 0.01 lot</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Confidence / ความมั่นใจ</td><td>82.0</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Risk / ความเสี่ยง</td><td>risk_pass</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Expected Next Action / การกระทำถัดไป</td><td>continue_paper_trading_review</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Next Review Time / เวลาตรวจสอบครั้งถัดไป</td><td>next_runtime_cycle</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Waiting Reason / เหตุผลที่รอ</td><td>waiting_for_complete_runtime_review | EN: Explains why AFIP is waiting before opening or changing an order. | TH: อธิบายเหตุผลที่ AFIP ยังรอก่อนเปิดหรือปรับคำสั่ง</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Entry Reason / เหตุผลการเข้าเทรด</td><td>entry_requires_policy_risk_and_market_regime_alignment | EN: Explains the verified market, policy, confidence, and risk reason behind a simulated entry. | TH: อธิบายเหตุผลด้านตลาด นโยบาย ความมั่นใจ และความเสี่ยงก่อนเข้าเทรดจำลอง</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Holding Reason / เหตุผลการถือสถานะ</td><td>hold_while_market_reason_and_risk_remain_valid | EN: Explains why the current simulated position remains valid to hold. | TH: อธิบายว่าทำไมสถานะจำลองปัจจุบันยังสมควรถือต่อ</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Stop Loss Move Reason / เหตุผลการเลื่อน Stop Loss</td><td>stop_loss_review_protects_capital_per_profile_risk | EN: Explains why the protective stop should stay or move according to risk protection rules. | TH: อธิบายว่าทำไม Stop Loss ควรคงเดิมหรือเลื่อนตามกฎคุ้มครองความเสี่ยง</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Take Profit Change Reason / เหตุผลการปรับ Take Profit</td><td>take_profit_review_waits_for_verified_target_reason | EN: Explains why the simulated target should stay or be reviewed. | TH: อธิบายว่าทำไมเป้าหมายจำลองควรคงเดิมหรือถูกทบทวน</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Trailing Stop Reason / เหตุผล Trailing Stop</td><td>trailing_only_after_profit_protection_is_justified | EN: Explains whether profit protection through a simulated trailing stop is justified. | TH: อธิบายว่าการคุ้มครองกำไรด้วย Trailing Stop จำลองมีเหตุผลเพียงพอหรือไม่</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Partial Close Reason / เหตุผลการปิดบางส่วน</td><td>partial_close_uses_units_not_direct_lot_increase | EN: Explains simulated partial close decisions by unit count instead of direct lot increase. | TH: อธิบายการปิดบางส่วนแบบจำลองด้วยจำนวน Unit ไม่ใช่เพิ่ม Lot ตรง ๆ</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Exit Reason / เหตุผลการออกจากสถานะ</td><td>exit_waits_for_complete_exit_reason | EN: Explains the conditions required before AFIP considers a simulated exit complete. | TH: อธิบายเงื่อนไขที่ต้องครบก่อน AFIP พิจารณาออกจากสถานะจำลอง</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Expected Next Action / การกระทำถัดไปที่คาดไว้</td><td>continue_paper_trading_review | EN: Shows the next safe review step AFIP expects to perform. | TH: แสดงขั้นตอนตรวจสอบถัดไปที่ปลอดภัยซึ่ง AFIP คาดว่าจะทำ</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Confidence / ความมั่นใจ</td><td>82.0 | EN: Displays the current decision confidence used for review and monitoring. | TH: แสดงค่าความมั่นใจปัจจุบันที่ใช้สำหรับตรวจสอบและติดตาม</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Risk / ความเสี่ยง</td><td>risk_pass | EN: Shows the current risk state before any simulated order management action. | TH: แสดงสถานะความเสี่ยงปัจจุบันก่อนการบริหารคำสั่งจำลอง</td></tr>
+<tr><td>PAPER-DEMO-1 MANAGING Next Review Time / เวลาตรวจสอบครั้งถัดไป</td><td>next_runtime_cycle | EN: Shows when AFIP should review the order again. | TH: แสดงเวลาที่ AFIP ควรกลับมาตรวจสอบคำสั่งอีกครั้ง</td></tr></table>
 </section>
 <section id="production_readiness">
 <h2>Production Readiness / ความพร้อมก่อนใช้งานจริง</h2>

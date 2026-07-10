@@ -21,3 +21,4 @@
 - Pack 3 — Internet and Broker Latency Monitor: completed.
 - Pack 4 — Market Session and Trading Calendar Monitor: completed.
 - Pack 5 — Explainable Order Center: patch ready.
+- Pack 6 — AFIP Bank Live: patch ready.

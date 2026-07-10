@@ -16,6 +16,7 @@ from afip.mt5_live_account import MT5LiveAccountRuntime
 from afip.internet_monitor import InternetMonitorRuntime
 from afip.market_calendar import MarketCalendarRuntime
 from afip.explainable_order_center import ExplainableOrderCenterRuntime
+from afip.afip_bank_live import AFIPBankLiveRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -54,6 +55,7 @@ class DashboardUIRuntime:
         internet = InternetMonitorRuntime().evaluate_one({**dict(record), "mode": mode})
         market_calendar = MarketCalendarRuntime().evaluate_one({**dict(record), "mode": mode})
         explainable_orders = ExplainableOrderCenterRuntime().evaluate_one({**dict(record), "mode": mode})
+        afip_bank = AFIPBankLiveRuntime().evaluate_one({**dict(record), "mode": mode, "closed_profit": paper.closed_profit, "floating_profit": paper.floating_profit})
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -77,7 +79,7 @@ class DashboardUIRuntime:
             _intelligence_panel(record),
             _trading_panel(paper),
             _analytics_panel(research),
-            _bank_panel(paper),
+            _bank_panel(afip_bank),
             _research_panel(research),
             _system_panel(record, runtime, vps_health, mt5_account, internet),
             _mt5_account_panel(mt5_account),
@@ -224,15 +226,25 @@ def _analytics_panel(research: Any) -> DashboardPanel:
     ))
 
 
-def _bank_panel(paper: Any) -> DashboardPanel:
-    return DashboardPanel("afip_bank", "AFIP Bank", "ธนาคาร AFIP", paper.status, "Displays paper balance, equity, reserve, ROI, and allocation.", "แสดง Balance, Equity, Reserve, ROI และ Allocation", (
-        ("Balance", str(paper.balance)),
-        ("Equity", str(paper.equity)),
-        ("Reserve", str(paper.reserve)),
-        ("Allocation", str(paper.allocation)),
-        ("ROI", f"{paper.roi}%"),
-        ("Floating Profit", str(paper.floating_profit)),
-        ("Closed Profit", str(paper.closed_profit)),
+def _bank_panel(bank: Any) -> DashboardPanel:
+    return DashboardPanel("afip_bank", "AFIP Bank Live", "ธนาคาร AFIP แบบสด", bank.status, bank.dashboard_explanation_en, bank.dashboard_explanation_th, (
+        ("Currency", bank.currency),
+        ("Initial Capital", str(bank.initial_capital)),
+        ("Deposits", str(bank.deposits)),
+        ("Withdrawals", str(bank.withdrawals)),
+        ("Balance", str(bank.balance)),
+        ("Equity", str(bank.equity)),
+        ("Reserve", str(bank.reserve)),
+        ("Allocation", str(bank.available_allocation)),
+        ("ROI", f"{bank.lifetime_return_percent}%"),
+        ("Floating Profit", str(bank.floating_profit)),
+        ("Closed Profit", str(bank.closed_profit)),
+        ("Transactions", str(bank.transaction_count)),
+        ("Reason", bank.reason),
+        ("คำอธิบายภาษาไทย", bank.dashboard_explanation_th),
+        ("เงินฝาก", str(bank.deposits)),
+        ("เงินถอน", str(bank.withdrawals)),
+        ("เงินที่จัดสรรได้", str(bank.available_allocation)),
     ))
 
 
