@@ -299,6 +299,517 @@ small { color: #555; }
 <tr><td>Next Action / ขั้นตอนถัดไป</td><td>Save, activate, duplicate, archive, or assign an account. / บันทึก เปิดใช้งาน คัดลอก เก็บถาวร หรือกำหนดบัญชีได้</td></tr>
 <tr><td>Live Execution</td><td>False</td></tr></table>
 </section>
+<section id="economic_calendar_intelligence">
+<h2>Economic Calendar Intelligence / ปัญญาปฏิทินเศรษฐกิจ</h2>
+<p class="status">READY</p>
+<p>Converts economic events into structured gold intelligence. Events never execute orders directly.<br><small>แปลงเหตุการณ์เศรษฐกิจเป็นข้อมูลอัจฉริยะสำหรับทองคำ โดยข่าวไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>READY</td></tr>
+<tr><td>Reason / เหตุผล</td><td>economic_calendar_pass</td></tr>
+<tr><td>Event Count / จำนวนเหตุการณ์</td><td>0</td></tr>
+<tr><td>High Impact / ผลกระทบสูง</td><td>0</td></tr>
+<tr><td>Gold Relevant / เกี่ยวข้องกับทอง</td><td>0</td></tr>
+<tr><td>Trading Allowed / อนุญาตให้เทรด</td><td>True</td></tr>
+<tr><td>Trading Block Reason / เหตุผลบล็อก</td><td>economic_calendar_pass</td></tr>
+<tr><td>Next Event UTC / ข่าวถัดไป</td><td>NONE</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr></table>
+</section>
+<section id="news_intelligence">
+<h2>News Intelligence / ปัญญาข่าวสาร</h2>
+<p class="status">WAITING</p>
+<p>Transforms supplied news into structured intelligence with source reliability and duplicate control. News never executes orders directly.<br><small>แปลงข่าวที่ได้รับเป็นข้อมูลอัจฉริยะ พร้อมประเมินความน่าเชื่อถือและควบคุมข่าวซ้ำ โดยข่าวไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_news_items</td></tr>
+<tr><td>News Items / จำนวนข่าว</td><td>0</td></tr>
+<tr><td>Unique / ข่าวไม่ซ้ำ</td><td>0</td></tr>
+<tr><td>Duplicates / ข่าวซ้ำ</td><td>0</td></tr>
+<tr><td>High Reliability / ความน่าเชื่อถือสูง</td><td>0</td></tr>
+<tr><td>Gold Relevant / เกี่ยวข้องกับทอง</td><td>0</td></tr>
+<tr><td>Aggregate Sentiment / อารมณ์รวม</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr></table>
+</section>
+<section id="gold_macro_intelligence">
+<h2>Gold Macro Intelligence / ปัญญามหภาคสำหรับทองคำ</h2>
+<p class="status">WAITING</p>
+<p>Converts CPI, PPI, employment, GDP, PMI, and ISM observations into structured GOLD# macro context. Macro data never executes orders directly.<br><small>แปลงข้อมูล CPI, PPI, การจ้างงาน, GDP, PMI และ ISM เป็นบริบทมหภาคสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_macro_indicators</td></tr>
+<tr><td>Indicators / ตัวชี้วัด</td><td>0</td></tr>
+<tr><td>Inflation / เงินเฟ้อ</td><td>0</td></tr>
+<tr><td>Employment / การจ้างงาน</td><td>0</td></tr>
+<tr><td>Growth / การเติบโต</td><td>0</td></tr>
+<tr><td>PMI-ISM / กิจกรรมเศรษฐกิจ</td><td>0</td></tr>
+<tr><td>Aggregate Bias / มุมมองรวม</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:45:00+00:00</td></tr></table>
+</section>
+<section id="central_bank_intelligence">
+<h2>Central Bank Intelligence / ปัญญาธนาคารกลาง</h2>
+<p class="status">WAITING</p>
+<p>Classifies FOMC, ECB, BOE, BOJ, and PBOC policy communications into structured GOLD# context. Central-bank data never executes orders directly.<br><small>จัดประเภทข้อมูลนโยบายจาก FOMC, ECB, BOE, BOJ และ PBOC เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_central_bank_observations</td></tr>
+<tr><td>Observations / จำนวนข้อมูล</td><td>0</td></tr>
+<tr><td>Hawkish / ตึงตัว</td><td>0</td></tr>
+<tr><td>Dovish / ผ่อนคลาย</td><td>0</td></tr>
+<tr><td>Neutral / เป็นกลาง</td><td>0</td></tr>
+<tr><td>Policy Bias / มุมมองนโยบาย</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Gold Effect / ผลต่อทอง</td><td>NEUTRAL</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:45:00+00:00</td></tr></table>
+</section>
+<section id="cot_intelligence">
+<h2>COT Intelligence / ปัญญารายงาน COT</h2>
+<p class="status">WAITING</p>
+<p>Transforms supplied Commitments of Traders positioning into structured GOLD# context. COT data never executes orders directly.<br><small>แปลงข้อมูลสถานะจากรายงาน Commitments of Traders เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูล COT ไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_cot_observations</td></tr>
+<tr><td>Reports / จำนวนรายงาน</td><td>0</td></tr>
+<tr><td>Bullish / สนับสนุนทอง</td><td>0</td></tr>
+<tr><td>Bearish / กดดันทอง</td><td>0</td></tr>
+<tr><td>Neutral / เป็นกลาง</td><td>0</td></tr>
+<tr><td>Positioning Bias / มุมมองสถานะ</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-11T14:30:00+00:00</td></tr></table>
+</section>
+<section id="open_interest_intelligence">
+<h2>Open Interest Intelligence / ปัญญา Open Interest</h2>
+<p class="status">WAITING</p>
+<p>Transforms supplied futures open interest and price relationships into structured GOLD# participation context. Open-interest data never executes orders directly.<br><small>แปลงความสัมพันธ์ระหว่าง Open Interest ของตลาด Futures กับราคาเป็นบริบทการมีส่วนร่วมสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_open_interest_observations</td></tr>
+<tr><td>Observations / จำนวนข้อมูล</td><td>0</td></tr>
+<tr><td>Rising OI / OI เพิ่ม</td><td>0</td></tr>
+<tr><td>Falling OI / OI ลด</td><td>0</td></tr>
+<tr><td>Stable OI / OI คงที่</td><td>0</td></tr>
+<tr><td>Participation / การมีส่วนร่วม</td><td>STABLE</td></tr>
+<tr><td>Gold Effect / ผลต่อทอง</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T18:30:00+00:00</td></tr></table>
+</section>
+<section id="etf_flow_intelligence">
+<h2>ETF Flow Intelligence / ปัญญากระแสเงิน ETF</h2>
+<p class="status">WAITING</p>
+<p>Transforms supplied GLD, IAU, and gold ETF flows into structured GOLD# context. ETF flow data never executes orders directly.<br><small>แปลงกระแสเงินของ GLD, IAU และ Gold ETF เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_etf_flow_observations</td></tr>
+<tr><td>Observations / จำนวนข้อมูล</td><td>0</td></tr>
+<tr><td>Inflows / เงินไหลเข้า</td><td>0</td></tr>
+<tr><td>Outflows / เงินไหลออก</td><td>0</td></tr>
+<tr><td>Balanced / สมดุล</td><td>0</td></tr>
+<tr><td>Flow Trend / แนวโน้มกระแสเงิน</td><td>BALANCED</td></tr>
+<tr><td>Gold Effect / ผลต่อทอง</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Daily Flow USD / กระแสรายวัน</td><td>0.0</td></tr>
+<tr><td>Weekly Flow USD / กระแสรายสัปดาห์</td><td>0.0</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T20:30:00+00:00</td></tr></table>
+</section>
+<section id="usd_index_intelligence">
+<h2>USD Index Intelligence / ปัญญาดัชนีดอลลาร์สหรัฐ</h2>
+<p class="status">WAITING</p>
+<p>Transforms supplied DXY observations into structured GOLD# context with trend, correlation, and divergence analysis. USD index data never executes orders directly.<br><small>แปลงข้อมูล DXY เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# พร้อมวิเคราะห์แนวโน้ม ความสัมพันธ์ และ divergence โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_usd_index_observations</td></tr>
+<tr><td>Observations / จำนวนข้อมูล</td><td>0</td></tr>
+<tr><td>Rising DXY / DXY เพิ่ม</td><td>0</td></tr>
+<tr><td>Falling DXY / DXY ลด</td><td>0</td></tr>
+<tr><td>Stable DXY / DXY คงที่</td><td>0</td></tr>
+<tr><td>Divergences / ความเบี่ยงเบน</td><td>0</td></tr>
+<tr><td>USD Trend / แนวโน้มดอลลาร์</td><td>STABLE</td></tr>
+<tr><td>Gold Effect / ผลต่อทอง</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T15:30:00+00:00</td></tr></table>
+</section>
+<section id="bond_yield_intelligence">
+<h2>Bond Yield Intelligence / ปัญญาอัตราผลตอบแทนพันธบัตร</h2>
+<p class="status">WAITING</p>
+<p>Transforms supplied US2Y, US10Y, real-yield, and yield-curve observations into structured GOLD# context. Yield data never executes orders directly.<br><small>แปลงข้อมูล US2Y, US10Y, real yield และเส้นอัตราผลตอบแทนเป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_bond_yield_observations</td></tr>
+<tr><td>Observations / จำนวนข้อมูล</td><td>0</td></tr>
+<tr><td>Rising Nominal / ผลตอบแทนทั่วไปเพิ่ม</td><td>0</td></tr>
+<tr><td>Falling Nominal / ผลตอบแทนทั่วไปลด</td><td>0</td></tr>
+<tr><td>Rising Real Yield / Real Yield เพิ่ม</td><td>0</td></tr>
+<tr><td>Falling Real Yield / Real Yield ลด</td><td>0</td></tr>
+<tr><td>Inverted Curves / เส้นผลตอบแทนกลับด้าน</td><td>0</td></tr>
+<tr><td>Yield Trend / แนวโน้มผลตอบแทน</td><td>STABLE</td></tr>
+<tr><td>Real Yield Trend / แนวโน้ม Real Yield</td><td>STABLE</td></tr>
+<tr><td>Curve Shape / รูปทรงเส้นผลตอบแทน</td><td>UNAVAILABLE</td></tr>
+<tr><td>Gold Effect / ผลต่อทอง</td><td>NEUTRAL (0.0)</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T15:30:00+00:00</td></tr></table>
+</section>
+<section id="market_regime_v2">
+<h2>Market Regime V2 / ภาวะตลาด V2</h2>
+<p class="status">WAITING</p>
+<p>Aggregates structured market intelligence into one explainable GOLD# regime. It never executes orders directly.<br><small>รวม Market Intelligence แบบมีโครงสร้างเป็นภาวะตลาดเดียวสำหรับ GOLD# ที่ตรวจสอบได้ และไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_minimum_structured_intelligence</td></tr>
+<tr><td>Regime / ภาวะตลาด</td><td>INSUFFICIENT_DATA</td></tr>
+<tr><td>Directional Bias / ทิศทาง</td><td>NEUTRAL</td></tr>
+<tr><td>Risk State / สถานะความเสี่ยง</td><td>HIGH</td></tr>
+<tr><td>Aggregate Score / คะแนนรวม</td><td>0.0</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Ready Components / องค์ประกอบพร้อม</td><td>1/9</td></tr>
+<tr><td>Alignment / ความสอดคล้อง</td><td>NEUTRAL</td></tr>
+<tr><td>Intelligence Ready / พร้อมใช้งาน</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T15:00:00+00:00</td></tr>
+<tr><td>Component / economic_calendar</td><td>status=READY | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: economic_calendar contributes NEUTRAL structured context with score 0.00. | TH: economic_calendar ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / news</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: news contributes NEUTRAL structured context with score 0.00. | TH: news ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / gold_macro</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: gold_macro contributes NEUTRAL structured context with score 0.00. | TH: gold_macro ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / central_bank</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: central_bank contributes NEUTRAL structured context with score 0.00. | TH: central_bank ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / cot</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: cot contributes NEUTRAL structured context with score 0.00. | TH: cot ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / open_interest</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: open_interest contributes NEUTRAL structured context with score 0.00. | TH: open_interest ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / etf_flow</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: etf_flow contributes NEUTRAL structured context with score 0.00. | TH: etf_flow ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / usd_index</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: usd_index contributes NEUTRAL structured context with score 0.00. | TH: usd_index ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr>
+<tr><td>Component / bond_yield</td><td>status=WAITING | effect=NEUTRAL | score=0.0 | confidence=0.0 | EN: bond_yield contributes NEUTRAL structured context with score 0.00. | TH: bond_yield ให้บริบทแบบมีโครงสร้างเป็น NEUTRAL ด้วยคะแนน 0.00</td></tr></table>
+</section>
+<section id="decision_intelligence_foundation">
+<h2>Decision Intelligence Foundation / รากฐานปัญญาการตัดสินใจ</h2>
+<p class="status">WAITING</p>
+<p>Resolves structured consensus and conflicts before any entry validation. It never executes orders directly.<br><small>สรุปฉันทามติและแก้ความขัดแย้งของข้อมูลแบบมีโครงสร้างก่อนตรวจสอบการเข้าออเดอร์ และไม่ส่งคำสั่งซื้อขายโดยตรง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>waiting_for_consensus_or_evidence</td></tr>
+<tr><td>Consensus / ข้อสรุป</td><td>WAIT</td></tr>
+<tr><td>Conflict / ความขัดแย้ง</td><td>LOW</td></tr>
+<tr><td>Opportunity / สถานะโอกาส</td><td>INSUFFICIENT_EVIDENCE</td></tr>
+<tr><td>Aggregate Score / คะแนนรวม</td><td>0.0</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Supporting / สนับสนุน</td><td>2</td></tr>
+<tr><td>Opposing / คัดค้าน</td><td>0</td></tr>
+<tr><td>Ready Evidence / หลักฐานพร้อม</td><td>2/6</td></tr>
+<tr><td>Market Regime / ภาวะตลาด</td><td>INSUFFICIENT_DATA</td></tr>
+<tr><td>Regime Bias / ทิศทางภาวะตลาด</td><td>WAIT</td></tr>
+<tr><td>Decision Ready / พร้อมตัดสินใจ</td><td>False</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for additional structured evidence.</td></tr>
+<tr><td>Expected Next Action TH</td><td>รอหลักฐานแบบมีโครงสร้างเพิ่มเติม</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:45:00+00:00</td></tr>
+<tr><td>Evidence / market_regime</td><td>status=WAITING | direction=WAIT | confidence=0.0 | weight=1.0 | weighted=0.0 | EN: market_regime contributes WAIT decision context with confidence 0.00. | TH: market_regime ให้บริบทการตัดสินใจเป็น WAIT ด้วยความมั่นใจ 0.00</td></tr>
+<tr><td>Evidence / market_structure</td><td>status=WAITING | direction=WAIT | confidence=0.0 | weight=0.9 | weighted=0.0 | EN: market_structure contributes WAIT decision context with confidence 0.00. | TH: market_structure ให้บริบทการตัดสินใจเป็น WAIT ด้วยความมั่นใจ 0.00</td></tr>
+<tr><td>Evidence / multi_timeframe</td><td>status=WAITING | direction=WAIT | confidence=0.0 | weight=0.85 | weighted=0.0 | EN: multi_timeframe contributes WAIT decision context with confidence 0.00. | TH: multi_timeframe ให้บริบทการตัดสินใจเป็น WAIT ด้วยความมั่นใจ 0.00</td></tr>
+<tr><td>Evidence / liquidity</td><td>status=WAITING | direction=WAIT | confidence=0.0 | weight=0.7 | weighted=0.0 | EN: liquidity contributes WAIT decision context with confidence 0.00. | TH: liquidity ให้บริบทการตัดสินใจเป็น WAIT ด้วยความมั่นใจ 0.00</td></tr>
+<tr><td>Evidence / trading_cost</td><td>status=READY | direction=WAIT | confidence=1.0 | weight=0.55 | weighted=0.0 | EN: trading_cost contributes WAIT decision context with confidence 1.00. | TH: trading_cost ให้บริบทการตัดสินใจเป็น WAIT ด้วยความมั่นใจ 1.00</td></tr>
+<tr><td>Evidence / risk</td><td>status=READY | direction=WAIT | confidence=1.0 | weight=1.0 | weighted=0.0 | EN: risk contributes WAIT decision context with confidence 1.00. | TH: risk ให้บริบทการตัดสินใจเป็น WAIT ด้วยความมั่นใจ 1.00</td></tr></table>
+</section>
+<section id="consensus_engine">
+<h2>Consensus Engine / กลไกฉันทามติ</h2>
+<p class="status">WAITING</p>
+<p>Calculates weighted agreement and conflict across structured evidence before trade scoring.<br><small>คำนวณน้ำหนักการเห็นพ้องและความขัดแย้งของหลักฐานแบบมีโครงสร้างก่อนให้คะแนนโอกาสซื้อขาย</small></p>
+<table><tr><td>Consensus / ฉันทามติ</td><td>WAIT</td></tr>
+<tr><td>Consensus Quality / คุณภาพฉันทามติ</td><td>WEAK</td></tr>
+<tr><td>Agreement Ratio / สัดส่วนเห็นพ้อง</td><td>0.00%</td></tr>
+<tr><td>Conflict Ratio / สัดส่วนขัดแย้ง</td><td>0.00%</td></tr>
+<tr><td>BUY Score</td><td>0.0</td></tr>
+<tr><td>SELL Score</td><td>0.0</td></tr>
+<tr><td>WAIT Score</td><td>0.0</td></tr>
+<tr><td>Dominant Sources / แหล่งข้อมูลหลัก</td><td>-</td></tr>
+<tr><td>Contradicting Sources / แหล่งข้อมูลขัดแย้ง</td><td>-</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for stronger agreement or additional reliable evidence.</td></tr>
+<tr><td>การดำเนินการถัดไป TH</td><td>รอฉันทามติที่แข็งแรงขึ้นหรือหลักฐานที่เชื่อถือได้เพิ่มเติม</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr></table>
+</section>
+<section id="conflict_resolver">
+<h2>Conflict Resolver / ตัวแก้ความขัดแย้ง</h2>
+<p class="status">WAITING</p>
+<p>Resolves material evidence disagreement before scoring or execution review.<br><small>แก้ความขัดแย้งของหลักฐานสำคัญก่อนการให้คะแนนหรือทบทวนการส่งคำสั่ง</small></p>
+<table><tr><td>Status</td><td>WAITING</td></tr>
+<tr><td>Original Consensus</td><td>WAIT</td></tr>
+<tr><td>Resolved Consensus</td><td>WAIT</td></tr>
+<tr><td>Conflict Level</td><td>LOW</td></tr>
+<tr><td>Conflict Score</td><td>0.0</td></tr>
+<tr><td>Resolution Method</td><td>INSUFFICIENT_EVIDENCE</td></tr>
+<tr><td>Unresolved Sources</td><td>None</td></tr>
+<tr><td>Waiting Reason EN</td><td>Material evidence conflict remains unresolved; decision must wait.</td></tr>
+<tr><td>Waiting Reason TH</td><td>หลักฐานสำคัญยังขัดแย้งกันและยังแก้ไม่ได้ จึงต้องรอการตัดสินใจ</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for market-regime confirmation or stronger aligned evidence.</td></tr>
+<tr><td>Expected Next Action TH</td><td>รอการยืนยัน Market Regime หรือหลักฐานที่สอดคล้องและแข็งแรงกว่า</td></tr>
+<tr><td>Next Review Time</td><td>2026-07-10T14:40:00+00:00</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr></table>
+</section>
+<section id="opportunity_ranking">
+<h2>Opportunity Ranking Engine / กลไกจัดอันดับโอกาส</h2>
+<p class="status">WAITING</p>
+<p>Ranks eligible GOLD# opportunities after regime, consensus, conflict, risk, and cost review. Ranking never executes orders.<br><small>จัดอันดับโอกาส GOLD# หลังตรวจ Market Regime ฉันทามติ ความขัดแย้ง ความเสี่ยง และต้นทุน โดยการจัดอันดับไม่ส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>no_eligible_opportunity</td></tr>
+<tr><td>Top Opportunity / โอกาสอันดับหนึ่ง</td><td>NONE</td></tr>
+<tr><td>Top Direction / ทิศทางอันดับหนึ่ง</td><td>WAIT</td></tr>
+<tr><td>Top Score / คะแนนอันดับหนึ่ง</td><td>0.0</td></tr>
+<tr><td>Eligible / ผ่านเกณฑ์</td><td>0/1</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for an eligible GOLD# opportunity with aligned direction, acceptable risk, cost, and conflict.</td></tr>
+<tr><td>Expected Next Action TH</td><td>รอโอกาส GOLD# ที่มีทิศทางสอดคล้อง ความเสี่ยงและต้นทุนยอมรับได้ และไม่มีความขัดแย้งสูง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:40:00+00:00</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Rank 1 / GOLD_PRIMARY</td><td>symbol=GOLD# | direction=WAIT | score=0.2 | eligible=False | EN: Directional evidence is not actionable. | TH: หลักฐานด้านทิศทางยังไม่พร้อมใช้งาน</td></tr></table>
+</section>
+<section id="trade_scoring">
+<h2>Trade Scoring Engine / กลไกให้คะแนนการซื้อขาย</h2>
+<p class="status">WAITING</p>
+<p>Scores ranked GOLD# opportunities using deterministic quality, risk-adjusted, and execution-readiness factors. Scoring never executes orders.<br><small>ให้คะแนนโอกาส GOLD# ที่จัดอันดับแล้วด้วยปัจจัยคุณภาพ ปรับตามความเสี่ยง และความพร้อมในการดำเนินการแบบกำหนดแน่นอน โดยคะแนนไม่ส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>no_eligible_trade_score</td></tr>
+<tr><td>Top Opportunity / โอกาสอันดับหนึ่ง</td><td>NONE</td></tr>
+<tr><td>Top Direction / ทิศทางอันดับหนึ่ง</td><td>WAIT</td></tr>
+<tr><td>Top Final Score / คะแนนสุดท้ายสูงสุด</td><td>0.0</td></tr>
+<tr><td>Top Grade / เกรดสูงสุด</td><td>REJECT</td></tr>
+<tr><td>Eligible / ผ่านเกณฑ์</td><td>0/1</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for a candidate with sufficient opportunity, quality, risk-adjusted, and execution-readiness scores.</td></tr>
+<tr><td>Expected Next Action TH</td><td>รอผู้สมัครที่มีคะแนนโอกาส คุณภาพ ปรับตามความเสี่ยง และความพร้อมในการดำเนินการเพียงพอ</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:40:00+00:00</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>GOLD_PRIMARY / REJECT</td><td>direction=WAIT | final=0.47 | opportunity=0.2 | quality=0.0 | risk_adjusted=1.0 | execution=1.0 | eligible=False | EN: Direction is not actionable. | TH: ทิศทางยังไม่พร้อมใช้งาน</td></tr></table>
+</section>
+<section id="unit_allocation">
+<h2>Unit Allocation Engine / กลไกจัดสรร Unit</h2>
+<p class="status">WAITING</p>
+<p>Allocates fixed 0.01-lot units from profile, capital, risk, and trade score. It never increases lot per unit and never executes orders.<br><small>จัดสรร Unit คงที่ 0.01 lot จากโปรไฟล์ เงินทุน ความเสี่ยง และคะแนนการซื้อขาย โดยไม่เพิ่ม lot ต่อ Unit และไม่ส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>no_eligible_unit_allocation</td></tr>
+<tr><td>Profile / โปรไฟล์</td><td>Balanced</td></tr>
+<tr><td>Selected Opportunity / โอกาสที่เลือก</td><td>NONE</td></tr>
+<tr><td>Direction / ทิศทาง</td><td>WAIT</td></tr>
+<tr><td>Allocated Units / จำนวน Unit</td><td>0</td></tr>
+<tr><td>Lot per Unit / Lot ต่อ Unit</td><td>0.01</td></tr>
+<tr><td>Total Lot / Lot รวม</td><td>0.0</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for sufficient score, risk approval, profile capacity, and capital for at least one fixed unit.</td></tr>
+<tr><td>Expected Next Action TH</td><td>รอคะแนน การอนุมัติความเสี่ยง ความจุโปรไฟล์ และเงินทุนที่เพียงพอสำหรับอย่างน้อย 1 Unit คงที่</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:40:00+00:00</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>GOLD_PRIMARY / REJECT</td><td>direction=WAIT | score=0.47 | capital_per_unit=500.0 | capital_units=0 | profile_units=3 | score_units=0 | allocated=0 | total_lot=0.0 | eligible=False | EN: Direction is not actionable. | TH: ทิศทางยังไม่พร้อมใช้งาน</td></tr></table>
+</section>
+<section id="entry_validation">
+<h2>Entry Validation Engine / กลไกตรวจสอบจุดเข้า</h2>
+<p class="status">WAITING</p>
+<p>Validates regime, conflict, score, risk, timing, spread, and fixed-unit allocation before paper/demo execution review. Validation never sends orders.<br><small>ตรวจสอบ Market Regime ความขัดแย้ง คะแนน ความเสี่ยง เวลา Spread และการจัดสรร Unit คงที่ก่อน paper/demo execution โดยไม่ส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>entry_validation_blocked_or_incomplete</td></tr>
+<tr><td>Selected Opportunity / โอกาสที่เลือก</td><td>NONE</td></tr>
+<tr><td>Direction / ทิศทาง</td><td>WAIT</td></tr>
+<tr><td>Entry Approved / อนุมัติจุดเข้า</td><td>False</td></tr>
+<tr><td>Approved Units / Unit ที่อนุมัติ</td><td>0</td></tr>
+<tr><td>Lot per Unit / Lot ต่อ Unit</td><td>0.01</td></tr>
+<tr><td>Total Lot / Lot รวม</td><td>0.0</td></tr>
+<tr><td>Waiting Reason EN</td><td>Waiting for entry requirements: entry_direction_not_actionable, market_regime_not_ready, trade_score_not_approved, unit_allocation_not_approved.</td></tr>
+<tr><td>Waiting Reason TH</td><td>รอเงื่อนไขจุดเข้า: entry_direction_not_actionable, market_regime_not_ready, trade_score_not_approved, unit_allocation_not_approved</td></tr>
+<tr><td>Expected Next Action EN</td><td>Review market regime, conflict, score, risk, timing, spread, and fixed-unit allocation.</td></tr>
+<tr><td>Expected Next Action TH</td><td>ตรวจสอบ Market Regime ความขัดแย้ง คะแนน ความเสี่ยง เวลา Spread และการจัดสรร Unit คงที่</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>GOLD_PRIMARY / WAIT</td><td>approved=False | units=0 | regime=False | conflict=True | score=False | risk=True | timing=True | spread=True | allocation=False | blocks=entry_direction_not_actionable,market_regime_not_ready,trade_score_not_approved,unit_allocation_not_approved | EN: Entry context is waiting because: entry_direction_not_actionable, market_regime_not_ready, trade_score_not_approved, unit_allocation_not_approved. | TH: บริบทจุดเข้ายังรอเนื่องจาก: entry_direction_not_actionable, market_regime_not_ready, trade_score_not_approved, unit_allocation_not_approved</td></tr></table>
+</section>
+<section id="exit_validation">
+<h2>Exit Validation Engine / กลไกตรวจสอบการถือและออกจากสถานะ</h2>
+<p class="status">WAITING</p>
+<p>Validates holding, stop-loss moves, take-profit changes, trailing stops, partial closes, and exits without modifying positions.<br><small>ตรวจสอบการถือ เลื่อน Stop Loss เปลี่ยน Take Profit Trailing Stop ปิดบางส่วน และออกจากสถานะโดยไม่แก้ไขสถานะจริง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>exit_validation_no_open_position</td></tr>
+<tr><td>Selected Position / สถานะที่เลือก</td><td>NONE</td></tr>
+<tr><td>Approved Action / การดำเนินการที่อนุมัติ</td><td>HOLD</td></tr>
+<tr><td>Approved Units / Unit ที่อนุมัติ</td><td>0</td></tr>
+<tr><td>Holding Reason EN</td><td>Holding is not currently approved or no open position is available.</td></tr>
+<tr><td>Holding Reason TH</td><td>ยังไม่อนุมัติการถือสถานะหรือไม่มีสถานะเปิด</td></tr>
+<tr><td>Stop Loss Move Reason EN</td><td>No approved stop-loss move is active.</td></tr>
+<tr><td>Stop Loss Move Reason TH</td><td>ยังไม่มีการอนุมัติเลื่อน Stop Loss</td></tr>
+<tr><td>Take Profit Change Reason EN</td><td>No approved take-profit change is active.</td></tr>
+<tr><td>Take Profit Change Reason TH</td><td>ยังไม่มีการอนุมัติเปลี่ยน Take Profit</td></tr>
+<tr><td>Trailing Stop Reason EN</td><td>No approved trailing-stop action is active.</td></tr>
+<tr><td>Trailing Stop Reason TH</td><td>ยังไม่มีการอนุมัติ Trailing Stop</td></tr>
+<tr><td>Partial Close Reason EN</td><td>No approved partial-close action is active.</td></tr>
+<tr><td>Partial Close Reason TH</td><td>ยังไม่มีการอนุมัติปิดบางส่วน</td></tr>
+<tr><td>Exit Reason EN</td><td>No approved full-exit action is active.</td></tr>
+<tr><td>Exit Reason TH</td><td>ยังไม่มีการอนุมัติออกจากสถานะทั้งหมด</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for an open paper/demo position before validating management or exit actions.</td></tr>
+<tr><td>Expected Next Action TH</td><td>รอสถานะ paper/demo ที่เปิดอยู่ก่อนตรวจสอบการจัดการหรือออกจากสถานะ</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr></table>
+</section>
+<section id="portfolio_decision">
+<h2>Portfolio Decision Engine / กลไกตัดสินใจระดับพอร์ต</h2>
+<p class="status">READY</p>
+<p>Combines entry, exit, risk, exposure, and fixed-unit capacity into one explainable portfolio decision without executing orders.<br><small>รวมจุดเข้า การออก ความเสี่ยง Exposure และความจุ Unit คงที่เป็นการตัดสินใจระดับพอร์ตที่อธิบายได้โดยไม่ส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Status / สถานะ</td><td>READY</td></tr>
+<tr><td>Reason / เหตุผล</td><td>portfolio_decision_ready</td></tr>
+<tr><td>Portfolio / พอร์ต</td><td>AFIP_GOLD_PORTFOLIO</td></tr>
+<tr><td>Decision / การตัดสินใจ</td><td>HOLD</td></tr>
+<tr><td>Direction / ทิศทาง</td><td>HOLD</td></tr>
+<tr><td>Approved Units / Unit ที่อนุมัติ</td><td>1</td></tr>
+<tr><td>Current Units / Unit ปัจจุบัน</td><td>1</td></tr>
+<tr><td>Maximum Units / Unit สูงสุด</td><td>3</td></tr>
+<tr><td>Available Units / Unit ที่เหลือ</td><td>2</td></tr>
+<tr><td>Portfolio Risk / ความเสี่ยงพอร์ต</td><td>READY</td></tr>
+<tr><td>Waiting Reason EN</td><td>No portfolio decision block is active.</td></tr>
+<tr><td>Waiting Reason TH</td><td>ไม่มีเงื่อนไขบล็อกการตัดสินใจระดับพอร์ต</td></tr>
+<tr><td>Expected Next Action EN</td><td>Pass HOLD context to paper/demo portfolio review; do not execute a live order.</td></tr>
+<tr><td>Expected Next Action TH</td><td>ส่งบริบท HOLD ไปยังการตรวจสอบพอร์ตแบบ paper/demo และห้ามส่งคำสั่งจริง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>AFIP_GOLD_PORTFOLIO / HOLD</td><td>direction=HOLD | approved=True | current=1 | max=3 | available=2 | entry=0 | exit=0 | risk=True | exposure=True | blocks= | EN: Portfolio decision HOLD is approved for 1 fixed unit(s); the decision is context only and sends no order. | TH: อนุมัติการตัดสินใจระดับพอร์ต HOLD จำนวน 1 Unit คงที่ โดยเป็นเพียงบริบทและไม่ส่งคำสั่งซื้อขาย</td></tr></table>
+</section>
+<section id="decision_intelligence_certification">
+<h2>Decision Intelligence Certification / การรับรอง Decision Intelligence</h2>
+<p class="status">CERTIFIED</p>
+<p>Certifies Milestone J as explainable, deterministic, and simulation-only before Execution Intelligence begins.<br><small>รับรอง Milestone J ว่าอธิบายได้ กำหนดผลซ้ำได้ และจำกัดเฉพาะ simulation ก่อนเริ่ม Execution Intelligence</small></p>
+<table><tr><td>Status / สถานะ</td><td>CERTIFIED</td></tr>
+<tr><td>Reason / เหตุผล</td><td>milestone_j_decision_intelligence_certified</td></tr>
+<tr><td>Certification Level / ระดับการรับรอง</td><td>DECISION_INTELLIGENCE_COMPLETE</td></tr>
+<tr><td>Passed Checks / รายการที่ผ่าน</td><td>13/13</td></tr>
+<tr><td>Failed Checks / รายการที่ไม่ผ่าน</td><td>NONE</td></tr>
+<tr><td>Decision Intelligence Ready / พร้อมใช้งาน</td><td>True</td></tr>
+<tr><td>Summary EN</td><td>Milestone J is certified as an explainable, deterministic, simulation-only Decision Intelligence platform.</td></tr>
+<tr><td>Summary TH</td><td>Milestone J ผ่านการรับรองเป็นแพลตฟอร์ม Decision Intelligence ที่อธิบายได้ กำหนดผลซ้ำได้ และจำกัดเฉพาะ simulation</td></tr>
+<tr><td>Expected Next Action EN</td><td>Proceed to Milestone K Execution Intelligence while live execution remains disabled.</td></tr>
+<tr><td>Expected Next Action TH</td><td>ดำเนินการต่อสู่ Milestone K Execution Intelligence โดยยังคงปิดคำสั่งจริง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:45:00+00:00</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Live Execution / คำสั่งจริง</td><td>False</td></tr>
+<tr><td>Execution Status / สถานะการส่งคำสั่ง</td><td>LOCKED_SIMULATION_ONLY</td></tr></table>
+</section>
+<section id="execution_intelligence_foundation">
+<h2>Execution Intelligence Foundation / รากฐานปัญญาการส่งคำสั่ง</h2>
+<p class="status">WAITING</p>
+<p>Converts certified portfolio decisions into an explainable simulation-only execution context. It never sends an order.<br><small>แปลงการตัดสินใจระดับพอร์ตที่ผ่านการรับรองเป็นบริบทการส่งคำสั่งแบบ Simulation ที่อธิบายได้ และไม่ส่งคำสั่งจริง</small></p>
+<table><tr><td>Status / สถานะ</td><td>WAITING</td></tr>
+<tr><td>Reason / เหตุผล</td><td>portfolio_decision_not_actionable_for_entry</td></tr>
+<tr><td>Execution Stage / ขั้นตอน</td><td>AWAITING_ACTIONABLE_PORTFOLIO_DECISION</td></tr>
+<tr><td>Readiness / ความพร้อม</td><td>WAITING_FOR_VALIDATION</td></tr>
+<tr><td>Approval Stage / การอนุมัติ</td><td>PENDING</td></tr>
+<tr><td>Pipeline Progress / ความคืบหน้า</td><td>100%</td></tr>
+<tr><td>Confidence / ความมั่นใจ</td><td>0.0</td></tr>
+<tr><td>Simulation Ready / พร้อมจำลอง</td><td>False</td></tr>
+<tr><td>No Order Sent / ไม่มีคำสั่งถูกส่ง</td><td>True</td></tr>
+<tr><td>Approved Units / Unit ที่อนุมัติ</td><td>1</td></tr>
+<tr><td>Lot per Unit</td><td>0.01</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>NONE</td></tr>
+<tr><td>Waiting Reason EN</td><td>The portfolio decision is not yet an approved entry with at least one fixed unit.</td></tr>
+<tr><td>Waiting Reason TH</td><td>การตัดสินใจระดับพอร์ตยังไม่ใช่จุดเข้าที่อนุมัติพร้อมอย่างน้อย 1 Unit คงที่</td></tr>
+<tr><td>Expected Next Action EN</td><td>Wait for an approved entry decision, then rerun the simulation readiness gate.</td></tr>
+<tr><td>Expected Next Action TH</td><td>รอการอนุมัติจุดเข้า แล้วประเมิน Simulation Readiness อีกครั้ง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:35:00+00:00</td></tr>
+<tr><td>Execution Status / สถานะการส่งคำสั่ง</td><td>LOCKED_SIMULATION_ONLY</td></tr>
+<tr><td>Direct Execution / ส่งคำสั่งโดยตรง</td><td>False</td></tr>
+<tr><td>Live Execution / คำสั่งจริง</td><td>False</td></tr></table>
+</section>
+<section id="smart_entry">
+<h2>Smart Entry Engine / กลไกวางแผนจุดเข้าอัจฉริยะ</h2>
+<p class="status">BLOCKED</p>
+<p>Builds a protected paper/demo entry instruction without sending a live order.<br><small>สร้างคำสั่งจำลองสำหรับจุดเข้าที่มีการป้องกันความเสี่ยง โดยไม่ส่งคำสั่งจริง</small></p>
+<table><tr><td>Status / สถานะ</td><td>BLOCKED</td></tr>
+<tr><td>Reason / เหตุผล</td><td>execution_not_ready_for_simulation</td></tr>
+<tr><td>Entry Plan / แผนจุดเข้า</td><td>ENTRY_PLAN_BLOCKED</td></tr>
+<tr><td>Side / ฝั่ง</td><td>WAIT</td></tr>
+<tr><td>Order Type / ประเภทคำสั่ง</td><td>MARKET</td></tr>
+<tr><td>Reference Price / ราคาอ้างอิง</td><td>0.0</td></tr>
+<tr><td>Stop Loss / จุดหยุดขาดทุน</td><td>0.0</td></tr>
+<tr><td>Take Profit / จุดทำกำไร</td><td>0.0</td></tr>
+<tr><td>Reward/Risk</td><td>0.0</td></tr>
+<tr><td>Units / จำนวน Unit</td><td>1</td></tr>
+<tr><td>Total Lot / Lot รวม</td><td>0.01</td></tr>
+<tr><td>Simulation Instruction Ready / พร้อมจำลอง</td><td>False</td></tr>
+<tr><td>No Order Sent / ไม่มีคำสั่งถูกส่ง</td><td>True</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>execution_not_ready_for_simulation, portfolio_decision_not_entry, entry_direction_missing, reference_price_missing, protective_prices_missing, reward_risk_below_minimum</td></tr>
+<tr><td>Entry Reason EN</td><td>No entry instruction was approved.</td></tr>
+<tr><td>Entry Reason TH</td><td>ยังไม่มีการอนุมัติคำสั่งจำลองสำหรับจุดเข้า</td></tr>
+<tr><td>Waiting Reason EN</td><td>Smart Entry is waiting because one or more entry protection or policy checks failed.</td></tr>
+<tr><td>Waiting Reason TH</td><td>Smart Entry กำลังรอ เนื่องจากเงื่อนไขด้านการป้องกันความเสี่ยงหรือนโยบายบางข้อไม่ผ่าน</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct the listed block reasons and evaluate the entry plan again.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไขเหตุผลที่ถูกบล็อก แล้วประเมินแผนจุดเข้าอีกครั้ง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr>
+<tr><td>Execution Status / สถานะการส่งคำสั่ง</td><td>LOCKED_SIMULATION_ONLY</td></tr></table>
+</section>
+<section id="smart_exit">
+<h2>Smart Exit Engine / กลไกวางแผนออกอัจฉริยะ</h2>
+<p class="status">BLOCKED</p>
+<p>Builds hold, partial-close, or full-exit instructions for paper/demo positions without changing a live position.<br><small>สร้างคำสั่งถือต่อ ปิดบางส่วน หรือออกทั้งหมดสำหรับสถานะจำลอง โดยไม่แก้ไขสถานะจริง</small></p>
+<table><tr><td>Status / สถานะ</td><td>BLOCKED</td></tr>
+<tr><td>Reason / เหตุผล</td><td>open_position_missing</td></tr>
+<tr><td>Exit Plan / แผนออก</td><td>EXIT_PLAN_BLOCKED</td></tr>
+<tr><td>Action / การดำเนินการ</td><td>HOLD</td></tr>
+<tr><td>Current Units / Unit ปัจจุบัน</td><td>0</td></tr>
+<tr><td>Close Units / Unit ที่ปิด</td><td>0</td></tr>
+<tr><td>Remaining Units / Unit คงเหลือ</td><td>0</td></tr>
+<tr><td>Reference Price / ราคาอ้างอิง</td><td>0.0</td></tr>
+<tr><td>Unrealized PnL / กำไรขาดทุนลอยตัว</td><td>0.0</td></tr>
+<tr><td>Simulation Instruction Ready / พร้อมจำลอง</td><td>False</td></tr>
+<tr><td>No Order Sent / ไม่มีคำสั่งถูกส่ง</td><td>True</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>open_position_missing, reference_price_missing</td></tr>
+<tr><td>Holding Reason EN</td><td>Hold is not approved while exit checks remain unresolved.</td></tr>
+<tr><td>Holding Reason TH</td><td>ยังไม่อนุมัติให้ถือต่อ เนื่องจากเงื่อนไขการออกยังไม่ครบ</td></tr>
+<tr><td>Partial Close Reason EN</td><td>No partial-close instruction was approved.</td></tr>
+<tr><td>Partial Close Reason TH</td><td>ยังไม่มีการอนุมัติคำสั่งปิดบางส่วน</td></tr>
+<tr><td>Exit Reason EN</td><td>No exit instruction was approved.</td></tr>
+<tr><td>Exit Reason TH</td><td>ยังไม่มีการอนุมัติคำสั่งออกจากสถานะ</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct the listed block reasons and evaluate the exit plan again.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไขเหตุผลที่ถูกบล็อก แล้วประเมินแผนออกอีกครั้ง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr>
+<tr><td>Execution Status / สถานะการส่งคำสั่ง</td><td>LOCKED_SIMULATION_ONLY</td></tr></table>
+</section>
+<section id="dynamic_stop_loss">
+<h2>Dynamic Stop Loss Intelligence / ระบบวิเคราะห์ Stop Loss แบบปรับตามสถานการณ์</h2>
+<p class="status">BLOCKED</p>
+<p>Reviews a risk-reducing stop-loss proposal for paper/demo simulation without modifying a live position.<br><small>ทบทวนข้อเสนอการเลื่อน Stop Loss ที่ลดความเสี่ยงสำหรับการจำลอง โดยไม่แก้ไขสถานะจริง</small></p>
+<table><tr><td>Status / สถานะ</td><td>BLOCKED</td></tr>
+<tr><td>Reason / เหตุผล</td><td>open_position_missing</td></tr>
+<tr><td>Action / การดำเนินการ</td><td>HOLD</td></tr>
+<tr><td>Current Stop Loss / Stop Loss ปัจจุบัน</td><td>0.0</td></tr>
+<tr><td>Proposed Stop Loss / Stop Loss ที่เสนอ</td><td>0.0</td></tr>
+<tr><td>Reference Price / ราคาอ้างอิง</td><td>0.0</td></tr>
+<tr><td>Risk Distance Before / ระยะความเสี่ยงก่อน</td><td>0.0</td></tr>
+<tr><td>Risk Distance After / ระยะความเสี่ยงหลัง</td><td>0.0</td></tr>
+<tr><td>Risk Reduction / ความเสี่ยงที่ลดลง</td><td>0.0</td></tr>
+<tr><td>Move Approved / อนุมัติการเลื่อน</td><td>False</td></tr>
+<tr><td>Simulation Instruction Ready / พร้อมจำลอง</td><td>False</td></tr>
+<tr><td>No Order Sent / ไม่มีคำสั่งถูกส่ง</td><td>True</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>open_position_missing, reference_price_missing, current_stop_loss_missing</td></tr>
+<tr><td>Stop Loss Move Reason EN</td><td>The stop-loss move is blocked until all risk and structure checks pass.</td></tr>
+<tr><td>Stop Loss Move Reason TH</td><td>ยังไม่อนุมัติการเลื่อน Stop Loss จนกว่าการตรวจความเสี่ยงและโครงสร้างตลาดจะผ่านครบ</td></tr>
+<tr><td>Holding Reason EN</td><td>Keep the current stop-loss unchanged while the proposal is under review.</td></tr>
+<tr><td>Holding Reason TH</td><td>คง Stop Loss เดิมไว้ระหว่างทบทวนข้อเสนอ</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct the listed block reasons and evaluate the stop-loss proposal again.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไขเหตุผลที่ถูกบล็อก แล้วประเมินข้อเสนอ Stop Loss อีกครั้ง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr>
+<tr><td>Execution Status / สถานะการส่งคำสั่ง</td><td>LOCKED_SIMULATION_ONLY</td></tr></table>
+</section>
+<section id="dynamic_take_profit">
+<h2>Dynamic Take Profit Intelligence / ระบบวิเคราะห์ Take Profit แบบปรับตามสถานการณ์</h2>
+<p class="status">BLOCKED</p>
+<p>Reviews a take-profit proposal for paper/demo simulation while preserving reward/risk and never modifying a live position.<br><small>ทบทวนข้อเสนอ Take Profit สำหรับการจำลองโดยรักษา Reward/Risk และไม่แก้ไขสถานะจริง</small></p>
+<table><tr><td>Status / สถานะ</td><td>BLOCKED</td></tr>
+<tr><td>Reason / เหตุผล</td><td>reference_price_missing</td></tr>
+<tr><td>Action / การดำเนินการ</td><td>HOLD</td></tr>
+<tr><td>Current TP / Take Profit ปัจจุบัน</td><td>0.0</td></tr>
+<tr><td>Proposed TP / Take Profit ที่เสนอ</td><td>0.0</td></tr>
+<tr><td>Reference Price / ราคาอ้างอิง</td><td>0.0</td></tr>
+<tr><td>Reward/Risk Before / ก่อนปรับ</td><td>0.0</td></tr>
+<tr><td>Reward/Risk After / หลังปรับ</td><td>0.0</td></tr>
+<tr><td>Change Approved / อนุมัติการเปลี่ยน</td><td>False</td></tr>
+<tr><td>Simulation Ready / พร้อมจำลอง</td><td>False</td></tr>
+<tr><td>No Order Sent / ไม่มีคำสั่งถูกส่ง</td><td>True</td></tr>
+<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>reference_price_missing, current_take_profit_missing, current_stop_loss_missing</td></tr>
+<tr><td>Take Profit Change Reason EN</td><td>The take-profit change is blocked until reward, risk, timing, and market-structure checks pass.</td></tr>
+<tr><td>Take Profit Change Reason TH</td><td>ยังไม่อนุมัติการเปลี่ยน Take Profit จนกว่าการตรวจผลตอบแทน ความเสี่ยง เวลา และโครงสร้างตลาดจะผ่านครบ</td></tr>
+<tr><td>Holding Reason EN</td><td>Keep the current take-profit unchanged while the proposal is under review.</td></tr>
+<tr><td>Holding Reason TH</td><td>คง Take Profit เดิมไว้ระหว่างทบทวนข้อเสนอ</td></tr>
+<tr><td>Expected Next Action EN</td><td>Correct the listed block reasons and evaluate the take-profit proposal again.</td></tr>
+<tr><td>Expected Next Action TH</td><td>แก้ไขเหตุผลที่ถูกบล็อก แล้วประเมินข้อเสนอ Take Profit อีกครั้ง</td></tr>
+<tr><td>Next Review UTC / ตรวจสอบถัดไป</td><td>2026-07-10T14:32:00+00:00</td></tr></table>
+</section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>
 <p class="status">READY</p>

@@ -22,6 +22,31 @@ from afip.dashboard_live_runtime import DashboardLiveRuntime
 from afip.runtime_supervisor import RuntimeSupervisorRuntime
 from afip.production_certification import ProductionCertificationRuntime
 from afip.profile_customization import ProfileCustomizationRuntime
+from afip.economic_calendar_intelligence import EconomicCalendarIntelligenceRuntime
+from afip.news_intelligence import NewsIntelligenceRuntime
+from afip.gold_macro_intelligence import GoldMacroIntelligenceRuntime
+from afip.central_bank_intelligence import CentralBankIntelligenceRuntime
+from afip.cot_intelligence import COTIntelligenceRuntime
+from afip.open_interest_intelligence import OpenInterestIntelligenceRuntime
+from afip.etf_flow_intelligence import ETFFlowIntelligenceRuntime
+from afip.usd_index_intelligence import USDIndexIntelligenceRuntime
+from afip.bond_yield_intelligence import BondYieldIntelligenceRuntime
+from afip.market_regime_v2 import MarketRegimeV2Runtime
+from afip.decision_intelligence_foundation import DecisionIntelligenceFoundationRuntime
+from afip.consensus_engine import ConsensusEngineRuntime
+from afip.conflict_resolver import ConflictResolverRuntime
+from afip.opportunity_ranking import OpportunityRankingRuntime
+from afip.trade_scoring import TradeScoringRuntime
+from afip.unit_allocation import UnitAllocationRuntime
+from afip.entry_validation import EntryValidationRuntime
+from afip.exit_validation import ExitValidationRuntime
+from afip.portfolio_decision import PortfolioDecisionRuntime
+from afip.decision_intelligence_certification import DecisionIntelligenceCertificationRuntime
+from afip.execution_intelligence_foundation import ExecutionIntelligenceFoundationRuntime
+from afip.smart_entry import SmartEntryRuntime
+from afip.smart_exit import SmartExitRuntime
+from afip.dynamic_stop_loss import DynamicStopLossRuntime
+from afip.dynamic_take_profit import DynamicTakeProfitRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -66,6 +91,152 @@ class DashboardUIRuntime:
         runtime_supervisor = RuntimeSupervisorRuntime().evaluate_one({**dict(record), "mode": mode})
         production_certification = ProductionCertificationRuntime().evaluate_one({**dict(record), "mode": mode})
         profile_customization = ProfileCustomizationRuntime(record.get("profile_storage_path", "runtime/profiles/profiles.json")).preview(record)
+        economic_calendar = EconomicCalendarIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        news_intelligence = NewsIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        gold_macro = GoldMacroIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        central_bank = CentralBankIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        cot_intelligence = COTIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        open_interest_intelligence = OpenInterestIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        etf_flow_intelligence = ETFFlowIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        usd_index_intelligence = USDIndexIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        bond_yield_intelligence = BondYieldIntelligenceRuntime().evaluate_one({**dict(record), "mode": mode})
+        market_regime_v2 = MarketRegimeV2Runtime().evaluate_one({
+            **dict(record), "mode": mode,
+            "economic_calendar_status": economic_calendar.status, "economic_calendar_effect": "NEUTRAL", "economic_calendar_score": 0.0, "economic_calendar_confidence": getattr(economic_calendar, "confidence", 0.0),
+            "news_status": news_intelligence.status, "news_effect": getattr(news_intelligence, "aggregate_sentiment", "NEUTRAL"), "news_score": getattr(news_intelligence, "aggregate_score", 0.0), "news_confidence": getattr(news_intelligence, "confidence", 0.0),
+            "gold_macro_status": gold_macro.status, "gold_macro_effect": getattr(gold_macro, "aggregate_gold_effect", "NEUTRAL"), "gold_macro_score": getattr(gold_macro, "aggregate_score", 0.0), "gold_macro_confidence": getattr(gold_macro, "confidence", 0.0),
+            "central_bank_status": central_bank.status, "central_bank_effect": getattr(central_bank, "aggregate_gold_effect", "NEUTRAL"), "central_bank_score": getattr(central_bank, "aggregate_score", 0.0), "central_bank_confidence": getattr(central_bank, "confidence", 0.0),
+            "cot_status": cot_intelligence.status, "cot_effect": getattr(cot_intelligence, "aggregate_gold_effect", "NEUTRAL"), "cot_score": getattr(cot_intelligence, "aggregate_score", 0.0), "cot_confidence": getattr(cot_intelligence, "confidence", 0.0),
+            "open_interest_status": open_interest_intelligence.status, "open_interest_effect": getattr(open_interest_intelligence, "aggregate_gold_effect", "NEUTRAL"), "open_interest_score": getattr(open_interest_intelligence, "aggregate_score", 0.0), "open_interest_confidence": getattr(open_interest_intelligence, "confidence", 0.0),
+            "etf_flow_status": etf_flow_intelligence.status, "etf_flow_effect": getattr(etf_flow_intelligence, "aggregate_gold_effect", "NEUTRAL"), "etf_flow_score": getattr(etf_flow_intelligence, "aggregate_score", 0.0), "etf_flow_confidence": getattr(etf_flow_intelligence, "confidence", 0.0),
+            "usd_index_status": usd_index_intelligence.status, "usd_index_effect": getattr(usd_index_intelligence, "aggregate_gold_effect", "NEUTRAL"), "usd_index_score": getattr(usd_index_intelligence, "aggregate_score", 0.0), "usd_index_confidence": getattr(usd_index_intelligence, "confidence", 0.0),
+            "bond_yield_status": bond_yield_intelligence.status, "bond_yield_effect": bond_yield_intelligence.aggregate_gold_effect, "bond_yield_score": bond_yield_intelligence.aggregate_score, "bond_yield_confidence": getattr(bond_yield_intelligence, "confidence", 0.0),
+        })
+        decision_intelligence = DecisionIntelligenceFoundationRuntime().evaluate_one({
+            **dict(record), "mode": mode,
+            "market_regime_status": market_regime_v2.status,
+            "market_regime_direction": market_regime_v2.directional_bias,
+            "market_regime_confidence": market_regime_v2.confidence,
+            "market_regime": market_regime_v2.regime,
+            "market_regime_bias": market_regime_v2.directional_bias,
+            "market_structure_status": _upper(record.get("market_structure_status"), "WAITING"),
+            "market_structure_direction": _upper(record.get("market_structure_direction"), "WAIT"),
+            "market_structure_confidence": float(record.get("market_structure_confidence", 0.0) or 0.0),
+            "multi_timeframe_status": _upper(record.get("multi_timeframe_status"), "WAITING"),
+            "multi_timeframe_direction": _upper(record.get("multi_timeframe_direction"), "WAIT"),
+            "multi_timeframe_confidence": float(record.get("multi_timeframe_confidence", 0.0) or 0.0),
+            "liquidity_status": _upper(record.get("liquidity_status"), "WAITING"),
+            "liquidity_direction": _upper(record.get("liquidity_direction"), "WAIT"),
+            "liquidity_confidence": float(record.get("liquidity_confidence", 0.0) or 0.0),
+            "trading_cost_status": "READY" if bool(record.get("trading_cost_allowed", True)) else "BLOCKED",
+            "trading_cost_direction": "WAIT",
+            "trading_cost_confidence": 1.0,
+            "risk_status": "READY" if bool(record.get("risk_allowed", True)) else "BLOCKED",
+            "risk_direction": "WAIT",
+            "risk_confidence": 1.0,
+        })
+        consensus_engine = ConsensusEngineRuntime().evaluate_one({
+            **dict(record),
+            "market_regime_status": market_regime_v2.status,
+            "market_regime_direction": market_regime_v2.directional_bias,
+            "market_regime_confidence": market_regime_v2.confidence,
+        })
+        conflict_resolver = ConflictResolverRuntime().evaluate_one(record)
+        opportunity_ranking = OpportunityRankingRuntime().evaluate_one({
+            **dict(record),
+            "resolved_consensus": conflict_resolver.resolved_consensus,
+            "market_regime_confidence": market_regime_v2.confidence,
+            "consensus_confidence": consensus_engine.agreement_ratio,
+        })
+        trade_scoring = TradeScoringRuntime().evaluate_one({**dict(record), "ranked_opportunities": [item.__dict__ for item in opportunity_ranking.ranked_opportunities]})
+        unit_allocation = UnitAllocationRuntime().evaluate_one({**dict(record), "trade_scores": [item.__dict__ for item in trade_scoring.scores]})
+        entry_validation = EntryValidationRuntime().evaluate_one({
+            **dict(record),
+            "market_regime_status": market_regime_v2.status,
+            "market_regime_ready": market_regime_v2.status == "READY",
+            "conflict_level": getattr(conflict_resolver, "conflict_level", record.get("conflict_level", "LOW")),
+            "unit_allocations": [item.__dict__ for item in unit_allocation.allocations],
+        })
+        exit_validation = ExitValidationRuntime().evaluate_one({**dict(record), "market_regime_ready": market_regime_v2.status == "READY"})
+        portfolio_decision = PortfolioDecisionRuntime().evaluate_one({
+            **dict(record),
+            "entry_validation": entry_validation.__dict__,
+            "exit_validation": exit_validation.__dict__,
+            "current_units": getattr(paper, "current_units", record.get("current_units", 0)),
+            "maximum_units": record.get("maximum_units", record.get("profile_max_units", 1)),
+        })
+        decision_certification = DecisionIntelligenceCertificationRuntime().evaluate_one({
+            **dict(record),
+            "market_regime_status": market_regime_v2.status,
+            "decision_intelligence_status": decision_intelligence.status,
+            "consensus_status": consensus_engine.status,
+            "conflict_resolver_status": conflict_resolver.status,
+            "opportunity_ranking_status": opportunity_ranking.status,
+            "trade_scoring_status": trade_scoring.status,
+            "unit_allocation_status": unit_allocation.status,
+            "entry_validation_status": entry_validation.status,
+            "exit_validation_status": exit_validation.status,
+            "portfolio_decision_status": portfolio_decision.status,
+            "direct_execution": portfolio_decision.direct_execution,
+            "lot_per_unit": 0.01,
+        })
+        execution_intelligence = ExecutionIntelligenceFoundationRuntime().evaluate_one({
+            **dict(record),
+            "decision_certification_status": decision_certification.status,
+            "portfolio_decision_status": portfolio_decision.status,
+            "portfolio_decision": portfolio_decision.portfolio_decision,
+            "entry_validation_status": entry_validation.status,
+            "conflict_level": getattr(conflict_resolver, "conflict_level", "LOW"),
+            "approved_units": portfolio_decision.approved_units,
+            "risk_allowed": getattr(portfolio_decision, "portfolio_risk_status", "READY") not in {"BLOCKED", "HIGH"},
+            "timing_allowed": market_calendar.trading_allowed,
+            "trading_cost_allowed": bool(record.get("trading_cost_allowed", True)),
+            "market_open": market_calendar.market_open,
+            "calendar_allowed": economic_calendar.trading_allowed,
+            "decision_confidence": getattr(decision_intelligence, "confidence", 0.0),
+            "direct_execution": False,
+            "live_execution_enabled": False,
+            "lot_per_unit": 0.01,
+        })
+        smart_entry = SmartEntryRuntime().evaluate_one({
+            **dict(record),
+            "execution_readiness": execution_intelligence.execution_readiness,
+            "portfolio_decision": portfolio_decision.portfolio_decision,
+            "approved_units": portfolio_decision.approved_units,
+            "direction": record.get("direction", getattr(portfolio_decision, "portfolio_direction", record.get("entry_direction", "WAIT"))),
+            "lot_per_unit": 0.01,
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
+        smart_exit = SmartExitRuntime().evaluate_one({
+            **dict(record),
+            "portfolio_decision": portfolio_decision.portfolio_decision,
+            "current_units": record.get("current_units", record.get("position_units", 0)),
+            "risk_allowed": getattr(portfolio_decision, "portfolio_risk_status", "READY") not in {"BLOCKED", "HIGH"},
+            "timing_allowed": market_calendar.trading_allowed,
+            "trading_cost_allowed": bool(record.get("trading_cost_allowed", True)),
+            "lot_per_unit": 0.01,
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
+        dynamic_stop_loss = DynamicStopLossRuntime().evaluate_one({
+            **dict(record),
+            "current_units": record.get("current_units", record.get("position_units", 0)),
+            "risk_allowed": getattr(portfolio_decision, "portfolio_risk_status", "READY") not in {"BLOCKED", "HIGH"},
+            "timing_allowed": market_calendar.trading_allowed,
+            "lot_per_unit": 0.01,
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
+        dynamic_take_profit = DynamicTakeProfitRuntime().evaluate_one({
+            **dict(record),
+            "current_units": record.get("current_units", record.get("position_units", 1)),
+            "risk_allowed": getattr(portfolio_decision, "portfolio_risk_status", "READY") not in {"BLOCKED", "HIGH"},
+            "timing_allowed": market_calendar.trading_allowed,
+            "lot_per_unit": 0.01,
+            "direct_execution": False,
+            "live_execution_enabled": False,
+        })
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")
@@ -100,6 +271,31 @@ class DashboardUIRuntime:
             _runtime_supervisor_panel(runtime_supervisor),
             _production_certification_panel(production_certification),
             _profile_customization_panel(profile_customization),
+            _economic_calendar_intelligence_panel(economic_calendar),
+            _news_intelligence_panel(news_intelligence),
+            _gold_macro_intelligence_panel(gold_macro),
+            _central_bank_intelligence_panel(central_bank),
+            _cot_intelligence_panel(cot_intelligence),
+            _open_interest_intelligence_panel(open_interest_intelligence),
+            _etf_flow_intelligence_panel(etf_flow_intelligence),
+            _usd_index_intelligence_panel(usd_index_intelligence),
+            _bond_yield_intelligence_panel(bond_yield_intelligence),
+            _market_regime_v2_panel(market_regime_v2),
+            _decision_intelligence_foundation_panel(decision_intelligence),
+            _consensus_engine_panel(consensus_engine),
+            _conflict_resolver_panel(conflict_resolver),
+            _opportunity_ranking_panel(opportunity_ranking),
+            _trade_scoring_panel(trade_scoring),
+            _unit_allocation_panel(unit_allocation),
+            _entry_validation_panel(entry_validation),
+            _exit_validation_panel(exit_validation),
+            _portfolio_decision_panel(portfolio_decision),
+            _decision_intelligence_certification_panel(decision_certification),
+            _execution_intelligence_foundation_panel(execution_intelligence),
+            _smart_entry_panel(smart_entry),
+            _smart_exit_panel(smart_exit),
+            _dynamic_stop_loss_panel(dynamic_stop_loss),
+            _dynamic_take_profit_panel(dynamic_take_profit),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -461,6 +657,209 @@ def _production_certification_panel(report: Any) -> DashboardPanel:
         ),
     )
 
+
+def _exit_validation_panel(report: Any) -> DashboardPanel:
+    rows = [
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Selected Position / สถานะที่เลือก", report.selected_position_id),
+        ("Approved Action / การดำเนินการที่อนุมัติ", report.approved_action),
+        ("Approved Units / Unit ที่อนุมัติ", str(report.approved_units)),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Stop Loss Move Reason EN", report.stop_loss_move_reason_en),
+        ("Stop Loss Move Reason TH", report.stop_loss_move_reason_th),
+        ("Take Profit Change Reason EN", report.take_profit_change_reason_en),
+        ("Take Profit Change Reason TH", report.take_profit_change_reason_th),
+        ("Trailing Stop Reason EN", report.trailing_stop_reason_en),
+        ("Trailing Stop Reason TH", report.trailing_stop_reason_th),
+        ("Partial Close Reason EN", report.partial_close_reason_en),
+        ("Partial Close Reason TH", report.partial_close_reason_th),
+        ("Exit Reason EN", report.exit_reason_en),
+        ("Exit Reason TH", report.exit_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+    ]
+    for item in report.validations[:10]:
+        rows.append((f"{item.position_id} / {item.direction}", f"requested={item.recommended_action} | approved={item.approved_action} | action_approved={item.action_approved} | units={item.units} | hold={item.hold_allowed} | partial={item.partial_close_allowed} | sl_move={item.stop_loss_move_allowed} | tp_change={item.take_profit_change_allowed} | trailing={item.trailing_stop_allowed} | exit={item.full_exit_allowed} | blocks={','.join(item.block_reasons)} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("exit_validation", "Exit Validation Engine", "กลไกตรวจสอบการถือและออกจากสถานะ", report.status, "Validates holding, stop-loss moves, take-profit changes, trailing stops, partial closes, and exits without modifying positions.", "ตรวจสอบการถือ เลื่อน Stop Loss เปลี่ยน Take Profit Trailing Stop ปิดบางส่วน และออกจากสถานะโดยไม่แก้ไขสถานะจริง", tuple(rows))
+
+
+def _portfolio_decision_panel(report: Any) -> DashboardPanel:
+    rows = [
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Portfolio / พอร์ต", report.selected_portfolio_id),
+        ("Decision / การตัดสินใจ", report.portfolio_decision),
+        ("Direction / ทิศทาง", report.selected_direction),
+        ("Approved Units / Unit ที่อนุมัติ", str(report.approved_units)),
+        ("Current Units / Unit ปัจจุบัน", str(report.current_units)),
+        ("Maximum Units / Unit สูงสุด", str(report.maximum_units)),
+        ("Available Units / Unit ที่เหลือ", str(report.available_units)),
+        ("Portfolio Risk / ความเสี่ยงพอร์ต", report.portfolio_risk_status),
+        ("Waiting Reason EN", report.waiting_reason_en),
+        ("Waiting Reason TH", report.waiting_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+    ]
+    for item in report.decisions[:10]:
+        rows.append((f"{item.portfolio_id} / {item.decision}", f"direction={item.direction} | approved={item.approved} | current={item.current_units} | max={item.maximum_units} | available={item.available_units} | entry={item.entry_units} | exit={item.exit_units} | risk={item.risk_allowed} | exposure={item.exposure_allowed} | blocks={','.join(item.block_reasons)} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("portfolio_decision", "Portfolio Decision Engine", "กลไกตัดสินใจระดับพอร์ต", report.status, "Combines entry, exit, risk, exposure, and fixed-unit capacity into one explainable portfolio decision without executing orders.", "รวมจุดเข้า การออก ความเสี่ยง Exposure และความจุ Unit คงที่เป็นการตัดสินใจระดับพอร์ตที่อธิบายได้โดยไม่ส่งคำสั่งซื้อขาย", tuple(rows))
+
+def _decision_intelligence_certification_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Certification Level / ระดับการรับรอง", report.certification_level),
+        ("Passed Checks / รายการที่ผ่าน", f"{report.passed_checks}/{report.total_checks}"),
+        ("Failed Checks / รายการที่ไม่ผ่าน", ", ".join(report.failed_checks) or "NONE"),
+        ("Decision Intelligence Ready / พร้อมใช้งาน", str(report.decision_intelligence_ready)),
+        ("Summary EN", report.certification_summary_en),
+        ("Summary TH", report.certification_summary_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+        ("Live Execution / คำสั่งจริง", str(report.live_execution_enabled)),
+        ("Execution Status / สถานะการส่งคำสั่ง", report.execution_status),
+    )
+    return DashboardPanel("decision_intelligence_certification", "Decision Intelligence Certification", "การรับรอง Decision Intelligence", report.status, "Certifies Milestone J as explainable, deterministic, and simulation-only before Execution Intelligence begins.", "รับรอง Milestone J ว่าอธิบายได้ กำหนดผลซ้ำได้ และจำกัดเฉพาะ simulation ก่อนเริ่ม Execution Intelligence", rows)
+
+
+def _execution_intelligence_foundation_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Execution Stage / ขั้นตอน", report.execution_stage),
+        ("Readiness / ความพร้อม", report.execution_readiness),
+        ("Approval Stage / การอนุมัติ", report.approval_stage),
+        ("Pipeline Progress / ความคืบหน้า", f"{report.pipeline_progress_percent}%"),
+        ("Confidence / ความมั่นใจ", str(report.execution_confidence)),
+        ("Simulation Ready / พร้อมจำลอง", str(report.simulation_ready)),
+        ("No Order Sent / ไม่มีคำสั่งถูกส่ง", str(report.no_order_sent)),
+        ("Approved Units / Unit ที่อนุมัติ", str(report.unit_count)),
+        ("Lot per Unit", str(report.lot_per_unit)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Waiting Reason EN", report.waiting_reason_en),
+        ("Waiting Reason TH", report.waiting_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Execution Status / สถานะการส่งคำสั่ง", report.execution_status),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+        ("Live Execution / คำสั่งจริง", str(report.live_execution_enabled)),
+    )
+    return DashboardPanel("execution_intelligence_foundation", "Execution Intelligence Foundation", "รากฐานปัญญาการส่งคำสั่ง", report.status, "Converts certified portfolio decisions into an explainable simulation-only execution context. It never sends an order.", "แปลงการตัดสินใจระดับพอร์ตที่ผ่านการรับรองเป็นบริบทการส่งคำสั่งแบบ Simulation ที่อธิบายได้ และไม่ส่งคำสั่งจริง", rows)
+
+def _smart_entry_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Entry Plan / แผนจุดเข้า", report.entry_plan_status),
+        ("Side / ฝั่ง", report.order_side),
+        ("Order Type / ประเภทคำสั่ง", report.order_type),
+        ("Reference Price / ราคาอ้างอิง", str(report.reference_price)),
+        ("Stop Loss / จุดหยุดขาดทุน", str(report.stop_loss_price)),
+        ("Take Profit / จุดทำกำไร", str(report.take_profit_price)),
+        ("Reward/Risk", str(report.reward_risk_ratio)),
+        ("Units / จำนวน Unit", str(report.unit_count)),
+        ("Total Lot / Lot รวม", str(report.total_lot)),
+        ("Simulation Instruction Ready / พร้อมจำลอง", str(report.simulation_instruction_ready)),
+        ("No Order Sent / ไม่มีคำสั่งถูกส่ง", str(report.no_order_sent)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Entry Reason EN", report.entry_reason_en),
+        ("Entry Reason TH", report.entry_reason_th),
+        ("Waiting Reason EN", report.waiting_reason_en),
+        ("Waiting Reason TH", report.waiting_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Execution Status / สถานะการส่งคำสั่ง", report.execution_status),
+    )
+    return DashboardPanel("smart_entry", "Smart Entry Engine", "กลไกวางแผนจุดเข้าอัจฉริยะ", report.status, "Builds a protected paper/demo entry instruction without sending a live order.", "สร้างคำสั่งจำลองสำหรับจุดเข้าที่มีการป้องกันความเสี่ยง โดยไม่ส่งคำสั่งจริง", rows)
+
+def _smart_exit_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Exit Plan / แผนออก", report.exit_plan_status),
+        ("Action / การดำเนินการ", report.action),
+        ("Current Units / Unit ปัจจุบัน", str(report.current_units)),
+        ("Close Units / Unit ที่ปิด", str(report.close_units)),
+        ("Remaining Units / Unit คงเหลือ", str(report.remaining_units)),
+        ("Reference Price / ราคาอ้างอิง", str(report.reference_price)),
+        ("Unrealized PnL / กำไรขาดทุนลอยตัว", str(report.unrealized_pnl)),
+        ("Simulation Instruction Ready / พร้อมจำลอง", str(report.simulation_instruction_ready)),
+        ("No Order Sent / ไม่มีคำสั่งถูกส่ง", str(report.no_order_sent)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Partial Close Reason EN", report.partial_close_reason_en),
+        ("Partial Close Reason TH", report.partial_close_reason_th),
+        ("Exit Reason EN", report.exit_reason_en),
+        ("Exit Reason TH", report.exit_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Execution Status / สถานะการส่งคำสั่ง", report.execution_status),
+    )
+    return DashboardPanel("smart_exit", "Smart Exit Engine", "กลไกวางแผนออกอัจฉริยะ", report.status, "Builds hold, partial-close, or full-exit instructions for paper/demo positions without changing a live position.", "สร้างคำสั่งถือต่อ ปิดบางส่วน หรือออกทั้งหมดสำหรับสถานะจำลอง โดยไม่แก้ไขสถานะจริง", rows)
+
+def _dynamic_stop_loss_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Action / การดำเนินการ", report.action),
+        ("Current Stop Loss / Stop Loss ปัจจุบัน", str(report.current_stop_loss)),
+        ("Proposed Stop Loss / Stop Loss ที่เสนอ", str(report.proposed_stop_loss)),
+        ("Reference Price / ราคาอ้างอิง", str(report.reference_price)),
+        ("Risk Distance Before / ระยะความเสี่ยงก่อน", str(report.risk_distance_before)),
+        ("Risk Distance After / ระยะความเสี่ยงหลัง", str(report.risk_distance_after)),
+        ("Risk Reduction / ความเสี่ยงที่ลดลง", str(report.risk_reduction)),
+        ("Move Approved / อนุมัติการเลื่อน", str(report.move_approved)),
+        ("Simulation Instruction Ready / พร้อมจำลอง", str(report.simulation_instruction_ready)),
+        ("No Order Sent / ไม่มีคำสั่งถูกส่ง", str(report.no_order_sent)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Stop Loss Move Reason EN", report.stop_loss_move_reason_en),
+        ("Stop Loss Move Reason TH", report.stop_loss_move_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Execution Status / สถานะการส่งคำสั่ง", report.execution_status),
+    )
+    return DashboardPanel("dynamic_stop_loss", "Dynamic Stop Loss Intelligence", "ระบบวิเคราะห์ Stop Loss แบบปรับตามสถานการณ์", report.status, "Reviews a risk-reducing stop-loss proposal for paper/demo simulation without modifying a live position.", "ทบทวนข้อเสนอการเลื่อน Stop Loss ที่ลดความเสี่ยงสำหรับการจำลอง โดยไม่แก้ไขสถานะจริง", rows)
+
+def _dynamic_take_profit_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Action / การดำเนินการ", report.action),
+        ("Current TP / Take Profit ปัจจุบัน", str(report.current_take_profit)),
+        ("Proposed TP / Take Profit ที่เสนอ", str(report.proposed_take_profit)),
+        ("Reference Price / ราคาอ้างอิง", str(report.reference_price)),
+        ("Reward/Risk Before / ก่อนปรับ", str(report.reward_risk_before)),
+        ("Reward/Risk After / หลังปรับ", str(report.reward_risk_after)),
+        ("Change Approved / อนุมัติการเปลี่ยน", str(report.change_approved)),
+        ("Simulation Ready / พร้อมจำลอง", str(report.simulation_instruction_ready)),
+        ("No Order Sent / ไม่มีคำสั่งถูกส่ง", str(report.no_order_sent)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
+        ("Take Profit Change Reason EN", report.take_profit_change_reason_en),
+        ("Take Profit Change Reason TH", report.take_profit_change_reason_th),
+        ("Holding Reason EN", report.holding_reason_en),
+        ("Holding Reason TH", report.holding_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+    )
+    return DashboardPanel("dynamic_take_profit", "Dynamic Take Profit Intelligence", "ระบบวิเคราะห์ Take Profit แบบปรับตามสถานการณ์", report.status, "Reviews a take-profit proposal for paper/demo simulation while preserving reward/risk and never modifying a live position.", "ทบทวนข้อเสนอ Take Profit สำหรับการจำลองโดยรักษา Reward/Risk และไม่แก้ไขสถานะจริง", rows)
+
+
 def _market_panel(record: Mapping[str, Any], calendar: Any) -> DashboardPanel:
     return DashboardPanel("market", "Dashboard Market", "ตลาด", calendar.status, "Displays live market session and open/close status.", "แสดงสถานะตลาดสดและช่วงเวลาเทรด", (
         ("Market Open / Close", calendar.dashboard_market_status),
@@ -552,3 +951,183 @@ def _profile_customization_panel(report: Any) -> DashboardPanel:
         "สร้าง เปลี่ยนชื่อ คัดลอก เปิดใช้งาน เก็บถาวร และกำหนดบัญชีให้โปรไฟล์ พร้อมการตรวจสอบและประวัติเวอร์ชัน",
         (("Profile Name / ชื่อโปรไฟล์", p.profile_name), ("Profile ID", p.profile_id), ("Base Profile / โปรไฟล์ต้นแบบ", p.base_profile), ("Risk / ความเสี่ยง", p.risk_level), ("Maximum Units / จำนวน Unit สูงสุด", str(p.maximum_units)), ("Capital per Unit / เงินทุนต่อ Unit", str(p.capital_per_unit)), ("Active / ใช้งานอยู่", str(p.active)), ("Archived / เก็บถาวร", str(p.archived)), ("Assigned Account / บัญชีที่กำหนด", p.assigned_account_id or "-"), ("Validation / การตรวจสอบ", ", ".join(report.validation_items) or "PASS"), ("Next Action / ขั้นตอนถัดไป", report.expected_next_action_en + " / " + report.expected_next_action_th), ("Live Execution", str(report.live_execution_enabled))),
     )
+
+
+def _economic_calendar_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Event Count / จำนวนเหตุการณ์", str(report.event_count)), ("High Impact / ผลกระทบสูง", str(report.high_impact_count)), ("Gold Relevant / เกี่ยวข้องกับทอง", str(report.gold_relevant_count)), ("Trading Allowed / อนุญาตให้เทรด", str(report.trading_allowed)), ("Trading Block Reason / เหตุผลบล็อก", report.trading_block_reason), ("Next Event UTC / ข่าวถัดไป", report.next_event_time_utc), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for event in report.events[:5]:
+        rows.append((f"{event.title} / {event.impact}", f"{event.event_window} | gold={event.gold_relevance} | {event.minutes_until_event}m | EN: {event.explanation_en} | TH: {event.explanation_th}"))
+    return DashboardPanel("economic_calendar_intelligence", "Economic Calendar Intelligence", "ปัญญาปฏิทินเศรษฐกิจ", report.status, "Converts economic events into structured gold intelligence. Events never execute orders directly.", "แปลงเหตุการณ์เศรษฐกิจเป็นข้อมูลอัจฉริยะสำหรับทองคำ โดยข่าวไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _news_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("News Items / จำนวนข่าว", str(report.item_count)), ("Unique / ข่าวไม่ซ้ำ", str(report.unique_item_count)), ("Duplicates / ข่าวซ้ำ", str(report.duplicate_count)), ("High Reliability / ความน่าเชื่อถือสูง", str(report.high_reliability_count)), ("Gold Relevant / เกี่ยวข้องกับทอง", str(report.gold_relevant_count)), ("Aggregate Sentiment / อารมณ์รวม", f"{report.aggregate_sentiment} ({report.aggregate_sentiment_score})"), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.items[:5]:
+        rows.append((f"{item.source} / {item.category}", f"{item.sentiment} | reliability={item.reliability_score} | gold={item.gold_relevance} | duplicate={item.duplicate} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("news_intelligence", "News Intelligence", "ปัญญาข่าวสาร", report.status, "Transforms supplied news into structured intelligence with source reliability and duplicate control. News never executes orders directly.", "แปลงข่าวที่ได้รับเป็นข้อมูลอัจฉริยะ พร้อมประเมินความน่าเชื่อถือและควบคุมข่าวซ้ำ โดยข่าวไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _gold_macro_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Indicators / ตัวชี้วัด", str(report.indicator_count)), ("Inflation / เงินเฟ้อ", str(report.inflation_count)), ("Employment / การจ้างงาน", str(report.employment_count)), ("Growth / การเติบโต", str(report.growth_count)), ("PMI-ISM / กิจกรรมเศรษฐกิจ", str(report.activity_count)), ("Aggregate Bias / มุมมองรวม", f"{report.aggregate_bias} ({report.aggregate_score})"), ("Confidence / ความมั่นใจ", str(report.confidence)), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.indicators[:6]:
+        rows.append((f"{item.indicator} / {item.category}", f"actual={item.actual} | forecast={item.forecast} | previous={item.previous} | surprise={item.surprise} | gold={item.gold_effect} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("gold_macro_intelligence", "Gold Macro Intelligence", "ปัญญามหภาคสำหรับทองคำ", report.status, "Converts CPI, PPI, employment, GDP, PMI, and ISM observations into structured GOLD# macro context. Macro data never executes orders directly.", "แปลงข้อมูล CPI, PPI, การจ้างงาน, GDP, PMI และ ISM เป็นบริบทมหภาคสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _central_bank_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Observations / จำนวนข้อมูล", str(report.observation_count)), ("Hawkish / ตึงตัว", str(report.hawkish_count)), ("Dovish / ผ่อนคลาย", str(report.dovish_count)), ("Neutral / เป็นกลาง", str(report.neutral_count)), ("Policy Bias / มุมมองนโยบาย", f"{report.aggregate_policy_bias} ({report.aggregate_score})"), ("Gold Effect / ผลต่อทอง", report.aggregate_gold_effect), ("Confidence / ความมั่นใจ", str(report.confidence)), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.observations[:6]:
+        rows.append((f"{item.institution} / {item.communication_type}", f"speaker={item.speaker} | bias={item.policy_bias} | gold={item.gold_effect} | confidence={item.confidence} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("central_bank_intelligence", "Central Bank Intelligence", "ปัญญาธนาคารกลาง", report.status, "Classifies FOMC, ECB, BOE, BOJ, and PBOC policy communications into structured GOLD# context. Central-bank data never executes orders directly.", "จัดประเภทข้อมูลนโยบายจาก FOMC, ECB, BOE, BOJ และ PBOC เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _cot_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Reports / จำนวนรายงาน", str(report.observation_count)), ("Bullish / สนับสนุนทอง", str(report.bullish_count)), ("Bearish / กดดันทอง", str(report.bearish_count)), ("Neutral / เป็นกลาง", str(report.neutral_count)), ("Positioning Bias / มุมมองสถานะ", f"{report.aggregate_positioning_bias} ({report.aggregate_score})"), ("Confidence / ความมั่นใจ", str(report.confidence)), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.observations[:6]:
+        rows.append((f"{item.market} / {item.report_id}", f"commercial_net={item.commercial_net} | noncommercial_net={item.noncommercial_net} | weekly_change={item.noncommercial_net_change} | trend={item.positioning_trend} | gold={item.gold_effect} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("cot_intelligence", "COT Intelligence", "ปัญญารายงาน COT", report.status, "Transforms supplied Commitments of Traders positioning into structured GOLD# context. COT data never executes orders directly.", "แปลงข้อมูลสถานะจากรายงาน Commitments of Traders เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูล COT ไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _open_interest_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Observations / จำนวนข้อมูล", str(report.observation_count)), ("Rising OI / OI เพิ่ม", str(report.rising_count)), ("Falling OI / OI ลด", str(report.falling_count)), ("Stable OI / OI คงที่", str(report.stable_count)), ("Participation / การมีส่วนร่วม", report.aggregate_participation), ("Gold Effect / ผลต่อทอง", f"{report.aggregate_gold_effect} ({report.aggregate_score})"), ("Confidence / ความมั่นใจ", str(report.confidence)), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.observations[:6]:
+        rows.append((f"{item.market} / {item.observation_id}", f"price_change={item.price_change_pct}% | oi={item.open_interest} | oi_change={item.open_interest_change_pct}% | participation={item.participation_trend} | interpretation={item.market_interpretation} | gold={item.gold_effect} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("open_interest_intelligence", "Open Interest Intelligence", "ปัญญา Open Interest", report.status, "Transforms supplied futures open interest and price relationships into structured GOLD# participation context. Open-interest data never executes orders directly.", "แปลงความสัมพันธ์ระหว่าง Open Interest ของตลาด Futures กับราคาเป็นบริบทการมีส่วนร่วมสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _etf_flow_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Observations / จำนวนข้อมูล", str(report.observation_count)), ("Inflows / เงินไหลเข้า", str(report.inflow_count)), ("Outflows / เงินไหลออก", str(report.outflow_count)), ("Balanced / สมดุล", str(report.neutral_count)), ("Flow Trend / แนวโน้มกระแสเงิน", report.aggregate_flow_trend), ("Gold Effect / ผลต่อทอง", f"{report.aggregate_gold_effect} ({report.aggregate_score})"), ("Daily Flow USD / กระแสรายวัน", str(report.total_daily_flow_usd)), ("Weekly Flow USD / กระแสรายสัปดาห์", str(report.total_weekly_flow_usd)), ("Confidence / ความมั่นใจ", str(report.confidence)), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.observations[:6]:
+        rows.append((f"{item.fund} / {item.observation_id}", f"daily={item.daily_flow_usd} | weekly={item.weekly_flow_usd} | holdings_tonnes={item.holdings_change_tonnes} | trend={item.flow_trend} | gold={item.gold_effect} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("etf_flow_intelligence", "ETF Flow Intelligence", "ปัญญากระแสเงิน ETF", report.status, "Transforms supplied GLD, IAU, and gold ETF flows into structured GOLD# context. ETF flow data never executes orders directly.", "แปลงกระแสเงินของ GLD, IAU และ Gold ETF เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _usd_index_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Observations / จำนวนข้อมูล", str(report.observation_count)), ("Rising DXY / DXY เพิ่ม", str(report.rising_count)), ("Falling DXY / DXY ลด", str(report.falling_count)), ("Stable DXY / DXY คงที่", str(report.stable_count)), ("Divergences / ความเบี่ยงเบน", str(report.divergence_count)), ("USD Trend / แนวโน้มดอลลาร์", report.aggregate_usd_trend), ("Gold Effect / ผลต่อทอง", f"{report.aggregate_gold_effect} ({report.aggregate_score})"), ("Confidence / ความมั่นใจ", str(report.confidence)), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.observations[:6]:
+        rows.append((f"{item.index_name} / {item.observation_id}", f"current={item.current_value} | previous={item.previous_value} | change={item.change_pct}% | trend={item.trend} | correlation={item.gold_correlation} | divergence={item.divergence} | gold={item.gold_effect} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("usd_index_intelligence", "USD Index Intelligence", "ปัญญาดัชนีดอลลาร์สหรัฐ", report.status, "Transforms supplied DXY observations into structured GOLD# context with trend, correlation, and divergence analysis. USD index data never executes orders directly.", "แปลงข้อมูล DXY เป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# พร้อมวิเคราะห์แนวโน้ม ความสัมพันธ์ และ divergence โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _bond_yield_intelligence_panel(report: Any) -> DashboardPanel:
+    rows = [("Status / สถานะ", report.status), ("Reason / เหตุผล", report.reason), ("Observations / จำนวนข้อมูล", str(report.observation_count)), ("Rising Nominal / ผลตอบแทนทั่วไปเพิ่ม", str(report.rising_nominal_count)), ("Falling Nominal / ผลตอบแทนทั่วไปลด", str(report.falling_nominal_count)), ("Rising Real Yield / Real Yield เพิ่ม", str(report.rising_real_count)), ("Falling Real Yield / Real Yield ลด", str(report.falling_real_count)), ("Inverted Curves / เส้นผลตอบแทนกลับด้าน", str(report.inverted_curve_count)), ("Yield Trend / แนวโน้มผลตอบแทน", report.aggregate_yield_trend), ("Real Yield Trend / แนวโน้ม Real Yield", report.aggregate_real_yield_trend), ("Curve Shape / รูปทรงเส้นผลตอบแทน", report.aggregate_curve_shape), ("Gold Effect / ผลต่อทอง", f"{report.aggregate_gold_effect} ({report.aggregate_score})"), ("Confidence / ความมั่นใจ", str(report.confidence)), ("Intelligence Ready / พร้อมใช้งาน", str(report.intelligence_ready)), ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.execution_allowed)), ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc)]
+    for item in report.observations[:6]:
+        rows.append((f"Yield / {item.observation_id}", f"US2Y={item.us2y_yield}% | US10Y={item.us10y_yield}% | real={item.real_yield}% | spread={item.curve_spread_bps}bps | curve={item.curve_shape} | nominal={item.nominal_yield_trend} | real_trend={item.real_yield_trend} | gold={item.gold_effect} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("bond_yield_intelligence", "Bond Yield Intelligence", "ปัญญาอัตราผลตอบแทนพันธบัตร", report.status, "Transforms supplied US2Y, US10Y, real-yield, and yield-curve observations into structured GOLD# context. Yield data never executes orders directly.", "แปลงข้อมูล US2Y, US10Y, real yield และเส้นอัตราผลตอบแทนเป็นบริบทแบบมีโครงสร้างสำหรับ GOLD# โดยข้อมูลไม่ส่งคำสั่งซื้อขายโดยตรง", tuple(rows))
+
+
+def _market_regime_v2_panel(report: Any) -> DashboardPanel:
+    rows=[("Status / สถานะ",report.status),("Reason / เหตุผล",report.reason),("Regime / ภาวะตลาด",report.regime),("Directional Bias / ทิศทาง",report.directional_bias),("Risk State / สถานะความเสี่ยง",report.risk_state),("Aggregate Score / คะแนนรวม",str(report.aggregate_score)),("Confidence / ความมั่นใจ",str(report.confidence)),("Ready Components / องค์ประกอบพร้อม",f"{report.ready_component_count}/{report.total_component_count}"),("Alignment / ความสอดคล้อง",report.component_alignment),("Intelligence Ready / พร้อมใช้งาน",str(report.intelligence_ready)),("Direct Execution / ส่งคำสั่งโดยตรง",str(report.execution_allowed)),("Next Review UTC / ตรวจสอบถัดไป",report.next_review_time_utc)]
+    for item in report.components:
+        rows.append((f"Component / {item.name}",f"status={item.status} | effect={item.effect} | score={item.score} | confidence={item.confidence} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("market_regime_v2","Market Regime V2","ภาวะตลาด V2",report.status,"Aggregates structured market intelligence into one explainable GOLD# regime. It never executes orders directly.","รวม Market Intelligence แบบมีโครงสร้างเป็นภาวะตลาดเดียวสำหรับ GOLD# ที่ตรวจสอบได้ และไม่ส่งคำสั่งซื้อขายโดยตรง",tuple(rows))
+
+
+def _decision_intelligence_foundation_panel(report: Any) -> DashboardPanel:
+    rows=[("Status / สถานะ",report.status),("Reason / เหตุผล",report.reason),("Consensus / ข้อสรุป",report.consensus),("Conflict / ความขัดแย้ง",report.conflict_state),("Opportunity / สถานะโอกาส",report.opportunity_state),("Aggregate Score / คะแนนรวม",str(report.aggregate_score)),("Confidence / ความมั่นใจ",str(report.confidence)),("Supporting / สนับสนุน",str(report.supporting_count)),("Opposing / คัดค้าน",str(report.opposing_count)),("Ready Evidence / หลักฐานพร้อม",f"{report.ready_evidence_count}/{report.total_evidence_count}"),("Market Regime / ภาวะตลาด",report.market_regime),("Regime Bias / ทิศทางภาวะตลาด",report.market_regime_bias),("Decision Ready / พร้อมตัดสินใจ",str(report.decision_ready)),("Direct Execution / ส่งคำสั่งโดยตรง",str(report.execution_allowed)),("Expected Next Action EN",report.expected_next_action_en),("Expected Next Action TH",report.expected_next_action_th),("Next Review UTC / ตรวจสอบถัดไป",report.next_review_time_utc)]
+    for item in report.evidence:
+        rows.append((f"Evidence / {item.source}",f"status={item.status} | direction={item.direction} | confidence={item.confidence} | weight={item.weight} | weighted={item.weighted_score} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("decision_intelligence_foundation","Decision Intelligence Foundation","รากฐานปัญญาการตัดสินใจ",report.status,"Resolves structured consensus and conflicts before any entry validation. It never executes orders directly.","สรุปฉันทามติและแก้ความขัดแย้งของข้อมูลแบบมีโครงสร้างก่อนตรวจสอบการเข้าออเดอร์ และไม่ส่งคำสั่งซื้อขายโดยตรง",tuple(rows))
+
+
+def _consensus_engine_panel(report: Any) -> DashboardPanel:
+    rows=[("Consensus / ฉันทามติ",report.consensus),("Consensus Quality / คุณภาพฉันทามติ",report.consensus_quality),("Agreement Ratio / สัดส่วนเห็นพ้อง",f"{report.agreement_ratio:.2%}"),("Conflict Ratio / สัดส่วนขัดแย้ง",f"{report.conflict_ratio:.2%}"),("BUY Score",str(report.buy_score)),("SELL Score",str(report.sell_score)),("WAIT Score",str(report.neutral_score)),("Dominant Sources / แหล่งข้อมูลหลัก",", ".join(report.dominant_sources) or "-"),("Contradicting Sources / แหล่งข้อมูลขัดแย้ง",", ".join(report.contradicting_sources) or "-"),("Expected Next Action EN",report.expected_next_action_en),("การดำเนินการถัดไป TH",report.expected_next_action_th),("Direct Execution",str(report.direct_execution))]
+    return DashboardPanel("consensus_engine","Consensus Engine","กลไกฉันทามติ",report.status,"Calculates weighted agreement and conflict across structured evidence before trade scoring.","คำนวณน้ำหนักการเห็นพ้องและความขัดแย้งของหลักฐานแบบมีโครงสร้างก่อนให้คะแนนโอกาสซื้อขาย",tuple(rows))
+
+
+def _conflict_resolver_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Status", str(report.status)),
+        ("Original Consensus", str(report.original_consensus)),
+        ("Resolved Consensus", str(report.resolved_consensus)),
+        ("Conflict Level", str(report.conflict_level)),
+        ("Conflict Score", str(report.conflict_score)),
+        ("Resolution Method", str(report.resolution_method)),
+        ("Unresolved Sources", ", ".join(report.unresolved_sources) or "None"),
+        ("Waiting Reason EN", report.waiting_reason_en),
+        ("Waiting Reason TH", report.waiting_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review Time", report.next_review_time_utc),
+        ("Direct Execution", str(report.direct_execution)),
+    )
+    return DashboardPanel("conflict_resolver", "Conflict Resolver", "ตัวแก้ความขัดแย้ง", report.status, "Resolves material evidence disagreement before scoring or execution review.", "แก้ความขัดแย้งของหลักฐานสำคัญก่อนการให้คะแนนหรือทบทวนการส่งคำสั่ง", rows)
+
+
+def _opportunity_ranking_panel(report: Any) -> DashboardPanel:
+    rows = [
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Top Opportunity / โอกาสอันดับหนึ่ง", report.top_opportunity_id),
+        ("Top Direction / ทิศทางอันดับหนึ่ง", report.top_direction),
+        ("Top Score / คะแนนอันดับหนึ่ง", str(report.top_score)),
+        ("Eligible / ผ่านเกณฑ์", f"{report.eligible_count}/{report.opportunity_count}"),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+    ]
+    for item in report.ranked_opportunities[:10]:
+        rows.append((f"Rank {item.rank} / {item.opportunity_id}", f"symbol={item.symbol} | direction={item.direction} | score={item.total_score} | eligible={item.eligible} | EN: {item.block_reason_en} | TH: {item.block_reason_th}"))
+    return DashboardPanel("opportunity_ranking", "Opportunity Ranking Engine", "กลไกจัดอันดับโอกาส", report.status, "Ranks eligible GOLD# opportunities after regime, consensus, conflict, risk, and cost review. Ranking never executes orders.", "จัดอันดับโอกาส GOLD# หลังตรวจ Market Regime ฉันทามติ ความขัดแย้ง ความเสี่ยง และต้นทุน โดยการจัดอันดับไม่ส่งคำสั่งซื้อขาย", tuple(rows))
+
+
+def _trade_scoring_panel(report: Any) -> DashboardPanel:
+    rows = [
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Top Opportunity / โอกาสอันดับหนึ่ง", report.top_opportunity_id),
+        ("Top Direction / ทิศทางอันดับหนึ่ง", report.top_direction),
+        ("Top Final Score / คะแนนสุดท้ายสูงสุด", str(report.top_final_score)),
+        ("Top Grade / เกรดสูงสุด", report.top_grade),
+        ("Eligible / ผ่านเกณฑ์", f"{report.eligible_count}/{report.score_count}"),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+    ]
+    for item in report.scores[:10]:
+        rows.append((f"{item.opportunity_id} / {item.grade}", f"direction={item.direction} | final={item.final_score} | opportunity={item.opportunity_score} | quality={item.quality_score} | risk_adjusted={item.risk_adjusted_score} | execution={item.execution_readiness_score} | eligible={item.eligible} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("trade_scoring", "Trade Scoring Engine", "กลไกให้คะแนนการซื้อขาย", report.status, "Scores ranked GOLD# opportunities using deterministic quality, risk-adjusted, and execution-readiness factors. Scoring never executes orders.", "ให้คะแนนโอกาส GOLD# ที่จัดอันดับแล้วด้วยปัจจัยคุณภาพ ปรับตามความเสี่ยง และความพร้อมในการดำเนินการแบบกำหนดแน่นอน โดยคะแนนไม่ส่งคำสั่งซื้อขาย", tuple(rows))
+
+
+def _unit_allocation_panel(report: Any) -> DashboardPanel:
+    rows = [
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Profile / โปรไฟล์", report.profile_name),
+        ("Selected Opportunity / โอกาสที่เลือก", report.selected_opportunity_id),
+        ("Direction / ทิศทาง", report.selected_direction),
+        ("Allocated Units / จำนวน Unit", str(report.allocated_units)),
+        ("Lot per Unit / Lot ต่อ Unit", str(report.lot_per_unit)),
+        ("Total Lot / Lot รวม", str(report.total_lot)),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+    ]
+    for item in report.allocations[:10]:
+        rows.append((f"{item.opportunity_id} / {item.trade_grade}", f"direction={item.direction} | score={item.trade_score} | capital_per_unit={item.capital_per_unit} | capital_units={item.capital_max_units} | profile_units={item.profile_max_units} | score_units={item.score_max_units} | allocated={item.allocated_units} | total_lot={item.total_lot} | eligible={item.eligible} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("unit_allocation", "Unit Allocation Engine", "กลไกจัดสรร Unit", report.status, "Allocates fixed 0.01-lot units from profile, capital, risk, and trade score. It never increases lot per unit and never executes orders.", "จัดสรร Unit คงที่ 0.01 lot จากโปรไฟล์ เงินทุน ความเสี่ยง และคะแนนการซื้อขาย โดยไม่เพิ่ม lot ต่อ Unit และไม่ส่งคำสั่งซื้อขาย", tuple(rows))
+
+
+def _entry_validation_panel(report: Any) -> DashboardPanel:
+    rows = [
+        ("Status / สถานะ", report.status),
+        ("Reason / เหตุผล", report.reason),
+        ("Selected Opportunity / โอกาสที่เลือก", report.selected_opportunity_id),
+        ("Direction / ทิศทาง", report.selected_direction),
+        ("Entry Approved / อนุมัติจุดเข้า", str(report.entry_approved)),
+        ("Approved Units / Unit ที่อนุมัติ", str(report.approved_units)),
+        ("Lot per Unit / Lot ต่อ Unit", str(report.lot_per_unit)),
+        ("Total Lot / Lot รวม", str(report.total_lot)),
+        ("Waiting Reason EN", report.waiting_reason_en),
+        ("Waiting Reason TH", report.waiting_reason_th),
+        ("Expected Next Action EN", report.expected_next_action_en),
+        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Next Review UTC / ตรวจสอบถัดไป", report.next_review_time_utc),
+        ("Direct Execution / ส่งคำสั่งโดยตรง", str(report.direct_execution)),
+    ]
+    for item in report.validations[:10]:
+        rows.append((f"{item.opportunity_id} / {item.direction}", f"approved={item.approved} | units={item.allocated_units} | regime={item.market_regime_ready} | conflict={item.conflict_allowed} | score={item.trade_score_allowed} | risk={item.risk_allowed} | timing={item.timing_allowed} | spread={item.spread_allowed} | allocation={item.allocation_allowed} | blocks={','.join(item.block_reasons)} | EN: {item.explanation_en} | TH: {item.explanation_th}"))
+    return DashboardPanel("entry_validation", "Entry Validation Engine", "กลไกตรวจสอบจุดเข้า", report.status, "Validates regime, conflict, score, risk, timing, spread, and fixed-unit allocation before paper/demo execution review. Validation never sends orders.", "ตรวจสอบ Market Regime ความขัดแย้ง คะแนน ความเสี่ยง เวลา Spread และการจัดสรร Unit คงที่ก่อน paper/demo execution โดยไม่ส่งคำสั่งซื้อขาย", tuple(rows))

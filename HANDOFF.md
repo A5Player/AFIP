@@ -1,0 +1,49 @@
+
+## Latest Increment — Milestone J Pack 3
+Conflict Resolver completed. Install after Milestone J Pack 2. Run targeted test, full pytest, local quality check, dashboard, then commit and push.
+
+## Latest Increment — Milestone J Pack 4
+Opportunity Ranking Engine added. Install after Milestone J Pack 3. Direct execution remains disabled. Next: Milestone J Pack 5 Trade Scoring Engine.
+
+## Current Handoff — Milestone J Pack 5
+Trade Scoring Engine completed. Continue with Milestone J Pack 6 Unit Allocation Engine. Live execution remains disabled.
+
+## Milestone J Pack 6
+Install after J Pack 5. Unit Allocation uses fixed 0.01-lot Units and passes only an explainable allocation context to Entry Validation. Direct execution remains disabled.
+
+## Milestone J Pack 7
+Install after J Pack 6. Entry Validation passes only an explainable approved context to paper/demo execution review. It never sends orders. Next: Milestone J Pack 8 Exit Validation Engine.
+
+## Milestone J Pack 8
+Install after J Pack 7. Exit Validation produces explainable paper/demo management context for HOLD, partial close, stop-loss move, take-profit change, trailing stop, or full exit. It never modifies or closes a live position. Next: Milestone J Pack 9 Portfolio Decision Engine.
+
+## Latest Increment — Milestone J Pack 9
+Portfolio Decision Engine added. Install after Milestone J Pack 8. Run targeted test, full pytest, local quality check, dashboard, then commit and push. Live execution remains disabled.
+
+## Latest Increment — Milestone J Pack 10
+Decision Intelligence Certification completed. Install after Milestone J Pack 9. Run targeted test, full pytest, local quality check, dashboard, then commit and push. Milestone J is complete when validation passes. Continue with Milestone K Pack 1 while live execution remains disabled.
+
+## Latest — Milestone K Pack 1
+Execution Intelligence Foundation added after Milestone J certification. Continue with Milestone K Pack 2 Smart Entry Engine. Preserve XM-only, GOLD#-only, 1 Unit = 0.01 lot, and LOCKED_SIMULATION_ONLY policy.
+
+## Latest Increment — Milestone K Pack 2
+Smart Entry Engine added with deterministic entry-price, stop-loss, take-profit, reward/risk, order-type, and fixed-unit validation. Dashboard explainability is available in English and Thai. No live order is sent. Continue from Milestone K Pack 3 — Smart Exit Engine.
+
+## Latest Completed
+Milestone K Pack 3 — Smart Exit Engine
+
+Validation:
+- Targeted: 6 passed
+- Full pytest: 1150 passed
+- AFIP Local Quality Check: PASS
+- Dashboard generation: PASS
+- Live execution remains disabled
+
+Next:
+Milestone K Pack 4 — Dynamic Stop Loss Intelligence
+
+## Latest Increment: Milestone K Pack 4
+Dynamic Stop Loss Intelligence added as an incremental patch. Install after Milestone K Pack 3. Validate with the included RUN script. Live execution remains disabled and no real position is modified.
+
+## Latest: Milestone K Pack 5
+Dynamic Take Profit Intelligence completed. Continue from Milestone K Pack 6 — Trailing Stop Intelligence after local validation and Git push.
