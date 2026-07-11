@@ -419,3 +419,11 @@ Next: Milestone P Pack 7 — Market Behaviour Confidence Calibration.
 Validation: 8 targeted tests passed; 1551 full tests passed; local quality and dashboard passed.
 
 Next: Milestone P Pack 8 — Market Behaviour Validation Governance.
+
+## Milestone P Pack 8 — Market Behaviour Validation Governance
+Status: COMPLETE
+
+Added deterministic governance validation for accepted Pack 7 market-behaviour confidence calibrations. The gate validates lineage, chronology, future safety, Market Regime ordering, evidence coverage, confidence thresholds, frozen policy version, role separation, and permanent execution locks. No adaptive, production, position-management, broker-request, or order-transmission authority was added.
+
+Validation: 8 targeted tests passed; 1559 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+Next: Milestone P Pack 9 — Market Behaviour Review Certification.

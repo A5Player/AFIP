@@ -315,3 +315,16 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone P Pack 8 — Market Behaviour Validation Governance.
+
+## Latest Completed
+Milestone P Pack 8 — Market Behaviour Validation Governance ✅
+
+- Full pytest: 1559 passed
+- Local Quality Check: PASS
+- Dashboard generation: PASS
+- Execution: LOCKED_SIMULATION_ONLY
+- Direct Execution: False
+- Live Execution: Disabled
+- Order Status: NO_ORDER_SENT
+
+Continue from Milestone P Pack 9 — Market Behaviour Review Certification.
