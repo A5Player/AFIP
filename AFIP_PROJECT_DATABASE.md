@@ -396,3 +396,14 @@ Status: COMPLETE
 - Validation: 8 targeted tests passed; 1511 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
 - Next: Milestone P Pack 3 — Market Behaviour Sequence Analysis.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone P Pack 3 — Market Behaviour Sequence Analysis
+Status: COMPLETE
+
+- Analyzes accepted Pack 2 normalized market-behaviour states as chronological immutable research sequences.
+- Produces deterministic transition signatures, state count, transition count, dominant regime, dominant behaviour, persistence ratio, and regime/behaviour/direction change counts.
+- Validates Pack 2 lineage, unique state IDs, minimum sequence length, chronology, future safety, certified data, Market Regime before Behaviour, XM/GOLD#/0.01 policy, and permanent execution lock.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Validation: 8 targeted tests passed; 1519 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+- Next: Milestone P Pack 4 — Market Behaviour Transition Statistics.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
