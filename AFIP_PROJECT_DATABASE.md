@@ -307,3 +307,14 @@ Status: COMPLETE
 - Blocks non-finite metrics, out-of-range metrics, invalid financial labels, dataset contamination, adaptive updates, trading logic changes, production knowledge promotion, and all execution authority.
 - Next: Milestone O Pack 3 — Learning Evidence Aggregation.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone O Pack 3 — Learning Evidence Aggregation
+Status: COMPLETE
+
+- Aggregates only accepted Pack 2 canonical evidence into deterministic research statistics.
+- Preserves TRAINING, EVALUATION, and HOLDOUT isolation.
+- Validates unique evidence IDs, chronology, data quality, future safety, finite metrics, financial labels, and locked policy.
+- Produces weighted sample counts, outcome counts, average confidence, realized R, MFE, MAE, costs, and duration.
+- Automatic parameter updates, trading logic changes, production knowledge promotion, broker requests, position modification, and order transmission remain forbidden.
+- Next: Milestone O Pack 4 — Learning Performance Evaluation.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.

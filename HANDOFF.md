@@ -171,3 +171,11 @@ Completed deterministic research-only certification of Capital Allocation, Expos
 - Validate with `pytest tests/test_milestone_o_pack_2.py -v`, full pytest, local quality check, and dashboard generation.
 - Next: Milestone O Pack 3 — Learning Evidence Aggregation.
 - Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
+
+## Current Handoff — Milestone O Pack 3
+- Learning Evidence Aggregation implemented after Milestone O Pack 2.
+- Aggregates only accepted, future-safe, chronological Pack 2 evidence with isolated dataset roles.
+- Duplicate IDs, dataset contamination, invalid chronology, uncertified data, non-finite metrics, adaptive updates, and execution authority are blocked.
+- Validate with `pytest tests/test_milestone_o_pack_3.py -v`, full pytest, local quality check, and dashboard generation.
+- Next: Milestone O Pack 4 — Learning Performance Evaluation.
+- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
