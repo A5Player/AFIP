@@ -350,3 +350,13 @@ Status: COMPLETE
 Added deterministic research-only confidence calibration for accepted Milestone O Pack 6 drift reports. The runtime validates unique Pack 6 lineage, chronology, future safety, data quality, sample coverage, finite metrics, locked policy compliance, and minimum calibrated confidence. It combines raw research confidence, evidence coverage, realized-R drift stability, generalization stability, and positive-window consistency into a bounded confidence score and band. It cannot update parameters, change trading logic, promote production knowledge, modify positions, create broker requests, or transmit orders.
 
 Validation: 8 targeted tests passed; 1471 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+
+
+## Milestone O Pack 8 — Learning Validation Governance ✅
+
+- Added deterministic governance validation over accepted Pack 7 confidence calibrations.
+- Enforces unique lineage, chronology, future safety, data quality, Feature Freeze policy version, reviewer/approver separation, sample coverage, and confidence thresholds.
+- Produces a research-only immutable governance decision requiring manual review.
+- Automatic parameter updates, trading logic changes, production knowledge promotion, position modification, broker requests, and order transmission remain disabled.
+- Validation: targeted 8 passed; full pytest 1479 passed; local quality check PASS; dashboard generation PASS.
+- Next: Milestone O Pack 9 — Learning Review Certification.

@@ -227,3 +227,15 @@ Milestone O Pack 7 — Learning Confidence Calibration ✅
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
 
 Next: Milestone O Pack 8 — Learning Validation Governance.
+
+
+## Latest Completed Work
+
+Milestone O Pack 8 — Learning Validation Governance ✅
+
+- Validates accepted Pack 7 confidence calibrations under frozen Version 1.0 governance.
+- Enforces unique lineage, chronology, future safety, data quality, policy version integrity, reviewer/approver separation, sample coverage, and confidence thresholds.
+- Requires documented manual review and does not grant adaptive, knowledge-promotion, position, broker, or execution authority.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+Next: Milestone O Pack 9 — Learning Review Certification.
