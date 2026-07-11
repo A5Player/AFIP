@@ -380,3 +380,16 @@ Validation: 8 targeted tests passed; 1495 full tests passed; AFIP Local Quality 
 Status: COMPLETE
 
 Added deterministic, immutable, research-only aggregation of certified Milestone P Pack 3 sequence reports. The runtime calculates transition frequencies, persistence, regime/behaviour/direction change rates, dominant states, and lineage validation while preserving Feature Freeze and LOCKED_SIMULATION_ONLY execution policy.
+
+## Milestone P Pack 5 — Market Behaviour Stability Validation ✅
+
+- Added `afip/market_behaviour_stability_validation`.
+- Validates certified Pack 4 transition-statistics reports across chronological research windows.
+- Measures persistence variability, regime/behaviour change-rate variability, dominant-state consistency, stable-window rate, and sample coverage.
+- Blocks invalid lineage, duplicates, insufficient windows or transitions, chronology errors, future leakage, uncertified data, invalid metrics, excessive variability, low consistency, and frozen-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation: 8 targeted tests passed; 1535 full tests passed; local quality and dashboard passed.
+
+Next: Milestone P Pack 6 — Market Behaviour Drift Detection.

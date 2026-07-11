@@ -267,3 +267,15 @@ Validation target: `tests/test_milestone_p_pack_4.py`
 Next: Milestone P Pack 5 — Market Behaviour Stability Validation
 
 Execution remains `LOCKED_SIMULATION_ONLY`; direct and live execution remain disabled; no order is sent.
+
+## Latest Completed Work
+
+Milestone P Pack 5 — Market Behaviour Stability Validation ✅
+
+- Validates accepted Pack 4 transition statistics across chronological research windows.
+- Measures persistence variability, change-rate variability, dominant regime/behaviour consistency, stable-window rate, and transition coverage.
+- Blocks duplicate IDs, chronology errors, future leakage, uncertified data, insufficient coverage, invalid metrics, excessive variability, poor consistency, and locked-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+Next: Milestone P Pack 6 — Market Behaviour Drift Detection.
