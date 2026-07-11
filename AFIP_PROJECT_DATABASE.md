@@ -342,3 +342,11 @@ Status: COMPLETE
 Added deterministic research-only drift detection for accepted Milestone O Pack 5 stability validation windows. The runtime compares certified baseline and recent segments for mean evaluation realized R, mean generalization gap, and positive evaluation-window rate. It validates unique Pack 5 lineage, chronology, future safety, data quality, sample coverage, finite metrics, and locked policy compliance. It cannot update parameters, change trading logic, promote production knowledge, modify positions, or transmit orders.
 
 Validation: 8 targeted tests passed; 1463 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+
+## Milestone O Pack 7 — Learning Confidence Calibration
+
+Status: COMPLETE
+
+Added deterministic research-only confidence calibration for accepted Milestone O Pack 6 drift reports. The runtime validates unique Pack 6 lineage, chronology, future safety, data quality, sample coverage, finite metrics, locked policy compliance, and minimum calibrated confidence. It combines raw research confidence, evidence coverage, realized-R drift stability, generalization stability, and positive-window consistency into a bounded confidence score and band. It cannot update parameters, change trading logic, promote production knowledge, modify positions, create broker requests, or transmit orders.
+
+Validation: 8 targeted tests passed; 1471 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.

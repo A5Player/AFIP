@@ -215,3 +215,15 @@ Milestone O Pack 6 — Learning Drift Detection ✅
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
 
 Next: Milestone O Pack 7 — Learning Confidence Calibration.
+
+## Latest Completed Work
+
+Milestone O Pack 7 — Learning Confidence Calibration ✅
+
+- Calibrates research confidence from accepted Pack 6 drift reports.
+- Combines raw confidence, evidence coverage, realized-R drift stability, generalization stability, and positive-window consistency.
+- Blocks duplicate IDs, chronology errors, future leakage, uncertified data, insufficient reports or samples, non-finite metrics, low calibrated confidence, and locked-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+Next: Milestone O Pack 8 — Learning Validation Governance.
