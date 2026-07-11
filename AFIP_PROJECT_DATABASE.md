@@ -515,3 +515,15 @@ Next: Milestone Q Pack 6 — Market Intent Drift Detection.
 - Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone Q Pack 7 — Market Intent Confidence Calibration.
+
+## Milestone Q Pack 7 — Market Intent Confidence Calibration ✅
+
+- Added `afip/market_intent_confidence_calibration`.
+- Calibrates deterministic research confidence from accepted Pack 6 Market Intent drift reports.
+- Measures raw drift confidence, evidence coverage, persistence consistency, intensity consistency, stability consistency, pattern consistency, calibrated confidence, and confidence band.
+- Blocks invalid Pack 6 lineage, duplicate drift IDs, chronology errors, detected or review-required drift, invalid metrics, uncertified data, future leakage, prerequisite-order violations, insufficient evidence, low confidence, and frozen-policy violations.
+- Broker remains XM Only; symbol remains GOLD# Only; base unit remains 0.01 lot.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone Q Pack 8 — Market Intent Validation Governance.

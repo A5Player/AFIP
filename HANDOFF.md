@@ -457,3 +457,21 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone Q Pack 7 — Market Intent Confidence Calibration.
+
+## Latest Completed Work
+
+Milestone Q Pack 7 — Market Intent Confidence Calibration ✅
+
+- Calibrates deterministic Market Intent confidence from accepted Pack 6 drift reports.
+- Measures raw drift confidence, evidence coverage, persistence, intensity, stability, and pattern consistency.
+- Enforces Pack 6 lineage, unique IDs, chronology, accepted drift state, metric validity, data quality, future safety, Market Regime and Market Behaviour prerequisite order, evidence thresholds, confidence threshold, and frozen execution policy.
+- Research only. Automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, and order transmission remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation commands:
+- `pytest tests/test_milestone_q_pack_7.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone Q Pack 8 — Market Intent Validation Governance.
