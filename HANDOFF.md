@@ -132,3 +132,6 @@ Execution remains permanently locked for Version 1.0 development.
 - Preserve valid Protected Runner positions and independent position lifecycles.
 - Next: Milestone N Pack 7 under the locked Version 1.0 roadmap.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone N Pack 7 — Portfolio Stress Validation
+Completed deterministic research-only stress validation for portfolio allocation lineage. The runtime evaluates hypothetical spread, volatility, adverse-movement and liquidity conditions without creating, modifying, closing or transmitting orders. Continue from Milestone N Pack 8 after validation.

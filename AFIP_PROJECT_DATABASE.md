@@ -251,3 +251,11 @@
 - Existing valid Protected Runner positions remain preserved and included in portfolio exposure.
 - Independent position lifecycles and all permanent Version 1.0 trading policies remain mandatory.
 - Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone N Pack 7 — Portfolio Stress Validation
+- Status: COMPLETE
+- Scope: deterministic research-only portfolio stress validation
+- Validates stressed equity floor, stressed drawdown, liquidity buffer and Pack 4–6 lineage
+- Trading logic changed: No
+- Execution authority: None
+- Execution status: LOCKED_SIMULATION_ONLY
