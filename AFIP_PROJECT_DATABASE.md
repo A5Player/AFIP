@@ -457,3 +457,15 @@ Next: Milestone Q Pack 1 — Market Intent Intelligence Foundation.
 - No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission authority was introduced.
 
 Next: Milestone Q Pack 2 — Market Intent State Normalization.
+
+## Milestone Q Pack 2 — Market Intent State Normalization ✅
+
+- Added `afip/market_intent_state_normalization`.
+- Normalizes accepted Pack 1 Market Intent observations into the canonical immutable research schema.
+- Produces dominant pressure, intent intensity, intensity band, continuation/reversal balance, and directional alignment.
+- Requires valid QINT lineage, certified data, future-safe chronology, Market Regime before Intent, Market Behaviour before Intent, valid labels, valid metrics, and frozen-policy compliance.
+- Broker remains XM Only; symbol remains GOLD# Only; base unit remains 0.01 lot.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone Q Pack 3 — Market Intent Sequence Analysis.

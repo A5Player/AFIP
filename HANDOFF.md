@@ -368,3 +368,21 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone Q Pack 2 — Market Intent State Normalization.
+
+## Latest Completed Work
+
+Milestone Q Pack 2 — Market Intent State Normalization ✅
+
+- Normalizes accepted Q Pack 1 Market Intent observations into a deterministic canonical schema.
+- Derives dominant pressure, intensity band, continuation/reversal balance, and directional alignment.
+- Validates Pack 1 lineage, chronology, data quality, future safety, Market Regime and Market Behaviour prerequisite order, labels, metrics, and frozen policy.
+- Research only. Automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, and order transmission remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation commands:
+- `pytest tests/test_milestone_q_pack_2.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone Q Pack 3 — Market Intent Sequence Analysis.
