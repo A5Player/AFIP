@@ -479,3 +479,15 @@ Status: Implemented
 Added a deterministic and immutable research-only sequence analysis layer for canonical Market Intent States from Pack 2. The layer validates lineage, strict chronology, labels, metrics, data quality, future safety, prerequisite ordering, and the Version 1.0 frozen execution policy. It measures intent, direction, regime, and behaviour transitions; persistence; average intensity; intensity change; and continuation/reversal balance change. It has no parameter-update, trading-logic, broker, position, or order authority.
 
 Execution remains `LOCKED_SIMULATION_ONLY`, direct execution remains false, live execution remains disabled, and order status remains `NO_ORDER_SENT`.
+
+## Milestone Q Pack 4 — Market Intent Statistics ✅
+
+- Added `afip/market_intent_statistics`.
+- Aggregates accepted Pack 3 sequence reports into deterministic immutable research statistics.
+- Calculates weighted persistence, weighted intent intensity, change rates, mean deltas, population standard deviation, pattern distribution, and dominant sequence pattern.
+- Validates sample sufficiency, Pack 3 lineage, chronology, unique identifiers, count relationships, metric ranges, data quality, future safety, prerequisite ordering, and frozen policy.
+- Broker remains XM Only; symbol remains GOLD# Only; base unit remains 0.01 lot.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone Q Pack 5 — Market Intent Stability Validation.

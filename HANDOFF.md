@@ -402,3 +402,21 @@ Key guarantees:
 - Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next roadmap item: Milestone Q Pack 4 — Market Intent Statistics.
+
+## Latest Completed Work
+
+Milestone Q Pack 4 — Market Intent Statistics ✅
+
+- Aggregates accepted Pack 3 sequence reports into deterministic immutable statistics.
+- Measures weighted persistence, weighted intensity, intent/direction/regime/behaviour change rates, mean changes, intensity-change standard deviation, and sequence-pattern distribution.
+- Blocks insufficient samples, invalid Pack 3 lineage, duplicate IDs, chronology errors, invalid count relationships, invalid metrics, uncertified data, future leakage, prerequisite-order violations, and frozen-policy violations.
+- Research only. Automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, and order transmission remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation commands:
+- `pytest tests/test_milestone_q_pack_4.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone Q Pack 5 — Market Intent Stability Validation.
