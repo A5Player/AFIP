@@ -491,3 +491,15 @@ Execution remains `LOCKED_SIMULATION_ONLY`, direct execution remains false, live
 - Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone Q Pack 5 — Market Intent Stability Validation.
+
+## Milestone Q Pack 5 — Market Intent Stability Validation ✅
+
+- Added `afip/market_intent_stability_validation`.
+- Validates accepted Pack 4 statistical windows for deterministic Market Intent stability.
+- Measures weighted persistence and intensity means, metric ranges, dominant-pattern consistency, stable-window ratio, stability score, and stability band.
+- Blocks insufficient samples, invalid Pack 4 lineage, duplicate IDs, overlapping chronology, invalid coverage, invalid metrics, unstable windows, uncertified data, future leakage, prerequisite-order violations, and frozen-policy violations.
+- Broker remains XM Only; symbol remains GOLD# Only; base unit remains 0.01 lot.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone Q Pack 6 — Market Intent Drift Detection.

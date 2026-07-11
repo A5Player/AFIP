@@ -420,3 +420,21 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone Q Pack 5 — Market Intent Stability Validation.
+
+## Latest Completed Work
+
+Milestone Q Pack 5 — Market Intent Stability Validation ✅
+
+- Validates stability across accepted Pack 4 statistical windows.
+- Measures persistence/intensity ranges, transition-rate ranges, dominant-pattern consistency, stable-window ratio, and deterministic stability score.
+- Enforces Pack 4 lineage, non-overlapping chronology, coverage, metric validity, data quality, future safety, Market Regime and Market Behaviour prerequisite order, and frozen execution policy.
+- Research only. Automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, and order transmission remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation commands:
+- `pytest tests/test_milestone_q_pack_5.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone Q Pack 6 — Market Intent Drift Detection.
