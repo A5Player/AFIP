@@ -316,15 +316,19 @@ Validation commands:
 
 Next: Milestone P Pack 8 — Market Behaviour Validation Governance.
 
-## Latest Completed
-Milestone P Pack 8 — Market Behaviour Validation Governance ✅
+## Latest Completed Work
 
-- Full pytest: 1559 passed
-- Local Quality Check: PASS
-- Dashboard generation: PASS
-- Execution: LOCKED_SIMULATION_ONLY
-- Direct Execution: False
-- Live Execution: Disabled
-- Order Status: NO_ORDER_SENT
+Milestone P Pack 9 — Market Behaviour Review Certification ✅
 
-Continue from Milestone P Pack 9 — Market Behaviour Review Certification.
+- Certifies documented manual review for accepted Pack 8 market-behaviour governance reports.
+- Validates PBGV lineage, review chronology, manual reviewer identity, PBREV record, approved research-continuation outcome, transition coverage, confidence, data quality, future safety, Market Regime ordering, and frozen policy controls.
+- Research only. Automatic parameter update, trading-logic change, production knowledge promotion, Production Certification, position modification, broker request, and order transmission remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation commands:
+- `pytest tests/test_milestone_p_pack_9.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone P Pack 10 — Market Behaviour Intelligence Complete.

@@ -420,10 +420,14 @@ Validation: 8 targeted tests passed; 1551 full tests passed; local quality and d
 
 Next: Milestone P Pack 8 — Market Behaviour Validation Governance.
 
-## Milestone P Pack 8 — Market Behaviour Validation Governance
-Status: COMPLETE
+## Milestone P Pack 9 — Market Behaviour Review Certification ✅
 
-Added deterministic governance validation for accepted Pack 7 market-behaviour confidence calibrations. The gate validates lineage, chronology, future safety, Market Regime ordering, evidence coverage, confidence thresholds, frozen policy version, role separation, and permanent execution locks. No adaptive, production, position-management, broker-request, or order-transmission authority was added.
+- Added `afip/market_behaviour_review_certification`.
+- Certifies documented manual review of accepted Pack 8 market-behaviour governance reports.
+- Validates unique PBGV lineage, chronology, reviewer identity, PBREV review record, approved research-continuation outcome, transition coverage, confidence, data quality, future safety, Market Regime order, and frozen-policy controls.
+- Certification remains research-only and does not authorize parameter updates, trading-logic changes, production knowledge promotion, Production Certification, position modification, broker requests, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
-Validation: 8 targeted tests passed; 1559 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
-Next: Milestone P Pack 9 — Market Behaviour Review Certification.
+Validation: 8 targeted tests passed; 1567 full tests passed; local quality check PASS; dashboard generation PASS.
+
+Next: Milestone P Pack 10 — Market Behaviour Intelligence Complete.
