@@ -503,3 +503,15 @@ Next: Milestone Q Pack 5 — Market Intent Stability Validation.
 - Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone Q Pack 6 — Market Intent Drift Detection.
+
+## Milestone Q Pack 6 — Market Intent Drift Detection ✅
+
+- Added `afip/market_intent_drift_detection`.
+- Detects deterministic drift across accepted Pack 5 stability-validation reports.
+- Measures first-to-last persistence, intensity, stability-score, stable-window-ratio, and dominant-pattern-consistency deltas plus maximum adjacent score and intensity changes.
+- Produces a deterministic drift score and NONE/LOW/MODERATE/HIGH drift band.
+- Moderate or high drift requires research review but cannot update parameters, change trading logic, promote production knowledge, modify positions, create broker requests, or transmit orders.
+- Validates Pack 5 lineage, unique IDs, non-overlapping chronology, metric ranges, certified data, future safety, prerequisite ordering, and frozen policy.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone Q Pack 7 — Market Intent Confidence Calibration.
