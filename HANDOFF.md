@@ -203,3 +203,15 @@ Milestone O Pack 5 — Learning Stability Validation ✅
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
 
 Next: Milestone O Pack 6 — Learning Drift Detection.
+
+## Latest Completed Work
+
+Milestone O Pack 6 — Learning Drift Detection ✅
+
+- Compares accepted Pack 5 stability windows across certified baseline and recent research segments.
+- Detects drift in mean evaluation realized R, mean generalization gap, and positive evaluation-window rate.
+- Blocks duplicate IDs, chronology errors, future leakage, uncertified data, insufficient segment coverage, non-finite metrics, excessive drift, and locked-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+Next: Milestone O Pack 7 — Learning Confidence Calibration.

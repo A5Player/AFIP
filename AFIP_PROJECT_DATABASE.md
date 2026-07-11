@@ -334,3 +334,11 @@ Status: COMPLETE
 Added deterministic research-only stability validation for accepted Milestone O Pack 4 performance evaluations across chronological research windows. The runtime validates window count, total sample coverage, dataset coverage, unique lineage, chronology, future safety, data quality, evaluation variability, generalization gap, and positive evaluation-window rate. It cannot update parameters, change trading logic, promote production knowledge, modify positions, or transmit orders.
 
 Validation: 8 targeted tests passed; 1455 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+
+## Milestone O Pack 6 — Learning Drift Detection
+
+Status: COMPLETE
+
+Added deterministic research-only drift detection for accepted Milestone O Pack 5 stability validation windows. The runtime compares certified baseline and recent segments for mean evaluation realized R, mean generalization gap, and positive evaluation-window rate. It validates unique Pack 5 lineage, chronology, future safety, data quality, sample coverage, finite metrics, and locked policy compliance. It cannot update parameters, change trading logic, promote production knowledge, modify positions, or transmit orders.
+
+Validation: 8 targeted tests passed; 1463 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
