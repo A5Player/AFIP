@@ -475,3 +475,9 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone Q Pack 8 — Market Intent Validation Governance.
+
+## Latest Completed Work
+Milestone Q Pack 8 — Market Intent Validation Governance
+
+Next: Milestone Q Pack 9 — Market Intent Review Certification.
+Execution remains LOCKED_SIMULATION_ONLY. Direct execution is disabled. NO_ORDER_SENT.

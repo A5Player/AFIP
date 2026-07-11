@@ -527,3 +527,8 @@ Next: Milestone Q Pack 7 — Market Intent Confidence Calibration.
 - Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone Q Pack 8 — Market Intent Validation Governance.
+
+## Milestone Q Pack 8 — Market Intent Validation Governance
+Status: COMPLETE
+
+Added deterministic, immutable research governance for accepted Pack 7 Market Intent confidence calibration evidence. Production and execution authority remain disabled under AFIP Version 1.0 Feature Freeze.
