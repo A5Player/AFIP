@@ -228,14 +228,13 @@ Milestone O Pack 7 — Learning Confidence Calibration ✅
 
 Next: Milestone O Pack 8 — Learning Validation Governance.
 
-
 ## Latest Completed Work
 
-Milestone O Pack 8 — Learning Validation Governance ✅
+Milestone O Pack 9 — Learning Review Certification ✅
 
-- Validates accepted Pack 7 confidence calibrations under frozen Version 1.0 governance.
-- Enforces unique lineage, chronology, future safety, data quality, policy version integrity, reviewer/approver separation, sample coverage, and confidence thresholds.
-- Requires documented manual review and does not grant adaptive, knowledge-promotion, position, broker, or execution authority.
+- Certifies documented manual review of accepted Pack 8 governance reports.
+- Validates unique governance lineage, chronology, human reviewer identity, review-record integrity, approved research-continuation outcome, sample coverage, calibrated confidence, data quality, future safety, and frozen-policy compliance.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
 
-Next: Milestone O Pack 9 — Learning Review Certification.
+Next: Milestone O Pack 10 — Learning Intelligence Complete.

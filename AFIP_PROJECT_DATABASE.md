@@ -351,12 +351,10 @@ Added deterministic research-only confidence calibration for accepted Milestone 
 
 Validation: 8 targeted tests passed; 1471 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
 
-
-## Milestone O Pack 8 — Learning Validation Governance ✅
-
-- Added deterministic governance validation over accepted Pack 7 confidence calibrations.
-- Enforces unique lineage, chronology, future safety, data quality, Feature Freeze policy version, reviewer/approver separation, sample coverage, and confidence thresholds.
-- Produces a research-only immutable governance decision requiring manual review.
-- Automatic parameter updates, trading logic changes, production knowledge promotion, position modification, broker requests, and order transmission remain disabled.
-- Validation: targeted 8 passed; full pytest 1479 passed; local quality check PASS; dashboard generation PASS.
-- Next: Milestone O Pack 9 — Learning Review Certification.
+## Milestone O Pack 9 — Learning Review Certification ✅
+- Added deterministic certification of documented manual review for accepted Pack 8 governance reports.
+- Validates unique OGOV lineage, chronology, reviewer identity, review record, approved research-continuation outcome, coverage, confidence, data quality, future safety, and frozen-policy controls.
+- Certification remains research-only and does not authorize parameter updates, trading-logic changes, production knowledge promotion, position modification, broker requests, or order transmission.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+- Validation: targeted 8 passed; full pytest 1487 passed; local quality check PASS; dashboard generation PASS.
+- Next: Milestone O Pack 10 — Learning Intelligence Complete.
