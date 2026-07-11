@@ -384,3 +384,15 @@ Validation: 8 targeted tests passed; 1495 full tests passed; AFIP Local Quality 
 - Classifies directional persistence, range rotation, volatility expansion/compression, regime transition, and balanced behaviour without changing trading logic.
 - Validation: 8 targeted tests passed; 1503 full tests passed; local quality and dashboard generation passed.
 - Next: Milestone P Pack 2 — Market Behaviour State Normalization.
+
+## Milestone P Pack 2 — Market Behaviour State Normalization
+Status: COMPLETE
+
+- Normalizes accepted Pack 1 market behaviour observations into the canonical immutable research schema.
+- Preserves Market Regime before Behaviour and Pack 1 lineage.
+- Adds canonical directional strength, volatility state, range zone, and momentum state.
+- Validates certified data, chronology, future safety, financial labels, finite bounded metrics, XM/GOLD#/0.01 policy, and permanent execution lock.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Validation: 8 targeted tests passed; 1511 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+- Next: Milestone P Pack 3 — Market Behaviour Sequence Analysis.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
