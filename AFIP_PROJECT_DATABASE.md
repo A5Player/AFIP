@@ -469,3 +469,13 @@ Next: Milestone Q Pack 2 — Market Intent State Normalization.
 - Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone Q Pack 3 — Market Intent Sequence Analysis.
+
+---
+
+## Milestone Q Pack 3 — Market Intent Sequence Analysis
+
+Status: Implemented
+
+Added a deterministic and immutable research-only sequence analysis layer for canonical Market Intent States from Pack 2. The layer validates lineage, strict chronology, labels, metrics, data quality, future safety, prerequisite ordering, and the Version 1.0 frozen execution policy. It measures intent, direction, regime, and behaviour transitions; persistence; average intensity; intensity change; and continuation/reversal balance change. It has no parameter-update, trading-logic, broker, position, or order authority.
+
+Execution remains `LOCKED_SIMULATION_ONLY`, direct execution remains false, live execution remains disabled, and order status remains `NO_ORDER_SENT`.

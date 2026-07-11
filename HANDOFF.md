@@ -386,3 +386,19 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone Q Pack 3 — Market Intent Sequence Analysis.
+
+---
+
+## Latest Development — Milestone Q Pack 3
+
+Milestone Q Pack 3 adds Market Intent Sequence Analysis on top of Pack 2 normalized states.
+
+Key guarantees:
+- Patch only; no unrelated module replacement.
+- Deterministic and immutable sequence reports.
+- Strictly increasing chronology and unique Pack 2 state lineage.
+- Market Regime before Behaviour and Intent prerequisites remain enforced.
+- Research-only output; no automatic parameter update or trading logic change.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next roadmap item: Milestone Q Pack 4 — Market Intent Statistics.
