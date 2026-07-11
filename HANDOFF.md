@@ -258,59 +258,12 @@ Validation commands:
 
 Next: Milestone P Pack 1 — Market Behaviour Intelligence Foundation.
 
-## Latest Handoff — Milestone P Pack 1
+## Latest Completed Work
 
-Milestone O — Learning Intelligence is complete.
-Milestone P Pack 1 — Market Behaviour Intelligence Foundation is complete.
+Milestone P Pack 4 — Market Behaviour Transition Statistics ✅
 
-Validation:
-- `pytest tests/test_milestone_p_pack_1.py -v` → 8 passed
-- `pytest` → 1503 passed
-- `python tools/afip_local_quality_check.py` → PASS
-- `python -m afip.dashboard_ui` → PASS
+Validation target: `tests/test_milestone_p_pack_4.py`
 
-Execution remains permanently locked for Version 1.0 development:
-- LOCKED_SIMULATION_ONLY
-- Direct Execution = False
-- Live Execution = Disabled
-- NO_ORDER_SENT
+Next: Milestone P Pack 5 — Market Behaviour Stability Validation
 
-Continue from Milestone P Pack 2 — Market Behaviour State Normalization.
-
-## Latest Handoff — Milestone P Pack 2
-
-Milestone P Pack 2 — Market Behaviour State Normalization is complete.
-
-Validation:
-- `pytest tests/test_milestone_p_pack_2.py -v` → 8 passed
-- `pytest` → 1511 passed
-- `python tools/afip_local_quality_check.py` → PASS
-- `python -m afip.dashboard_ui` → PASS
-
-Execution remains permanently locked for Version 1.0 development:
-- LOCKED_SIMULATION_ONLY
-- Direct Execution = False
-- Live Execution = Disabled
-- NO_ORDER_SENT
-
-Continue from Milestone P Pack 3 — Market Behaviour Sequence Analysis.
-
-## Latest Handoff — Milestone P Pack 3
-
-Milestone P Pack 3 — Market Behaviour Sequence Analysis is complete.
-
-Validation:
-- `pytest tests/test_milestone_p_pack_3.py -v` → 8 passed
-- `pytest` → 1519 passed
-- `python tools/afip_local_quality_check.py` → PASS
-- `python -m afip.dashboard_ui` → PASS
-
-Pack 3 analyzes accepted Pack 2 states into deterministic immutable sequence reports. It validates unique lineage, minimum sequence length, chronology, future safety, certified data, Market Regime before Behaviour, and frozen Version 1.0 policy.
-
-Execution remains permanently locked for Version 1.0 development:
-- LOCKED_SIMULATION_ONLY
-- Direct Execution = False
-- Live Execution = Disabled
-- NO_ORDER_SENT
-
-Continue from Milestone P Pack 4 — Market Behaviour Transition Statistics.
+Execution remains `LOCKED_SIMULATION_ONLY`; direct and live execution remain disabled; no order is sent.
