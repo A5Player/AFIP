@@ -481,3 +481,19 @@ Milestone Q Pack 8 — Market Intent Validation Governance
 
 Next: Milestone Q Pack 9 — Market Intent Review Certification.
 Execution remains LOCKED_SIMULATION_ONLY. Direct execution is disabled. NO_ORDER_SENT.
+
+## Latest Completed Work
+Milestone Q Pack 9 — Market Intent Review Certification
+
+- Added deterministic and immutable research review certification for accepted Pack 8 governance evidence.
+- Enforces Pack 8 lineage, unique IDs, chronology, governance acceptance, no pending review, sample sufficiency, governance score, data quality, future safety, prerequisite order, and frozen execution policy.
+- READY is only a Milestone Q completion candidate and cannot grant Production Certification, Release Candidate status, production knowledge, parameter updates, trading-logic changes, broker requests, position changes, or order transmission.
+
+Validation commands:
+- `pytest tests/test_milestone_q_pack_9.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone Q Pack 10 — Market Intent Intelligence Complete.
+Execution remains `LOCKED_SIMULATION_ONLY`. Direct execution is disabled. `NO_ORDER_SENT`.

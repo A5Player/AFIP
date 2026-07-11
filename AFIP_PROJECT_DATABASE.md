@@ -532,3 +532,14 @@ Next: Milestone Q Pack 8 — Market Intent Validation Governance.
 Status: COMPLETE
 
 Added deterministic, immutable research governance for accepted Pack 7 Market Intent confidence calibration evidence. Production and execution authority remain disabled under AFIP Version 1.0 Feature Freeze.
+
+## Milestone Q Pack 9 — Market Intent Review Certification ✅
+
+- Added `afip/market_intent_review_certification`.
+- Certifies accepted Pack 8 governance evidence for deterministic, immutable Market Intent research review.
+- Validates Pack 8 lineage, unique IDs, chronology, governance acceptance, pending-review state, report sufficiency, governance score, data quality, future safety, prerequisite ordering, and frozen policy.
+- READY marks evidence only as a Milestone Q completion candidate; it does not grant Production Certification or Release Candidate status.
+- No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone Q Pack 10 — Market Intent Intelligence Complete.
