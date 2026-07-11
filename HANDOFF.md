@@ -297,3 +297,21 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone P Pack 7 — Market Behaviour Confidence Calibration.
+
+## Latest Completed Work
+
+Milestone P Pack 7 — Market Behaviour Confidence Calibration ✅
+
+- Calibrates research confidence from accepted Pack 6 behaviour-drift reports.
+- Measures evidence coverage, persistence stability, regime/behaviour change-rate stability, and stable-window consistency.
+- Blocks invalid lineage, duplicate IDs, chronology errors, future leakage, uncertified data, insufficient coverage, non-finite metrics, low confidence, and frozen-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+Validation commands:
+- `pytest tests/test_milestone_p_pack_7.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone P Pack 8 — Market Behaviour Validation Governance.

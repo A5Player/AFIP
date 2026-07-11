@@ -406,3 +406,16 @@ Next: Milestone P Pack 6 — Market Behaviour Drift Detection.
 Validation: 8 targeted tests passed; 1543 full tests passed; local quality and dashboard passed.
 
 Next: Milestone P Pack 7 — Market Behaviour Confidence Calibration.
+
+## Milestone P Pack 7 — Market Behaviour Confidence Calibration ✅
+
+- Added `afip/market_behaviour_confidence_calibration`.
+- Calibrates deterministic research confidence from accepted Pack 6 behaviour-drift reports.
+- Combines raw drift confidence, transition coverage, persistence stability, regime-change stability, behaviour-change stability, and stable-window consistency.
+- Blocks invalid Pack 6 lineage, duplicate report IDs, chronology errors, future leakage, uncertified data, insufficient report or transition coverage, non-finite metrics, low calibrated confidence, and frozen-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation: 8 targeted tests passed; 1551 full tests passed; local quality and dashboard passed.
+
+Next: Milestone P Pack 8 — Market Behaviour Validation Governance.
