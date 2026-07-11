@@ -393,3 +393,16 @@ Added deterministic, immutable, research-only aggregation of certified Milestone
 Validation: 8 targeted tests passed; 1535 full tests passed; local quality and dashboard passed.
 
 Next: Milestone P Pack 6 — Market Behaviour Drift Detection.
+
+## Milestone P Pack 6 — Market Behaviour Drift Detection ✅
+
+- Added `afip/market_behaviour_drift_detection`.
+- Compares accepted Pack 5 stability reports across certified baseline and recent research segments.
+- Detects drift in persistence, regime/behaviour change rates, and stable-window rate.
+- Blocks invalid lineage, duplicate IDs, insufficient segment coverage, chronology errors, future leakage, uncertified data, invalid metrics, excessive drift, and frozen-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation: 8 targeted tests passed; 1543 full tests passed; local quality and dashboard passed.
+
+Next: Milestone P Pack 7 — Market Behaviour Confidence Calibration.

@@ -279,3 +279,21 @@ Milestone P Pack 5 — Market Behaviour Stability Validation ✅
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
 
 Next: Milestone P Pack 6 — Market Behaviour Drift Detection.
+
+## Latest Completed Work
+
+Milestone P Pack 6 — Market Behaviour Drift Detection ✅
+
+- Compares accepted Pack 5 stability reports across chronological baseline and recent research segments.
+- Measures drift in mean persistence, regime-change rate, behaviour-change rate, and stable-window rate.
+- Blocks invalid Pack 5 lineage, duplicate report IDs, insufficient windows or transition coverage, chronology errors, future leakage, uncertified data, invalid metrics, drift-limit breaches, and locked-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+Validation commands:
+- `pytest tests/test_milestone_p_pack_6.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone P Pack 7 — Market Behaviour Confidence Calibration.
