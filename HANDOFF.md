@@ -179,3 +179,15 @@ Completed deterministic research-only certification of Capital Allocation, Expos
 - Validate with `pytest tests/test_milestone_o_pack_3.py -v`, full pytest, local quality check, and dashboard generation.
 - Next: Milestone O Pack 4 — Learning Performance Evaluation.
 - Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
+
+## Latest Completed Work
+
+Milestone O Pack 4 — Learning Performance Evaluation ✅
+
+- Evaluates accepted Pack 3 aggregates across TRAINING and EVALUATION/HOLDOUT datasets.
+- Produces deterministic weighted win/loss/breakeven rates, weighted realized R, total R, payoff ratio, and generalization gap.
+- Blocks invalid lineage, duplicate aggregate IDs, missing evaluation datasets, chronology errors, future leakage, insufficient samples, non-finite values, data-quality failures, and locked-policy violations.
+- Research only. No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+Next: Milestone O Pack 5 — Learning Stability Validation.

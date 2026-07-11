@@ -318,3 +318,11 @@ Status: COMPLETE
 - Automatic parameter updates, trading logic changes, production knowledge promotion, broker requests, position modification, and order transmission remain forbidden.
 - Next: Milestone O Pack 4 — Learning Performance Evaluation.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone O Pack 4 — Learning Performance Evaluation
+
+Status: COMPLETE
+
+Added deterministic research-only performance evaluation for accepted Milestone O Pack 3 aggregates. The runtime validates dataset coverage, chronology, future safety, sample sufficiency, data quality, locked policy compliance, weighted performance statistics, and training-to-evaluation generalization gap. It cannot update parameters, change trading logic, promote production knowledge, modify positions, or transmit orders.
+
+Validation: 8 targeted tests passed; 1447 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
