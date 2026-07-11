@@ -543,3 +543,11 @@ Added deterministic, immutable research governance for accepted Pack 7 Market In
 - Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone Q Pack 10 — Market Intent Intelligence Complete.
+
+## Milestone Q Pack 10 — Market Intent Intelligence Complete
+- Status: COMPLETED
+- Added deterministic, immutable Milestone Q completion from accepted Pack 9 review certificates.
+- Enforces Pack 9 lineage, unique certificate IDs, chronology, review certification, completion-candidate status, sample sufficiency, review-score threshold, data quality, future safety, prerequisite order, and frozen execution policy.
+- Milestone Q completion is research-only and does not grant Production Certification, Release Candidate status, production knowledge promotion, parameter updates, trading-logic changes, broker requests, position modification, or order transmission.
+- Next milestone: Milestone R — Production Certification.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remain disabled; `NO_ORDER_SENT`.
