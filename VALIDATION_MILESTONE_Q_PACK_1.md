@@ -1,20 +1,11 @@
 # Validation — Milestone Q Pack 1
 
-## Verified results
+## Results
 
 - `pytest tests/test_milestone_q_pack_1.py -v` — 8 passed
 - `pytest` — 1583 passed
 - `python tools/afip_local_quality_check.py` — PASS
 - `python -m afip.dashboard_ui` — PASS
-
-## Required commands
-
-```powershell
-pytest tests/test_milestone_q_pack_1.py -v
-pytest
-python tools/afip_local_quality_check.py
-python -m afip.dashboard_ui
-```
 
 ## Locked policies confirmed
 

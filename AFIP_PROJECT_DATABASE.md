@@ -446,20 +446,14 @@ Validation: 8 targeted tests passed; 1575 full tests passed; local quality check
 
 Next: Milestone Q Pack 1 — Market Intent Intelligence Foundation.
 
-## Milestone Q Pack 1 — Market Intent Intelligence Foundation
+## Milestone Q Pack 1 — Market Intent Intelligence Foundation ✅
 
-- Added deterministic, immutable, research-only Market Intent observations derived from certified Market Regime and Market Behaviour evidence.
-- Added normalized intent states: BUYING_PRESSURE, SELLING_PRESSURE, LIQUIDITY_SEEKING, BREAKOUT_ATTEMPT, REVERSAL_ATTEMPT, and BALANCED_INTENT.
-- Enforced Market Regime before Intent and Market Behaviour before Intent.
-- Added blocking for invalid chronology, future leakage, uncertified data, unsupported lineage values, invalid or non-finite metrics, and frozen-policy violations.
-- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
-- Automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, and order transmission remain disabled.
-- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
-
-Validation commands:
-- `pytest tests/test_milestone_q_pack_1.py -v`
-- `pytest`
-- `python tools/afip_local_quality_check.py`
-- `python -m afip.dashboard_ui`
+- Added `afip/market_intent_intelligence_foundation`.
+- Creates deterministic, immutable, research-only Market Intent observations.
+- Requires certified data, valid chronology, future-safe inputs, Market Regime before Intent, and Market Behaviour before Intent.
+- Supports BUYING_PRESSURE, SELLING_PRESSURE, LIQUIDITY_SEEKING, BREAKOUT_ATTEMPT, REVERSAL_ATTEMPT, and BALANCED_INTENT.
+- Broker remains XM Only; symbol remains GOLD# Only; base unit remains 0.01 lot.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+- No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission authority was introduced.
 
 Next: Milestone Q Pack 2 — Market Intent State Normalization.

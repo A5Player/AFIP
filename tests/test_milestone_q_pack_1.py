@@ -11,14 +11,14 @@ def _payload(**overrides):
         "source_timestamp": 2900,
         "market_regime": "TREND",
         "market_behaviour": "DIRECTIONAL_PERSISTENCE",
-        "market_regime_evaluated_first": True,
-        "market_behaviour_evaluated_first": True,
+        "market_regime_evaluated_before_intent": True,
+        "market_behaviour_evaluated_before_intent": True,
         "direction": "BUY",
         "directional_pressure": 0.82,
-        "liquidity_pressure": 0.45,
-        "breakout_pressure": 0.55,
+        "continuation_pressure": 0.76,
         "reversal_pressure": 0.18,
-        "participation_strength": 0.74,
+        "liquidity_seeking_pressure": 0.24,
+        "breakout_pressure": 0.42,
         "data_quality_certified": True,
         "future_safe": True,
         "future_leakage_detected": False,
@@ -62,9 +62,12 @@ def test_blocks_future_leakage_and_invalid_chronology():
     assert "intent_observation_chronology_invalid" in report.block_reasons
 
 
-def test_blocks_when_required_evaluation_order_is_missing():
+def test_blocks_when_regime_or_behaviour_prerequisite_is_missing():
     report = MarketIntentIntelligenceFoundationRuntime().evaluate_one(
-        _payload(market_regime_evaluated_first=False, market_behaviour_evaluated_first=False)
+        _payload(
+            market_regime_evaluated_before_intent=False,
+            market_behaviour_evaluated_before_intent=False,
+        )
     )
     assert "market_regime_not_evaluated_before_intent" in report.block_reasons
     assert "market_behaviour_not_evaluated_before_intent" in report.block_reasons
@@ -72,29 +75,27 @@ def test_blocks_when_required_evaluation_order_is_missing():
 
 def test_blocks_invalid_metrics_and_non_finite_values():
     report = MarketIntentIntelligenceFoundationRuntime().evaluate_one(
-        _payload(directional_pressure=1.5, liquidity_pressure=float("inf"))
+        _payload(directional_pressure=1.5, breakout_pressure=float("inf"))
     )
     assert "intent_metrics_invalid" in report.block_reasons
 
 
-def test_classifies_sell_breakout_reversal_and_liquidity_states():
+def test_classifies_intent_states_deterministically():
     runtime = MarketIntentIntelligenceFoundationRuntime()
-    sell = runtime.evaluate_one(_payload(direction="SELL", directional_pressure=0.78))
-    breakout = runtime.evaluate_one(_payload(breakout_pressure=0.86, participation_strength=0.75))
-    reversal = runtime.evaluate_one(_payload(reversal_pressure=0.88, breakout_pressure=0.30))
+    sell = runtime.evaluate_one(_payload(direction="SELL"))
     liquidity = runtime.evaluate_one(
-        _payload(
-            market_behaviour="RANGE_ROTATION",
-            direction="FLAT",
-            directional_pressure=0.30,
-            liquidity_pressure=0.82,
-            breakout_pressure=0.25,
-        )
+        _payload(liquidity_seeking_pressure=0.85, continuation_pressure=0.40)
+    )
+    breakout = runtime.evaluate_one(
+        _payload(breakout_pressure=0.88, continuation_pressure=0.55)
+    )
+    reversal = runtime.evaluate_one(
+        _payload(reversal_pressure=0.80, continuation_pressure=0.30)
     )
     assert sell.intent_state == "SELLING_PRESSURE"
+    assert liquidity.intent_state == "LIQUIDITY_SEEKING"
     assert breakout.intent_state == "BREAKOUT_ATTEMPT"
     assert reversal.intent_state == "REVERSAL_ATTEMPT"
-    assert liquidity.intent_state == "LIQUIDITY_SEEKING"
 
 
 def test_blocks_data_quality_and_policy_violation():

@@ -2,23 +2,27 @@
 
 ## วัตถุประสงค์
 
-แพตช์นี้สร้างรากฐานงานวิจัยแบบ immutable และ deterministic สำหรับ Market Intent Intelligence โดยแปลงหลักฐาน Market Regime และ Market Behaviour ที่ผ่านการรับรองให้เป็น Intent Observation หลังจากประเมินทั้งสองส่วนตามลำดับที่กำหนดแล้วเท่านั้น
+แพตช์นี้สร้างรากฐานงานวิจัยของ Market Intent Intelligence แบบ immutable และ deterministic โดยจะแปลงหลักฐาน Market Regime และ Market Behaviour ที่ผ่านการรับรองเป็น Market Intent Observation เฉพาะเมื่อประเมินเงื่อนไขทั้งสองตามลำดับก่อนแล้วเท่านั้น
 
 ## สถานะ Intent
 
 - BUYING_PRESSURE — แรงกดดันฝั่งซื้อ
 - SELLING_PRESSURE — แรงกดดันฝั่งขาย
-- LIQUIDITY_SEEKING — การเคลื่อนไหวเพื่อค้นหาสภาพคล่อง
+- LIQUIDITY_SEEKING — พฤติกรรมค้นหาสภาพคล่อง
 - BREAKOUT_ATTEMPT — ความพยายามทะลุกรอบ
 - REVERSAL_ATTEMPT — ความพยายามกลับทิศ
 - BALANCED_INTENT — Intent สมดุล
 
 ## การควบคุมความปลอดภัย
 
-Runtime จะระงับ Observation หากไม่ผ่านการตรวจคุณภาพข้อมูล ลำดับเวลา Future Safety ลำดับ Market Regime ลำดับ Market Behaviour ช่วงค่าตัวชี้วัด นโยบาย Broker/Symbol/Base Unit หรือนโยบาย Execution ที่ล็อกไว้
+ระบบจะระงับ Observation เมื่อไม่ผ่านการตรวจคุณภาพข้อมูล ลำดับเวลา Future Safety ลำดับ Market Regime ลำดับ Market Behaviour ช่วงค่าตัวชี้วัด นโยบาย Broker/Symbol/Base Unit หรือนโยบายล็อกการส่งคำสั่ง
 
-โมดูลนี้ไม่มีสิทธิ์ปรับพารามิเตอร์ เปลี่ยน Trading Logic เลื่อนความรู้เข้าสู่ Production แก้ไข Position ติดต่อ Broker หรือส่ง Order
+โมดูลนี้ไม่มีสิทธิ์ปรับพารามิเตอร์ เปลี่ยน Trading Logic เลื่อนข้อมูลเป็น Production Knowledge แก้ไข Position ติดต่อ Broker หรือส่ง Order
 
 ## การติดตั้ง
 
-แตกไฟล์ Patch ทับที่รากของ AFIP repository เท่านั้น ห้ามแทนที่ repository ทั้งชุดและห้ามลบไฟล์ที่ไม่เกี่ยวข้อง
+แตกไฟล์แพตช์ทับที่โฟลเดอร์รากของ AFIP ห้ามแทนที่ Repository ทั้งชุดและห้ามลบไฟล์ที่ไม่เกี่ยวข้อง
+
+## การตรวจสอบ
+
+รัน `RUN_MILESTONE_Q_PACK_1.ps1` หรือ `RUN_MILESTONE_Q_PACK_1.bat`

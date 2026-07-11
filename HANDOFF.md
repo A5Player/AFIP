@@ -356,12 +356,10 @@ Next: Milestone Q Pack 1 — Market Intent Intelligence Foundation.
 
 Milestone Q Pack 1 — Market Intent Intelligence Foundation ✅
 
-- Introduces immutable deterministic research-only Market Intent observations.
-- Requires certified Market Regime and Market Behaviour evidence to be evaluated before Intent.
-- Classifies BUYING_PRESSURE, SELLING_PRESSURE, LIQUIDITY_SEEKING, BREAKOUT_ATTEMPT, REVERSAL_ATTEMPT, and BALANCED_INTENT.
-- Blocks invalid chronology, future leakage, uncertified data, invalid lineage values, invalid metrics, and frozen-policy violations.
-- No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
-- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+- Establishes deterministic and immutable research-only Market Intent observations.
+- Requires Market Regime and Market Behaviour evaluation before Intent.
+- Validates chronology, data quality, future safety, input metric ranges, and Version 1.0 frozen policy.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct and live execution remain disabled; no order is sent.
 
 Validation commands:
 - `pytest tests/test_milestone_q_pack_1.py -v`
