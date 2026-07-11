@@ -243,3 +243,11 @@
 - Restored panel IDs: `production_readiness_complete`, `knowledge_intelligence_foundation`, `pattern_knowledge_engine`, `pattern_similarity_search`, `pattern_clustering`, `pattern_statistics`.
 - Trading logic unchanged. Execution remains `LOCKED_SIMULATION_ONLY`, direct execution false, live execution disabled, and order status `NO_ORDER_SENT`.
 - Validation: 1375 tests passed including the dedicated regression test; local quality check PASS; dashboard generation PASS.
+
+## Milestone N Pack 6 — Portfolio Drawdown Protection
+- Status: IMPLEMENTED
+- Adds deterministic research-only equity-floor, maximum-drawdown, daily-loss, and consecutive-loss protection after Portfolio Exposure Coordination.
+- A blocked result requires reducing or stopping new allocation; it never modifies a position or creates a broker request.
+- Existing valid Protected Runner positions remain preserved and included in portfolio exposure.
+- Independent position lifecycles and all permanent Version 1.0 trading policies remain mandatory.
+- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.

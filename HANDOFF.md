@@ -124,3 +124,11 @@ Validation after applying Milestone N Packs 4–5 plus this patch:
 - `python -m afip.dashboard_ui`
 
 Execution remains permanently locked for Version 1.0 development.
+
+## Current Handoff — Milestone N Pack 6
+- Portfolio Drawdown Protection implemented.
+- Validates equity floor, maximum drawdown, daily loss and consecutive loss limits after Pack 5 exposure coordination.
+- Blocks new allocation when a protection gate fails; does not modify existing positions or send orders.
+- Preserve valid Protected Runner positions and independent position lifecycles.
+- Next: Milestone N Pack 7 under the locked Version 1.0 roadmap.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
