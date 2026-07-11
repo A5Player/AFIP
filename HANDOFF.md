@@ -257,3 +257,22 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone P Pack 1 — Market Behaviour Intelligence Foundation.
+
+## Latest Handoff — Milestone P Pack 1
+
+Milestone O — Learning Intelligence is complete.
+Milestone P Pack 1 — Market Behaviour Intelligence Foundation is complete.
+
+Validation:
+- `pytest tests/test_milestone_p_pack_1.py -v` → 8 passed
+- `pytest` → 1503 passed
+- `python tools/afip_local_quality_check.py` → PASS
+- `python -m afip.dashboard_ui` → PASS
+
+Execution remains permanently locked for Version 1.0 development:
+- LOCKED_SIMULATION_ONLY
+- Direct Execution = False
+- Live Execution = Disabled
+- NO_ORDER_SENT
+
+Continue from Milestone P Pack 2 — Market Behaviour State Normalization.

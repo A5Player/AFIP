@@ -374,3 +374,13 @@ Status: COMPLETE
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
 
 Validation: 8 targeted tests passed; 1495 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+
+## Milestone P — Market Behaviour Intelligence
+
+### Pack 1 — Market Behaviour Intelligence Foundation ✅
+- Added `afip/market_behaviour_intelligence_foundation`.
+- Creates deterministic immutable research-only market behaviour observations.
+- Enforces Market Regime before Behaviour, certified data, chronology, future safety, finite bounded metrics, XM/GOLD#/0.01 policy, and permanent execution lock.
+- Classifies directional persistence, range rotation, volatility expansion/compression, regime transition, and balanced behaviour without changing trading logic.
+- Validation: 8 targeted tests passed; 1503 full tests passed; local quality and dashboard generation passed.
+- Next: Milestone P Pack 2 — Market Behaviour State Normalization.
