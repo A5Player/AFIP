@@ -326,3 +326,11 @@ Status: COMPLETE
 Added deterministic research-only performance evaluation for accepted Milestone O Pack 3 aggregates. The runtime validates dataset coverage, chronology, future safety, sample sufficiency, data quality, locked policy compliance, weighted performance statistics, and training-to-evaluation generalization gap. It cannot update parameters, change trading logic, promote production knowledge, modify positions, or transmit orders.
 
 Validation: 8 targeted tests passed; 1447 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
+
+## Milestone O Pack 5 — Learning Stability Validation
+
+Status: COMPLETE
+
+Added deterministic research-only stability validation for accepted Milestone O Pack 4 performance evaluations across chronological research windows. The runtime validates window count, total sample coverage, dataset coverage, unique lineage, chronology, future safety, data quality, evaluation variability, generalization gap, and positive evaluation-window rate. It cannot update parameters, change trading logic, promote production knowledge, modify positions, or transmit orders.
+
+Validation: 8 targeted tests passed; 1455 full tests passed; AFIP Local Quality Check PASS; Dashboard generation PASS.
