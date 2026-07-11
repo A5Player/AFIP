@@ -351,3 +351,22 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone Q Pack 1 — Market Intent Intelligence Foundation.
+
+## Latest Completed Work
+
+Milestone Q Pack 1 — Market Intent Intelligence Foundation ✅
+
+- Introduces immutable deterministic research-only Market Intent observations.
+- Requires certified Market Regime and Market Behaviour evidence to be evaluated before Intent.
+- Classifies BUYING_PRESSURE, SELLING_PRESSURE, LIQUIDITY_SEEKING, BREAKOUT_ATTEMPT, REVERSAL_ATTEMPT, and BALANCED_INTENT.
+- Blocks invalid chronology, future leakage, uncertified data, invalid lineage values, invalid metrics, and frozen-policy violations.
+- No automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation commands:
+- `pytest tests/test_milestone_q_pack_1.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone Q Pack 2 — Market Intent State Normalization.
