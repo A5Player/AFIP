@@ -90,5 +90,37 @@ Demo Execution Certification completed. Install after Milestone L Pack 7. Valida
 ## Latest: Milestone L Pack 9
 Production Release Candidate completed. Install after Milestone L Pack 8. Validate with `pytest tests/test_milestone_l_pack_9.py -v`, full pytest, local quality check, and dashboard generation. A READY result approves the Version 1.0 release candidate only; it does not enable demo or live execution and does not complete Production Certification. Continue next with Milestone L Pack 10 — Production Readiness Complete while XM-only, GOLD#-only, fixed 0.01-lot Unit, No-DCA, LOCKED_SIMULATION_ONLY, and NO_ORDER_SENT remain mandatory.
 
-## Latest: Milestone L Pack 10
-Production Readiness Complete finished. Install after Milestone L Pack 9. Validate with `pytest tests/test_milestone_l_pack_10.py -v`, full pytest, local quality check, and dashboard generation. When all gates pass, Milestone L is complete and development continues to Milestone M Pack 1 — Knowledge Intelligence Foundation. Production certification remains false. Direct and live execution remain disabled; LOCKED_SIMULATION_ONLY and NO_ORDER_SENT remain mandatory.
+
+## Current Handoff — Milestone N Pack 3
+- Portfolio Risk Engine implemented.
+- Next: Milestone N Pack 4 — Capital Allocation.
+- Apply patch only; do not regenerate repository.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Current Handoff — Milestone N Pack 4
+- Capital Allocation implemented.
+- Allocates only remaining risk, Unit, and margin capacity among independent trade plans.
+- Preserves free-margin reserve, Portfolio Risk Engine lineage, protected-runner exposure, and No-DCA policy.
+- Next: Milestone N Pack 5 under the locked Version 1.0 roadmap.
+- Apply patch only; do not regenerate repository.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Current Handoff — Milestone N Pack 5
+- Portfolio Exposure Coordination implemented.
+- Install after Milestone N Pack 4 Capital Allocation.
+- Validate with `pytest tests/test_milestone_n_pack_5.py -v`, full pytest, local quality check and dashboard generation.
+- No broker request or order transmission is permitted.
+- Next: Milestone N Pack 6 under the locked Version 1.0 roadmap.
+
+## Regression Patch 1 — Dashboard Panel Registration
+Status: COMPLETE
+
+This patch fixes six existing dashboard registration regressions from Milestone L Pack 10 and Milestone M Packs 1–5. It modifies only dashboard composition and adds a regression test. No intelligence, trading, risk, allocation, or execution logic was changed.
+
+Validation after applying Milestone N Packs 4–5 plus this patch:
+- `pytest tests/test_regression_patch_1_dashboard_panel_registration.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Execution remains permanently locked for Version 1.0 development.

@@ -1,0 +1,21 @@
+Milestone N Pack 5 — Portfolio Exposure Coordination
+
+New Files
+- afip/portfolio_exposure_coordination/__init__.py
+- afip/portfolio_exposure_coordination/runtime.py
+- tests/test_milestone_n_pack_5.py
+- README_MILESTONE_N_PACK_5.md
+- README_MILESTONE_N_PACK_5_TH.md
+- RUN_MILESTONE_N_PACK_5.ps1
+- RUN_MILESTONE_N_PACK_5.bat
+- AFIP_MILESTONE_N_PACK_5_FILE_LIST.txt
+
+Modified Files
+- AFIP_PROJECT_DATABASE.md
+- HANDOFF.md
+
+No unrelated module is replaced.
+No trading logic is changed.
+No live execution is enabled.
+
+- VALIDATION_MILESTONE_N_PACK_5.md

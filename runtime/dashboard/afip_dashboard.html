@@ -928,7 +928,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:19:35.717504+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-11T12:30:39.707927+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -954,7 +954,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:23:35.717650+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-11T12:34:39.708078+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -980,7 +980,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-10T17:23:35.717749+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-11T12:34:39.708173+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">
@@ -1213,32 +1213,100 @@ small { color: #555; }
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="production_readiness_complete">
-<h2>Production Readiness Complete / ความพร้อม Production ครบถ้วน</h2>
+<h2>Production Readiness Complete / ความพร้อม Production เสร็จสมบูรณ์</h2>
 <p class="status">BLOCKED</p>
-<p>Closes Milestone L after every readiness and safety gate passes while production certification and order transmission remain disabled.<br><small>ปิด Milestone L หลังเกณฑ์ความพร้อมและความปลอดภัยผ่านทั้งหมด โดยยังคงปิด Production Certification และการส่งคำสั่งซื้อขาย</small></p>
-<table><tr><td>Readiness / ความพร้อม</td><td>MILESTONE_L_INCOMPLETE</td></tr>
-<tr><td>Completion ID / รหัส</td><td>L10-3CA1D46FF7181107</td></tr>
-<tr><td>Release Candidate ID / รหัส Candidate</td><td>L09-BE7C8CE7EA20BB15</td></tr>
-<tr><td>Candidate Ready / Candidate พร้อม</td><td>False</td></tr>
-<tr><td>Milestone L Packs / Pack ครบ</td><td>False</td></tr>
-<tr><td>Operational Safety / ความปลอดภัย</td><td>health=True | emergency=True</td></tr>
-<tr><td>Report and Ledger / รายงานและ Ledger</td><td>report=True | ledger=True</td></tr>
-<tr><td>Data and Knowledge / ข้อมูลและความรู้</td><td>data=True | versioning=True</td></tr>
-<tr><td>Feature Flags / Feature Flags</td><td>True</td></tr>
-<tr><td>Operation Manuals / คู่มือ</td><td>EN=True | TH=True</td></tr>
-<tr><td>Audit Chain / สาย Audit</td><td>True</td></tr>
-<tr><td>Independent Plan / แผนอิสระ</td><td>True</td></tr>
-<tr><td>Runner Exposure / Exposure ของ Runner</td><td>True</td></tr>
-<tr><td>No DCA / ปิด DCA</td><td>traditional=True | averaging_down=True</td></tr>
-<tr><td>Milestone L Complete / ปิด Milestone L</td><td>False</td></tr>
-<tr><td>Ready for Milestone M / พร้อม Milestone M</td><td>False</td></tr>
-<tr><td>Production Certified / รับรอง Production</td><td>False</td></tr>
-<tr><td>Block Reasons / เหตุผลที่บล็อก</td><td>release_candidate_not_ready, milestone_l_packs_incomplete</td></tr>
-<tr><td>Completion Reason EN</td><td>Milestone L cannot close until every release-candidate, operational, documentation, policy, and safety gate passes.</td></tr>
-<tr><td>Completion Reason TH</td><td>Milestone L ยังปิดไม่ได้จนกว่าเกณฑ์ Release Candidate ระบบปฏิบัติการ เอกสาร นโยบาย และความปลอดภัยจะผ่านทั้งหมด</td></tr>
-<tr><td>Expected Next Action EN</td><td>Correct every block reason and re-run the completion gate without creating or transmitting an order.</td></tr>
-<tr><td>Expected Next Action TH</td><td>แก้ไข Block Reason ทั้งหมดและรันเกณฑ์ปิด Milestone ใหม่โดยไม่สร้างหรือส่งคำสั่งซื้อขาย</td></tr>
-<tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
+<p>Displays an existing certified runtime report without changing trading logic or execution authority.<br><small>แสดงรายงาน Runtime ที่มีอยู่แล้วโดยไม่เปลี่ยน Trading Logic หรืออำนาจการส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Reason</td><td>release_candidate_not_ready</td></tr>
+<tr><td>Milestone</td><td>MILESTONE_L</td></tr>
+<tr><td>Pack</td><td>PACK_10</td></tr>
+<tr><td>Readiness</td><td>MILESTONE_L_INCOMPLETE</td></tr>
+<tr><td>Block Reasons</td><td>(&#x27;release_candidate_not_ready&#x27;, &#x27;release_candidate_id_missing&#x27;, &#x27;milestone_l_packs_incomplete&#x27;, &#x27;production_health_monitor_not_ready&#x27;, &#x27;emergency_safety_system_not_ready&#x27;, &#x27;production_report_not_ready&#x27;, &#x27;decision_ledger_not_ready&#x27;, &#x27;data_quality_not_certified&#x27;, &#x27;knowledge_versioning_not_ready&#x27;, &#x27;feature_flags_not_ready&#x27;, &#x27;operation_manual_en_missing&#x27;, &#x27;operation_manual_th_missing&#x27;, &#x27;audit_chain_not_ready&#x27;, &#x27;independent_trade_plan_invalid&#x27;, &#x27;protected_runner_exposure_excluded&#x27;)</td></tr>
+<tr><td>Expected Next Action En</td><td>Correct every block reason and re-run the completion gate without creating or transmitting an order.</td></tr>
+<tr><td>Expected Next Action Th</td><td>แก้ไข Block Reason ทั้งหมดและรันเกณฑ์ปิด Milestone ใหม่โดยไม่สร้างหรือส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Execution Status</td><td>LOCKED_SIMULATION_ONLY</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr>
+<tr><td>Live Execution Enabled</td><td>False</td></tr>
+<tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="knowledge_intelligence_foundation">
+<h2>Knowledge Intelligence Foundation / รากฐานปัญญาความรู้</h2>
+<p class="status">BLOCKED</p>
+<p>Displays an existing certified runtime report without changing trading logic or execution authority.<br><small>แสดงรายงาน Runtime ที่มีอยู่แล้วโดยไม่เปลี่ยน Trading Logic หรืออำนาจการส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Reason</td><td>milestone_l_not_complete</td></tr>
+<tr><td>Milestone</td><td>MILESTONE_M</td></tr>
+<tr><td>Pack</td><td>PACK_1</td></tr>
+<tr><td>Knowledge Version</td><td>M1.0.0-RESEARCH</td></tr>
+<tr><td>Block Reasons</td><td>(&#x27;milestone_l_not_complete&#x27;, &#x27;milestone_m_not_authorized&#x27;, &#x27;knowledge_records_missing&#x27;, &#x27;knowledge_records_incomplete&#x27;, &#x27;market_regime_missing&#x27;, &#x27;feature_schema_invalid&#x27;, &#x27;outcome_schema_invalid&#x27;, &#x27;explainability_metadata_missing&#x27;, &#x27;lineage_invalid&#x27;, &#x27;data_quality_not_certified&#x27;)</td></tr>
+<tr><td>Expected Next Action En</td><td>Correct every block reason and re-run without creating or transmitting an order.</td></tr>
+<tr><td>Expected Next Action Th</td><td>แก้ไข Block Reason ทั้งหมดและรันใหม่โดยไม่สร้างหรือส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Execution Status</td><td>LOCKED_SIMULATION_ONLY</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr>
+<tr><td>Live Execution Enabled</td><td>False</td></tr>
+<tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="pattern_knowledge_engine">
+<h2>Pattern Knowledge Engine / กลไกความรู้รูปแบบ</h2>
+<p class="status">BLOCKED</p>
+<p>Displays an existing certified runtime report without changing trading logic or execution authority.<br><small>แสดงรายงาน Runtime ที่มีอยู่แล้วโดยไม่เปลี่ยน Trading Logic หรืออำนาจการส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Reason</td><td>foundation_not_ready</td></tr>
+<tr><td>Milestone</td><td>MILESTONE_M</td></tr>
+<tr><td>Pack</td><td>PACK_2</td></tr>
+<tr><td>Knowledge Version</td><td>M1.1.0-RESEARCH</td></tr>
+<tr><td>Block Reasons</td><td>(&#x27;foundation_not_ready&#x27;, &#x27;research_knowledge_not_approved&#x27;, &#x27;knowledge_records_missing&#x27;, &#x27;knowledge_records_incomplete&#x27;, &#x27;canonical_feature_schema_invalid&#x27;, &#x27;outcome_statistics_invalid&#x27;, &#x27;market_regime_partition_missing&#x27;, &#x27;pattern_identity_invalid&#x27;, &#x27;lineage_invalid&#x27;, &#x27;data_quality_not_certified&#x27;)</td></tr>
+<tr><td>Expected Next Action En</td><td>Correct every block reason and re-run without creating or transmitting an order.</td></tr>
+<tr><td>Expected Next Action Th</td><td>แก้ไข Block Reason ทั้งหมดและรันใหม่โดยไม่สร้างหรือส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Execution Status</td><td>LOCKED_SIMULATION_ONLY</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr>
+<tr><td>Live Execution Enabled</td><td>False</td></tr>
+<tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="pattern_similarity_search">
+<h2>Pattern Similarity Search / การค้นหาความคล้ายของรูปแบบ</h2>
+<p class="status">BLOCKED</p>
+<p>Displays an existing certified runtime report without changing trading logic or execution authority.<br><small>แสดงรายงาน Runtime ที่มีอยู่แล้วโดยไม่เปลี่ยน Trading Logic หรืออำนาจการส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Reason</td><td>pattern_engine_not_ready</td></tr>
+<tr><td>Milestone</td><td>MILESTONE_M</td></tr>
+<tr><td>Pack</td><td>PACK_3</td></tr>
+<tr><td>Knowledge Version</td><td>M1.2.0-RESEARCH</td></tr>
+<tr><td>Block Reasons</td><td>(&#x27;pattern_engine_not_ready&#x27;, &#x27;research_knowledge_not_approved&#x27;, &#x27;query_pattern_missing&#x27;, &#x27;candidate_patterns_missing&#x27;, &#x27;market_regime_mismatch&#x27;, &#x27;feature_schema_mismatch&#x27;, &#x27;lineage_invalid&#x27;, &#x27;data_quality_not_certified&#x27;)</td></tr>
+<tr><td>Expected Next Action En</td><td>Correct every block reason and re-run without creating or transmitting an order.</td></tr>
+<tr><td>Expected Next Action Th</td><td>แก้ไข Block Reason ทั้งหมดและรันใหม่โดยไม่สร้างหรือส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Execution Status</td><td>LOCKED_SIMULATION_ONLY</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr>
+<tr><td>Live Execution Enabled</td><td>False</td></tr>
+<tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="pattern_clustering">
+<h2>Pattern Clustering / การจัดกลุ่มรูปแบบ</h2>
+<p class="status">BLOCKED</p>
+<p>Displays an existing certified runtime report without changing trading logic or execution authority.<br><small>แสดงรายงาน Runtime ที่มีอยู่แล้วโดยไม่เปลี่ยน Trading Logic หรืออำนาจการส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Reason</td><td>similarity_search_not_ready</td></tr>
+<tr><td>Milestone</td><td>MILESTONE_M</td></tr>
+<tr><td>Pack</td><td>PACK_4</td></tr>
+<tr><td>Knowledge Version</td><td>M1.3.0-RESEARCH</td></tr>
+<tr><td>Block Reasons</td><td>(&#x27;similarity_search_not_ready&#x27;, &#x27;research_knowledge_not_approved&#x27;, &#x27;patterns_missing&#x27;, &#x27;eligible_patterns_missing&#x27;, &#x27;data_quality_not_certified&#x27;)</td></tr>
+<tr><td>Expected Next Action En</td><td>Correct every block reason and re-run without creating or transmitting an order.</td></tr>
+<tr><td>Expected Next Action Th</td><td>แก้ไข Block Reason ทั้งหมดและรันใหม่โดยไม่สร้างหรือส่งคำสั่งซื้อขาย</td></tr>
+<tr><td>Execution Status</td><td>LOCKED_SIMULATION_ONLY</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr>
+<tr><td>Live Execution Enabled</td><td>False</td></tr>
+<tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr></table>
+</section>
+<section id="pattern_statistics">
+<h2>Pattern Statistics / สถิติรูปแบบ</h2>
+<p class="status">BLOCKED</p>
+<p>Displays an existing certified runtime report without changing trading logic or execution authority.<br><small>แสดงรายงาน Runtime ที่มีอยู่แล้วโดยไม่เปลี่ยน Trading Logic หรืออำนาจการส่งคำสั่งซื้อขาย</small></p>
+<table><tr><td>Reason</td><td>Pattern statistics blocked by validation controls.</td></tr>
+<tr><td>Milestone</td><td>M</td></tr>
+<tr><td>Pack</td><td>5</td></tr>
+<tr><td>Knowledge Version</td><td>M1.5.0-RESEARCH</td></tr>
+<tr><td>Block Reasons</td><td>(&#x27;cluster_lineage_invalid&#x27;, &#x27;data_quality_not_certified&#x27;, &#x27;outcome_values_invalid&#x27;, &#x27;pattern_clustering_not_ready&#x27;, &#x27;pattern_lineage_invalid&#x27;, &#x27;research_knowledge_not_approved&#x27;)</td></tr>
+<tr><td>Expected Next Action En</td><td>Correct blocked validation inputs and evaluate again.</td></tr>
+<tr><td>Expected Next Action Th</td><td>แก้ข้อมูลที่ไม่ผ่านการตรวจสอบแล้วประเมินใหม่</td></tr>
+<tr><td>Execution Status</td><td>LOCKED_SIMULATION_ONLY</td></tr>
+<tr><td>Direct Execution</td><td>False</td></tr>
+<tr><td>Live Execution Enabled</td><td>False</td></tr>
+<tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="market">
 <h2>Dashboard Market / ตลาด</h2>

@@ -62,6 +62,11 @@ from afip.shadow_execution_observation import ShadowExecutionObservationRuntime
 from afip.demo_execution_certification import DemoExecutionCertificationRuntime
 from afip.version1_release_candidate import Version1ReleaseCandidateRuntime
 from afip.production_readiness_complete import ProductionReadinessCompleteRuntime
+from afip.knowledge_intelligence_foundation import KnowledgeIntelligenceFoundationRuntime
+from afip.pattern_knowledge_engine import PatternKnowledgeEngineRuntime
+from afip.pattern_similarity_search import PatternSimilaritySearchRuntime
+from afip.pattern_clustering import PatternClusteringRuntime
+from afip.pattern_statistics import PatternStatisticsRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -521,6 +526,12 @@ class DashboardUIRuntime:
             "broker_request_created": False,
             "order_transmission_attempted": False,
         })
+        production_readiness_complete = ProductionReadinessCompleteRuntime().evaluate_one({**dict(record), "mode": mode})
+        knowledge_intelligence_foundation = KnowledgeIntelligenceFoundationRuntime().evaluate_one({**dict(record), "mode": mode})
+        pattern_knowledge_engine = PatternKnowledgeEngineRuntime().evaluate_one({**dict(record), "mode": mode})
+        pattern_similarity_search = PatternSimilaritySearchRuntime().evaluate_one({**dict(record), "mode": mode})
+        pattern_clustering = PatternClusteringRuntime().evaluate_one({**dict(record), "mode": mode})
+        pattern_statistics = PatternStatisticsRuntime().evaluate_one({**dict(record), "mode": mode})
         production_release_candidate = Version1ReleaseCandidateRuntime().evaluate_one({
             **dict(record),
             "broker": broker,
@@ -555,29 +566,6 @@ class DashboardUIRuntime:
             "direct_execution": False,
             "live_execution_enabled": False,
             "broker_request_created": False,
-            "order_transmission_attempted": False,
-        })
-        production_readiness_complete = ProductionReadinessCompleteRuntime().evaluate_one({
-            **dict(record),
-            "broker": broker, "symbol": symbol,
-            "release_candidate_ready": production_release_candidate.release_candidate_approved,
-            "release_candidate_id": production_release_candidate.release_candidate_id,
-            "all_milestone_l_packs_ready": production_release_candidate.all_pack_dependencies_ready,
-            "production_health_monitor_ready": production_release_candidate.production_health_monitor_ready,
-            "emergency_safety_system_ready": production_release_candidate.emergency_safety_system_ready,
-            "production_report_ready": production_release_candidate.production_report_ready,
-            "decision_ledger_ready": production_release_candidate.decision_ledger_ready,
-            "data_quality_certified": production_release_candidate.data_quality_certified,
-            "knowledge_versioning_ready": production_release_candidate.knowledge_versioning_ready,
-            "feature_flags_ready": production_release_candidate.feature_flags_ready,
-            "operation_manual_en_ready": production_release_candidate.operation_manual_en_ready,
-            "operation_manual_th_ready": production_release_candidate.operation_manual_th_ready,
-            "audit_chain_ready": production_release_candidate.audit_chain_ready,
-            "independent_trade_plan_valid": True, "protected_runner_exposure_included": True,
-            "traditional_dca_enabled": False, "averaging_down_enabled": False,
-            "lot_per_unit": 0.01, "execution_status": "LOCKED_SIMULATION_ONLY",
-            "order_status": "NO_ORDER_SENT", "direct_execution": False,
-            "live_execution_enabled": False, "broker_request_created": False,
             "order_transmission_attempted": False,
         })
         panels = (
@@ -636,7 +624,12 @@ class DashboardUIRuntime:
             _shadow_execution_observation_panel(shadow_execution_observation),
             _demo_execution_certification_panel(demo_execution_certification),
             _production_release_candidate_panel(production_release_candidate),
-            _production_readiness_complete_panel(production_readiness_complete),
+            _regression_report_panel("production_readiness_complete", "Production Readiness Complete", "ความพร้อม Production เสร็จสมบูรณ์", production_readiness_complete),
+            _regression_report_panel("knowledge_intelligence_foundation", "Knowledge Intelligence Foundation", "รากฐานปัญญาความรู้", knowledge_intelligence_foundation),
+            _regression_report_panel("pattern_knowledge_engine", "Pattern Knowledge Engine", "กลไกความรู้รูปแบบ", pattern_knowledge_engine),
+            _regression_report_panel("pattern_similarity_search", "Pattern Similarity Search", "การค้นหาความคล้ายของรูปแบบ", pattern_similarity_search),
+            _regression_report_panel("pattern_clustering", "Pattern Clustering", "การจัดกลุ่มรูปแบบ", pattern_clustering),
+            _regression_report_panel("pattern_statistics", "Pattern Statistics", "สถิติรูปแบบ", pattern_statistics),
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
@@ -1954,34 +1947,60 @@ def _production_release_candidate_panel(report: Any) -> DashboardPanel:
     )
 
 
-def _production_readiness_complete_panel(report: Any) -> DashboardPanel:
+def _regression_report_panel(panel_id: str, title_en: str, title_th: str, report: Any) -> DashboardPanel:
+    """Expose an existing deterministic report in the dashboard without changing its logic."""
+    payload = report.as_dict() if hasattr(report, "as_dict") else dict(getattr(report, "__dict__", {}))
+    preferred = (
+        "reason", "milestone", "pack", "knowledge_version", "readiness",
+        "block_reasons", "expected_next_action_en", "expected_next_action_th",
+        "execution_status", "direct_execution", "live_execution_enabled", "order_status",
+    )
+    rows = tuple(
+        (key.replace("_", " ").title(), str(payload[key]))
+        for key in preferred if key in payload
+    )
+    return DashboardPanel(
+        panel_id, title_en, title_th, str(getattr(report, "status", "BLOCKED")),
+        "Displays an existing certified runtime report without changing trading logic or execution authority.",
+        "แสดงรายงาน Runtime ที่มีอยู่แล้วโดยไม่เปลี่ยน Trading Logic หรืออำนาจการส่งคำสั่งซื้อขาย",
+        rows,
+    )
+
+
+# Milestone N Pack 3 — Portfolio Risk Engine panel factory.
+def _portfolio_risk_engine_panel(report: Any) -> DashboardPanel:
     rows = (
-        ("Readiness / ความพร้อม", report.readiness),
-        ("Completion ID / รหัส", report.completion_id),
-        ("Release Candidate ID / รหัส Candidate", report.release_candidate_id),
-        ("Candidate Ready / Candidate พร้อม", str(report.release_candidate_ready)),
-        ("Milestone L Packs / Pack ครบ", str(report.all_milestone_l_packs_ready)),
-        ("Operational Safety / ความปลอดภัย", f"health={report.production_health_monitor_ready} | emergency={report.emergency_safety_system_ready}"),
-        ("Report and Ledger / รายงานและ Ledger", f"report={report.production_report_ready} | ledger={report.decision_ledger_ready}"),
-        ("Data and Knowledge / ข้อมูลและความรู้", f"data={report.data_quality_certified} | versioning={report.knowledge_versioning_ready}"),
-        ("Feature Flags / Feature Flags", str(report.feature_flags_ready)),
-        ("Operation Manuals / คู่มือ", f"EN={report.operation_manual_en_ready} | TH={report.operation_manual_th_ready}"),
-        ("Audit Chain / สาย Audit", str(report.audit_chain_ready)),
-        ("Independent Plan / แผนอิสระ", str(report.independent_trade_plan_valid)),
-        ("Runner Exposure / Exposure ของ Runner", str(report.protected_runner_exposure_included)),
-        ("No DCA / ปิด DCA", f"traditional={report.traditional_dca_disabled} | averaging_down={report.averaging_down_disabled}"),
-        ("Milestone L Complete / ปิด Milestone L", str(report.milestone_l_complete)),
-        ("Ready for Milestone M / พร้อม Milestone M", str(report.ready_for_milestone_m)),
-        ("Production Certified / รับรอง Production", str(report.production_certified)),
+        ("Risk Evaluation ID / รหัส", report.risk_evaluation_id),
+        ("Portfolio Risk / ความเสี่ยงรวม", f"{report.total_portfolio_risk_amount} | {report.total_portfolio_risk_percent}%"),
+        ("Risk Limit / ขีดจำกัด", f"{report.maximum_portfolio_risk_percent}% | valid={report.risk_budget_valid}"),
+        ("Drawdown / การลดลง", f"{report.current_drawdown_percent}% | valid={report.drawdown_valid}"),
+        ("Margin Level / ระดับ Margin", f"{report.margin_level_percent}% | valid={report.margin_level_valid}"),
+        ("Units / หน่วย", f"current={report.current_units} | proposed={report.proposed_units} | total={report.total_units}"),
+        ("Protected Runners / Protected Runner", str(report.protected_runner_count)),
+        ("Approval / การอนุมัติ", str(report.portfolio_risk_approved)),
         ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
-        ("Completion Reason EN", report.completion_reason_en),
-        ("Completion Reason TH", report.completion_reason_th),
-        ("Expected Next Action EN", report.expected_next_action_en),
-        ("Expected Next Action TH", report.expected_next_action_th),
+        ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
+    )
+    return DashboardPanel("portfolio_risk_engine", "Portfolio Risk Engine", "ระบบประเมินความเสี่ยง Portfolio", report.status,
+        "Aggregates current and proposed portfolio risk without execution authority.",
+        "รวมความเสี่ยง Portfolio ปัจจุบันและที่เสนอโดยไม่มีอำนาจส่งคำสั่งซื้อขาย", rows)
+
+
+# Milestone N Pack 4 — Capital Allocation panel factory.
+def _capital_allocation_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Allocation ID / รหัส", report.allocation_id),
+        ("Plans / แผน", f"requested={report.requested_plan_count} | allocated={report.allocated_plan_count}"),
+        ("Units / Unit", f"requested={report.requested_units} | allocated={report.allocated_units} | rejected={report.rejected_units}"),
+        ("Risk Capacity / ความสามารถด้าน Risk", f"available={report.available_risk_amount} | allocated={report.allocated_risk_amount} | remaining={report.remaining_risk_amount}"),
+        ("Margin Capacity / ความสามารถด้าน Margin", f"allocatable={report.allocatable_margin_amount} | allocated={report.allocated_margin_amount} | remaining={report.remaining_margin_amount}"),
+        ("Remaining Units / Unit คงเหลือ", str(report.remaining_units)),
+        ("Approval / การอนุมัติ", str(report.capital_allocation_approved)),
+        ("Block Reasons / เหตุผลที่บล็อก", ", ".join(report.block_reasons) or "NONE"),
         ("Execution / การดำเนินการ", f"{report.execution_status} | {report.order_status}"),
     )
     return DashboardPanel(
-        "production_readiness_complete", "Production Readiness Complete", "ความพร้อม Production ครบถ้วน", report.status,
-        "Closes Milestone L after every readiness and safety gate passes while production certification and order transmission remain disabled.",
-        "ปิด Milestone L หลังเกณฑ์ความพร้อมและความปลอดภัยผ่านทั้งหมด โดยยังคงปิด Production Certification และการส่งคำสั่งซื้อขาย", rows,
+        "capital_allocation", "Capital Allocation", "การจัดสรรทุน", report.status,
+        "Distributes bounded portfolio risk, unit and margin capacity among independent trade plans without execution authority.",
+        "จัดสรรความสามารถด้าน Risk, Unit และ Margin ของ Portfolio ให้แผนการเทรดอิสระโดยไม่มีอำนาจส่งคำสั่งซื้อขาย", rows,
     )

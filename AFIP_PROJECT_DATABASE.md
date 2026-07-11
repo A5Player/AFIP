@@ -209,11 +209,37 @@
 - XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
 - Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
 
-## Milestone L Pack 10 — Production Readiness Complete
-- Added deterministic final readiness gate for Milestone L.
-- Requires Pack 9 release-candidate approval and complete Milestone L dependency lineage.
-- Requires Production Health Monitor, Emergency Safety System, Production Report, Decision Ledger, Data Quality Certification, Knowledge Versioning, Feature Flags, bilingual Operation Manual, and Audit Chain.
-- Preserves Independent Trade Plan and Protected Runner exposure accounting.
-- Traditional DCA and averaging down remain disabled.
-- READY closes Milestone L and permits continuation to Milestone M only.
-- Production certification remains false; execution remains LOCKED_SIMULATION_ONLY and NO_ORDER_SENT.
+
+## Milestone N Pack 3 — Portfolio Risk Engine
+- Status: Implemented
+- Research-only deterministic portfolio risk aggregation and approval gate.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+- Version 1.0 roadmap now completes at Milestone R.
+
+## Milestone N Pack 4 — Capital Allocation
+- Status: IMPLEMENTED
+- Adds deterministic, research-only allocation of remaining portfolio risk, fixed Units, and margin capacity among independent trade plans.
+- Uses Portfolio Risk Engine approval and lineage from Pack 3.
+- Preserves the configured minimum free-margin reserve and maximum portfolio Unit ceiling.
+- Allocates in deterministic priority order and records full, partial, blocked, or no-capacity outcomes per trade plan.
+- Requires unique Independent Trade Plans and independent position lifecycles.
+- Protected Runner exposure remains included in portfolio exposure and risk.
+- Traditional DCA, Averaging Down, Martingale, Grid Trading, and Recovery Trading remain disabled.
+- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
+- Execution remains LOCKED_SIMULATION_ONLY with Direct Execution disabled, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone N Pack 5 — Portfolio Exposure Coordination
+
+- Added deterministic research-only coordination of allocated BUY/SELL exposure.
+- Validates portfolio unit, total-risk, direction-concentration and Protected Runner limits.
+- Preserves independent Trade Plan and Position lifecycles.
+- Preserves XM-only, GOLD#-only and fixed 0.01-lot Unit policy.
+- Traditional DCA, Averaging Down, Martingale, Grid Trading and Recovery Trading remain prohibited.
+- Execution remains `LOCKED_SIMULATION_ONLY`, Direct Execution remains false and no order is sent.
+
+## Regression Patch 1 — Dashboard Panel Registration
+- Scope: Regression fix only; no new trading capability.
+- Registered existing Milestone L Pack 10 and Milestone M Packs 1–5 reports in `DashboardUIRuntime`.
+- Restored panel IDs: `production_readiness_complete`, `knowledge_intelligence_foundation`, `pattern_knowledge_engine`, `pattern_similarity_search`, `pattern_clustering`, `pattern_statistics`.
+- Trading logic unchanged. Execution remains `LOCKED_SIMULATION_ONLY`, direct execution false, live execution disabled, and order status `NO_ORDER_SENT`.
+- Validation: 1375 tests passed including the dedicated regression test; local quality check PASS; dashboard generation PASS.
