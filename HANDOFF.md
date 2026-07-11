@@ -162,3 +162,12 @@ Completed deterministic research-only certification of Capital Allocation, Expos
 - Validate with `pytest tests/test_milestone_o_pack_1.py -v`, full pytest, local quality check, and dashboard generation.
 - Next: Milestone O Pack 2 — Learning Evidence Normalization.
 - Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
+
+## Current Handoff — Milestone O Pack 2
+- Learning Evidence Normalization implemented after Milestone O Pack 1.
+- Converts accepted immutable Learning Records into deterministic canonical Evidence Records.
+- TRAINING, EVALUATION, and HOLDOUT roles remain isolated.
+- Non-finite values, invalid ranges, chronology violations, future leakage, uncertified lineage, adaptive updates, and execution authority are blocked.
+- Validate with `pytest tests/test_milestone_o_pack_2.py -v`, full pytest, local quality check, and dashboard generation.
+- Next: Milestone O Pack 3 — Learning Evidence Aggregation.
+- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.

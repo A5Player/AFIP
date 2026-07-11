@@ -297,3 +297,13 @@ Status: COMPLETE
 - Requires Milestone N Portfolio Intelligence completion lineage.
 - Next: Milestone O Pack 2 — Learning Evidence Normalization.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone O Pack 2 — Learning Evidence Normalization
+Status: COMPLETE
+
+- Normalizes accepted immutable Pack 1 learning records into canonical research evidence records.
+- Standardizes dataset role, outcome, direction, Market Regime, confidence, realized R, MFE, MAE, cost ratio, duration, and sample weight.
+- Requires Pack 1 acceptance, immutable lineage, certified data quality, valid chronology, and future-safe evidence.
+- Blocks non-finite metrics, out-of-range metrics, invalid financial labels, dataset contamination, adaptive updates, trading logic changes, production knowledge promotion, and all execution authority.
+- Next: Milestone O Pack 3 — Learning Evidence Aggregation.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
