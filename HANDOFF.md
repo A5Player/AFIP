@@ -153,3 +153,12 @@ Completed deterministic research-only certification of Capital Allocation, Expos
 - Production certification remains pending Milestone R.
 - Apply patch only; do not regenerate repository or replace unrelated modules.
 - Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
+
+## Current Handoff — Milestone O Pack 1
+- Learning Intelligence Foundation implemented after Milestone N completion.
+- Accepts only certified, chronological, future-safe observations as immutable research learning records.
+- TRAINING, EVALUATION, and HOLDOUT roles remain separated.
+- Automatic parameter updates, trading logic changes, and production knowledge promotion remain disabled.
+- Validate with `pytest tests/test_milestone_o_pack_1.py -v`, full pytest, local quality check, and dashboard generation.
+- Next: Milestone O Pack 2 — Learning Evidence Normalization.
+- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.

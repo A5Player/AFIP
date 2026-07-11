@@ -287,3 +287,13 @@
 - Production certification is not granted; Milestone R remains required.
 - Next: Milestone O Pack 1 — Learning Intelligence Foundation.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone O Pack 1 — Learning Intelligence Foundation
+Status: COMPLETE
+
+- Adds deterministic immutable research learning records from certified chronological observations.
+- Separates TRAINING, EVALUATION, and HOLDOUT dataset roles.
+- Blocks future leakage, uncertified sources, invalid chronology, mutable records, automatic parameter updates, trading logic changes, and production knowledge promotion.
+- Requires Milestone N Portfolio Intelligence completion lineage.
+- Next: Milestone O Pack 2 — Learning Evidence Normalization.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
