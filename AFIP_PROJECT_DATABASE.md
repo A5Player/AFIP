@@ -551,3 +551,15 @@ Next: Milestone Q Pack 10 — Market Intent Intelligence Complete.
 - Milestone Q completion is research-only and does not grant Production Certification, Release Candidate status, production knowledge promotion, parameter updates, trading-logic changes, broker requests, position modification, or order transmission.
 - Next milestone: Milestone R — Production Certification.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remain disabled; `NO_ORDER_SENT`.
+
+## Milestone R Pack 1 — Production Regression Audit
+
+Status: Implemented and validated.
+
+- Added deterministic immutable Production Regression Audit runtime.
+- Requires valid Milestone Q Pack 10 completion lineage.
+- Audits targeted test suites and required repository validation checks.
+- Validates evidence uniqueness, chronology, regression test-count continuity, and permanent trading/execution policy.
+- Does not grant Production Certification or Release Candidate status.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution stays disabled; `NO_ORDER_SENT`.
+- Next: Milestone R Pack 2 — Duplicate Code Audit.
