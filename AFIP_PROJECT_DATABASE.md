@@ -269,3 +269,9 @@
 - XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
 - No broker request, order transmission, position modification, or trading-logic change is permitted.
 - Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
+
+## Milestone N Pack 9 — Portfolio Governance Validation
+- Added deterministic portfolio governance validation after Pack 8 resilience certification.
+- Validates frozen Version 1.0 policy, configuration integrity, audit lineage, authority separation, override prohibition, lifecycle independence, protected runner preservation, and permanent forbidden-method policy.
+- Research-only; no broker request, order transmission, position modification, or trading-logic change.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.

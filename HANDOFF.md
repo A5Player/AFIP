@@ -138,3 +138,10 @@ Completed deterministic research-only stress validation for portfolio allocation
 
 ## Milestone N Pack 8 — Portfolio Resilience Certification
 Completed deterministic research-only certification of Capital Allocation, Exposure Coordination, Drawdown Protection, and Stress Validation lineage. Continue from Milestone N Pack 9 after validation. Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Current Handoff — Milestone N Pack 9
+- Portfolio Governance Validation implemented after Pack 8 Portfolio Resilience Certification.
+- Validate with `pytest tests/test_milestone_n_pack_9.py -v`, full pytest, local quality check, and dashboard generation.
+- Next: Milestone N Pack 10 — Portfolio Intelligence Complete.
+- Apply patch only; do not regenerate repository.
+- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
