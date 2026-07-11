@@ -275,3 +275,15 @@
 - Validates frozen Version 1.0 policy, configuration integrity, audit lineage, authority separation, override prohibition, lifecycle independence, protected runner preservation, and permanent forbidden-method policy.
 - Research-only; no broker request, order transmission, position modification, or trading-logic change.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone N Pack 10 — Portfolio Intelligence Complete
+- Status: COMPLETE
+- Closes Milestone N Portfolio Intelligence under the Version 1.0 Feature Freeze.
+- Verifies completion and unique lineage for Packs 1–9.
+- Requires approved Portfolio Governance, data quality, future-safe evidence, deterministic runtime, and Market Regime before Signal.
+- Requires independent trade plans, independent position lifecycles, and Protected Runner preservation.
+- Traditional DCA, Averaging Down, Martingale, Grid Trading, and Recovery Trading remain disabled.
+- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
+- Production certification is not granted; Milestone R remains required.
+- Next: Milestone O Pack 1 — Learning Intelligence Foundation.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.

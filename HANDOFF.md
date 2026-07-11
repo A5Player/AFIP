@@ -145,3 +145,11 @@ Completed deterministic research-only certification of Capital Allocation, Expos
 - Next: Milestone N Pack 10 — Portfolio Intelligence Complete.
 - Apply patch only; do not regenerate repository.
 - Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
+
+## Current Handoff — Milestone N Pack 10
+- Milestone N Portfolio Intelligence is COMPLETE.
+- Pack 10 validates Packs 1–9 capability completion, unique lineage, Portfolio Governance approval, data integrity, future safety, deterministic runtime, and permanent policy controls.
+- A READY result permits progression only to Milestone O Pack 1 — Learning Intelligence Foundation.
+- Production certification remains pending Milestone R.
+- Apply patch only; do not regenerate repository or replace unrelated modules.
+- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
