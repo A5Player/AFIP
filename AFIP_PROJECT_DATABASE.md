@@ -431,3 +431,17 @@ Next: Milestone P Pack 8 — Market Behaviour Validation Governance.
 Validation: 8 targeted tests passed; 1567 full tests passed; local quality check PASS; dashboard generation PASS.
 
 Next: Milestone P Pack 10 — Market Behaviour Intelligence Complete.
+
+## Milestone P Pack 10 — Market Behaviour Intelligence Complete ✅
+
+- Added `afip/market_behaviour_intelligence_complete`.
+- Closes Milestone P under AFIP Version 1.0 Feature Freeze.
+- Validates complete and unique capability lineage for Packs 1–9.
+- Requires accepted Pack 9 documented manual review certification.
+- Requires certified data quality, future safety, deterministic runtime, Market Regime before Behaviour, chronological completion, and frozen execution policy.
+- Research only. Does not authorize automatic parameter updates, trading-logic changes, production knowledge promotion, Production Certification, position modification, broker requests, or order transmission.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation: 8 targeted tests passed; 1575 full tests passed; local quality check PASS; dashboard generation PASS.
+
+Next: Milestone Q Pack 1 — Market Intent Intelligence Foundation.

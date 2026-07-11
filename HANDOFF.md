@@ -332,3 +332,22 @@ Validation commands:
 - `python -m afip.dashboard_ui`
 
 Next: Milestone P Pack 10 — Market Behaviour Intelligence Complete.
+
+## Latest Completed Work
+
+Milestone P Pack 10 — Market Behaviour Intelligence Complete ✅
+
+- Certifies Packs 1–9 as complete with unique capability lineage and accepted Pack 9 manual review certification.
+- Validates chronology, data quality, future safety, deterministic runtime, Market Regime before Behaviour, and Version 1.0 frozen policy.
+- Milestone P is complete for research-only progression.
+- Production Certification remains pending Milestone R.
+- Automatic parameter update, trading-logic change, production knowledge promotion, position modification, broker request, and order transmission remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Validation commands:
+- `pytest tests/test_milestone_p_pack_10.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone Q Pack 1 — Market Intent Intelligence Foundation.
