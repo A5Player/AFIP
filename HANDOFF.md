@@ -135,3 +135,6 @@ Execution remains permanently locked for Version 1.0 development.
 
 ## Milestone N Pack 7 — Portfolio Stress Validation
 Completed deterministic research-only stress validation for portfolio allocation lineage. The runtime evaluates hypothetical spread, volatility, adverse-movement and liquidity conditions without creating, modifying, closing or transmitting orders. Continue from Milestone N Pack 8 after validation.
+
+## Milestone N Pack 8 — Portfolio Resilience Certification
+Completed deterministic research-only certification of Capital Allocation, Exposure Coordination, Drawdown Protection, and Stress Validation lineage. Continue from Milestone N Pack 9 after validation. Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.

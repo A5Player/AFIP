@@ -259,3 +259,13 @@
 - Trading logic changed: No
 - Execution authority: None
 - Execution status: LOCKED_SIMULATION_ONLY
+
+## Milestone N Pack 8 — Portfolio Resilience Certification
+- Status: COMPLETE
+- Consolidates approved lineage from Milestone N Packs 4–7 into one deterministic research-only certification gate.
+- Requires Capital Allocation, Exposure Coordination, Drawdown Protection, and Stress Validation approvals and identifiers.
+- Requires data quality, future-safe evidence, Market Regime before Signal, independent position lifecycles, and Protected Runner preservation.
+- Traditional DCA, Averaging Down, Martingale, Grid Trading, and Recovery Trading remain disabled.
+- XM only, GOLD# only, and 1 Unit = 0.01 Lot remain mandatory.
+- No broker request, order transmission, position modification, or trading-logic change is permitted.
+- Execution remains LOCKED_SIMULATION_ONLY, Direct Execution false, Live Execution disabled, and NO_ORDER_SENT.
