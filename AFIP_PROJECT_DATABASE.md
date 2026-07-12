@@ -626,3 +626,15 @@ Status: Implemented and validated.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 6 — Safety Audit.
+
+## Milestone R Pack 6 — Production Safety Audit
+
+Status: Implemented and validated.
+
+- Added `afip/production_certification_safety_audit` while preserving existing `afip.safety_audit`.
+- Validates R Pack 5 Repository Cleanup lineage and reviewed controls across six mandatory safety domains.
+- Enforces unique IDs, SHA-256 fingerprints, chronology, schema, review completion, domain coverage, safety score, and frozen policy.
+- Blocks unaccepted or critical failures and performs no trading-logic change, safety bypass, broker request, position modification, or order transmission.
+- Production Certification and Release Candidate remain disabled; execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 7 — Security Audit.

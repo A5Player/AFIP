@@ -607,3 +607,15 @@ Validation commands:
 
 Next: Milestone R Pack 6 — Safety Audit.
 Execution remains `LOCKED_SIMULATION_ONLY`. Direct execution is disabled. `NO_ORDER_SENT`.
+
+## Latest Completed Work
+
+Milestone R Pack 6 — Production Safety Audit ✅
+
+- Added deterministic immutable production-safety evidence auditing in `afip.production_certification_safety_audit` without replacing `afip.safety_audit`.
+- Validates Pack 5 lineage, fingerprints, chronology, review completion, six mandatory safety domains, safety score, failures, and permanent policy controls.
+- Passing Pack 6 does not grant Production Certification or Release Candidate status.
+
+Validation: `pytest tests/test_milestone_r_pack_6.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
+
+Next: Milestone R Pack 7 — Security Audit. Execution remains `LOCKED_SIMULATION_ONLY`; direct execution disabled; `NO_ORDER_SENT`.
