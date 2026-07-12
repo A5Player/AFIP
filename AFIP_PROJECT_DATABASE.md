@@ -730,3 +730,11 @@ Status: Implemented.
 - Execution remains `LOCKED_SIMULATION_ONLY`; `NO_ORDER_SENT`.
 
 Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
+
+## Milestone S Pack 1 — Locked Simulation Runtime Runner
+
+- Added continuous operational runner command: `python afip.py run-locked-simulation`.
+- Default interval: 60 seconds; optional finite cycle count for controlled validation.
+- Added immutable execution guards: LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution False, NO_ORDER_SENT.
+- Added JSONL event ledger, atomic status record, acceptance summary, duplicate snapshot fingerprinting, cycle-failure isolation, dashboard rebuild hook, and graceful Ctrl+C shutdown.
+- No trading logic, broker order path, risk policy, profile policy, or position lifecycle was changed.

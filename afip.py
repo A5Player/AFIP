@@ -7,6 +7,7 @@ Commands:
     python afip.py
     python afip.py simulate
     python afip.py mt5-check
+    python afip.py run-locked-simulation [interval_seconds] [maximum_cycles]
 """
 
 from pathlib import Path
@@ -43,6 +44,7 @@ def _print_help() -> None:
     print("Available commands:")
     print("  simulate        Run safe simulation pipeline")
     print("  mt5-check       Check real MT5 data connection fallback safely")
+    print("  run-locked-simulation  Run continuous locked simulation acceptance")
     print("  help            Show this help")
 
 
@@ -64,8 +66,29 @@ def main():
         mt5_check_main(symbol=symbol)
         return
 
+    if command in ("run-locked-simulation", "locked-simulation"):
+        from afip.locked_simulation_runtime import LockedSimulationConfig, LockedSimulationRunner
+
+        interval_seconds = float(sys.argv[2]) if len(sys.argv) > 2 else 60.0
+        maximum_cycles = int(sys.argv[3]) if len(sys.argv) > 3 else None
+        config = LockedSimulationConfig(
+            interval_seconds=interval_seconds,
+            maximum_cycles=maximum_cycles,
+        )
+        print("=== AFIP Version 1.0 — Locked Simulation Runtime ===")
+        print(f"Interval  : {config.interval_seconds} sec")
+        print(f"Max Cycles: {config.maximum_cycles or 'UNLIMITED'}")
+        print("Execution : LOCKED_SIMULATION_ONLY")
+        print("Order     : NO_ORDER_SENT")
+        print("Stop      : Ctrl+C")
+        summary = LockedSimulationRunner(config).run()
+        print(f"Completed : {summary.completed_cycles} cycles")
+        print(f"Failures  : {summary.failed_cycles}")
+        print("Execution : LOCKED_SIMULATION_ONLY | NO_ORDER_SENT")
+        return
+
     print(f"Unknown AFIP command: {command}")
-    print("Available commands: simulate, mt5-check, help")
+    print("Available commands: simulate, mt5-check, run-locked-simulation, help")
     raise SystemExit(2)
 
 

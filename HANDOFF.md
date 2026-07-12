@@ -708,3 +708,28 @@ Milestone R Pack 14 — Version 1.0 Release Record ✅
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
 
 Next: run final local validation, create the final repository snapshot, calculate SHA-256, and create Git tag `v1.0.0`.
+
+## Milestone S Pack 1 — Locked Simulation Runtime Runner
+
+Operational acceptance can now begin on the VPS without enabling broker execution.
+
+Start in PowerShell from `C:\AFIP\source`:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python afip.py run-locked-simulation
+```
+
+For a short verification run:
+
+```powershell
+python afip.py run-locked-simulation 60 3
+```
+
+Stop with `Ctrl+C`. Review:
+
+- `runtime\locked_simulation\status.json`
+- `runtime\locked_simulation\events.jsonl`
+- `runtime\locked_simulation\acceptance_summary.json`
+
+Execution remains LOCKED_SIMULATION_ONLY and every cycle records NO_ORDER_SENT.
