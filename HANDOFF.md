@@ -643,3 +643,17 @@ Next: Milestone R Pack 9 — Performance Audit.
 
 ## Current Handoff — Milestone R Pack 9
 Performance Audit implemented as audit-only. Next work: Milestone R Pack 10 Production Certification. Keep direct/live execution disabled until certification completion.
+
+## Latest Completed Work
+
+Milestone R Pack 10 — Production Certification ✅
+
+- Added deterministic immutable Production Certification over completed R Pack 1–9 audit evidence.
+- Validates complete audit coverage, unique IDs, chronology, schema, successful audit status, critical blocks, certification score, and permanent policy controls.
+- Passing Pack 10 grants Production Certification only.
+- Release Candidate and Version 1.0 Final remain ungranted.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
+
+Validation: `pytest tests/test_milestone_r_pack_10.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
+
+Next: Release Candidate preparation under Milestone R.

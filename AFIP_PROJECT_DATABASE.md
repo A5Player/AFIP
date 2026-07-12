@@ -664,3 +664,18 @@ Next: Milestone R Pack 9 — Performance Audit.
 - Deterministic immutable performance evidence audit.
 - Execution remains LOCKED_SIMULATION_ONLY; NO_ORDER_SENT.
 - Next: Milestone R Pack 10 — Production Certification.
+
+## Milestone R Pack 10 — Production Certification
+
+Status: Implemented and validated.
+
+- Added `afip.production_certification_final` as a deterministic immutable certification layer.
+- Requires successful and complete evidence from Milestone R Packs 1–9.
+- Validates required audit coverage, unique audit IDs, chronology, schema, pass status, critical blocks, score, and frozen execution policy.
+- A passing result grants Production Certification only.
+- Release Candidate and Version 1.0 Final remain ungranted.
+- Direct/live execution remains disabled; execution remains `LOCKED_SIMULATION_ONLY`; `NO_ORDER_SENT`.
+
+Validation: targeted 8 passed; full pytest 1735 passed; Local Quality Check PASS; Dashboard Build PASS.
+
+Next: Release Candidate preparation under Milestone R.
