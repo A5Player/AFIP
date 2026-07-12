@@ -640,3 +640,6 @@ Milestone R Pack 8 — Production Data Integrity Audit ✅
 - Performs no data rewrite, schema migration, future-data use, trading change, or order transmission.
 Validation: `pytest tests/test_milestone_r_pack_8.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
 Next: Milestone R Pack 9 — Performance Audit.
+
+## Current Handoff — Milestone R Pack 9
+Performance Audit implemented as audit-only. Next work: Milestone R Pack 10 Production Certification. Keep direct/live execution disabled until certification completion.

@@ -659,3 +659,8 @@ Status: Implemented and validated.
 - Blocks invalid lineage, duplicate IDs, future evidence, schema defects, incomplete review, critical failures, low score, data rewrites, future leakage, and frozen-policy violations.
 - Production Certification and Release Candidate remain disabled; execution remains locked.
 Next: Milestone R Pack 9 — Performance Audit.
+
+## Milestone R Pack 9 — Production Performance Audit
+- Deterministic immutable performance evidence audit.
+- Execution remains LOCKED_SIMULATION_ONLY; NO_ORDER_SENT.
+- Next: Milestone R Pack 10 — Production Certification.

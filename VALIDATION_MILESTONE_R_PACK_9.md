@@ -1,0 +1,11 @@
+# Validation — Milestone R Pack 9
+- `pytest tests/test_milestone_r_pack_9.py -v`: 8 passed
+- Full `pytest`: 1727 passed
+- `python tools/afip_local_quality_check.py`: PASS
+- Financial Naming Validation: PASS
+- MT5 Data Check: PASS (simulation fallback in build environment)
+- `python -m afip.dashboard_ui`: PASS
+- Execution: LOCKED_SIMULATION_ONLY
+- Direct Execution: False
+- Live Execution: Disabled
+- Order Status: NO_ORDER_SENT
