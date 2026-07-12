@@ -657,3 +657,16 @@ Milestone R Pack 10 — Production Certification ✅
 Validation: `pytest tests/test_milestone_r_pack_10.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
 
 Next: Release Candidate preparation under Milestone R.
+
+## Latest Completed Work
+
+Milestone R Pack 11 — Release Candidate Preparation ✅
+
+- Added deterministic immutable Release Candidate preparation over valid Pack 10 Production Certification evidence.
+- Validates certification lineage, manifests, documentation, validations, readiness score, chronology, and permanent policy controls.
+- Passing Pack 11 does not grant Release Candidate or Version 1.0 Final status.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
+
+Validation: `pytest tests/test_milestone_r_pack_11.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
+
+Next: Milestone R Pack 12 — Release Candidate Review.

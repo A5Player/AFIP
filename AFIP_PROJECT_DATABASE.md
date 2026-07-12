@@ -679,3 +679,16 @@ Status: Implemented and validated.
 Validation: targeted 8 passed; full pytest 1735 passed; Local Quality Check PASS; Dashboard Build PASS.
 
 Next: Release Candidate preparation under Milestone R.
+
+## Milestone R Pack 11 — Release Candidate Preparation
+
+Status: Implemented and validated.
+
+- Added `afip.release_candidate_preparation` as a deterministic immutable preparation layer.
+- Requires one valid Milestone R Pack 10 Production Certification record.
+- Validates certification identity, chronology, schema, artifact manifest, validation manifest, bilingual documentation manifest, readiness score, and frozen execution policy.
+- Passing Pack 11 prepares the repository for Release Candidate review only.
+- Release Candidate and Version 1.0 Final remain ungranted.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 12 — Release Candidate Review.
