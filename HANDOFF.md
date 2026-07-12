@@ -697,3 +697,14 @@ Milestone R Pack 13 — Version 1.0 Final Review ✅
 Validation: `pytest tests/test_milestone_r_pack_13.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
 
 Next: Version 1.0 Release Record.
+
+## Latest Completed Work
+
+Milestone R Pack 14 — Version 1.0 Release Record ✅
+
+- Added deterministic immutable Version 1.0 release recording over valid Pack 13 final-review evidence.
+- Validates final identity, chronology, schema, validation evidence, bilingual documentation, release metadata, score, and permanent policy controls.
+- Records AFIP Version 1.0 Final without granting execution unlock.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
+
+Next: run final local validation, create the final repository snapshot, calculate SHA-256, and create Git tag `v1.0.0`.

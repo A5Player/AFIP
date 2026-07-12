@@ -717,3 +717,16 @@ Status: Implemented.
 - Direct/live execution remains disabled; execution remains `LOCKED_SIMULATION_ONLY`; `NO_ORDER_SENT`.
 
 Next: Version 1.0 Release Record.
+
+## Milestone R Pack 14 — Version 1.0 Release Record
+
+Status: Implemented.
+
+- Added `afip.version_1_release_record` as a deterministic immutable release-record layer.
+- Requires one valid Milestone R Pack 13 Version 1.0 Final Review record.
+- Validates final-review identity, chronology, schema, validation evidence, bilingual documentation, release metadata, release score, and frozen execution policy.
+- Passing Pack 14 records AFIP Version 1.0 Final.
+- It does not authorize execution unlock, direct execution, live execution, broker requests, order transmission, or position modification.
+- Execution remains `LOCKED_SIMULATION_ONLY`; `NO_ORDER_SENT`.
+
+Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
