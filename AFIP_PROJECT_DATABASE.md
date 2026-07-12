@@ -651,3 +651,11 @@ Status: Implemented and validated.
 - Production Certification and Release Candidate remain disabled; execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 8 — Data Integrity Audit.
+
+## Milestone R Pack 8 — Production Data Integrity Audit
+Status: Implemented and validated.
+- Added `afip.production_certification_data_integrity_audit`.
+- Validates R Pack 7 Security Audit lineage and seven mandatory data-integrity domains.
+- Blocks invalid lineage, duplicate IDs, future evidence, schema defects, incomplete review, critical failures, low score, data rewrites, future leakage, and frozen-policy violations.
+- Production Certification and Release Candidate remain disabled; execution remains locked.
+Next: Milestone R Pack 9 — Performance Audit.

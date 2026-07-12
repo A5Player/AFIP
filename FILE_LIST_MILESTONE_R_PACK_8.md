@@ -1,0 +1,11 @@
+# File List — Milestone R Pack 8
+- afip/production_certification_data_integrity_audit/__init__.py
+- afip/production_certification_data_integrity_audit/runtime.py
+- tests/test_milestone_r_pack_8.py
+- README_MILESTONE_R_PACK_8.md
+- README_MILESTONE_R_PACK_8_TH.md
+- VALIDATION_MILESTONE_R_PACK_8.md
+- RUN_MILESTONE_R_PACK_8.ps1
+- RUN_MILESTONE_R_PACK_8.bat
+- AFIP_PROJECT_DATABASE.md
+- HANDOFF.md
