@@ -670,3 +670,17 @@ Milestone R Pack 11 — Release Candidate Preparation ✅
 Validation: `pytest tests/test_milestone_r_pack_11.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
 
 Next: Milestone R Pack 12 — Release Candidate Review.
+
+## Latest Completed Work
+
+Milestone R Pack 12 — Release Candidate Review ✅
+
+- Added deterministic immutable Release Candidate review over valid Pack 11 preparation evidence.
+- Validates preparation lineage, reviewer coverage, validation evidence, documentation, chronology, score, and permanent policy controls.
+- Passing Pack 12 grants Release Candidate status only.
+- Version 1.0 Final remains ungranted.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
+
+Validation: `pytest tests/test_milestone_r_pack_12.py -v`; `pytest`; `python tools/afip_local_quality_check.py`; `python -m afip.dashboard_ui`.
+
+Next: Milestone R Pack 13 — Version 1.0 Final Review.

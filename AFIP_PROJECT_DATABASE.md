@@ -692,3 +692,16 @@ Status: Implemented and validated.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 12 — Release Candidate Review.
+
+## Milestone R Pack 12 — Release Candidate Review
+
+Status: Implemented.
+
+- Added `afip.release_candidate_review` as a deterministic immutable review layer.
+- Requires one valid Pack 11 Release Candidate Preparation record.
+- Validates preparation identity, chronology, schema, six required review domains, validation manifest, documentation manifest, score, and frozen execution policy.
+- Passing Pack 12 grants Release Candidate status only.
+- Version 1.0 Final remains ungranted.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 13 — Version 1.0 Final Review.
