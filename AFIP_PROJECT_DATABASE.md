@@ -611,3 +611,18 @@ Status: Implemented and validated.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 5 — Repository Cleanup.
+
+## Milestone R Pack 5 — Production Repository Cleanup
+
+Status: Implemented and validated.
+
+- Added `afip/production_repository_cleanup`.
+- Validates controlled cleanup evidence after successful Milestone R Pack 4 Architecture Audit lineage.
+- Classifies generated artifacts, cache artifacts, obsolete documents, stale test artifacts, and policy-retained artifacts.
+- Requires unique cleanup IDs, SHA-256 fingerprints, valid chronology, completed review, authorized completion, and frozen-policy compliance.
+- Blocks any cleanup authorization targeting protected source.
+- Performs no trading-logic change, dependency rewiring, broker request, position modification, or order transmission.
+- Production Certification and Release Candidate status remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 6 — Safety Audit.
