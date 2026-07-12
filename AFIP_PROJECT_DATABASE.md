@@ -638,3 +638,16 @@ Status: Implemented and validated.
 - Production Certification and Release Candidate remain disabled; execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 7 — Security Audit.
+
+## Milestone R Pack 7 — Production Security Audit
+
+Status: Implemented and validated.
+
+- Added `afip/production_certification_security_audit` without replacing existing security-related modules.
+- Validates successful R Pack 6 Safety Audit lineage and reviewed controls across seven mandatory security domains.
+- Enforces unique IDs, SHA-256 fingerprints, chronology, schema, review completion, domain coverage, security score, and frozen policy.
+- Blocks unaccepted or critical failures, credential collection, secret exposure, dependency changes, network changes, broker requests, position modifications, and order transmission.
+- Stores no credential or secret values and performs no trading-logic change.
+- Production Certification and Release Candidate remain disabled; execution remains `LOCKED_SIMULATION_ONLY` / `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 8 — Data Integrity Audit.
