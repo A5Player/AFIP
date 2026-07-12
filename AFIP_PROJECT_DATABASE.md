@@ -579,3 +579,19 @@ Status: Implemented and validated.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 3 — Dead Code Audit.
+
+## Milestone R Pack 3 — Production Dead Code Audit
+
+Status: Implemented and validated.
+
+- Added `afip/production_dead_code_audit`.
+- Audits reviewed dead-code evidence without deleting source or changing runtime wiring.
+- Requires valid Milestone R Pack 2 Duplicate Code Audit lineage.
+- Classifies unreachable code, unused symbols, unused modules, obsolete paths, and policy-retained code.
+- Validates unique finding IDs, SHA-256 fingerprints, chronology, review completion, dead-code ratio, severity, and frozen policy.
+- Retained code is excluded from remediation only when explicitly classified, policy-retained, and reviewed.
+- Actionable findings are recorded for controlled Milestone R cleanup; this pack performs no source removal.
+- Production Certification and Release Candidate status remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 4 — Architecture Audit.
