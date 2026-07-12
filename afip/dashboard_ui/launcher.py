@@ -14,6 +14,7 @@ def default_dashboard_record() -> dict[str, Any]:
         "symbol": "GOLD#",
         "profile_name": "Balanced",
         "mode": "DEMO",
+        "four_profile_config_path": "config/four_profile_demo.json",
         "execution_mode": "DEMO",
         "production_readiness_requested": True,
         "demo_trading_requested": True,

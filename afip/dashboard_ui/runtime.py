@@ -22,6 +22,7 @@ from afip.dashboard_live_runtime import DashboardLiveRuntime
 from afip.runtime_supervisor import RuntimeSupervisorRuntime
 from afip.production_certification import ProductionCertificationRuntime
 from afip.profile_customization import ProfileCustomizationRuntime
+from afip.four_profile_operations import FourProfileSupervisor
 from afip.economic_calendar_intelligence import EconomicCalendarIntelligenceRuntime
 from afip.news_intelligence import NewsIntelligenceRuntime
 from afip.gold_macro_intelligence import GoldMacroIntelligenceRuntime
@@ -634,6 +635,11 @@ class DashboardUIRuntime:
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
         )
+        try:
+            four_profile_report = FourProfileSupervisor(record.get("four_profile_config_path", "config/four_profile_demo.json")).status()
+            panels = (_four_profile_overview_panel(four_profile_report),) + panels
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
         if production is not None:
             panels = panels + (_production_readiness_panel(production),)
         if validation_items:
@@ -697,6 +703,32 @@ small {{ color: #555; }}
         path.write_text(self.render_html(record), encoding="utf-8")
         return path
 
+
+
+def _four_profile_overview_panel(report: Any) -> DashboardPanel:
+    rows: list[tuple[str, str]] = [
+        ("Execution", report.execution),
+        ("Order Status", report.order_status),
+        ("Simulation", "LOCKED — live execution disabled"),
+    ]
+    for profile in report.profiles:
+        profile_id = str(profile.get("profile_id", "PROFILE"))
+        state = str(profile.get("runtime_state", profile.get("status", "STOPPED")))
+        summary = (
+            f"{state} | {profile.get('profile_name')} | {profile.get('broker')} | "
+            f"{profile.get('account')} | {profile.get('server')} | MT5: {profile.get('mt5_folder')} | "
+            f"Latency: waiting | Reconnect: 0 | {profile.get('waiting_reason')}"
+        )
+        rows.append((profile_id, summary))
+    return DashboardPanel(
+        "four_profile_overview",
+        "Four-Profile Demo Overview",
+        "ภาพรวม Demo 4 โปรไฟล์",
+        report.status,
+        "Daily operational view for isolated locked-simulation profiles.",
+        "สรุปสถานะโปรไฟล์แบบแยก Runtime สำหรับการใช้งานประจำวัน",
+        tuple(rows),
+    )
 
 def _policy_panel(validation_items: list[str]) -> DashboardPanel:
     return DashboardPanel("policy", "Production Policy", "นโยบายการใช้งาน", "BLOCKED", "Dashboard blocks unsafe or unsupported runtime modes.", "Dashboard บล็อกโหมดที่ไม่ปลอดภัยหรือไม่อยู่ใน Version 1", tuple((item, "BLOCKED") for item in validation_items))

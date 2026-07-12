@@ -738,3 +738,12 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Added immutable execution guards: LOCKED_SIMULATION_ONLY, Direct Execution False, Live Execution False, NO_ORDER_SENT.
 - Added JSONL event ledger, atomic status record, acceptance summary, duplicate snapshot fingerprinting, cycle-failure isolation, dashboard rebuild hook, and graceful Ctrl+C shutdown.
 - No trading logic, broker order path, risk policy, profile policy, or position lifecycle was changed.
+
+## Milestone S Pack 2 — Four-Profile Demo Operational Configuration
+- Added isolated operational configuration for P1 High Safety, P2 Balanced, P3 High Risk Within Plan, and P4 Research.
+- XM-only and GOLD#-only validation is mandatory.
+- Every profile remains `LOCKED_SIMULATION_ONLY`; direct and live execution are false; order status is `NO_ORDER_SENT`.
+- Per-profile MT5 folders, terminals, servers, runtime, database, logs, dashboard, learning, knowledge, and statistics paths are isolated.
+- Duplicate path and configured-account protection runs before startup.
+- Credentials are environment-only and are not stored in repository files.
+- Dashboard includes a four-profile operational overview.

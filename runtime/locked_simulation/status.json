@@ -1,0 +1,13 @@
+{
+  "completed_cycles": 3,
+  "direct_execution": false,
+  "duplicate_snapshots": 2,
+  "execution": "LOCKED_SIMULATION_ONLY",
+  "failed_cycles": 0,
+  "live_execution": false,
+  "order_status": "NO_ORDER_SENT",
+  "recorded_snapshots": 1,
+  "runtime_state": "STOPPED",
+  "started_at_utc": "2026-07-12T14:34:25.721349+00:00",
+  "stopped_at_utc": "2026-07-12T14:34:36.265646+00:00"
+}

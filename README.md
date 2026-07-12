@@ -14,3 +14,6 @@ git add .
 git commit -m "Production Batch 14.9: Finalize data source compatibility"
 git push
 ```
+
+## Version 1.0 Milestone S Pack 2
+Four-profile demo operations are available through `config/four_profile_demo.json` and `tools/afip_four_profile_control.py`. See `README_MILESTONE_S_PACK_2.md` and `README_MILESTONE_S_PACK_2_TH.md`. Live execution remains disabled.

@@ -733,3 +733,16 @@ Stop with `Ctrl+C`. Review:
 - `runtime\locked_simulation\acceptance_summary.json`
 
 Execution remains LOCKED_SIMULATION_ONLY and every cycle records NO_ORDER_SENT.
+
+## Current Handoff — Milestone S Pack 2
+- Baseline commit: `6b94b1f`
+- Pack: Four-Profile Demo Operational Configuration
+- Default enabled profiles: P1 and P4
+- Default disabled profiles: P2 and P3
+- MT5 folders: `C:\XM Global MT5 P1` through `C:\XM Global MT5 P4`
+- Execution: `LOCKED_SIMULATION_ONLY`
+- Direct execution: false
+- Live execution: false
+- Order result: `NO_ORDER_SENT`
+- Credentials: configure locally with `SET_AFIP_PROFILE_CREDENTIALS_LOCAL.ps1`; never commit them.
+- Validation entry point: `RUN_MILESTONE_S_PACK_2.ps1` or `.bat`.
