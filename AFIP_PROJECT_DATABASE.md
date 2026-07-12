@@ -705,3 +705,15 @@ Status: Implemented.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution disabled; `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 13 — Version 1.0 Final Review.
+
+## Milestone R Pack 13 — Version 1.0 Final Review
+
+Status: Implemented.
+
+- Added `afip.version_1_final_review` as a deterministic immutable final-review layer.
+- Requires one valid Pack 12 Release Candidate Review record.
+- Validates Release Candidate identity, chronology, schema, eight final-review domains, validation manifest, documentation manifest, final score, and frozen execution policy.
+- Passing Pack 13 grants AFIP Version 1.0 Final identity.
+- Direct/live execution remains disabled; execution remains `LOCKED_SIMULATION_ONLY`; `NO_ORDER_SENT`.
+
+Next: Version 1.0 Release Record.
