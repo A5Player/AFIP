@@ -563,3 +563,19 @@ Status: Implemented and validated.
 - Does not grant Production Certification or Release Candidate status.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution stays disabled; `NO_ORDER_SENT`.
 - Next: Milestone R Pack 2 — Duplicate Code Audit.
+
+## Milestone R Pack 2 — Production Duplicate Code Audit
+
+Status: Implemented and validated.
+
+- Added `afip/production_duplicate_code_audit`.
+- Audits reviewed duplicate-code evidence without modifying repository source.
+- Requires valid Milestone R Pack 1 Regression Audit lineage.
+- Classifies exact, structural, expected, and actionable duplication.
+- Validates unique finding IDs, SHA-256 fingerprints, chronology, occurrence counts, review completion, duplicate ratio, severity, and frozen policy.
+- Expected duplication is excluded from remediation totals only when explicitly classified and reviewed.
+- Actionable findings are recorded for controlled Milestone R cleanup; this pack performs no refactor or deletion.
+- Production Certification and Release Candidate status remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 3 — Dead Code Audit.
