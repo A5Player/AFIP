@@ -569,3 +569,22 @@ Validation commands:
 
 Next: Milestone R Pack 4 — Architecture Audit.
 Execution remains `LOCKED_SIMULATION_ONLY`. Direct execution is disabled. `NO_ORDER_SENT`.
+
+## Latest Completed Work
+
+Milestone R Pack 4 — Production Architecture Audit ✅
+
+- Added deterministic and immutable architecture-evidence auditing.
+- Validates Pack 3 dead-code audit lineage, finding identifiers, SHA-256 fingerprints, chronology, review completion, architecture score, severity, and permanent policy controls.
+- Audits module boundaries, dependency direction, cycles, public APIs, policy violations, and explicitly reviewed accepted exceptions.
+- Records cleanup requirements without refactoring, dependency rewiring, or runtime changes.
+- Passing Pack 4 does not grant Production Certification or Release Candidate status.
+
+Validation commands:
+- `pytest tests/test_milestone_r_pack_4.py -v`
+- `pytest`
+- `python tools/afip_local_quality_check.py`
+- `python -m afip.dashboard_ui`
+
+Next: Milestone R Pack 5 — Repository Cleanup.
+Execution remains `LOCKED_SIMULATION_ONLY`. Direct execution is disabled. `NO_ORDER_SENT`.

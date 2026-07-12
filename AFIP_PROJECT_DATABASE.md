@@ -595,3 +595,19 @@ Status: Implemented and validated.
 - Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
 
 Next: Milestone R Pack 4 — Architecture Audit.
+
+## Milestone R Pack 4 — Production Architecture Audit
+
+Status: Implemented and validated.
+
+- Added `afip/production_certification_architecture_audit`.
+- Audits reviewed architecture evidence without refactoring modules or changing runtime wiring.
+- Requires valid Milestone R Pack 3 Dead Code Audit lineage.
+- Classifies module-boundary violations, dependency-direction violations, dependency cycles, public API violations, policy violations, and accepted exceptions.
+- Validates unique finding IDs, SHA-256 fingerprints, chronology, review completion, architecture score, severity, and frozen policy.
+- Accepted exceptions are excluded from remediation only when explicitly classified and reviewed.
+- Actionable findings are recorded for controlled Milestone R cleanup; this pack performs no architecture change.
+- Production Certification and Release Candidate status remain disabled.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remains disabled; `NO_ORDER_SENT`.
+
+Next: Milestone R Pack 5 — Repository Cleanup.
