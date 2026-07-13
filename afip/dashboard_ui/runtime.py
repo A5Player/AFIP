@@ -716,8 +716,9 @@ def _four_profile_overview_panel(report: Any) -> DashboardPanel:
         state = str(profile.get("runtime_state", profile.get("status", "STOPPED")))
         summary = (
             f"{state} | {profile.get('profile_name')} | {profile.get('broker')} | "
-            f"{profile.get('account')} | {profile.get('server')} | MT5: {profile.get('mt5_folder')} | "
-            f"Latency: waiting | Reconnect: 0 | {profile.get('waiting_reason')}"
+            f"{profile.get('account')} | {profile.get('server')} | MT5: {profile.get('mt5_connection', 'NOT_CHECKED')} | "
+            f"Latency: {profile.get('latency_ms') if profile.get('latency_ms') is not None else 'waiting'} ms | "
+            f"Reconnect: {profile.get('reconnect_attempts', 0)} | {profile.get('mt5_reason', profile.get('waiting_reason'))}"
         )
         rows.append((profile_id, summary))
     return DashboardPanel(

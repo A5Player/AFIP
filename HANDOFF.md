@@ -746,3 +746,6 @@ Execution remains LOCKED_SIMULATION_ONLY and every cycle records NO_ORDER_SENT.
 - Order result: `NO_ORDER_SENT`
 - Credentials: configure locally with `SET_AFIP_PROFILE_CREDENTIALS_LOCAL.ps1`; never commit them.
 - Validation entry point: `RUN_MILESTONE_S_PACK_2.ps1` or `.bat`.
+
+## Milestone S Pack 3
+MT5 Multi-Terminal Connection Manager added. Run `python tools/afip_mt5_multi_terminal_check.py --profiles P1 P4 --reconnect-attempts 2` after opening/logging in the matching MT5 terminals. No live execution or order sending was introduced.

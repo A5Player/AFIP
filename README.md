@@ -17,3 +17,6 @@ git push
 
 ## Version 1.0 Milestone S Pack 2
 Four-profile demo operations are available through `config/four_profile_demo.json` and `tools/afip_four_profile_control.py`. See `README_MILESTONE_S_PACK_2.md` and `README_MILESTONE_S_PACK_2_TH.md`. Live execution remains disabled.
+
+### Milestone S Pack 3
+Use `tools/afip_mt5_multi_terminal_check.py` to verify isolated P1–P4 MT5 terminal connectivity before starting locked simulation runtime. See README_MILESTONE_S_PACK_3.md and README_MILESTONE_S_PACK_3_TH.md.

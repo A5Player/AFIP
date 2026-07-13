@@ -280,6 +280,20 @@ class FourProfileSupervisor:
                     running = True
                 except (OSError, ValueError):
                     pid_path.unlink(missing_ok=True)
-            record.update({"runtime_state": "RUNNING" if running else "STOPPED", "pid": pid if running else None})
+            health_path = profile.runtime_directory / "mt5_health.json"
+            mt5_health = {}
+            if health_path.exists():
+                try:
+                    mt5_health = json.loads(health_path.read_text(encoding="utf-8"))
+                except (OSError, ValueError, TypeError):
+                    mt5_health = {}
+            record.update({
+                "runtime_state": "RUNNING" if running else "STOPPED",
+                "pid": pid if running else None,
+                "mt5_connection": mt5_health.get("connection_status", "NOT_CHECKED"),
+                "latency_ms": mt5_health.get("latency_ms"),
+                "reconnect_attempts": mt5_health.get("reconnect_attempts", 0),
+                "mt5_reason": mt5_health.get("reason", "MT5 health check not run"),
+            })
             records.append(record)
         return FourProfileReport("READY" if not errors else "BLOCKED", tuple(records), errors)

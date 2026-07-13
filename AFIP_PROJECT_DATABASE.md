@@ -747,3 +747,11 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Duplicate path and configured-account protection runs before startup.
 - Credentials are environment-only and are not stored in repository files.
 - Dashboard includes a four-profile operational overview.
+
+## Milestone S Pack 3 — MT5 Multi-Terminal Connection Manager
+- Isolated sequential MT5 health verification for P1–P4.
+- Exact terminal/login/server mapping with account and server mismatch protection.
+- GOLD# Market Watch and tick verification.
+- Bounded reconnect attempts and per-profile health snapshots.
+- Dashboard MT5 status, latency, reconnect count and readable reason.
+- Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
