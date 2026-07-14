@@ -35,7 +35,7 @@
                      {
                          "profile_id":  "P2",
                          "profile_name":  "Balanced",
-                         "enabled":  true,
+                         "enabled":  false,
                          "launch_mt5":  false,
                          "mt5_folder":  "C:\\XM Global MT5 P2",
                          "mt5_terminal":  "C:\\XM Global MT5 P2\\terminal64.exe",
@@ -65,7 +65,7 @@
                      {
                          "profile_id":  "P3",
                          "profile_name":  "High Risk Within Plan",
-                         "enabled":  true,
+                         "enabled":  false,
                          "launch_mt5":  false,
                          "mt5_folder":  "C:\\XM Global MT5 P3",
                          "mt5_terminal":  "C:\\XM Global MT5 P3\\terminal64.exe",

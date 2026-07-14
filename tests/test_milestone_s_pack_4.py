@@ -74,8 +74,19 @@ def test_policy_keeps_fixed_001_units():
 
 
 def test_unarmed_gateway_never_reaches_order_send(tmp_path, monkeypatch):
-    monkeypatch.setenv("AFIP_P1_LOGIN","1301760369"); monkeypatch.setenv("AFIP_P1_PASSWORD","secret")
-    mt5=FakeMT5(); report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=simulation).run_cycle()
+    for key in (
+        "AFIP_DEMO_EXECUTION_ARMED",
+        "AFIP_P1_DEMO_ARMED",
+        "AFIP_P2_DEMO_ARMED",
+        "AFIP_P3_DEMO_ARMED",
+        "AFIP_P4_DEMO_ARMED",
+    ):
+        monkeypatch.delenv(key, raising=False)
+
+    monkeypatch.setenv("AFIP_P1_LOGIN","1301760369")
+    monkeypatch.setenv("AFIP_P1_PASSWORD","secret")
+    mt5=FakeMT5()
+    report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=simulation).run_cycle()
     assert report.status=="BLOCKED" and report.reason=="local_demo_execution_not_armed" and mt5.sent==[]
 
 
