@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import subprocess
 import signal
+import ctypes
 from typing import Any, Iterable, Mapping
 
 LOCKED_EXECUTION = "LOCKED_SIMULATION_ONLY"
@@ -139,7 +140,7 @@ class FourProfileOperationalRuntime:
         self.config_path = Path(config_path)
 
     def load(self) -> tuple[ProfileOperationalConfig, ...]:
-        payload = json.loads(self.config_path.read_text(encoding="utf-8"))
+        payload = json.loads(self.config_path.read_text(encoding="utf-8-sig"))
         return tuple(ProfileOperationalConfig.from_mapping(item) for item in payload["profiles"])
 
     @staticmethod
@@ -264,6 +265,26 @@ class FourProfileSupervisor:
         self.stop(selected)
         return self.start(selected)
 
+    @staticmethod
+    def _is_process_running(pid: int) -> bool:
+        if pid <= 0:
+            return False
+        if os.name != "nt":
+            try:
+                os.kill(pid, 0)
+                return True
+            except OSError:
+                return False
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        STILL_ACTIVE = 259
+        handle = ctypes.windll.kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        if not handle:
+            return False
+        exit_code = ctypes.c_ulong()
+        ok = ctypes.windll.kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+        ctypes.windll.kernel32.CloseHandle(handle)
+        return bool(ok) and exit_code.value == STILL_ACTIVE
+
     def status(self) -> FourProfileReport:
         profiles = self.operations.load()
         errors = self.operations.validate(profiles)
@@ -276,8 +297,10 @@ class FourProfileSupervisor:
             if pid_path.exists():
                 try:
                     pid = int(pid_path.read_text(encoding="utf-8").strip())
-                    os.kill(pid, 0)
-                    running = True
+                    running = self._is_process_running(pid)
+                    if not running:
+                        pid_path.unlink(missing_ok=True)
+                        pid = None
                 except (OSError, ValueError):
                     pid_path.unlink(missing_ok=True)
             health_path = profile.runtime_directory / "mt5_health.json"
@@ -287,6 +310,13 @@ class FourProfileSupervisor:
                     mt5_health = json.loads(health_path.read_text(encoding="utf-8"))
                 except (OSError, ValueError, TypeError):
                     mt5_health = {}
+            demo_state_path = profile.runtime_directory / "demo_execution_state.json"
+            demo_state = {}
+            if demo_state_path.exists():
+                try:
+                    demo_state = json.loads(demo_state_path.read_text(encoding="utf-8-sig"))
+                except (OSError, ValueError, TypeError):
+                    demo_state = {}
             record.update({
                 "runtime_state": "RUNNING" if running else "STOPPED",
                 "pid": pid if running else None,
@@ -294,6 +324,11 @@ class FourProfileSupervisor:
                 "latency_ms": mt5_health.get("latency_ms"),
                 "reconnect_attempts": mt5_health.get("reconnect_attempts", 0),
                 "mt5_reason": mt5_health.get("reason", "MT5 health check not run"),
+                "demo_gateway_status": demo_state.get("status", "NOT_STARTED"),
+                "demo_gateway_reason": demo_state.get("reason", "Demo gateway has not run"),
+                "demo_verified": demo_state.get("demo_verified", False),
+                "demo_order_status": demo_state.get("order_status", "ORDER_NOT_SENT"),
+                "demo_sent_units": demo_state.get("sent_units", 0),
             })
             records.append(record)
         return FourProfileReport("READY" if not errors else "BLOCKED", tuple(records), errors)

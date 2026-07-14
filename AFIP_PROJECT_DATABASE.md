@@ -755,3 +755,11 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Bounded reconnect attempts and per-profile health snapshots.
 - Dashboard MT5 status, latency, reconnect count and readable reason.
 - Execution remains LOCKED_SIMULATION_ONLY / NO_ORDER_SENT.
+
+## Milestone S Pack 4 — Demo Execution Gateway
+- Added demo-only broker execution gateway for P1–P4.
+- Real and contest MT5 accounts are blocked by mandatory `trade_mode=DEMO` verification before `order_send`.
+- Added exact account/server, XM, GOLD#, trade permission, real-data, risk, cost, protected SL/TP, manual override, allocation, and duplicate-cooldown gates.
+- Fixed unit size remains 0.01; profiles allocate up to three separate units according to capital-per-unit and confidence policy.
+- Added environment-only two-level local arming and immediate disarm scripts.
+- Validation never arms execution and never transmits an order.

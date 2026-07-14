@@ -20,3 +20,6 @@ Four-profile demo operations are available through `config/four_profile_demo.jso
 
 ### Milestone S Pack 3
 Use `tools/afip_mt5_multi_terminal_check.py` to verify isolated P1–P4 MT5 terminal connectivity before starting locked simulation runtime. See README_MILESTONE_S_PACK_3.md and README_MILESTONE_S_PACK_3_TH.md.
+
+### Milestone S Pack 4
+Demo-only protected order transmission is available through `tools/afip_demo_execution_control.py`. It requires verified MT5 demo accounts and explicit local arming. See the English and Thai Pack 4 guides. Real-account transmission remains blocked.

@@ -1,0 +1,23 @@
+{
+  "profile_id": "P3",
+  "enabled": true,
+  "connection_status": "CONNECTED",
+  "terminal_exists": true,
+  "initialized": true,
+  "authenticated": true,
+  "account_match": true,
+  "server_match": true,
+  "symbol_available": true,
+  "tick_available": true,
+  "latency_ms": 10.17,
+  "reconnect_attempts": 0,
+  "account": "****6145",
+  "server": "XMGlobal-MT5 5",
+  "terminal_path": "C:\\XM Global MT5 P3\\terminal64.exe",
+  "reason": "MT5 terminal connected and GOLD# data ready",
+  "checked_at_utc": "2026-07-13T15:49:09.378642+00:00",
+  "execution": "LOCKED_SIMULATION_ONLY",
+  "order_status": "NO_ORDER_SENT",
+  "direct_execution": false,
+  "live_execution": false
+}

@@ -709,7 +709,8 @@ def _four_profile_overview_panel(report: Any) -> DashboardPanel:
     rows: list[tuple[str, str]] = [
         ("Execution", report.execution),
         ("Order Status", report.order_status),
-        ("Simulation", "LOCKED — live execution disabled"),
+        ("Simulation", "LOCKED runtime remains available"),
+        ("Demo Gateway", "DEMO account verification required before broker transmission"),
     ]
     for profile in report.profiles:
         profile_id = str(profile.get("profile_id", "PROFILE"))
@@ -718,7 +719,9 @@ def _four_profile_overview_panel(report: Any) -> DashboardPanel:
             f"{state} | {profile.get('profile_name')} | {profile.get('broker')} | "
             f"{profile.get('account')} | {profile.get('server')} | MT5: {profile.get('mt5_connection', 'NOT_CHECKED')} | "
             f"Latency: {profile.get('latency_ms') if profile.get('latency_ms') is not None else 'waiting'} ms | "
-            f"Reconnect: {profile.get('reconnect_attempts', 0)} | {profile.get('mt5_reason', profile.get('waiting_reason'))}"
+            f"Reconnect: {profile.get('reconnect_attempts', 0)} | "
+            f"Demo: {profile.get('demo_gateway_status', 'NOT_STARTED')} / {profile.get('demo_order_status', 'ORDER_NOT_SENT')} | "
+            f"{profile.get('demo_gateway_reason', profile.get('mt5_reason', profile.get('waiting_reason')))}"
         )
         rows.append((profile_id, summary))
     return DashboardPanel(
@@ -726,8 +729,8 @@ def _four_profile_overview_panel(report: Any) -> DashboardPanel:
         "Four-Profile Demo Overview",
         "ภาพรวม Demo 4 โปรไฟล์",
         report.status,
-        "Daily operational view for isolated locked-simulation profiles.",
-        "สรุปสถานะโปรไฟล์แบบแยก Runtime สำหรับการใช้งานประจำวัน",
+        "Daily operational view for isolated simulation and demo-only profiles.",
+        "สรุปสถานะโปรไฟล์แบบแยก Runtime สำหรับ Simulation และบัญชี Demo เท่านั้น",
         tuple(rows),
     )
 

@@ -749,3 +749,6 @@ Execution remains LOCKED_SIMULATION_ONLY and every cycle records NO_ORDER_SENT.
 
 ## Milestone S Pack 3
 MT5 Multi-Terminal Connection Manager added. Run `python tools/afip_mt5_multi_terminal_check.py --profiles P1 P4 --reconnect-attempts 2` after opening/logging in the matching MT5 terminals. No live execution or order sending was introduced.
+
+## Milestone S Pack 4
+Demo Execution Gateway added for all four demo profiles. Apply the patch, run validation, enable P1–P4 with `ENABLE_AFIP_ALL_DEMO_PROFILES.ps1`, confirm all four MT5 connections, then arm locally with `SET_AFIP_DEMO_EXECUTION_ARM_LOCAL.ps1`. Start with `python tools/afip_demo_execution_control.py start-all`. Real/contest accounts and fallback data are blocked before broker transmission.

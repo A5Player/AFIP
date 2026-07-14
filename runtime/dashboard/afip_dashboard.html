@@ -27,14 +27,15 @@ small { color: #555; }
 <section id="four_profile_overview">
 <h2>Four-Profile Demo Overview / ภาพรวม Demo 4 โปรไฟล์</h2>
 <p class="status">READY</p>
-<p>Daily operational view for isolated locked-simulation profiles.<br><small>สรุปสถานะโปรไฟล์แบบแยก Runtime สำหรับการใช้งานประจำวัน</small></p>
+<p>Daily operational view for isolated simulation and demo-only profiles.<br><small>สรุปสถานะโปรไฟล์แบบแยก Runtime สำหรับ Simulation และบัญชี Demo เท่านั้น</small></p>
 <table><tr><td>Execution</td><td>LOCKED_SIMULATION_ONLY</td></tr>
 <tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr>
-<tr><td>Simulation</td><td>LOCKED — live execution disabled</td></tr>
-<tr><td>P1</td><td>STOPPED | High Safety | XM | NOT_CONFIGURED | XMGlobal-MT5 6 | MT5: NOT_CHECKED | Latency: waiting ms | Reconnect: 0 | MT5 health check not run</td></tr>
-<tr><td>P2</td><td>STOPPED | Balanced | XM | NOT_CONFIGURED | XMGlobal-MT5 6 | MT5: NOT_CHECKED | Latency: waiting ms | Reconnect: 0 | MT5 health check not run</td></tr>
-<tr><td>P3</td><td>STOPPED | High Risk Within Plan | XM | NOT_CONFIGURED | XMGlobal-MT5 5 | MT5: NOT_CHECKED | Latency: waiting ms | Reconnect: 0 | MT5 health check not run</td></tr>
-<tr><td>P4</td><td>STOPPED | Research | XM | NOT_CONFIGURED | XMGlobal-MT5 5 | MT5: NOT_CHECKED | Latency: waiting ms | Reconnect: 0 | MT5 health check not run</td></tr></table>
+<tr><td>Simulation</td><td>LOCKED runtime remains available</td></tr>
+<tr><td>Demo Gateway</td><td>DEMO account verification required before broker transmission</td></tr>
+<tr><td>P1</td><td>STOPPED | High Safety | XM | ****0369 | XMGlobal-MT5 6 | MT5: CONNECTED | Latency: 152.43 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
+<tr><td>P2</td><td>STOPPED | Balanced | XM | ****6767 | XMGlobal-MT5 6 | MT5: CONNECTED | Latency: 7.05 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
+<tr><td>P3</td><td>STOPPED | High Risk Within Plan | XM | ****6145 | XMGlobal-MT5 5 | MT5: CONNECTED | Latency: 10.17 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
+<tr><td>P4</td><td>STOPPED | Research | XM | ****6153 | XMGlobal-MT5 5 | MT5: CONNECTED | Latency: 4.19 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr></table>
 </section>
 <section id="runtime">
 <h2>Dashboard Runtime / สถานะระบบ</h2>
@@ -940,7 +941,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-13T13:55:19.455089+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-14T13:00:18.496913+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -966,7 +967,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-13T13:59:19.455749+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-14T13:04:18.497086+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -992,7 +993,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-13T13:59:19.455872+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-14T13:04:18.497187+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">

@@ -1,0 +1,19 @@
+{
+  "account": "****6145",
+  "account_trade_mode": "DEMO",
+  "allocated_units": 0,
+  "armed": true,
+  "checked_at_utc": "2026-07-14T12:57:44.751434+00:00",
+  "decision_action": "BUY",
+  "decision_confidence": 100.0,
+  "demo_verified": true,
+  "execution": "DEMO_EXECUTION_ONLY",
+  "order_status": "ORDER_NOT_SENT",
+  "profile_id": "P3",
+  "reason": "trading_cost_not_approved",
+  "sent_units": 0,
+  "server": "XMGlobal-MT5 5",
+  "status": "WAITING",
+  "symbol": "GOLD#",
+  "tickets": []
+}

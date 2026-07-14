@@ -1,0 +1,15 @@
+{
+  "completed_cycles": 23,
+  "direct_execution": false,
+  "duplicate_snapshots": 8,
+  "execution": "LOCKED_SIMULATION_ONLY",
+  "failed_cycles": 0,
+  "last_cycle_utc": "2026-07-13T15:22:44.305278+00:00",
+  "last_fingerprint": "0bb9688156acc165d2640604898a90ed06eb04a5b3b5db7b7046ed21b73331bc",
+  "last_snapshot_duplicate": true,
+  "live_execution": false,
+  "order_status": "NO_ORDER_SENT",
+  "recorded_snapshots": 15,
+  "runtime_state": "RUNNING",
+  "started_at_utc": "2026-07-13T15:00:40.743630+00:00"
+}
