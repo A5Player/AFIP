@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from html import escape
 from pathlib import Path
+from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from afip.dashboard_center import DashboardFoundationRuntime, DashboardRuntimeStatus
@@ -665,34 +666,40 @@ class DashboardUIRuntime:
         report = self.evaluate_one(record)
         cards = "\n".join(_panel_html(panel) for panel in report.panels)
         nav = "".join(f"<li>{escape(section)}</li>" for section in report.navigation_sections)
+        try:
+            operational_report = FourProfileSupervisor(record.get("four_profile_config_path", "config/four_profile_demo.json")).status()
+            operational_html = _operational_profile_cards_html(operational_report)
+        except (OSError, ValueError, KeyError, TypeError):
+            operational_html = '<section class="operational-alert"><strong>Four-profile runtime unavailable</strong><br/>Unable to read live profile state.</section>'
+        generated_at = datetime.now(timezone.utc).isoformat()
         return f"""<!doctype html>
-<html lang=\"en\">
+<html lang="en">
 <head>
-<meta charset=\"utf-8\" />
-<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="refresh" content="5" />
 <title>{escape(report.page_title)}</title>
 <style>
-body {{ font-family: Arial, sans-serif; margin: 24px; background: #f7f7f7; color: #222; }}
-header, section {{ background: white; border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 14px; }}
+body {{ font-family: Arial, sans-serif; margin: 18px; background: #f4f6f8; color: #17202a; }}
+header, section {{ background: white; border: 1px solid #d9e0e6; border-radius: 12px; padding: 16px; margin-bottom: 14px; }}
 .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }}
-.status {{ font-weight: bold; }}
-table {{ width: 100%; border-collapse: collapse; }}
-td {{ border-top: 1px solid #eee; padding: 6px 4px; vertical-align: top; }}
-td:first-child {{ font-weight: bold; width: 42%; }}
-small {{ color: #555; }}
+table {{ width: 100%; border-collapse: collapse; }} td {{ border-top: 1px solid #eee; padding: 6px 4px; vertical-align: top; }} td:first-child {{ font-weight: bold; width: 42%; }} small {{ color:#555; }}
+.operational-heading {{ display:flex; justify-content:space-between; gap:12px; align-items:flex-end; margin-bottom:10px; }}
+.profile-grid {{ display:grid; grid-template-columns:repeat(4,minmax(245px,1fr)); gap:12px; }}
+.profile-card {{ background:white; border:2px solid #cfd8df; border-radius:14px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,.05); }}
+.profile-card.ready {{ border-color:#2e8b57; }} .profile-card.waiting {{ border-color:#d19a00; }} .profile-card.blocked,.profile-card.stopped {{ border-color:#b23b3b; }}
+.profile-title {{ display:flex; justify-content:space-between; gap:8px; align-items:center; }} .profile-title h2 {{ margin:0; font-size:20px; }}
+.badge {{ border-radius:999px; padding:4px 9px; font-size:12px; font-weight:bold; background:#eef2f5; }} .badge.ready {{ background:#dff3e7; }} .badge.waiting {{ background:#fff1c9; }} .badge.blocked,.badge.stopped {{ background:#f8d7da; }}
+.profile-primary {{ font-size:18px; font-weight:bold; margin:7px 0; }} .profile-reason {{ min-height:42px; padding:8px; border-radius:8px; background:#f7f8fa; margin:8px 0; word-break:break-word; }}
+.profile-meta {{ font-size:13px; }} .profile-meta td {{ padding:4px 0; border:0; }} .profile-meta td:first-child {{ width:44%; color:#52616b; }} .stale {{ color:#b23b3b; font-weight:bold; }} .fresh {{ color:#2e8b57; font-weight:bold; }}
+summary {{ cursor:pointer; padding:12px; background:white; border-radius:10px; margin-bottom:12px; }}
+@media (max-width:1150px) {{ .profile-grid {{ grid-template-columns:repeat(2,minmax(260px,1fr)); }} }} @media (max-width:650px) {{ .profile-grid {{ grid-template-columns:1fr; }} }}
 </style>
 </head>
 <body>
-<header>
-<h1>{escape(report.page_title)}</h1>
-<p class=\"status\">Status: {escape(report.status)} — {escape(report.reason)}</p>
-<p>Profile: {escape(report.profile_name)} | Broker: {escape(report.broker)} | Symbol: {escape(report.symbol)} | Mode: {escape(report.mode)} | Live Execution: {escape(str(report.live_execution_enabled))}</p>
-<small>Presentation layer only. No trading logic changed. Live trading remains disabled.</small>
-<nav><ul>{nav}</ul></nav>
-</header>
-<div class=\"grid\">
-{cards}
-</div>
+<header><h1>{escape(report.page_title)}</h1><h2>AFIP Operational Dashboard</h2><p><strong>Four-profile demo runtime and account status</strong></p><p>Broker: XM | Symbol: GOLD# | Demo Execution Only | Real-money execution blocked | Live Execution: False</p><small>Generated UTC: {escape(generated_at)} | Browser refresh: every 5 seconds</small></header>
+{operational_html}
+<details><summary><strong>Technical and certification panels</strong> — click to expand</summary><nav><ul>{nav}</ul></nav><div class="grid">{cards}</div></details>
 </body>
 </html>
 """
@@ -703,6 +710,31 @@ small {{ color: #555; }}
         path.write_text(self.render_html(record), encoding="utf-8")
         return path
 
+
+
+def _operational_profile_cards_html(report: Any) -> str:
+    cards: list[str] = []
+    for profile in report.profiles:
+        runtime_state = _upper(profile.get("runtime_state", "STOPPED"), "STOPPED")
+        gateway_status = _upper(profile.get("demo_gateway_status", "NOT_STARTED"), "NOT_STARTED")
+        mt5_status = _upper(profile.get("mt5_connection", "NOT_CHECKED"), "NOT_CHECKED")
+        enabled = bool(profile.get("enabled", False))
+        fresh = bool(profile.get("data_fresh", False))
+        if not enabled or runtime_state != "RUNNING": visual, headline = "stopped", ("STOPPED" if enabled else "DISABLED")
+        elif mt5_status != "CONNECTED" or gateway_status == "BLOCKED": visual, headline = "blocked", "BLOCKED"
+        elif gateway_status in {"WAITING", "NOT_STARTED"}: visual, headline = "waiting", "WAITING"
+        else: visual, headline = "ready", gateway_status
+        reason = profile.get("demo_gateway_reason") or profile.get("mt5_reason") or profile.get("waiting_reason") or "No reason recorded"
+        tickets = profile.get("tickets") or []
+        ticket_text = ", ".join(str(x) for x in tickets) if tickets else "None"
+        age = profile.get("data_age_seconds")
+        age_text = "unknown" if age is None else f"{age} sec"
+        freshness = "FRESH" if fresh else "STALE / NOT RECORDED"
+        freshness_class = "fresh" if fresh else "stale"
+        cards.append(f'''<article class="profile-card {visual}"><div class="profile-title"><h2>{escape(str(profile.get("profile_id")))} — {escape(str(profile.get("profile_name")))}</h2><span class="badge {visual}">{escape(headline)}</span></div><div class="profile-primary">{escape(runtime_state)} · MT5 {escape(mt5_status)}</div><div class="profile-reason"><strong>Waiting / Status reason:</strong><br/>{escape(str(reason))}</div><table class="profile-meta"><tr><td>Account</td><td>{escape(str(profile.get("account")))}</td></tr><tr><td>Server</td><td>{escape(str(profile.get("server")))}</td></tr><tr><td>Runtime</td><td>{escape(str(profile.get("runtime_kind", "STOPPED")))} · PID {escape(str(profile.get("pid") or "-"))}</td></tr><tr><td>Demo verified / armed</td><td>{escape(str(profile.get("demo_verified", False)))} / {escape(str(profile.get("demo_armed", False)))}</td></tr><tr><td>Decision</td><td>{escape(str(profile.get("decision_action", "WAIT")))} · confidence {escape(str(profile.get("decision_confidence", 0.0)))}%</td></tr><tr><td>Order</td><td>{escape(str(profile.get("demo_order_status", "ORDER_NOT_SENT")))} · units {escape(str(profile.get("demo_sent_units", 0)))}</td></tr><tr><td>Tickets</td><td>{escape(ticket_text)}</td></tr><tr><td>Latency</td><td>{escape(str(profile.get("latency_ms") if profile.get("latency_ms") is not None else "waiting"))} ms · reconnect {escape(str(profile.get("reconnect_attempts", 0)))}</td></tr><tr><td>Last update</td><td>{escape(str(profile.get("checked_at_utc", "NOT_RECORDED")))}</td></tr><tr><td>Freshness</td><td class="{freshness_class}">{freshness} · age {escape(age_text)}</td></tr></table></article>''')
+    running = sum(1 for x in report.profiles if x.get("runtime_state") == "RUNNING")
+    connected = sum(1 for x in report.profiles if x.get("mt5_connection") == "CONNECTED")
+    return f'''<section><div class="operational-heading"><div><h2 style="margin:0">P1–P4 Live Operational Status</h2><small>ดูส่วนนี้ก่อน: ระบบทำงานไหม เชื่อม MT5 หรือไม่ และกำลังรออะไร</small></div><strong>Runtime {running}/4 · MT5 {connected}/4</strong></div><div class="profile-grid">{''.join(cards)}</div></section>'''
 
 
 def _four_profile_overview_panel(report: Any) -> DashboardPanel:

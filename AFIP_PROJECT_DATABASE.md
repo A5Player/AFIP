@@ -763,3 +763,9 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Fixed unit size remains 0.01; profiles allocate up to three separate units according to capital-per-unit and confidence policy.
 - Added environment-only two-level local arming and immediate disarm scripts.
 - Validation never arms execution and never transmits an order.
+
+## Milestone S Pack 4.1 — Live Dashboard Runtime Wiring
+- Added P1-P4 operational cards at the top of the dashboard.
+- Dashboard reads demo runtime PID, MT5 health, demo gateway state, waiting reason, confidence, orders, tickets, timestamps, and freshness from isolated profile runtime files.
+- Added continuous dashboard regeneration service with five-second browser refresh.
+- Trading logic and demo execution policy remain unchanged.

@@ -10,6 +10,7 @@ from dataclasses import asdict, dataclass
 import json
 import os
 from pathlib import Path
+from datetime import datetime, timezone
 import subprocess
 import signal
 import ctypes
@@ -291,18 +292,24 @@ class FourProfileSupervisor:
         records: list[dict[str, Any]] = []
         for profile in profiles:
             record = profile.status_record()
-            pid_path = self._pid_path(profile)
+            locked_pid_path = self._pid_path(profile)
+            demo_pid_path = profile.runtime_directory / "demo_runner.pid"
             running = False
             pid = None
-            if pid_path.exists():
+            runtime_kind = "STOPPED"
+            for candidate, kind in ((demo_pid_path, "DEMO_EXECUTION"), (locked_pid_path, "LOCKED_SIMULATION")):
+                if not candidate.exists():
+                    continue
                 try:
-                    pid = int(pid_path.read_text(encoding="utf-8").strip())
-                    running = self._is_process_running(pid)
-                    if not running:
-                        pid_path.unlink(missing_ok=True)
-                        pid = None
+                    candidate_pid = int(candidate.read_text(encoding="utf-8").strip())
+                    if self._is_process_running(candidate_pid):
+                        pid = candidate_pid
+                        running = True
+                        runtime_kind = kind
+                        break
+                    candidate.unlink(missing_ok=True)
                 except (OSError, ValueError):
-                    pid_path.unlink(missing_ok=True)
+                    candidate.unlink(missing_ok=True)
             health_path = profile.runtime_directory / "mt5_health.json"
             mt5_health = {}
             if health_path.exists():
@@ -317,8 +324,21 @@ class FourProfileSupervisor:
                     demo_state = json.loads(demo_state_path.read_text(encoding="utf-8-sig"))
                 except (OSError, ValueError, TypeError):
                     demo_state = {}
+            checked_at = demo_state.get("checked_at_utc") or mt5_health.get("checked_at_utc")
+            data_age_seconds = None
+            data_fresh = False
+            if checked_at:
+                try:
+                    checked_dt = datetime.fromisoformat(str(checked_at).replace("Z", "+00:00"))
+                    if checked_dt.tzinfo is None:
+                        checked_dt = checked_dt.replace(tzinfo=timezone.utc)
+                    data_age_seconds = max(0, int((datetime.now(timezone.utc) - checked_dt).total_seconds()))
+                    data_fresh = data_age_seconds <= 180
+                except (TypeError, ValueError):
+                    pass
             record.update({
                 "runtime_state": "RUNNING" if running else "STOPPED",
+                "runtime_kind": runtime_kind,
                 "pid": pid if running else None,
                 "mt5_connection": mt5_health.get("connection_status", "NOT_CHECKED"),
                 "latency_ms": mt5_health.get("latency_ms"),
@@ -327,8 +347,17 @@ class FourProfileSupervisor:
                 "demo_gateway_status": demo_state.get("status", "NOT_STARTED"),
                 "demo_gateway_reason": demo_state.get("reason", "Demo gateway has not run"),
                 "demo_verified": demo_state.get("demo_verified", False),
+                "demo_armed": demo_state.get("armed", False),
                 "demo_order_status": demo_state.get("order_status", "ORDER_NOT_SENT"),
                 "demo_sent_units": demo_state.get("sent_units", 0),
+                "demo_allocated_units": demo_state.get("allocated_units", 0),
+                "decision_action": demo_state.get("decision_action", "WAIT"),
+                "decision_confidence": demo_state.get("decision_confidence", 0.0),
+                "tickets": demo_state.get("tickets", []),
+                "execution_mode": demo_state.get("execution", LOCKED_EXECUTION),
+                "checked_at_utc": checked_at or "NOT_RECORDED",
+                "data_age_seconds": data_age_seconds,
+                "data_fresh": data_fresh,
             })
             records.append(record)
         return FourProfileReport("READY" if not errors else "BLOCKED", tuple(records), errors)
