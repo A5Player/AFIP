@@ -777,3 +777,17 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Added execution diagnostics for spread thresholds, point size, digits, MT5 order-check/send calls, and MT5 result information.
 - No trading, confidence, spread, sizing, arming, account, or broker safety threshold was weakened.
 - Validation: 13 pack tests, 15 combined pack/dashboard tests, and 1808 full tests passed in the source repository.
+
+## Milestone S Pack 4.6 — Capital Growth Table Safety Correction
+- Replaced linear capital-per-unit interpretation for P1/P2 with explicit capital-tier allocation tables.
+- P1 tiers culminate at USD 7,200 with maximum concurrent allocation 0.03 + 0.03 + 0.03 + 0.03.
+- P2 tiers culminate at USD 7,800 with maximum concurrent allocation 0.03 + 0.03 + 0.03 + 0.03.
+- Balances above the final tier do not increase risk; excess profit is available for operator withdrawal policy.
+- P3/P4 remain fixed 0.01 research allocation per approved distinct signal, without a profile capital-tier ceiling; all safety gates remain active.
+
+## Milestone S Pack 4.7 — Backward-Compatible Capital Allocation Recovery
+- Corrected `DemoProfilePolicy.validate()` control flow so `LEGACY_FIXED_UNIT`, `CAPITAL_TIER_TABLE`, and `RESEARCH_FIXED_001` are all recognized deterministically.
+- Preserved the approved capped P1/P2 capital-tier tables from Pack 4.6.
+- Restored compatibility report fields: `order_unit_distribution`, `maximum_orders`, and `remaining_order_capacity`.
+- No changes to confidence, risk, spread, cooldown, demo verification, manual override, SL/TP, or MT5 order safety.
+- Validation: Pack regression 17 passed; full regression 1812 passed.

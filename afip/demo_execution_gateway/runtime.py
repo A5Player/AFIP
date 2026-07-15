@@ -51,6 +51,10 @@ class DemoProfilePolicy:
     minimum_seconds_between_entries: int
     magic: int
     lot_per_unit: float = 0.01
+    allocation_mode: str = "LEGACY_FIXED_UNIT"
+    capital_tiers: tuple[tuple[float, tuple[float, ...]], ...] = ()
+    maximum_concurrent_orders: int = 4
+    maximum_lot_per_order: float = 0.03
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> "DemoProfilePolicy":
@@ -61,6 +65,13 @@ class DemoProfilePolicy:
             capital_per_unit=float(raw.get("capital_per_unit", 1000.0)),
             maximum_units=int(raw.get("maximum_units", 1)),
             minimum_confidence=float(raw.get("minimum_confidence", 98.0)),
+            allocation_mode=str(raw.get("allocation_mode", "LEGACY_FIXED_UNIT")).strip().upper(),
+            capital_tiers=tuple(
+                (float(item["minimum_balance"]), tuple(float(v) for v in item["lots"]))
+                for item in raw.get("capital_tiers", ())
+            ),
+            maximum_concurrent_orders=int(raw.get("maximum_concurrent_orders", raw.get("maximum_units", 4))),
+            maximum_lot_per_order=float(raw.get("maximum_lot_per_order", 0.03)),
             minimum_seconds_between_entries=int(raw.get("minimum_seconds_between_entries", 900)),
             magic=int(raw.get("magic", 26071001)),
             lot_per_unit=float(raw.get("lot_per_unit", 0.01)),
@@ -68,8 +79,32 @@ class DemoProfilePolicy:
 
     def validate(self) -> tuple[str, ...]:
         errors: list[str] = []
-        if self.capital_per_unit <= 0: errors.append("capital_per_unit_must_be_positive")
-        if self.maximum_units not in {1, 2, 3}: errors.append("maximum_units_must_be_1_to_3")
+        if self.allocation_mode == "LEGACY_FIXED_UNIT":
+            if self.capital_per_unit <= 0:
+                errors.append("capital_per_unit_must_be_positive")
+            if self.maximum_units not in {1, 2, 3, 4}:
+                errors.append("maximum_units_must_be_1_to_4")
+        elif self.allocation_mode == "CAPITAL_TIER_TABLE":
+            if not self.capital_tiers:
+                errors.append("capital_tiers_required")
+            previous = -1.0
+            for minimum_balance, lots in self.capital_tiers:
+                if minimum_balance < 0 or minimum_balance <= previous:
+                    errors.append("capital_tiers_must_be_strictly_ascending")
+                    break
+                previous = minimum_balance
+                if not 1 <= len(lots) <= self.maximum_concurrent_orders:
+                    errors.append("capital_tier_order_count_out_of_range")
+                    break
+                if any(lot <= 0 or lot > self.maximum_lot_per_order for lot in lots):
+                    errors.append("capital_tier_lot_out_of_range")
+                    break
+        elif self.allocation_mode == "RESEARCH_FIXED_001":
+            pass
+        else:
+            errors.append("allocation_mode_unknown")
+        if self.allocation_mode != "RESEARCH_FIXED_001" and self.maximum_concurrent_orders < 1:
+            errors.append("maximum_concurrent_orders_must_be_positive")
         if not 0 <= self.minimum_confidence <= 100: errors.append("minimum_confidence_out_of_range")
         if self.minimum_seconds_between_entries < 60: errors.append("entry_cooldown_must_be_at_least_60_seconds")
         if abs(self.lot_per_unit - 0.01) > 1e-12: errors.append("lot_per_unit_must_remain_0_01")
@@ -108,6 +143,12 @@ class DemoGatewayReport:
     decision_action: str = "WAIT"
     decision_confidence: float = 0.0
     allocated_units: int = 0
+    allocated_orders: int = 0
+    allocated_lots: tuple[float, ...] = ()
+    total_allocated_lot: float = 0.0
+    order_unit_distribution: tuple[int, ...] = ()
+    maximum_orders: int = 0
+    remaining_order_capacity: int = 0
     sent_units: int = 0
     order_status: str = ORDER_NOT_SENT
     tickets: tuple[int, ...] = ()
@@ -285,13 +326,25 @@ class DemoExecutionGateway:
         manual_positions = [p for p in positions if int(self._value(p, "magic", 0)) != self.policy.magic]
         return afip_positions, manual_positions
 
-    def _allocation(self, balance: float, confidence: float, current_units: int) -> int:
+    def _allocation_lots(self, balance: float, current_orders: int) -> tuple[float, ...]:
+        if balance <= 0:
+            return ()
+        if self.policy.allocation_mode == "CAPITAL_TIER_TABLE":
+            selected: tuple[float, ...] = ()
+            for minimum_balance, lots in self.policy.capital_tiers:
+                if balance >= minimum_balance:
+                    selected = lots
+                else:
+                    break
+            if not selected:
+                return ()
+            return tuple(selected[current_orders:self.policy.maximum_concurrent_orders])
+        if self.policy.allocation_mode == "RESEARCH_FIXED_001":
+            return (0.01,)
         capital_units = max(0, math.floor(balance / self.policy.capital_per_unit))
-        score_units = 1
-        if confidence >= 98: score_units = 3
-        elif confidence >= 95: score_units = 2
-        capacity = max(0, self.policy.maximum_units - current_units)
-        return max(0, min(capital_units, score_units, capacity))
+        capacity = max(0, self.policy.maximum_units - current_orders)
+        units = max(0, min(capital_units, capacity))
+        return tuple(self.policy.lot_per_unit for _ in range(units))
 
     def _cooldown_passed(self, fingerprint: str) -> bool:
         state = self._state()
@@ -300,7 +353,7 @@ class DemoExecutionGateway:
         last_epoch = float(state.get("last_order_epoch", 0.0) or 0.0)
         return time.time() - last_epoch >= self.policy.minimum_seconds_between_entries
 
-    def _request(self, mt5: MT5Protocol, action: str, sl_points: float, tp_points: float) -> dict[str, Any]:
+    def _request(self, mt5: MT5Protocol, action: str, sl_points: float, tp_points: float, volume: float) -> dict[str, Any]:
         symbol_info = mt5.symbol_info(self.profile.symbol)
         tick = mt5.symbol_info_tick(self.profile.symbol)
         point = float(self._value(symbol_info, "point", 0.0))
@@ -317,7 +370,7 @@ class DemoExecutionGateway:
         request = {
             "action": getattr(mt5, "TRADE_ACTION_DEAL"),
             "symbol": self.profile.symbol,
-            "volume": self.policy.lot_per_unit,
+            "volume": round(float(volume), 2),
             "type": order_type,
             "price": round(price, digits),
             "sl": round(sl, digits),
@@ -385,14 +438,26 @@ class DemoExecutionGateway:
             if sl_points <= 0 or tp_points <= 0:
                 return self._report("BLOCKED", "protective_sl_tp_missing", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
 
-            current_units = len(afip_positions)
-            units = self._allocation(float(self._value(account, "balance", 0.0)), confidence, current_units)
-            if units <= 0:
-                return self._report("WAITING", "profile_unit_capacity_unavailable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+            current_orders = len(afip_positions)
+            allocation_lots = self._allocation_lots(float(self._value(account, "balance", 0.0)), current_orders)
+            units = sum(max(1, int(round(lot / 0.01))) for lot in allocation_lots)
+            maximum_orders = 0 if self.policy.allocation_mode == "RESEARCH_FIXED_001" else self.policy.maximum_concurrent_orders
+            remaining_order_capacity = -1 if maximum_orders == 0 else max(0, maximum_orders - current_orders)
+            allocation_diagnostics = {
+                "allocated_units": units,
+                "allocated_orders": len(allocation_lots),
+                "allocated_lots": tuple(allocation_lots),
+                "total_allocated_lot": round(sum(allocation_lots), 2),
+                "order_unit_distribution": tuple(max(1, int(round(lot / 0.01))) for lot in allocation_lots),
+                "maximum_orders": maximum_orders,
+                "remaining_order_capacity": remaining_order_capacity,
+            }
+            if not allocation_lots:
+                return self._report("WAITING", "profile_order_capacity_unavailable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)
 
             fingerprint = hashlib.sha256(f"{action}|{confidence:.4f}|{sl_points:.2f}|{tp_points:.2f}".encode()).hexdigest()
             if not self._cooldown_passed(fingerprint):
-                return self._report("WAITING", "duplicate_signal_cooldown_active", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units)
+                return self._report("WAITING", "duplicate_signal_cooldown_active", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)
 
             symbol_info = mt5.symbol_info(self.profile.symbol)
             point_size = float(self._value(symbol_info, "point", 0.0) or 0.0)
@@ -400,26 +465,26 @@ class DemoExecutionGateway:
             execution_diagnostics = {**cost_diagnostics, "point_size": point_size, "digits": digits}
 
             tickets: list[int] = []
-            for _ in range(units):
-                request = self._request(mt5, action, sl_points, tp_points)
+            for volume in allocation_lots:
+                request = self._request(mt5, action, sl_points, tp_points, volume)
                 check = mt5.order_check(request)
                 if check is None or int(self._value(check, "retcode", -1)) != 0:
                     reason = self._value(check, "comment", mt5.last_error())
-                    return self._report("BLOCKED", f"order_check_failed:{reason}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets), order_check_called=True, mt5_result_code=int(self._value(check, "retcode", -1)), mt5_result_comment=str(reason), **execution_diagnostics)
+                    return self._report("BLOCKED", f"order_check_failed:{reason}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, mt5_result_code=int(self._value(check, "retcode", -1)), mt5_result_comment=str(reason), **execution_diagnostics)
                 result_send = mt5.order_send(request)
                 if result_send is None:
-                    return self._report("ERROR", f"order_send_returned_none:{mt5.last_error()}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_comment=str(mt5.last_error()), **execution_diagnostics)
+                    return self._report("ERROR", f"order_send_returned_none:{mt5.last_error()}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_comment=str(mt5.last_error()), **execution_diagnostics)
                 retcode = int(self._value(result_send, "retcode", -1))
                 success_codes = {
                     int(getattr(mt5, name)) for name in SUCCESS_RETCODE_NAMES if hasattr(mt5, name)
                 }
                 if retcode not in success_codes:
                     comment = self._value(result_send, "comment", "unknown")
-                    return self._report("ERROR", f"order_send_failed:{retcode}:{comment}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(comment), **execution_diagnostics)
+                    return self._report("ERROR", f"order_send_failed:{retcode}:{comment}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(comment), **execution_diagnostics)
                 ticket = int(self._value(result_send, "order", self._value(result_send, "deal", 0)) or 0)
                 tickets.append(ticket)
 
-            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), **execution_diagnostics)
+            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), **execution_diagnostics)
             state = report.as_dict()
             state["last_signal_fingerprint"] = fingerprint
             state["last_order_epoch"] = time.time()

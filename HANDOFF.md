@@ -762,3 +762,9 @@ Live Dashboard Runtime Wiring completed. Start with `python tools/afip_dashboard
 - Runtime state/ledger now expose cost and MT5 path diagnostics.
 - Stop all demo runners before replacing files, run Pack 4.2 validation, then restart P1-P4.
 - Do not change the 25/35 point thresholds unless a separate repository-grounded calculation defect is proven.
+
+## Milestone S Pack 4.6
+Capital allocation semantics corrected to explicit operator-approved growth tables. This pack supersedes the proposed Pack 4.5 schedule. P1/P2 are capped at four concurrent AFIP orders and 0.03 lot per order. No automatic scaling occurs above the final table tier.
+
+## Milestone S Pack 4.7
+Pack 4.6 exposed a validation control-flow defect: `LEGACY_FIXED_UNIT` fell through to `allocation_mode_unknown`, which blocked the gateway before normal safety gates. Pack 4.7 fixes only that compatibility defect and restores legacy report attributes while retaining the approved P1/P2 capital-tier configuration. Restart all demo profile runtimes after deployment.

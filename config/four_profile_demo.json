@@ -1,126 +1,346 @@
 {
-    "version":  "AFIP-1.0-MILESTONE-S-PACK-4",
-    "execution":  "LOCKED_SIMULATION_ONLY",
-    "profiles":  [
-                     {
-                         "profile_id":  "P1",
-                         "profile_name":  "High Safety",
-                         "enabled":  true,
-                         "launch_mt5":  false,
-                         "mt5_folder":  "C:\\XM Global MT5 P1",
-                         "mt5_terminal":  "C:\\XM Global MT5 P1\\terminal64.exe",
-                         "broker":  "XM",
-                         "server":  "XMGlobal-MT5 6",
-                         "symbol":  "GOLD#",
-                         "login_env":  "AFIP_P1_LOGIN",
-                         "password_env":  "AFIP_P1_PASSWORD",
-                         "runtime_directory":  "runtime/profiles/p1",
-                         "database_path":  "runtime/profiles/p1/database/afip_p1.sqlite3",
-                         "logs_directory":  "runtime/profiles/p1/logs",
-                         "dashboard_path":  "runtime/profiles/p1/dashboard/afip_dashboard.html",
-                         "learning_directory":  "runtime/profiles/p1/learning",
-                         "knowledge_directory":  "runtime/profiles/p1/knowledge",
-                         "statistics_directory":  "runtime/profiles/p1/statistics",
-                         "execution":  "LOCKED_SIMULATION_ONLY",
-                         "direct_execution":  false,
-                         "live_execution":  false,
-                         "demo_execution_enabled":  true,
-                         "capital_per_unit":  1000.0,
-                         "maximum_units":  3,
-                         "minimum_confidence":  98.0,
-                         "magic":  26071001,
-                         "lot_per_unit":  0.01,
-                         "minimum_seconds_between_entries":  900
-                     },
-                     {
-                         "profile_id":  "P2",
-                         "profile_name":  "Balanced",
-                         "enabled":  false,
-                         "launch_mt5":  false,
-                         "mt5_folder":  "C:\\XM Global MT5 P2",
-                         "mt5_terminal":  "C:\\XM Global MT5 P2\\terminal64.exe",
-                         "broker":  "XM",
-                         "server":  "XMGlobal-MT5 6",
-                         "symbol":  "GOLD#",
-                         "login_env":  "AFIP_P2_LOGIN",
-                         "password_env":  "AFIP_P2_PASSWORD",
-                         "runtime_directory":  "runtime/profiles/p2",
-                         "database_path":  "runtime/profiles/p2/database/afip_p2.sqlite3",
-                         "logs_directory":  "runtime/profiles/p2/logs",
-                         "dashboard_path":  "runtime/profiles/p2/dashboard/afip_dashboard.html",
-                         "learning_directory":  "runtime/profiles/p2/learning",
-                         "knowledge_directory":  "runtime/profiles/p2/knowledge",
-                         "statistics_directory":  "runtime/profiles/p2/statistics",
-                         "execution":  "LOCKED_SIMULATION_ONLY",
-                         "direct_execution":  false,
-                         "live_execution":  false,
-                         "demo_execution_enabled":  true,
-                         "capital_per_unit":  500.0,
-                         "maximum_units":  3,
-                         "minimum_confidence":  95.0,
-                         "magic":  26071002,
-                         "lot_per_unit":  0.01,
-                         "minimum_seconds_between_entries":  900
-                     },
-                     {
-                         "profile_id":  "P3",
-                         "profile_name":  "High Risk Within Plan",
-                         "enabled":  false,
-                         "launch_mt5":  false,
-                         "mt5_folder":  "C:\\XM Global MT5 P3",
-                         "mt5_terminal":  "C:\\XM Global MT5 P3\\terminal64.exe",
-                         "broker":  "XM",
-                         "server":  "XMGlobal-MT5 5",
-                         "symbol":  "GOLD#",
-                         "login_env":  "AFIP_P3_LOGIN",
-                         "password_env":  "AFIP_P3_PASSWORD",
-                         "runtime_directory":  "runtime/profiles/p3",
-                         "database_path":  "runtime/profiles/p3/database/afip_p3.sqlite3",
-                         "logs_directory":  "runtime/profiles/p3/logs",
-                         "dashboard_path":  "runtime/profiles/p3/dashboard/afip_dashboard.html",
-                         "learning_directory":  "runtime/profiles/p3/learning",
-                         "knowledge_directory":  "runtime/profiles/p3/knowledge",
-                         "statistics_directory":  "runtime/profiles/p3/statistics",
-                         "execution":  "LOCKED_SIMULATION_ONLY",
-                         "direct_execution":  false,
-                         "live_execution":  false,
-                         "demo_execution_enabled":  true,
-                         "capital_per_unit":  200.0,
-                         "maximum_units":  3,
-                         "minimum_confidence":  90.0,
-                         "magic":  26071003,
-                         "lot_per_unit":  0.01,
-                         "minimum_seconds_between_entries":  900
-                     },
-                     {
-                         "profile_id":  "P4",
-                         "profile_name":  "Research",
-                         "enabled":  true,
-                         "launch_mt5":  false,
-                         "mt5_folder":  "C:\\XM Global MT5 P4",
-                         "mt5_terminal":  "C:\\XM Global MT5 P4\\terminal64.exe",
-                         "broker":  "XM",
-                         "server":  "XMGlobal-MT5 5",
-                         "symbol":  "GOLD#",
-                         "login_env":  "AFIP_P4_LOGIN",
-                         "password_env":  "AFIP_P4_PASSWORD",
-                         "runtime_directory":  "runtime/profiles/p4",
-                         "database_path":  "runtime/profiles/p4/database/afip_p4.sqlite3",
-                         "logs_directory":  "runtime/profiles/p4/logs",
-                         "dashboard_path":  "runtime/profiles/p4/dashboard/afip_dashboard.html",
-                         "learning_directory":  "runtime/profiles/p4/learning",
-                         "knowledge_directory":  "runtime/profiles/p4/knowledge",
-                         "statistics_directory":  "runtime/profiles/p4/statistics",
-                         "execution":  "LOCKED_SIMULATION_ONLY",
-                         "direct_execution":  false,
-                         "live_execution":  false,
-                         "demo_execution_enabled":  true,
-                         "capital_per_unit":  100.0,
-                         "maximum_units":  3,
-                         "minimum_confidence":  60.0,
-                         "magic":  26071004,
-                         "lot_per_unit":  0.01,
-                         "minimum_seconds_between_entries":  900
-                     }
-                 ]
+  "version": "AFIP-1.0-MILESTONE-S-PACK-4.6",
+  "execution": "LOCKED_SIMULATION_ONLY",
+  "profiles": [
+    {
+      "profile_id": "P1",
+      "profile_name": "High Safety",
+      "enabled": true,
+      "launch_mt5": false,
+      "mt5_folder": "C:\\XM Global MT5 P1",
+      "mt5_terminal": "C:\\XM Global MT5 P1\\terminal64.exe",
+      "broker": "XM",
+      "server": "XMGlobal-MT5 6",
+      "symbol": "GOLD#",
+      "login_env": "AFIP_P1_LOGIN",
+      "password_env": "AFIP_P1_PASSWORD",
+      "runtime_directory": "runtime/profiles/p1",
+      "database_path": "runtime/profiles/p1/database/afip_p1.sqlite3",
+      "logs_directory": "runtime/profiles/p1/logs",
+      "dashboard_path": "runtime/profiles/p1/dashboard/afip_dashboard.html",
+      "learning_directory": "runtime/profiles/p1/learning",
+      "knowledge_directory": "runtime/profiles/p1/knowledge",
+      "statistics_directory": "runtime/profiles/p1/statistics",
+      "execution": "LOCKED_SIMULATION_ONLY",
+      "direct_execution": false,
+      "live_execution": false,
+      "demo_execution_enabled": true,
+      "capital_per_unit": 1000.0,
+      "maximum_units": 3,
+      "minimum_confidence": 98.0,
+      "magic": 26071001,
+      "lot_per_unit": 0.01,
+      "minimum_seconds_between_entries": 900,
+      "allocation_mode": "CAPITAL_TIER_TABLE",
+      "maximum_concurrent_orders": 4,
+      "maximum_lot_per_order": 0.03,
+      "capital_tiers": [
+        {
+          "minimum_balance": 0,
+          "lots": [
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 200,
+          "lots": [
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 450,
+          "lots": [
+            0.01,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 800,
+          "lots": [
+            0.01,
+            0.01,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 1250,
+          "lots": [
+            0.02,
+            0.01,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 1800,
+          "lots": [
+            0.02,
+            0.02,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 2450,
+          "lots": [
+            0.02,
+            0.02,
+            0.02,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 3200,
+          "lots": [
+            0.02,
+            0.02,
+            0.02,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 4050,
+          "lots": [
+            0.03,
+            0.02,
+            0.02,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 5000,
+          "lots": [
+            0.03,
+            0.03,
+            0.02,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 6050,
+          "lots": [
+            0.03,
+            0.03,
+            0.03,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 7200,
+          "lots": [
+            0.03,
+            0.03,
+            0.03,
+            0.03
+          ]
+        }
+      ]
+    },
+    {
+      "profile_id": "P2",
+      "profile_name": "Balanced",
+      "enabled": false,
+      "launch_mt5": false,
+      "mt5_folder": "C:\\XM Global MT5 P2",
+      "mt5_terminal": "C:\\XM Global MT5 P2\\terminal64.exe",
+      "broker": "XM",
+      "server": "XMGlobal-MT5 6",
+      "symbol": "GOLD#",
+      "login_env": "AFIP_P2_LOGIN",
+      "password_env": "AFIP_P2_PASSWORD",
+      "runtime_directory": "runtime/profiles/p2",
+      "database_path": "runtime/profiles/p2/database/afip_p2.sqlite3",
+      "logs_directory": "runtime/profiles/p2/logs",
+      "dashboard_path": "runtime/profiles/p2/dashboard/afip_dashboard.html",
+      "learning_directory": "runtime/profiles/p2/learning",
+      "knowledge_directory": "runtime/profiles/p2/knowledge",
+      "statistics_directory": "runtime/profiles/p2/statistics",
+      "execution": "LOCKED_SIMULATION_ONLY",
+      "direct_execution": false,
+      "live_execution": false,
+      "demo_execution_enabled": true,
+      "capital_per_unit": 500.0,
+      "maximum_units": 3,
+      "minimum_confidence": 95.0,
+      "magic": 26071002,
+      "lot_per_unit": 0.01,
+      "minimum_seconds_between_entries": 900,
+      "allocation_mode": "CAPITAL_TIER_TABLE",
+      "maximum_concurrent_orders": 4,
+      "maximum_lot_per_order": 0.03,
+      "capital_tiers": [
+        {
+          "minimum_balance": 0,
+          "lots": [
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 300,
+          "lots": [
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 600,
+          "lots": [
+            0.01,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 1000,
+          "lots": [
+            0.01,
+            0.01,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 1500,
+          "lots": [
+            0.02,
+            0.01,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 2100,
+          "lots": [
+            0.02,
+            0.02,
+            0.01,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 2800,
+          "lots": [
+            0.02,
+            0.02,
+            0.02,
+            0.01
+          ]
+        },
+        {
+          "minimum_balance": 3600,
+          "lots": [
+            0.02,
+            0.02,
+            0.02,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 4500,
+          "lots": [
+            0.03,
+            0.02,
+            0.02,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 5500,
+          "lots": [
+            0.03,
+            0.03,
+            0.02,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 6600,
+          "lots": [
+            0.03,
+            0.03,
+            0.03,
+            0.02
+          ]
+        },
+        {
+          "minimum_balance": 7800,
+          "lots": [
+            0.03,
+            0.03,
+            0.03,
+            0.03
+          ]
+        }
+      ]
+    },
+    {
+      "profile_id": "P3",
+      "profile_name": "High Risk Within Plan",
+      "enabled": false,
+      "launch_mt5": false,
+      "mt5_folder": "C:\\XM Global MT5 P3",
+      "mt5_terminal": "C:\\XM Global MT5 P3\\terminal64.exe",
+      "broker": "XM",
+      "server": "XMGlobal-MT5 5",
+      "symbol": "GOLD#",
+      "login_env": "AFIP_P3_LOGIN",
+      "password_env": "AFIP_P3_PASSWORD",
+      "runtime_directory": "runtime/profiles/p3",
+      "database_path": "runtime/profiles/p3/database/afip_p3.sqlite3",
+      "logs_directory": "runtime/profiles/p3/logs",
+      "dashboard_path": "runtime/profiles/p3/dashboard/afip_dashboard.html",
+      "learning_directory": "runtime/profiles/p3/learning",
+      "knowledge_directory": "runtime/profiles/p3/knowledge",
+      "statistics_directory": "runtime/profiles/p3/statistics",
+      "execution": "LOCKED_SIMULATION_ONLY",
+      "direct_execution": false,
+      "live_execution": false,
+      "demo_execution_enabled": true,
+      "capital_per_unit": 200.0,
+      "maximum_units": 3,
+      "minimum_confidence": 90.0,
+      "magic": 26071003,
+      "lot_per_unit": 0.01,
+      "minimum_seconds_between_entries": 900,
+      "allocation_mode": "RESEARCH_FIXED_001",
+      "maximum_concurrent_orders": 0,
+      "maximum_lot_per_order": 0.01
+    },
+    {
+      "profile_id": "P4",
+      "profile_name": "Research",
+      "enabled": true,
+      "launch_mt5": false,
+      "mt5_folder": "C:\\XM Global MT5 P4",
+      "mt5_terminal": "C:\\XM Global MT5 P4\\terminal64.exe",
+      "broker": "XM",
+      "server": "XMGlobal-MT5 5",
+      "symbol": "GOLD#",
+      "login_env": "AFIP_P4_LOGIN",
+      "password_env": "AFIP_P4_PASSWORD",
+      "runtime_directory": "runtime/profiles/p4",
+      "database_path": "runtime/profiles/p4/database/afip_p4.sqlite3",
+      "logs_directory": "runtime/profiles/p4/logs",
+      "dashboard_path": "runtime/profiles/p4/dashboard/afip_dashboard.html",
+      "learning_directory": "runtime/profiles/p4/learning",
+      "knowledge_directory": "runtime/profiles/p4/knowledge",
+      "statistics_directory": "runtime/profiles/p4/statistics",
+      "execution": "LOCKED_SIMULATION_ONLY",
+      "direct_execution": false,
+      "live_execution": false,
+      "demo_execution_enabled": true,
+      "capital_per_unit": 100.0,
+      "maximum_units": 3,
+      "minimum_confidence": 60.0,
+      "magic": 26071004,
+      "lot_per_unit": 0.01,
+      "minimum_seconds_between_entries": 900,
+      "allocation_mode": "RESEARCH_FIXED_001",
+      "maximum_concurrent_orders": 0,
+      "maximum_lot_per_order": 0.01
+    }
+  ]
 }
