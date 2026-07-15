@@ -1,0 +1,11 @@
+{
+  "contract_version": "AFIP-RESEARCH-DATA-1.0",
+  "timezone": "UTC",
+  "write_policy": "APPEND_ONLY_EVENTS_ATOMIC_CASE_FILES",
+  "execution_side_effects": false,
+  "event_types": ["DECISION_GATE", "ORDER_EXECUTION", "HOLDING_OBSERVATION", "ORDER_MANAGEMENT", "ORDER_EXIT", "POST_TRADE_OBSERVATION"],
+  "post_trade_checkpoints": ["M30", "H1", "H4", "D1"],
+  "required_lineage": ["source_type", "source_path", "source_line_number", "source_sha256", "source_event_id"],
+  "export_formats": ["JSON", "JSONL"],
+  "future_data_policy": "NO_OBSERVATION_MAY_BE_ATTACHED_BEFORE_ITS_SCHEDULED_UTC_TIME"
+}

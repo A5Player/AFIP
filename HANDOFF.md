@@ -771,3 +771,8 @@ Pack 4.6 exposed a validation control-flow defect: `LEGACY_FIXED_UNIT` fell thro
 
 ## Milestone S Pack 4.8 Handoff
 Capital-tier calculation is now isolated in `afip/capital_growth_engine/runtime.py`. The demo gateway delegates allocation and records `account_balance`, `current_tier_minimum_balance`, `target_tier_lots`, `next_tier_balance`, `remaining_to_next_tier`, `maximum_tier_balance`, and `withdrawal_reference_balance`. Dashboard profile cards display these live state values. P1 stops risk growth at balance 7,200 with 0.03 x 4; P2 stops at 7,800 with 0.03 x 4. Amounts above those levels are visibility references for the user's withdrawal plan only; Pack 4.8 does not automatically withdraw funds.
+
+## Latest Pack: Milestone S Pack 5.1
+Research Data Foundation is added as a read-only sidecar. It consumes existing demo execution JSONL ledgers and creates versioned research events and Trade Case Files. It does not initialize MT5 or modify execution behavior.
+
+Next recommended work: connect holding/exit observations and implement due-time collectors for M30/H1/H4/D1 after validating the foundation on VPS-generated ledgers.

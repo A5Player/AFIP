@@ -799,3 +799,11 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Added live P1–P4 dashboard rows for balance, tier allocation, next-tier progress, and withdrawal reference.
 - Corrected Pack runner usage to invoke pytest through the active Python interpreter instead of a relocatable-broken `pytest.exe` launcher.
 - Trading thresholds, risk approval, trading-cost approval, cooldown, manual override, SL/TP, and MT5 order transmission behavior remain unchanged.
+
+## Milestone S Pack 5.1 — Research Data Foundation
+- Added versioned unified research contract `AFIP-RESEARCH-DATA-1.0`.
+- Added read-only ledger ingestion for Decision Gate and Order Execution events.
+- Added atomic Trade Case Files and UTC/SHA-256 data lineage.
+- Added pending M30/H1/H4/D1 checkpoint schedules with future-data leakage protection metadata.
+- Added idempotent ingestion and malformed-line quarantine.
+- Trading logic and MT5 execution path remain unchanged.
