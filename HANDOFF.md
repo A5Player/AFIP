@@ -768,3 +768,6 @@ Capital allocation semantics corrected to explicit operator-approved growth tabl
 
 ## Milestone S Pack 4.7
 Pack 4.6 exposed a validation control-flow defect: `LEGACY_FIXED_UNIT` fell through to `allocation_mode_unknown`, which blocked the gateway before normal safety gates. Pack 4.7 fixes only that compatibility defect and restores legacy report attributes while retaining the approved P1/P2 capital-tier configuration. Restart all demo profile runtimes after deployment.
+
+## Milestone S Pack 4.8 Handoff
+Capital-tier calculation is now isolated in `afip/capital_growth_engine/runtime.py`. The demo gateway delegates allocation and records `account_balance`, `current_tier_minimum_balance`, `target_tier_lots`, `next_tier_balance`, `remaining_to_next_tier`, `maximum_tier_balance`, and `withdrawal_reference_balance`. Dashboard profile cards display these live state values. P1 stops risk growth at balance 7,200 with 0.03 x 4; P2 stops at 7,800 with 0.03 x 4. Amounts above those levels are visibility references for the user's withdrawal plan only; Pack 4.8 does not automatically withdraw funds.

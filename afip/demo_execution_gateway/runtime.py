@@ -19,6 +19,7 @@ import time
 from typing import Any, Callable, Mapping, Protocol
 
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime, ProfileOperationalConfig
+from afip.capital_growth_engine import CapitalGrowthEngine
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -163,6 +164,14 @@ class DemoGatewayReport:
     order_send_called: bool = False
     mt5_result_code: int | None = None
     mt5_result_comment: str = ""
+    allocation_mode: str = "UNKNOWN"
+    account_balance: float = 0.0
+    current_tier_minimum_balance: float | None = None
+    target_tier_lots: tuple[float, ...] = ()
+    next_tier_balance: float | None = None
+    remaining_to_next_tier: float = 0.0
+    maximum_tier_balance: float | None = None
+    withdrawal_reference_balance: float | None = None
     checked_at_utc: str = ""
 
     def as_dict(self) -> dict[str, Any]:
@@ -326,25 +335,20 @@ class DemoExecutionGateway:
         manual_positions = [p for p in positions if int(self._value(p, "magic", 0)) != self.policy.magic]
         return afip_positions, manual_positions
 
+    def _capital_growth_decision(self, balance: float, current_orders: int):
+        return CapitalGrowthEngine.evaluate(
+            mode=self.policy.allocation_mode,
+            balance=balance,
+            current_orders=current_orders,
+            capital_tiers=self.policy.capital_tiers,
+            maximum_orders=self.policy.maximum_concurrent_orders,
+            legacy_capital_per_unit=self.policy.capital_per_unit,
+            legacy_maximum_units=self.policy.maximum_units,
+            lot_per_unit=self.policy.lot_per_unit,
+        )
+
     def _allocation_lots(self, balance: float, current_orders: int) -> tuple[float, ...]:
-        if balance <= 0:
-            return ()
-        if self.policy.allocation_mode == "CAPITAL_TIER_TABLE":
-            selected: tuple[float, ...] = ()
-            for minimum_balance, lots in self.policy.capital_tiers:
-                if balance >= minimum_balance:
-                    selected = lots
-                else:
-                    break
-            if not selected:
-                return ()
-            return tuple(selected[current_orders:self.policy.maximum_concurrent_orders])
-        if self.policy.allocation_mode == "RESEARCH_FIXED_001":
-            return (0.01,)
-        capital_units = max(0, math.floor(balance / self.policy.capital_per_unit))
-        capacity = max(0, self.policy.maximum_units - current_orders)
-        units = max(0, min(capital_units, capacity))
-        return tuple(self.policy.lot_per_unit for _ in range(units))
+        return self._capital_growth_decision(balance, current_orders).available_lots
 
     def _cooldown_passed(self, fingerprint: str) -> bool:
         state = self._state()
@@ -439,7 +443,9 @@ class DemoExecutionGateway:
                 return self._report("BLOCKED", "protective_sl_tp_missing", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
 
             current_orders = len(afip_positions)
-            allocation_lots = self._allocation_lots(float(self._value(account, "balance", 0.0)), current_orders)
+            account_balance = float(self._value(account, "balance", 0.0) or 0.0)
+            growth = self._capital_growth_decision(account_balance, current_orders)
+            allocation_lots = growth.available_lots
             units = sum(max(1, int(round(lot / 0.01))) for lot in allocation_lots)
             maximum_orders = 0 if self.policy.allocation_mode == "RESEARCH_FIXED_001" else self.policy.maximum_concurrent_orders
             remaining_order_capacity = -1 if maximum_orders == 0 else max(0, maximum_orders - current_orders)
@@ -451,6 +457,14 @@ class DemoExecutionGateway:
                 "order_unit_distribution": tuple(max(1, int(round(lot / 0.01))) for lot in allocation_lots),
                 "maximum_orders": maximum_orders,
                 "remaining_order_capacity": remaining_order_capacity,
+                "allocation_mode": growth.mode,
+                "account_balance": growth.balance,
+                "current_tier_minimum_balance": growth.current_tier_minimum_balance,
+                "target_tier_lots": growth.target_lots,
+                "next_tier_balance": growth.next_tier_balance,
+                "remaining_to_next_tier": growth.remaining_to_next_tier,
+                "maximum_tier_balance": growth.maximum_tier_balance,
+                "withdrawal_reference_balance": growth.withdrawal_reference_balance,
             }
             if not allocation_lots:
                 return self._report("WAITING", "profile_order_capacity_unavailable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)

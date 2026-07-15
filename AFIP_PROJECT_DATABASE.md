@@ -791,3 +791,11 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Restored compatibility report fields: `order_unit_distribution`, `maximum_orders`, and `remaining_order_capacity`.
 - No changes to confidence, risk, spread, cooldown, demo verification, manual override, SL/TP, or MT5 order safety.
 - Validation: Pack regression 17 passed; full regression 1812 passed.
+
+## Milestone S Pack 4.8 — Capital Growth Engine and Operator Visibility
+- Extracted deterministic P1/P2 capital-tier lookup from the demo execution gateway into `afip.capital_growth_engine`.
+- Preserved `LEGACY_FIXED_UNIT`, `CAPITAL_TIER_TABLE`, and `RESEARCH_FIXED_001` gateway compatibility.
+- Added current tier, next tier, amount remaining, maximum tier, and withdrawal-reference diagnostics to demo runtime state.
+- Added live P1–P4 dashboard rows for balance, tier allocation, next-tier progress, and withdrawal reference.
+- Corrected Pack runner usage to invoke pytest through the active Python interpreter instead of a relocatable-broken `pytest.exe` launcher.
+- Trading thresholds, risk approval, trading-cost approval, cooldown, manual override, SL/TP, and MT5 order transmission behavior remain unchanged.
