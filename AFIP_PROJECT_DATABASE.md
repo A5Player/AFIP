@@ -769,3 +769,11 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Dashboard reads demo runtime PID, MT5 health, demo gateway state, waiting reason, confidence, orders, tickets, timestamps, and freshness from isolated profile runtime files.
 - Added continuous dashboard regeneration service with five-second browser refresh.
 - Trading logic and demo execution policy remain unchanged.
+
+## Milestone S Pack 4.2 — Demo Execution Trading Cost Contract Recovery
+- Corrected the verified contract mismatch between Trading Cost Intelligence and Demo Execution Gateway.
+- `CAUTION` remains executable only when the authoritative `allowed` field is `True`.
+- `BLOCK`, unknown status, missing permission, and inconsistent contracts remain fail-closed.
+- Added execution diagnostics for spread thresholds, point size, digits, MT5 order-check/send calls, and MT5 result information.
+- No trading, confidence, spread, sizing, arming, account, or broker safety threshold was weakened.
+- Validation: 13 pack tests, 15 combined pack/dashboard tests, and 1808 full tests passed in the source repository.

@@ -755,3 +755,10 @@ Demo Execution Gateway added for all four demo profiles. Apply the patch, run va
 
 ### Milestone S Pack 4.1
 Live Dashboard Runtime Wiring completed. Start with `python tools/afip_dashboard_live_control.py start`, then open `runtime/dashboard/afip_dashboard.html`. P1-P4 operational status is displayed before technical certification panels.
+
+## Milestone S Pack 4.2 Handoff
+- Root cause fixed: Demo Gateway previously rejected `CAUTION` even when Trading Cost Intelligence returned `allowed=True`.
+- Gateway now follows `allowed` while validating known statuses and failing closed for invalid/inconsistent data.
+- Runtime state/ledger now expose cost and MT5 path diagnostics.
+- Stop all demo runners before replacing files, run Pack 4.2 validation, then restart P1-P4.
+- Do not change the 25/35 point thresholds unless a separate repository-grounded calculation defect is proven.

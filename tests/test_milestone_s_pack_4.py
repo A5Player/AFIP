@@ -34,7 +34,10 @@ def simulation(data_status="READY", action="BUY", confidence=100):
         "data_status": data_status, "data_source": "MT5_MULTI_TIMEFRAME_H1",
         "decision": {"action": action, "confidence": confidence},
         "risk": {"allowed": True},
-        "trading_cost_intelligence": {"status": "PASS"},
+        "trading_cost_intelligence": {
+            "status": "PASS", "allowed": True, "spread_points": 20.0,
+            "caution_spread_points": 25.0, "max_spread_points": 35.0,
+        },
         "order": {"status": "SIMULATION_ORDER_READY", "action": action,
                   "protection": {"stop_loss_points": 3000, "take_profit_points": 500}},
     }
@@ -141,3 +144,39 @@ def test_password_is_not_written_to_state_or_ledger(tmp_path, monkeypatch):
     DemoExecutionGateway(p,policy(),mt5=mt5,simulate=simulation).run_cycle()
     text=p.runtime_directory.joinpath("demo_execution_state.json").read_text(encoding="utf-8") + p.logs_directory.joinpath("demo_execution_ledger.jsonl").read_text(encoding="utf-8")
     assert "secret" not in text and "1301760369" not in text
+
+
+def test_trading_cost_caution_is_allowed_by_contract(tmp_path, monkeypatch):
+    arm(monkeypatch); mt5=FakeMT5()
+    payload=simulation()
+    payload["trading_cost_intelligence"] = {
+        "status": "CAUTION", "allowed": True, "spread_points": 29.0,
+        "caution_spread_points": 25.0, "max_spread_points": 35.0,
+    }
+    report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=lambda:payload).run_cycle()
+    assert report.status=="ORDER_SENT" and report.sent_units==3
+    assert report.trading_cost_status=="CAUTION" and report.trading_cost_allowed is True
+    assert report.spread_points==29.0 and report.max_spread_points==35.0
+    assert report.point_size==0.01 and report.digits==2
+    assert report.order_check_called and report.order_send_called
+
+
+def test_trading_cost_block_remains_fail_closed(tmp_path, monkeypatch):
+    arm(monkeypatch); mt5=FakeMT5()
+    payload=simulation()
+    payload["trading_cost_intelligence"] = {
+        "status": "BLOCK", "allowed": False, "spread_points": 36.0,
+        "caution_spread_points": 25.0, "max_spread_points": 35.0,
+    }
+    report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=lambda:payload).run_cycle()
+    assert report.status=="WAITING" and report.reason=="trading_cost_not_approved"
+    assert not report.order_check_called and not report.order_send_called and mt5.sent==[]
+
+
+def test_unknown_trading_cost_status_is_blocked(tmp_path, monkeypatch):
+    arm(monkeypatch); mt5=FakeMT5()
+    payload=simulation()
+    payload["trading_cost_intelligence"] = {"status": "", "allowed": True}
+    report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=lambda:payload).run_cycle()
+    assert report.status=="BLOCKED" and report.reason=="trading_cost_status_unknown"
+    assert mt5.sent==[]

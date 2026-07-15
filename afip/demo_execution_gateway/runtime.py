@@ -111,6 +111,17 @@ class DemoGatewayReport:
     sent_units: int = 0
     order_status: str = ORDER_NOT_SENT
     tickets: tuple[int, ...] = ()
+    trading_cost_status: str = "UNKNOWN"
+    trading_cost_allowed: bool = False
+    spread_points: float = 0.0
+    caution_spread_points: float = 0.0
+    max_spread_points: float = 0.0
+    point_size: float = 0.0
+    digits: int = 0
+    order_check_called: bool = False
+    order_send_called: bool = False
+    mt5_result_code: int | None = None
+    mt5_result_comment: str = ""
     checked_at_utc: str = ""
 
     def as_dict(self) -> dict[str, Any]:
@@ -350,8 +361,22 @@ class DemoExecutionGateway:
                 return self._report("WAITING", "profile_confidence_below_threshold", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
             if not bool(risk.get("allowed", False)):
                 return self._report("WAITING", "risk_not_approved", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
-            if str(cost.get("status", "")).upper() != "PASS":
-                return self._report("WAITING", "trading_cost_not_approved", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+
+            cost_status = str(cost.get("status", "")).strip().upper()
+            cost_allowed = cost.get("allowed") is True
+            cost_diagnostics = {
+                "trading_cost_status": cost_status or "UNKNOWN",
+                "trading_cost_allowed": cost_allowed,
+                "spread_points": float(cost.get("spread_points", 0.0) or 0.0),
+                "caution_spread_points": float(cost.get("caution_spread_points", 0.0) or 0.0),
+                "max_spread_points": float(cost.get("max_spread_points", 0.0) or 0.0),
+            }
+            if cost_status not in {"PASS", "CAUTION", "BLOCK"}:
+                return self._report("BLOCKED", "trading_cost_status_unknown", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)
+            if not cost_allowed:
+                return self._report("WAITING", "trading_cost_not_approved", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)
+            if cost_status == "BLOCK":
+                return self._report("BLOCKED", "trading_cost_contract_inconsistent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)
             if str(order.get("status", "")).upper() != "SIMULATION_ORDER_READY":
                 return self._report("WAITING", "protected_order_not_ready", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
 
@@ -369,27 +394,32 @@ class DemoExecutionGateway:
             if not self._cooldown_passed(fingerprint):
                 return self._report("WAITING", "duplicate_signal_cooldown_active", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units)
 
+            symbol_info = mt5.symbol_info(self.profile.symbol)
+            point_size = float(self._value(symbol_info, "point", 0.0) or 0.0)
+            digits = int(self._value(symbol_info, "digits", 0) or 0)
+            execution_diagnostics = {**cost_diagnostics, "point_size": point_size, "digits": digits}
+
             tickets: list[int] = []
             for _ in range(units):
                 request = self._request(mt5, action, sl_points, tp_points)
                 check = mt5.order_check(request)
                 if check is None or int(self._value(check, "retcode", -1)) != 0:
                     reason = self._value(check, "comment", mt5.last_error())
-                    return self._report("BLOCKED", f"order_check_failed:{reason}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets))
+                    return self._report("BLOCKED", f"order_check_failed:{reason}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets), order_check_called=True, mt5_result_code=int(self._value(check, "retcode", -1)), mt5_result_comment=str(reason), **execution_diagnostics)
                 result_send = mt5.order_send(request)
                 if result_send is None:
-                    return self._report("ERROR", f"order_send_returned_none:{mt5.last_error()}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets))
+                    return self._report("ERROR", f"order_send_returned_none:{mt5.last_error()}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_comment=str(mt5.last_error()), **execution_diagnostics)
                 retcode = int(self._value(result_send, "retcode", -1))
                 success_codes = {
                     int(getattr(mt5, name)) for name in SUCCESS_RETCODE_NAMES if hasattr(mt5, name)
                 }
                 if retcode not in success_codes:
                     comment = self._value(result_send, "comment", "unknown")
-                    return self._report("ERROR", f"order_send_failed:{retcode}:{comment}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets))
+                    return self._report("ERROR", f"order_send_failed:{retcode}:{comment}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(comment), **execution_diagnostics)
                 ticket = int(self._value(result_send, "order", self._value(result_send, "deal", 0)) or 0)
                 tickets.append(ticket)
 
-            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), order_status="DEMO_ORDER_SENT", tickets=tuple(tickets))
+            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, allocated_units=units, sent_units=len(tickets), order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), **execution_diagnostics)
             state = report.as_dict()
             state["last_signal_fingerprint"] = fingerprint
             state["last_order_epoch"] = time.time()
