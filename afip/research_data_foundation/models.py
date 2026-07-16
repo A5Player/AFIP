@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Any, Mapping
 
 RESEARCH_CONTRACT_VERSION = "AFIP-RESEARCH-DATA-1.0"
-POST_TRADE_CHECKPOINTS = ("M30", "H1", "H4", "D1")
+POST_TRADE_CHECKPOINTS = ("M15", "M30", "H1", "H4", "D1")
 
 
 def utc_now() -> str:

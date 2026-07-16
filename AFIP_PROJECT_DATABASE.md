@@ -807,3 +807,14 @@ Next: Final repository snapshot and Git tag `v1.0.0` after local validation.
 - Added pending M30/H1/H4/D1 checkpoint schedules with future-data leakage protection metadata.
 - Added idempotent ingestion and malformed-line quarantine.
 - Trading logic and MT5 execution path remain unchanged.
+
+## Milestone S Pack 5.2 — Trade Case Complete & Historical Research Foundation
+
+Status: IMPLEMENTED (Patch Only)
+
+- Extended the Pack 5.1 research contract with M15/M30/H1/H4/D1 post-trade checkpoints.
+- Added complete research-only trade lifecycle updates for PASS/WAIT/BLOCK gates, holding observations, exit quality, retained/given-back profit, and post-trade assessment.
+- Added deterministic candle-close replay queue, cursor, progress, event ledger, and statistics with explicit future-data-leakage blocking.
+- Added permanent Dashboard Research Foundation panel near the bottom, including historical coverage, replay state, dataset counts, Top 100 pattern statistics, and similar-pattern monitor.
+- Similarity and historical research remain read-only and cannot affect execution, thresholds, safety gates, position sizing, or trading decisions.
+- AFIP Gold Ultimate (V2) remains locked for future development.

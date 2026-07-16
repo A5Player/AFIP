@@ -1,15 +1,10 @@
-"""AFIP Research Data Foundation.
-
-Read-only research recording components. They never submit, modify, or close an
-order and are deliberately isolated from the execution decision path.
-"""
+"""AFIP research data foundation public API."""
 from .models import RESEARCH_CONTRACT_VERSION, ResearchEvent, TradeCase
-from .recorder import ResearchRecorder, RecorderSummary
+from .recorder import RecorderSummary, ResearchRecorder
+from .lifecycle import CHECKPOINTS, GateRecord, TradeLifecycleRecorder, checkpoint_plan
+from .replay import HistoricalReplayRecorder, ReplayJob
+from .dashboard import ResearchDashboardSnapshot
 
-__all__ = [
-    "RESEARCH_CONTRACT_VERSION",
-    "ResearchEvent",
-    "TradeCase",
-    "ResearchRecorder",
-    "RecorderSummary",
-]
+__all__ = ["RESEARCH_CONTRACT_VERSION", "ResearchEvent", "TradeCase", "RecorderSummary", "ResearchRecorder",
+           "CHECKPOINTS", "GateRecord", "TradeLifecycleRecorder", "checkpoint_plan", "HistoricalReplayRecorder", "ReplayJob",
+           "ResearchDashboardSnapshot"]

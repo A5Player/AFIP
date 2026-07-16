@@ -776,3 +776,18 @@ Capital-tier calculation is now isolated in `afip/capital_growth_engine/runtime.
 Research Data Foundation is added as a read-only sidecar. It consumes existing demo execution JSONL ledgers and creates versioned research events and Trade Case Files. It does not initialize MT5 or modify execution behavior.
 
 Next recommended work: connect holding/exit observations and implement due-time collectors for M30/H1/H4/D1 after validating the foundation on VPS-generated ledgers.
+
+## Current Handoff — Milestone S Pack 5.2
+
+Repository baseline: attached repository commit d5d1294.
+
+Pack 5.2 completes the research architecture foundation only. It does not optimize, train, promote standards, change trading logic, alter thresholds, reduce safety, or enable V2.
+
+Primary additions:
+- `afip/research_data_foundation/lifecycle.py`
+- `afip/research_data_foundation/replay.py`
+- `afip/research_data_foundation/dashboard.py`
+- dashboard permanent research panel
+- pack-specific regression tests
+
+Operational next step after validation: ingest demo execution ledgers, append lifecycle observations from existing runtime collectors, build historical replay jobs, and inspect the Dashboard Research Foundation. Historical similarity remains research-only.

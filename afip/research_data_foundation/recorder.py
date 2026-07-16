@@ -122,6 +122,7 @@ class ResearchRecorder:
     def _checkpoint_plan(execution_utc: str) -> dict[str, Any]:
         base = datetime.fromisoformat(execution_utc.replace("Z", "+00:00"))
         offsets = {
+            "M15": timedelta(minutes=15),
             "M30": timedelta(minutes=30),
             "H1": timedelta(hours=1),
             "H4": timedelta(hours=4),
@@ -155,8 +156,25 @@ class ResearchRecorder:
             "mt5_result_code": payload.get("mt5_result_code"),
             "mt5_result_comment": payload.get("mt5_result_comment", ""),
             "tickets": tickets,
+            "order_check": payload.get("mt5_order_check", {}),
+            "order_send": payload.get("mt5_order_send", {}),
+            "latency_ms": payload.get("latency_ms", 0.0),
+            "slippage_points": payload.get("slippage_points", 0.0),
+            "broker": payload.get("broker", "XM"),
+            "server": payload.get("server", ""),
+            "symbol": payload.get("symbol", event.symbol),
         }
         market = {
+            "snapshot": payload.get("market_snapshot", {}),
+            "pattern": payload.get("pattern", "UNKNOWN"),
+            "pattern_id": payload.get("pattern_id", "UNKNOWN"),
+            "pattern_family": payload.get("pattern_family", "UNKNOWN"),
+            "market_regime": payload.get("market_regime", "UNKNOWN"),
+            "session": payload.get("session", payload.get("trading_session", "UNKNOWN")),
+            "multi_timeframe_context": payload.get("multi_timeframe_context", {}),
+            "intelligence_outputs": payload.get("intelligence_outputs", {}),
+            "supporting_evidence": payload.get("supporting_evidence", ()),
+            "opposing_evidence": payload.get("opposing_evidence", ()),
             "spread_points": payload.get("spread_points", 0.0),
             "caution_spread_points": payload.get("caution_spread_points", 0.0),
             "max_spread_points": payload.get("max_spread_points", 0.0),
@@ -172,6 +190,8 @@ class ResearchRecorder:
             "allocation_mode": payload.get("allocation_mode", "UNKNOWN"),
             "capital_tier": payload.get("current_tier_minimum_balance"),
             "target_tier_lots": payload.get("target_tier_lots", ()),
+            "decision_reason": payload.get("decision_reason", payload.get("reason", "")),
+            "gates": payload.get("gates", ()),
         }
         return TradeCase(
             trade_case_id=case_id,

@@ -34,7 +34,7 @@ def test_ingest_creates_versioned_event_and_trade_case(tmp_path: Path):
     case = json.loads(cases[0].read_text(encoding="utf-8"))
     assert case["contract_version"] == "AFIP-RESEARCH-DATA-1.0"
     assert case["tickets"] == [11, 12]
-    assert set(case["post_trade_checkpoints"]) == {"M30", "H1", "H4", "D1"}
+    assert set(case["post_trade_checkpoints"]) == {"M15", "M30", "H1", "H4", "D1"}
     assert case["post_trade_checkpoints"]["M30"]["status"] == "PENDING"
 
 

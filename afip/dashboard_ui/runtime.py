@@ -69,6 +69,7 @@ from afip.pattern_knowledge_engine import PatternKnowledgeEngineRuntime
 from afip.pattern_similarity_search import PatternSimilaritySearchRuntime
 from afip.pattern_clustering import PatternClusteringRuntime
 from afip.pattern_statistics import PatternStatisticsRuntime
+from afip.research_data_foundation import ResearchDashboardSnapshot
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -570,6 +571,7 @@ class DashboardUIRuntime:
             "broker_request_created": False,
             "order_transmission_attempted": False,
         })
+        research_foundation_snapshot = ResearchDashboardSnapshot(record.get("research_root", "runtime/research")).build(record)
         panels = (
             _runtime_panel(runtime),
             _integrated_intelligence_panel(integrated),
@@ -635,6 +637,7 @@ class DashboardUIRuntime:
             _market_panel(record, market_calendar),
             _order_center_panel(paper),
             _explainable_order_center_panel(explainable_orders),
+            _research_foundation_panel(research_foundation_snapshot),
         )
         try:
             four_profile_report = FourProfileSupervisor(record.get("four_profile_config_path", "config/four_profile_demo.json")).status()
@@ -765,6 +768,45 @@ def _four_profile_overview_panel(report: Any) -> DashboardPanel:
         "สรุปสถานะโปรไฟล์แบบแยก Runtime สำหรับ Simulation และบัญชี Demo เท่านั้น",
         tuple(rows),
     )
+
+
+def _research_foundation_panel(snapshot: Mapping[str, Any]) -> DashboardPanel:
+    historical = snapshot.get("historical_data", {})
+    replay = snapshot.get("replay", {})
+    dataset = snapshot.get("dataset", {})
+    similar = snapshot.get("similar_pattern_monitor", {})
+    rows = [
+        ("Historical Coverage", str(historical.get("coverage", "UNKNOWN"))),
+        ("Historical Start", str(historical.get("start_date", "UNKNOWN"))),
+        ("Historical End", str(historical.get("end_date", "UNKNOWN"))),
+        ("Candle Count", str(historical.get("candle_count", 0))),
+        ("Tick Count", str(historical.get("tick_count", 0))),
+        ("Missing Data", str(historical.get("missing_data", 0))),
+        ("Data Quality", str(historical.get("data_quality", "UNKNOWN"))),
+        ("Replay Completed %", str(replay.get("completed_percent", 0.0))),
+        ("Replay Remaining", str(replay.get("remaining_candles", 0))),
+        ("Active Replay", str(replay.get("active_replay", "NONE"))),
+        ("Replay Speed", str(replay.get("replay_speed", "RECORDER_ONLY"))),
+        ("Trade Case Count", str(dataset.get("trade_case_count", 0))),
+        ("Pattern Count", str(dataset.get("pattern_count", 0))),
+        ("Unknown Pattern Count", str(dataset.get("unknown_pattern_count", 0))),
+        ("Historical Simulations", str(dataset.get("historical_simulations", 0))),
+        ("Recorded Decisions", str(dataset.get("recorded_decisions", 0))),
+        ("Recorded Exits", str(dataset.get("recorded_exits", 0))),
+        ("Similarity %", str(similar.get("similarity_percent", 0))),
+        ("Similar Pattern ID", str(similar.get("similar_pattern_id", "NONE"))),
+        ("Historical Occurrences", str(similar.get("historical_occurrences", 0))),
+        ("Historical Win Rate", str(similar.get("historical_win_rate", 0))),
+        ("Historical Profit Factor", str(similar.get("historical_profit_factor", 0))),
+        ("Research Only", str(similar.get("research_only", True))),
+        ("Affects Trading", str(similar.get("affects_trading", False))),
+    ]
+    for item in snapshot.get("top_100_patterns", ())[:100]:
+        rows.append((f"Pattern {item.get('pattern_id', 'UNKNOWN')}",
+                     f"occurrences={item.get('occurrences', 0)} | win_rate={item.get('win_rate', 0)} | profit_factor={item.get('profit_factor', 0)} | avg_holding={item.get('average_holding', 0)} | avg_mfe={item.get('average_mfe', 0)} | avg_mae={item.get('average_mae', 0)} | avg_exit_quality={item.get('average_exit_quality', 0)}"))
+    return DashboardPanel("research_foundation", "Trade Case & Historical Research Foundation", "ฐานข้อมูล Trade Case และการวิจัยย้อนหลัง", "READY",
+        "Permanent research-only section. It never changes trading decisions or thresholds.",
+        "ส่วนวิจัยถาวรเท่านั้น ไม่เปลี่ยนการตัดสินใจหรือ Threshold การเทรด", tuple(rows))
 
 def _policy_panel(validation_items: list[str]) -> DashboardPanel:
     return DashboardPanel("policy", "Production Policy", "นโยบายการใช้งาน", "BLOCKED", "Dashboard blocks unsafe or unsupported runtime modes.", "Dashboard บล็อกโหมดที่ไม่ปลอดภัยหรือไม่อยู่ใน Version 1", tuple((item, "BLOCKED") for item in validation_items))
