@@ -818,3 +818,12 @@ Status: IMPLEMENTED (Patch Only)
 - Added permanent Dashboard Research Foundation panel near the bottom, including historical coverage, replay state, dataset counts, Top 100 pattern statistics, and similar-pattern monitor.
 - Similarity and historical research remain read-only and cannot affect execution, thresholds, safety gates, position sizing, or trading decisions.
 - AFIP Gold Ultimate (V2) remains locked for future development.
+
+## Milestone S Pack 5.3 — Runtime Research Data Wiring
+- Added research-only runtime collector for P1-P4 demo execution ledgers.
+- Added idempotent ingestion into immutable Research Events and Trade Cases.
+- Added holding observation updates with floating profit/loss, MFE, MAE, SL and TP context.
+- Added closed-trade updates with exit quality, profit retained and profit given back.
+- Added due checkpoint observation wiring for M15, M30, H1, H4 and D1.
+- Collector is explicitly research-only and cannot invoke order placement.
+- Trading logic, thresholds, risk policy and execution safety remain unchanged.

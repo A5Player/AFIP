@@ -8,3 +8,5 @@ from .dashboard import ResearchDashboardSnapshot
 __all__ = ["RESEARCH_CONTRACT_VERSION", "ResearchEvent", "TradeCase", "RecorderSummary", "ResearchRecorder",
            "CHECKPOINTS", "GateRecord", "TradeLifecycleRecorder", "checkpoint_plan", "HistoricalReplayRecorder", "ReplayJob",
            "ResearchDashboardSnapshot"]
+
+from .runtime_collector import ResearchRuntimeCollector, RuntimeCollectionSummary
