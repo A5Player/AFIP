@@ -827,3 +827,9 @@ Status: IMPLEMENTED (Patch Only)
 - Added due checkpoint observation wiring for M15, M30, H1, H4 and D1.
 - Collector is explicitly research-only and cannot invoke order placement.
 - Trading logic, thresholds, risk policy and execution safety remain unchanged.
+
+## Milestone S Pack 5.4 — Research Aggregator and Live Dashboard Projection
+- Added deterministic read-only aggregation over Trade Case files.
+- Added dataset health, lifecycle distribution, checkpoint backlog, and pattern statistics.
+- Extended the permanent Research Foundation dashboard projection.
+- Research only; no trading logic, threshold, risk, sizing, or execution changes.

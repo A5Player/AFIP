@@ -794,3 +794,6 @@ Operational next step after validation: ingest demo execution ledgers, append li
 
 ## Latest Completed: Milestone S Pack 5.3
 Runtime Research Data Wiring is implemented as a research-only bridge from existing P1-P4 execution ledgers into the Trade Case dataset. It supports idempotent ledger ingestion, holding observations, MFE/MAE, exits, profit retention and due post-trade checkpoints. No trading logic, threshold, risk or execution permission was changed.
+
+## Milestone S Pack 5.4
+Research Aggregator and Live Dashboard Projection completed. The permanent dashboard research section now reads Trade Case lifecycle, dataset health, checkpoint backlog, and Top 100 pattern statistics without influencing trading.

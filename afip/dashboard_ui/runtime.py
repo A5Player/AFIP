@@ -775,6 +775,9 @@ def _research_foundation_panel(snapshot: Mapping[str, Any]) -> DashboardPanel:
     replay = snapshot.get("replay", {})
     dataset = snapshot.get("dataset", {})
     similar = snapshot.get("similar_pattern_monitor", {})
+    health = snapshot.get("dataset_health", {})
+    lifecycle = snapshot.get("lifecycle_states", {})
+    pending = snapshot.get("pending_checkpoints", {})
     rows = [
         ("Historical Coverage", str(historical.get("coverage", "UNKNOWN"))),
         ("Historical Start", str(historical.get("start_date", "UNKNOWN"))),
@@ -793,6 +796,13 @@ def _research_foundation_panel(snapshot: Mapping[str, Any]) -> DashboardPanel:
         ("Historical Simulations", str(dataset.get("historical_simulations", 0))),
         ("Recorded Decisions", str(dataset.get("recorded_decisions", 0))),
         ("Recorded Exits", str(dataset.get("recorded_exits", 0))),
+        ("Dataset Health", str(health.get("status", "UNKNOWN"))),
+        ("Active Lifecycle", str(health.get("active_lifecycle_count", 0))),
+        ("Closed Cases", str(health.get("closed_case_count", 0))),
+        ("Malformed Cases", str(health.get("malformed_case_count", 0))),
+        ("Lineage Coverage %", str(health.get("lineage_coverage_percent", 0))),
+        ("Lifecycle States", ", ".join(f"{key}={value}" for key, value in sorted(lifecycle.items())) or "NONE"),
+        ("Pending M15/M30/H1/H4/D1", ", ".join(f"{name}={pending.get(name, 0)}" for name in ("M15", "M30", "H1", "H4", "D1"))),
         ("Similarity %", str(similar.get("similarity_percent", 0))),
         ("Similar Pattern ID", str(similar.get("similar_pattern_id", "NONE"))),
         ("Historical Occurrences", str(similar.get("historical_occurrences", 0))),
