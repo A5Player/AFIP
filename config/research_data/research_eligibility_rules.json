@@ -1,0 +1,15 @@
+{
+  "version": "AFIP_RESEARCH_ELIGIBILITY_V1",
+  "immutable_raw_data": true,
+  "classifications": [
+    {"classification": "RESEARCH_ELIGIBLE", "training_allowed": true, "ranking_allowed": true},
+    {"classification": "QUARANTINED", "training_allowed": false, "ranking_allowed": false},
+    {"classification": "INCIDENT_REFERENCE_ONLY", "training_allowed": false, "ranking_allowed": false}
+  ],
+  "automatic_quarantine_reasons": [
+    "lookahead_detected",
+    "execution_incident",
+    "configuration_incident",
+    "data_quality_not_acceptable"
+  ]
+}

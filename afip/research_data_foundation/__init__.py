@@ -12,3 +12,17 @@ __all__ = [
            "ResearchDashboardSnapshot"]
 
 from .runtime_collector import ResearchRuntimeCollector, RuntimeCollectionSummary
+
+from .runtime import (
+    DataFoundationRegistry,
+    DecisionTraceEnvelope,
+    RegistryValidationError,
+    ResearchEligibility,
+)
+
+__all__ += [
+    "DataFoundationRegistry",
+    "DecisionTraceEnvelope",
+    "RegistryValidationError",
+    "ResearchEligibility",
+]

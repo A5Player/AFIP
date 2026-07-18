@@ -1,0 +1,13 @@
+{
+  "version": "AFIP_DATA_QUALITY_RULES_V1",
+  "immutable_raw_data": true,
+  "dimensions": [
+    {"dimension": "freshness", "required_metadata": ["observed_at_utc", "source_timestamp_utc", "maximum_age_seconds"]},
+    {"dimension": "completeness", "required_metadata": ["required_fields", "present_fields"]},
+    {"dimension": "timestamp_alignment", "required_metadata": ["source_timestamps", "alignment_tolerance_seconds"]},
+    {"dimension": "source_reliability", "required_metadata": ["source_id", "connection_status", "validation_status"]},
+    {"dimension": "cross_source_agreement", "required_metadata": ["compared_sources", "difference_measure", "tolerance"]}
+  ],
+  "statuses": ["PASS", "CAUTION", "BLOCK", "UNKNOWN"],
+  "raw_data_policy": "append_only_never_overwrite"
+}

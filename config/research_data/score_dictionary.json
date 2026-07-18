@@ -1,0 +1,22 @@
+{
+  "version": "AFIP_SCORE_DICTIONARY_V1",
+  "immutable_raw_data": true,
+  "scores": [
+    {
+      "score_id": "decision.confidence",
+      "range": {"minimum": 0.0, "maximum": 100.0},
+      "components": ["market_regime", "multi_timeframe_confluence", "structure", "liquidity", "institutional_context"],
+      "formula_id": "FORMULA_DECISION_CONFIDENCE_V1",
+      "hard_gates": ["data_freshness", "trading_cost", "risk", "execution_permission"],
+      "interpretation": "Composite evidence strength; never overrides a failed hard gate"
+    },
+    {
+      "score_id": "data.quality_score",
+      "range": {"minimum": 0.0, "maximum": 100.0},
+      "components": ["freshness", "completeness", "timestamp_alignment", "source_reliability", "cross_source_agreement"],
+      "formula_id": "FORMULA_DATA_QUALITY_V1",
+      "hard_gates": ["required_source_missing", "future_timestamp", "symbol_mismatch"],
+      "interpretation": "Quality of evidence available at the observation timestamp"
+    }
+  ]
+}

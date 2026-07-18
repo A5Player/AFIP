@@ -1,0 +1,22 @@
+{
+  "version": "AFIP_FORMULA_REGISTRY_V1",
+  "immutable_raw_data": true,
+  "formulas": [
+    {
+      "formula_id": "FORMULA_DECISION_CONFIDENCE_V1",
+      "status": "ACTIVE",
+      "expression": "bounded_weighted_component_evidence_minus_registered_penalties",
+      "inputs": ["component_scores", "component_statuses", "penalties"],
+      "output_range": [0.0, 100.0],
+      "recomputable_from_raw": true
+    },
+    {
+      "formula_id": "FORMULA_DATA_QUALITY_V1",
+      "status": "ACTIVE",
+      "expression": "weighted_quality_dimensions_with_hard_failure_floor",
+      "inputs": ["freshness", "completeness", "timestamp_alignment", "source_reliability", "cross_source_agreement"],
+      "output_range": [0.0, 100.0],
+      "recomputable_from_raw": true
+    }
+  ]
+}

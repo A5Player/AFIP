@@ -848,3 +848,12 @@ Status: IMPLEMENTED (Patch Only)
 - Corrected P1 permanent 0.10 lot tier threshold to balance 15,000.
 - Added regression certification for P2 1.00 lot ceiling, P3 450-balance growth sequence to 10.00 lots, and P4 fixed 0.01 research mode.
 - Live execution remains locked and unchanged.
+
+## Milestone S Pack 5.6 — Research Data Foundation
+
+- Added central, profile-independent machine-readable data and score dictionaries.
+- Added formula version registry, data-quality rules, and research-eligibility quarantine rules.
+- Added a side-effect-free Decision Trace envelope and registry validator.
+- Added documentation for architecture, fields, scores, calculations, quality, traceability, research usage, and cross-market alignment.
+- Raw research data policy is immutable/append-only; derived recomputation creates new versions.
+- No execution mode, trading threshold, order routing, or broker behavior changed.

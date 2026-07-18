@@ -1,0 +1,79 @@
+{
+  "version": "AFIP_DATA_DICTIONARY_V1",
+  "immutable_raw_data": true,
+  "description": "Canonical shared research fields. Profiles P1-P4 consume this central dataset and do not own separate research truth.",
+  "fields": [
+    {
+      "field_id": "market.observed_at_utc",
+      "meaning": "UTC observation time known to the engine at decision time",
+      "data_type": "datetime_utc",
+      "source": "runtime_clock",
+      "unit": "ISO-8601 UTC",
+      "quality_rules": ["required", "utc_only", "non_future_at_decision"],
+      "lineage": {"layer": "raw", "transform": "none"}
+    },
+    {
+      "field_id": "market.gold.bid",
+      "meaning": "Best bid price for the resolved gold symbol",
+      "data_type": "decimal",
+      "source": "MT5 symbol_info_tick",
+      "unit": "broker_price",
+      "quality_rules": ["positive", "fresh_tick", "symbol_match"],
+      "lineage": {"layer": "raw", "transform": "none"}
+    },
+    {
+      "field_id": "market.gold.ask",
+      "meaning": "Best ask price for the resolved gold symbol",
+      "data_type": "decimal",
+      "source": "MT5 symbol_info_tick",
+      "unit": "broker_price",
+      "quality_rules": ["positive", "fresh_tick", "symbol_match"],
+      "lineage": {"layer": "raw", "transform": "none"}
+    },
+    {
+      "field_id": "market.gold.spread_points",
+      "meaning": "Ask minus bid converted with broker point size",
+      "data_type": "decimal",
+      "source": "derived_from_bid_ask_point",
+      "unit": "points",
+      "quality_rules": ["non_negative", "point_size_verified", "digits_verified"],
+      "lineage": {"layer": "derived", "transform": "(ask-bid)/point_size"}
+    },
+    {
+      "field_id": "context.market_regime",
+      "meaning": "Market regime classified before signal evaluation",
+      "data_type": "enum",
+      "source": "market_regime_intelligence",
+      "unit": "category",
+      "quality_rules": ["known_enum", "formula_version_present"],
+      "lineage": {"layer": "derived", "transform": "registered_formula"}
+    },
+    {
+      "field_id": "decision.action",
+      "meaning": "Committed decision made without future information",
+      "data_type": "enum",
+      "source": "decision_intelligence",
+      "unit": "BUY_SELL_NO_ORDER",
+      "quality_rules": ["known_enum", "decision_trace_present"],
+      "lineage": {"layer": "decision", "transform": "registered_formula_and_hard_gates"}
+    },
+    {
+      "field_id": "outcome.maximum_adverse_excursion_points",
+      "meaning": "Worst adverse movement after entry during the measured horizon",
+      "data_type": "decimal",
+      "source": "post_decision_market_path",
+      "unit": "points",
+      "quality_rules": ["horizon_present", "entry_reference_present", "no_overwrite"],
+      "lineage": {"layer": "outcome", "transform": "path_minimum_relative_to_entry"}
+    },
+    {
+      "field_id": "outcome.maximum_favorable_excursion_points",
+      "meaning": "Best favorable movement after entry during the measured horizon",
+      "data_type": "decimal",
+      "source": "post_decision_market_path",
+      "unit": "points",
+      "quality_rules": ["horizon_present", "entry_reference_present", "no_overwrite"],
+      "lineage": {"layer": "outcome", "transform": "path_maximum_relative_to_entry"}
+    }
+  ]
+}
