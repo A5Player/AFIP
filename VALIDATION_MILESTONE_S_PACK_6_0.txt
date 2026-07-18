@@ -1,0 +1,5 @@
+Milestone S Pack 6.0
+Focused tests: 13 passed
+Execution authority: NONE
+Promotion to execution: PROHIBITED
+Expected full repository tests after installation: previous total + 13

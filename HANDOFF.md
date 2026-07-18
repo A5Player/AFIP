@@ -825,3 +825,7 @@ Blind Forward Research Engine added as an execution-neutral research sidecar. Ru
 
 ## Milestone S Pack 5.9 Handoff
 Research Metrics & Leaderboard added. Run `RUN_MILESTONE_S_PACK_5_9.ps1`, then full pytest. Rankings are descriptive research evidence only; execution authority is `NONE` and promotion to execution is prohibited.
+
+
+## Milestone S Pack 6.0 Handoff
+Knowledge Evolution Engine added as a research-only layer over Pack 5.9. It tracks evidence across time and emits deterministic candidate knowledge with drift and confidence controls. RESEARCH_CERTIFIED does not authorize policy or execution changes. Run `RUN_MILESTONE_S_PACK_6_0.ps1`, then full pytest.

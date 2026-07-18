@@ -1,0 +1,12 @@
+{
+  "schema_version": "knowledge-evolution-policy.v1",
+  "execution_authority": "NONE",
+  "promotion_to_execution": "PROHIBITED",
+  "minimum_snapshots": 3,
+  "minimum_total_samples": 100,
+  "minimum_confidence_score": 70.0,
+  "drift_warning_threshold": 35.0,
+  "research_certified_does_not_mean_execution_approved": true,
+  "manual_certification_required_before_any_future_policy_use": true,
+  "profiles_share_central_knowledge_base": true
+}

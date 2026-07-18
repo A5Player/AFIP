@@ -879,3 +879,11 @@ Status: IMPLEMENTED (Patch Only)
 - Added execution-neutral descriptive metrics and deterministic leaderboards over eligible blind-forward outcomes.
 - Added sample sufficiency and positive confidence-bound safeguards.
 - Rankings remain shared research evidence and cannot promote candidates to execution.
+
+
+## Milestone S Pack 6.0 — Knowledge Evolution Engine
+- Added deterministic evidence snapshots from research leaderboard reports.
+- Added candidate knowledge lifecycle: CANDIDATE, REJECTED, RESEARCH_CERTIFIED.
+- Added consistency, recency drift, sample sufficiency, and knowledge confidence scoring.
+- Preserved shared central research knowledge independent from P1–P4 profiles.
+- Execution authority remains `NONE`; promotion to execution remains `PROHIBITED`.
