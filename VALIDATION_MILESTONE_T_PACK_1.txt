@@ -1,0 +1,9 @@
+AFIP Milestone T Pack 1 validation sequence
+
+1. python -m pytest tests/test_milestone_t_pack_1_research_quarantine.py -q
+2. python tools/validate_financial_naming.py
+3. python tools/afip_local_quality_check.py
+4. python -m pytest -q
+
+Expected focused result: all Milestone T Pack 1 tests pass.
+Full regression count must be recorded from the user's source environment after patch application.

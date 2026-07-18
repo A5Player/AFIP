@@ -1,0 +1,12 @@
+{
+  "minimum_sample_size": 300,
+  "minimum_out_of_sample_size": 100,
+  "minimum_walk_forward_windows": 3,
+  "minimum_profit_factor": 1.2,
+  "minimum_expectancy": 0.0,
+  "maximum_drawdown": 0.2,
+  "require_out_of_sample": true,
+  "require_walk_forward": true,
+  "require_data_quality_certification": true,
+  "require_manual_approval": true
+}

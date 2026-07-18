@@ -54,3 +54,23 @@ All eight checks must pass. Certification remains research-only and cannot alter
 ## Latest verified development: Milestone S Pack 7.3
 
 Position-capacity configuration for P1-P3 is now stored as deterministic formulas and expanded into the legacy in-memory tier table at policy load time. Runtime allocation mode and Capital Growth Engine behavior remain unchanged. Legacy explicit tables remain supported. Validate with `RUN_MILESTONE_S_PACK_7_3.ps1`, full pytest, and AFIP local quality check before commit.
+
+## Milestone T Pack 1 Handoff
+
+Pack: Research Quarantine & Knowledge Promotion Foundation
+
+Important status separation:
+
+- Policy agreed: YES
+- Patch files created: YES
+- User local focused tests: PENDING
+- User local full regression: PENDING
+- Git commit/push: PENDING
+
+Production knowledge rule:
+
+- Research data remains quarantined until every promotion gate passes.
+- Production runtime must read only verified `PRODUCTION_APPROVED` knowledge.
+- TOP10/TOP100 is not part of the selection design.
+- Selection objectives are lower drawdown, higher net profit, and higher win probability under matching market context.
+
