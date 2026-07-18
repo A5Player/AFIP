@@ -874,3 +874,8 @@ Status: IMPLEMENTED (Patch Only)
 - Added append-only JSONL research results, duplicate protection and manifests.
 - Added research eligibility quarantine for incomplete or failed-quality cases.
 - Research storage remains shared across P1–P4 and execution authority is `NONE`.
+
+## Milestone S Pack 5.9 — Research Metrics & Leaderboard
+- Added execution-neutral descriptive metrics and deterministic leaderboards over eligible blind-forward outcomes.
+- Added sample sufficiency and positive confidence-bound safeguards.
+- Rankings remain shared research evidence and cannot promote candidates to execution.

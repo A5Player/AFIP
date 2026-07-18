@@ -1,0 +1,33 @@
+{
+  "schema_version": "research-leaderboard-policy.v1",
+  "execution_authority": "NONE",
+  "promotion_to_execution": "PROHIBITED",
+  "minimum_samples": 30,
+  "confidence_interval_level": 0.95,
+  "sample_sufficiency_target": 100,
+  "leaderboards": {
+    "tp_sl": [
+      "take_profit_points",
+      "stop_loss_points",
+      "time_exit_bars"
+    ],
+    "pattern": [
+      "pattern_family"
+    ],
+    "market_regime": [
+      "market_regime"
+    ],
+    "confidence": [
+      "confidence_bucket"
+    ],
+    "holding": [
+      "time_exit_bars"
+    ],
+    "pattern_regime": [
+      "pattern_family",
+      "market_regime"
+    ]
+  },
+  "ranking_is_research_only": true,
+  "profiles_share_research_dataset": true
+}

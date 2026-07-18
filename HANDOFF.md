@@ -822,3 +822,6 @@ Financial Data Lake Foundation added. Run `RUN_MILESTONE_S_PACK_5_7.ps1`, then f
 
 ## Milestone S Pack 5.8 Handoff
 Blind Forward Research Engine added as an execution-neutral research sidecar. Run `RUN_MILESTONE_S_PACK_5_8.ps1`, then the local quality check and full pytest suite. Candidate TP/SL/time-exit values are configuration-driven. Bars at or before entry are rejected, chronological order is mandatory, and same-bar TP/SL ambiguity resolves to SL First. Results are deterministic and append-only. Execution authority remains `NONE`; no MT5 or order path was added or changed. Next planned pack: Pack 5.9 Research Metrics & Leaderboard.
+
+## Milestone S Pack 5.9 Handoff
+Research Metrics & Leaderboard added. Run `RUN_MILESTONE_S_PACK_5_9.ps1`, then full pytest. Rankings are descriptive research evidence only; execution authority is `NONE` and promotion to execution is prohibited.
