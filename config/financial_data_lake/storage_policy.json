@@ -1,0 +1,26 @@
+{
+  "schema_version": "financial-data-lake-storage-policy.v1",
+  "root": "runtime/research/financial_data_lake",
+  "format": "JSONL",
+  "partition_order": [
+    "layer",
+    "domain",
+    "instrument",
+    "year",
+    "month",
+    "day"
+  ],
+  "layers": [
+    "raw",
+    "normalized",
+    "derived",
+    "decision_context",
+    "outcome"
+  ],
+  "raw_mutability": "APPEND_ONLY",
+  "duplicate_policy": "DETERMINISTIC_RECORD_ID_SKIP",
+  "manifest": "PER_PARTITION_APPEND_ONLY_JSONL",
+  "checksum": "SHA256_PER_RECORD_LINE",
+  "profile_storage_policy": "SHARED_CENTRAL_DATASET_NOT_PROFILE_OWNED",
+  "execution_mode": "NO_EXECUTION_SIDE_EFFECT"
+}

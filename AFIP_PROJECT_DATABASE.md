@@ -1,4 +1,3 @@
-
 ## Milestone J Pack 3 — Conflict Resolver
 - Deterministic evidence-conflict classification and resolution.
 - High unresolved conflict forces WAIT.
@@ -857,3 +856,11 @@ Status: IMPLEMENTED (Patch Only)
 - Added documentation for architecture, fields, scores, calculations, quality, traceability, research usage, and cross-market alignment.
 - Raw research data policy is immutable/append-only; derived recomputation creates new versions.
 - No execution mode, trading threshold, order routing, or broker behavior changed.
+
+
+## Milestone S Pack 5.7 — Financial Data Lake Foundation
+- Central profile-independent research dataset.
+- Append-only Raw layer and versioned downstream layers.
+- Deterministic IDs, UTC partitions, SHA-256 checksums and manifests.
+- Source catalog covers gold, USD, FX, rates, energy, volatility, indices, crypto, macro, positioning and news.
+- Execution remains unchanged and locked according to existing runtime policy.

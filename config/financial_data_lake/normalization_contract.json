@@ -1,0 +1,30 @@
+{
+  "schema_version": "financial-normalization-contract.v1",
+  "required_fields": [
+    "schema_version",
+    "record_id",
+    "layer",
+    "domain",
+    "instrument",
+    "source_id",
+    "observed_at_utc",
+    "ingested_at_utc",
+    "payload",
+    "provenance",
+    "quality",
+    "research_eligibility"
+  ],
+  "time_standard": "UTC_ISO_8601_WITH_OFFSET",
+  "numeric_policy": "NO_LOCALE_FORMATTING",
+  "missing_value_policy": "EXPLICIT_NULL_WITH_QUALITY_FLAG",
+  "units_policy": "UNIT_RECORDED_IN_PAYLOAD_OR_DICTIONARY",
+  "formula_version_required_for_layers": [
+    "derived",
+    "decision_context",
+    "outcome"
+  ],
+  "decision_trace_required_for_layers": [
+    "decision_context",
+    "outcome"
+  ]
+}

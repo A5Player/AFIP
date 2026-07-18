@@ -1,0 +1,148 @@
+{
+  "schema_version": "financial-data-source-catalog.v1",
+  "execution_effect": "NONE",
+  "domains": [
+    {
+      "domain": "gold",
+      "instruments": [
+        "GOLD#"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "usd",
+      "instruments": [
+        "DXY",
+        "USD_BASKET"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "fx",
+      "instruments": [
+        "EURUSD",
+        "USDJPY",
+        "GBPUSD",
+        "AUDUSD",
+        "USDCNH"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "rates",
+      "instruments": [
+        "US2Y",
+        "US5Y",
+        "US10Y",
+        "US30Y",
+        "REAL_YIELD_10Y"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "energy",
+      "instruments": [
+        "WTI",
+        "BRENT"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "volatility",
+      "instruments": [
+        "VIX"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "indices",
+      "instruments": [
+        "SPX",
+        "NDX",
+        "DJI"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "crypto",
+      "instruments": [
+        "BTCUSD"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "macro",
+      "instruments": [
+        "CPI",
+        "PCE",
+        "NFP",
+        "GDP",
+        "FOMC"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "positioning",
+      "instruments": [
+        "COT_GOLD",
+        "GOLD_ETF_FLOW"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    },
+    {
+      "domain": "news",
+      "instruments": [
+        "GOLD_MARKET_NEWS",
+        "CENTRAL_BANK_COMMUNICATION"
+      ],
+      "minimum_layers": [
+        "raw",
+        "normalized"
+      ]
+    }
+  ],
+  "source_requirements": [
+    "source_id",
+    "provider",
+    "retrieved_at_utc",
+    "observed_at_utc",
+    "license_or_usage_note",
+    "source_timezone"
+  ],
+  "policy": {
+    "raw_append_only": true,
+    "shared_across_profiles": true,
+    "credentials_forbidden_in_records": true,
+    "future_data_forbidden": true
+  }
+}
