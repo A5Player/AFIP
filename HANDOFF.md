@@ -12,3 +12,9 @@ Pack 6.2 adds the research-only Knowledge Certification Framework. Validated Pac
 ## Milestone S Pack 6.3 Handoff
 Pack 6.3 adds research-data portability and recovery. Import defaults to verification only and applied imports use isolated bundle-ID directories. Original datasets and bundles are never silently overwritten. No trading, broker, profile, TP, SL, lot, or risk authority was added.
 
+
+## Milestone S Pack 6.4 Handoff
+
+Pack 6.4 adds knowledge/data integrity monitoring. Apply documentation updates once, run focused and full
+regression tests, and keep runtime dashboard artifacts out of Git unless intentionally updated.
+

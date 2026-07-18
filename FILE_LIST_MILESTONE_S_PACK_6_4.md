@@ -1,0 +1,27 @@
+# Pack 6.4 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_6_4_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_6_4_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_6_4_APPEND.md`
+- `README_MILESTONE_S_PACK_6_4.md`
+- `README_MILESTONE_S_PACK_6_4_TH.md`
+- `RUN_MILESTONE_S_PACK_6_4.bat`
+- `RUN_MILESTONE_S_PACK_6_4.ps1`
+- `VALIDATION_MILESTONE_S_PACK_6_4.txt`
+- `afip/knowledge_integrity/__init__.py`
+- `afip/knowledge_integrity/runtime.py`
+- `config/knowledge_integrity/integrity_policy.json`
+- `data/governance/integrity/audits/.gitkeep`
+- `data/governance/integrity/dataset_info.json`
+- `data/governance/integrity/incidents/.gitkeep`
+- `data/governance/integrity/manifests/.gitkeep`
+- `data/governance/integrity/quarantine/.gitkeep`
+- `data/governance/integrity/reports/.gitkeep`
+- `docs/data_dictionary/AFIP_KNOWLEDGE_INTEGRITY_DATA_DICTIONARY.md`
+- `docs/research/AFIP_KNOWLEDGE_INTEGRITY_FRAMEWORK.md`
+- `docs/research/AFIP_KNOWLEDGE_INTEGRITY_MIGRATION_GUIDE.md`
+- `docs/research/AFIP_KNOWLEDGE_INTEGRITY_RECOVERY_RUNBOOK.md`
+- `docs/research/AFIP_KNOWLEDGE_INTEGRITY_RESEARCH_GUIDE.md`
+- `docs/research/AFIP_KNOWLEDGE_INTEGRITY_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_KNOWLEDGE_INTEGRITY_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_6_4.py`
