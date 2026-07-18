@@ -187,7 +187,10 @@ class ResearchCandidateFactory:
 class AppendOnlyResearchDataset:
     """Write chain-verified JSONL datasets without mutation or replacement."""
 
-    DATASET_NAMES = ("snapshots", "candidates", "decisions", "timeline", "run_summaries")
+    DATASET_NAMES = (
+        "snapshots", "candidates", "decisions", "timeline", "run_summaries",
+        "position_lifecycles", "exit_alternatives", "position_outcomes", "exit_quality",
+    )
 
     def __init__(self, root: str | Path) -> None:
         self.root = Path(root)
