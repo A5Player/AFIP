@@ -20,7 +20,7 @@ from typing import Any, Callable, Mapping, Protocol
 
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime, ProfileOperationalConfig
 from afip.capital_growth_engine import CapitalGrowthEngine
-from afip.position_policy import confidence_maximum_units
+from afip.position_policy import confidence_maximum_units, requested_units_within_confidence_ceiling
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -145,6 +145,10 @@ class DemoGatewayReport:
     decision_action: str = "WAIT"
     decision_confidence: float = 0.0
     allocated_units: int = 0
+    requested_units: int = 0
+    confidence_maximum_units: int = 0
+    unit_selection_source: str = "UNKNOWN"
+    unit_selection_reason: str = ""
     allocated_orders: int = 0
     allocated_lots: tuple[float, ...] = ()
     total_allocated_lot: float = 0.0
@@ -447,13 +451,25 @@ class DemoExecutionGateway:
             current_orders = len(afip_positions)
             account_balance = float(self._value(account, "balance", 0.0) or 0.0)
             growth = self._capital_growth_decision(account_balance, current_orders)
-            confidence_unit_cap = confidence_maximum_units(confidence).maximum_units
-            allocation_lots = tuple(growth.available_lots[:confidence_unit_cap])
+            order_unit_allocation = order.get("unit_allocation", {})
+            unit_request_context = {
+                "requested_units": order_unit_allocation.get(
+                    "requested_units",
+                    order_unit_allocation.get("approved_units", decision.get("requested_units")),
+                )
+            }
+            unit_selection = requested_units_within_confidence_ceiling(unit_request_context, confidence)
+            requested_units = unit_selection.approved_units
+            allocation_lots = tuple(growth.available_lots[:requested_units])
             units = len(allocation_lots)
             maximum_orders = 0 if self.policy.allocation_mode == "RESEARCH_FIXED_001" else self.policy.maximum_concurrent_orders
             remaining_order_capacity = -1 if maximum_orders == 0 else max(0, maximum_orders - current_orders)
             allocation_diagnostics = {
                 "allocated_units": units,
+                "requested_units": unit_selection.requested_units,
+                "confidence_maximum_units": unit_selection.confidence_maximum_units,
+                "unit_selection_source": unit_selection.source,
+                "unit_selection_reason": unit_selection.reason,
                 "allocated_orders": len(allocation_lots),
                 "allocated_lots": tuple(allocation_lots),
                 "total_allocated_lot": round(sum(allocation_lots), 2),

@@ -1,6 +1,6 @@
 from afip.position.position_sizer import PositionSizer
 from afip.protection.adaptive_rr_portfolio import AdaptiveRRProtectionPlanner
-from afip.position_policy import confidence_maximum_units
+from afip.position_policy import confidence_maximum_units, requested_units_within_confidence_ceiling
 
 
 class ProtectedSimulationOrderBuilder:
@@ -22,7 +22,8 @@ class ProtectedSimulationOrderBuilder:
         closes = snapshot.get("closes", [])
         entry_price = float(closes[-1]) if closes else float(snapshot.get("entry_price", 0.0) or 0.0)
         confidence = float(decision.get("confidence", 0.0) or 0.0)
-        unit_count = self._confidence_units(confidence)
+        unit_selection = requested_units_within_confidence_ceiling(decision, confidence)
+        unit_count = unit_selection.approved_units
 
         # Backward-compatible simulation allocation is intentionally narrow.
         # It is available only when ConfidenceCalibrator explicitly marks a
@@ -80,10 +81,20 @@ class ProtectedSimulationOrderBuilder:
             "decision": decision,
             "unit_allocation": {
                 "approved_units": unit_count,
+                "requested_units": (
+                    1 if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY"
+                    else unit_selection.requested_units
+                ),
+                "confidence_maximum_units": self._confidence_units(confidence),
                 "source": (
                     "LEGACY_SIMULATION_COMPATIBILITY"
                     if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY"
-                    else "CONFIDENCE_MAXIMUM_UNIT_POLICY"
+                    else unit_selection.source
+                ),
+                "reason": (
+                    "legacy_simulation_compatibility"
+                    if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY"
+                    else unit_selection.reason
                 ),
                 "confidence": confidence,
             },

@@ -121,7 +121,7 @@
           ]
         },
         {
-          "minimum_balance": 15000,
+          "minimum_balance": 16500,
           "lots": [
             0.1,
             0.1,
@@ -249,7 +249,7 @@
           ]
         },
         {
-          "minimum_balance": 16500,
+          "minimum_balance": 15000,
           "lots": [
             0.1,
             0.1,
@@ -9069,7 +9069,7 @@
     }
   ],
   "position_policy": {
-    "version": "AFIP_POSITION_POLICY_V1",
+    "version": "AFIP_POSITION_POLICY_V2",
     "confidence_unit_ceiling": [
       {
         "minimum_confidence": 0.0,
@@ -9093,6 +9093,12 @@
       }
     ],
     "final_allocation_rule": "MIN_CONFIDENCE_BALANCE_PROFILE_RISK_MARGIN_TRADING_COST_EXECUTION_CAPACITY",
-    "martingale_allowed": false
+    "martingale_allowed": false,
+    "ceiling_semantics": "MAXIMUM_CAPACITY_NOT_AUTOMATIC_TARGET",
+    "unit_selection_rule": "MIN_INTELLIGENCE_REQUEST_CONFIDENCE_CEILING_BALANCE_TIER_AVAILABLE_SLOTS_PROFILE_RISK_MARGIN_TRADING_COST_EXECUTION_CAPACITY",
+    "missing_intelligence_request_default_units": 1,
+    "automatic_fill_to_ceiling": false,
+    "balance_tier_semantics": "MAXIMUM_LOT_SIZE_PER_UNIT_AND_MAXIMUM_AVAILABLE_SLOTS",
+    "profile_semantics": "GROWTH_RATE_AND_RISK_CEILING"
   }
 }

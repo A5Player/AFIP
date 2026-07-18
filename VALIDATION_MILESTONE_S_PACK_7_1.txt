@@ -1,0 +1,18 @@
+AFIP Milestone S Pack 7.1 Validation
+
+Source repository: AFIP(32).zip
+
+Focused validation:
+28 passed
+
+Full regression:
+2076 passed in 6.82s
+
+Validated behavior:
+- Confidence is a maximum Unit ceiling, not an automatic target.
+- Missing Intelligence Unit request defaults to 1 eligible Unit.
+- Explicit Unit requests are reduced by the Confidence ceiling.
+- P1 0.10 threshold = 16,500; ceiling = 0.10 per Unit.
+- P2 0.10 threshold = 15,000; ceiling = 1.00 per Unit.
+- P3 approved progression retained; ceiling = 10.00 per Unit.
+- P4 fixed 0.01 per Unit with no lot growth.

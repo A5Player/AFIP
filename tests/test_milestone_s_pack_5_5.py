@@ -28,17 +28,17 @@ def test_confidence_boundaries_are_certified(confidence, units):
 def test_position_policy_is_machine_readable_and_martingale_is_disabled():
     payload, _ = profiles()
     policy = payload["position_policy"]
-    assert policy["version"] == "AFIP_POSITION_POLICY_V1"
+    assert policy["version"] == "AFIP_POSITION_POLICY_V2"
     assert policy["martingale_allowed"] is False
     assert "MIN_CONFIDENCE" in policy["final_allocation_rule"]
 
 
-def test_p1_reaches_permanent_010_ceiling_at_15000():
+def test_p1_reaches_permanent_010_ceiling_at_16500():
     _, by_id = profiles()
     p1 = by_id["P1"]
     tiers = tuple((x["minimum_balance"], tuple(x["lots"])) for x in p1["capital_tiers"])
-    below = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=14999.99, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
-    at_cap = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=15000, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
+    below = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=16499.99, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
+    at_cap = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=16500, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
     above = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=1_000_000, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
     assert below.target_lots == (0.09, 0.09, 0.09)
     assert at_cap.target_lots == (0.10, 0.10, 0.10)

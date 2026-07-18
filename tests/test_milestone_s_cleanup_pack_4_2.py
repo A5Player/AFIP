@@ -79,9 +79,10 @@ def test_spread_protection_stays_fail_closed():
     assert result["protected_order"]["status"] == "NO_ORDER"
 
 
-def test_98_plus_uses_normal_confidence_unit_policy():
+def test_confidence_ceiling_does_not_force_full_allocation():
     result = ConfidenceCalibrator().calibrate(_protected(), _modular(98.6), balance=1000)
     order = result["protected_order"]
     assert order["status"] == "SIMULATION_ORDER_READY"
-    assert order["unit_allocation"]["approved_units"] == 2
-    assert order["unit_allocation"]["source"] == "CONFIDENCE_MAXIMUM_UNIT_POLICY"
+    assert order["unit_allocation"]["approved_units"] == 1
+    assert order["unit_allocation"]["confidence_maximum_units"] == 2
+    assert order["unit_allocation"]["source"] == "CONSERVATIVE_DEFAULT_ONE_UNIT"

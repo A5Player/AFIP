@@ -39,6 +39,7 @@ def simulation(data_status="READY", action="BUY", confidence=100):
             "caution_spread_points": 25.0, "max_spread_points": 35.0,
         },
         "order": {"status": "SIMULATION_ORDER_READY", "action": action,
+                  "unit_allocation": {"requested_units": 3},
                   "protection": {"stop_loss_points": 3000, "take_profit_points": 500}},
     }
 
