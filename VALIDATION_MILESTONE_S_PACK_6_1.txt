@@ -1,0 +1,6 @@
+AFIP Milestone S Pack 6.1
+Focused tests: 13 passed
+Execution authority: NONE
+Promotion to execution: PROHIBITED
+Automatic trading policy change: PROHIBITED
+Full repository regression must be run after applying to C:\AFIP.

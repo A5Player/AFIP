@@ -1,0 +1,16 @@
+{
+  "schema_version": "knowledge-validation-policy.v1",
+  "execution_authority": "NONE",
+  "promotion_to_execution": "PROHIBITED",
+  "automatic_trading_policy_change": "PROHIBITED",
+  "minimum_independent_periods": 3,
+  "minimum_market_regimes": 2,
+  "minimum_total_samples": 200,
+  "minimum_positive_expectancy_ratio": 0.75,
+  "minimum_positive_ci_ratio": 0.67,
+  "minimum_average_stability": 70.0,
+  "minimum_validation_score": 75.0,
+  "human_approval_required": true,
+  "research_review_ready_does_not_mean_execution_approved": true,
+  "profiles_share_central_knowledge_base": true
+}
