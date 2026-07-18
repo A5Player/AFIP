@@ -1,0 +1,12 @@
+AFIP Milestone T Pack 3
+Historical Replay Runner & Research Dataset Builder
+
+Source baseline commit: 1aede17
+
+Assistant validation:
+- Focused test: 16 passed
+- Financial Naming Validation: PASS
+- Full pytest regression: 2131 passed
+- Production trading logic: unchanged
+- MT5 execution calls in Pack 3 module: none
+- Research state: EXPERIMENTAL
