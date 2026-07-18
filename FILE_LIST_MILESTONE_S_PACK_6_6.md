@@ -1,0 +1,26 @@
+# Pack 6.6 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_6_6_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_6_6_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_6_6_APPEND.md`
+- `README_MILESTONE_S_PACK_6_6.md`
+- `README_MILESTONE_S_PACK_6_6_TH.md`
+- `RUN_MILESTONE_S_PACK_6_6.bat`
+- `RUN_MILESTONE_S_PACK_6_6.ps1`
+- `VALIDATION_MILESTONE_S_PACK_6_6.txt`
+- `afip/data_quality/__init__.py`
+- `afip/data_quality/runtime.py`
+- `config/data_quality/quality_policy.json`
+- `data/governance/quality/archive/.gitkeep`
+- `data/governance/quality/assessments/.gitkeep`
+- `data/governance/quality/dataset_info.json`
+- `data/governance/quality/ledgers/.gitkeep`
+- `data/governance/quality/reports/.gitkeep`
+- `data/governance/quality/thresholds/.gitkeep`
+- `docs/data_dictionary/AFIP_DATA_QUALITY_DATA_DICTIONARY.md`
+- `docs/research/AFIP_DATA_QUALITY_FRAMEWORK.md`
+- `docs/research/AFIP_DATA_QUALITY_MIGRATION_GUIDE.md`
+- `docs/research/AFIP_DATA_QUALITY_RESEARCH_GUIDE.md`
+- `docs/research/AFIP_DATA_QUALITY_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_DATA_QUALITY_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_6_6.py`

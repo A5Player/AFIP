@@ -24,3 +24,9 @@ regression tests, and keep runtime dashboard artifacts out of Git unless intenti
 Pack 6.5 adds the central dataset catalog. Apply documentation updates once, run focused and full
 regression tests, and do not stage generated dashboard HTML unless intentionally changed.
 
+
+## Milestone S Pack 6.6 Handoff
+
+Pack 6.6 adds data quality scoring and research-readiness classification. Apply documentation updates,
+run focused and full regression tests, and keep generated dashboard HTML unstaged unless intentionally changed.
+

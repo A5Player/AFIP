@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "execution_authority": "NONE",
+  "automatic_strategy_change": "PROHIBITED",
+  "automatic_dataset_promotion": "PROHIBITED",
+  "human_review_required": true,
+  "weights": {
+    "completeness": 0.2,
+    "consistency": 0.15,
+    "validity": 0.15,
+    "freshness": 0.1,
+    "lineage": 0.1,
+    "documentation": 0.1,
+    "integrity": 0.2
+  }
+}

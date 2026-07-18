@@ -1,0 +1,28 @@
+{
+  "dataset_id": "afip-data-quality-assessments",
+  "name": "AFIP Data Quality Assessments",
+  "category": "DATA_GOVERNANCE",
+  "schema_version": "1.0.0",
+  "created_at": "2026-07-18T00:00:00+07:00",
+  "producer": "AFIP Milestone S Pack 6.6",
+  "owner": "AFIP",
+  "data_classification": "RESEARCH_GOVERNANCE",
+  "lifecycle_status": "ACTIVE",
+  "retention_policy": "KEEP_ALL_ASSESSMENTS",
+  "lineage_parents": [
+    "afip-central-data-catalog",
+    "afip-knowledge-integrity-audit"
+  ],
+  "guides": [
+    "docs/research/AFIP_DATA_QUALITY_USER_GUIDE.md",
+    "docs/research/AFIP_DATA_QUALITY_TECHNICAL_GUIDE.md",
+    "docs/data_dictionary/AFIP_DATA_QUALITY_DATA_DICTIONARY.md"
+  ],
+  "tags": [
+    "quality",
+    "readiness",
+    "research",
+    "governance"
+  ],
+  "execution_authority": "NONE"
+}
