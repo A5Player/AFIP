@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0.0",
+  "execution_authority": "NONE",
+  "promotion_to_execution": "PROHIBITED",
+  "automatic_strategy_change": "PROHIBITED",
+  "human_review_required": true,
+  "minimum_evidence_count": 3,
+  "minimum_independent_periods": 3,
+  "minimum_regime_coverage": 2,
+  "minimum_sample_size": 300,
+  "minimum_validation_score": 0.75,
+  "minimum_stability_score": 0.70,
+  "maximum_drift_score": 0.25
+}

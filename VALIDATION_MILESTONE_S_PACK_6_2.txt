@@ -1,0 +1,7 @@
+Milestone S Pack 6.2 validation targets:
+- Focused tests: 13
+- Financial naming validation
+- Simulation
+- MT5 data check
+- Full repository regression
+- Execution authority: NONE

@@ -1,16 +1,8 @@
 
-## Milestone S Pack 6.1 — Knowledge Validation & Promotion Pipeline
-- Cross-period and cross-regime validation of Pack 6.0 candidate knowledge.
-- Deterministic research promotion decision and evidence traceability.
-- Highest automatic state: RESEARCH_REVIEW_READY.
-- Execution authority and automatic trading-policy changes remain prohibited.
-
-
-## Milestone S Pack 6.2 â€” Knowledge Certification Framework
+## Milestone S Pack 6.2 — Knowledge Certification Framework
 
 - Added research-only certification governance with deterministic IDs.
 - Added central persistent data structure under `data/knowledge/certification/`.
 - Added append-only registry/lineage/version/report/archive layout.
 - Added schema metadata, data dictionary, migration guide, and user/technical/research guides.
 - `execution_authority = NONE`; promotion to execution and automatic strategy changes remain prohibited.
-

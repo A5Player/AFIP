@@ -1,0 +1,22 @@
+# File List — Milestone S Pack 6.2
+
+- afip/knowledge_certification/__init__.py
+- afip/knowledge_certification/runtime.py
+- config/knowledge_certification/certification_policy.json
+- data/knowledge/certification/dataset_info.json
+- data/knowledge/certification/{registry,lineage,versions,reports,archive}/.gitkeep
+- docs/research/AFIP_KNOWLEDGE_CERTIFICATION_FRAMEWORK.md
+- docs/research/AFIP_KNOWLEDGE_CERTIFICATION_USER_GUIDE.md
+- docs/research/AFIP_KNOWLEDGE_CERTIFICATION_TECHNICAL_GUIDE.md
+- docs/research/AFIP_KNOWLEDGE_CERTIFICATION_RESEARCH_GUIDE.md
+- docs/research/AFIP_KNOWLEDGE_CERTIFICATION_MIGRATION_GUIDE.md
+- docs/data_dictionary/AFIP_KNOWLEDGE_CERTIFICATION_DATA_DICTIONARY.md
+- tests/test_milestone_s_pack_6_2.py
+- README_MILESTONE_S_PACK_6_2.md
+- README_MILESTONE_S_PACK_6_2_TH.md
+- RUN_MILESTONE_S_PACK_6_2.ps1
+- RUN_MILESTONE_S_PACK_6_2.bat
+- VALIDATION_MILESTONE_S_PACK_6_2.txt
+- APPLY_MILESTONE_S_PACK_6_2_DOC_UPDATES.ps1
+- AFIP_PROJECT_DATABASE_PACK_6_2_APPEND.md
+- HANDOFF_PACK_6_2_APPEND.md

@@ -1,0 +1,15 @@
+{
+  "dataset_name": "AFIP Knowledge Certification Repository",
+  "schema_version": "1.0.0",
+  "created_by": "Milestone S Pack 6.2",
+  "storage_policy": "append_only_auditable_research_data",
+  "execution_authority": "NONE",
+  "directories": {
+    "registry": "certification decisions and current index",
+    "lineage": "parent-child knowledge history",
+    "versions": "immutable knowledge versions",
+    "reports": "human-readable and machine-readable reports",
+    "archive": "deprecated or rejected records; never deleted"
+  },
+  "migration_guide": "docs/research/AFIP_KNOWLEDGE_CERTIFICATION_MIGRATION_GUIDE.md"
+}
