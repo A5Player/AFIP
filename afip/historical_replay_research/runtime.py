@@ -190,6 +190,8 @@ class AppendOnlyResearchDataset:
     DATASET_NAMES = (
         "snapshots", "candidates", "decisions", "timeline", "run_summaries",
         "position_lifecycles", "exit_alternatives", "position_outcomes", "exit_quality",
+        "exit_evidence_observations", "exit_context_segments", "exit_evidence_summaries",
+        "exit_evidence_evaluations", "exit_policy_comparisons",
     )
 
     def __init__(self, root: str | Path) -> None:

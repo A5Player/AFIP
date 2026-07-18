@@ -1,0 +1,53 @@
+AFIP Milestone T Pack 5 Validation Summary
+
+Source baseline commit:
+807a9d07cc00493a22d468d8dee53a52a6bc34bb
+
+Focused Tests:
+19 passed
+
+Financial Naming:
+PASS
+
+Local Quality:
+PASS
+
+Simulation:
+PASS
+Execution: LOCKED_SIMULATION_ONLY
+
+MT5 Check in build environment:
+PASS using simulation fallback because MT5 package/terminal is unavailable in the build container.
+Run the supplied validation script on the user's Windows AFIP environment to confirm live MT5 data readiness.
+
+Full Regression:
+2168 passed
+
+Production Runtime:
+UNCHANGED
+
+Production Trading Logic:
+UNCHANGED
+
+MT5 Order Execution:
+NONE
+
+Research State:
+EXPERIMENTAL
+
+Production Usable:
+FALSE
+
+Mandatory Validation Commands:
+1. .\APPLY_MILESTONE_T_PACK_5_DOC_UPDATES.ps1
+2. .\RUN_MILESTONE_T_PACK_5.ps1
+3. python tools/validate_financial_naming.py
+4. python tools/afip_local_quality_check.py
+5. python -m pytest -q
+
+Mandatory Git Commands:
+git status
+git add .
+git commit -m "Milestone T Pack 5 exit experiment aggregation and evidence evaluation"
+git push origin main
+git rev-parse HEAD
