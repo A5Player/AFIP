@@ -1,0 +1,24 @@
+# Pack 6.7 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_6_7_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_6_7_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_6_7_APPEND.md`
+- `README_MILESTONE_S_PACK_6_7.md`
+- `README_MILESTONE_S_PACK_6_7_TH.md`
+- `RUN_MILESTONE_S_PACK_6_7.bat`
+- `RUN_MILESTONE_S_PACK_6_7.ps1`
+- `afip/archive_retention/__init__.py`
+- `afip/archive_retention/runtime.py`
+- `config/archive_retention/retention_policy.json`
+- `data/governance/retention/archives/.gitkeep`
+- `data/governance/retention/dataset_info.json`
+- `data/governance/retention/decisions/.gitkeep`
+- `data/governance/retention/ledgers/.gitkeep`
+- `data/governance/retention/legal_hold/.gitkeep`
+- `data/governance/retention/policies/.gitkeep`
+- `docs/data_dictionary/AFIP_ARCHIVE_RETENTION_DATA_DICTIONARY.md`
+- `docs/research/AFIP_ARCHIVE_RETENTION_FRAMEWORK.md`
+- `docs/research/AFIP_ARCHIVE_RETENTION_RECOVERY_GUIDE.md`
+- `docs/research/AFIP_ARCHIVE_RETENTION_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_ARCHIVE_RETENTION_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_6_7.py`

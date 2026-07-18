@@ -1,0 +1,8 @@
+{
+  "dataset_id": "afip-archive-retention",
+  "schema_version": "1.0.0",
+  "created_at": "2026-07-19T00:00:00+07:00",
+  "producer": "AFIP Milestone S Pack 6.7",
+  "data_classification": "RESEARCH_GOVERNANCE",
+  "execution_authority": "NONE"
+}

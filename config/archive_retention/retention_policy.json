@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0.0",
+  "execution_authority": "NONE",
+  "automatic_deletion": "PROHIBITED",
+  "archive_after_days": 365,
+  "human_review_required": true
+}

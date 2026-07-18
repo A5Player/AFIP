@@ -41,3 +41,23 @@ documentation, and integrity. Added readiness levels, research-use restrictions,
 ledgers, guides, data dictionary, and central storage under `data/governance/quality/`.
 Execution authority remains NONE and automatic dataset promotion is prohibited.
 
+
+## Milestone S Pack 6.7 - Long-Term Archive & Retention Policy
+
+Added recommendation-only retention governance, legal hold, archive tiers, ledgers, and recovery guidance.
+
+
+## Milestone S Pack 6.8 - Research Reproduction & Experiment Replay
+
+Added deterministic experiment specifications, replay fingerprints, missing-dataset blocking, and offline-only manifests.
+
+
+## Milestone S Pack 6.9 - Dataset Usage Ledger & Evidence Traceability
+
+Added append-only usage events, research readiness enforcement, evidence references, and experiment linkage.
+
+
+## Milestone S Pack 7.0 - Data Foundation Integration & Final Certification
+
+Integrated all Data Foundation governance layers and added deterministic final research-foundation certification.
+

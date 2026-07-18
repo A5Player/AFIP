@@ -1,0 +1,24 @@
+# Pack 6.8 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_6_8_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_6_8_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_6_8_APPEND.md`
+- `README_MILESTONE_S_PACK_6_8.md`
+- `README_MILESTONE_S_PACK_6_8_TH.md`
+- `RUN_MILESTONE_S_PACK_6_8.bat`
+- `RUN_MILESTONE_S_PACK_6_8.ps1`
+- `afip/experiment_replay/__init__.py`
+- `afip/experiment_replay/runtime.py`
+- `config/experiment_replay/replay_policy.json`
+- `data/research/replay/archive/.gitkeep`
+- `data/research/replay/comparisons/.gitkeep`
+- `data/research/replay/dataset_info.json`
+- `data/research/replay/manifests/.gitkeep`
+- `data/research/replay/results/.gitkeep`
+- `data/research/replay/specs/.gitkeep`
+- `docs/data_dictionary/AFIP_EXPERIMENT_REPLAY_DATA_DICTIONARY.md`
+- `docs/research/AFIP_EXPERIMENT_REPLAY_FRAMEWORK.md`
+- `docs/research/AFIP_EXPERIMENT_REPLAY_RESEARCH_GUIDE.md`
+- `docs/research/AFIP_EXPERIMENT_REPLAY_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_EXPERIMENT_REPLAY_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_6_8.py`

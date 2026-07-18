@@ -1,0 +1,24 @@
+# Pack 6.9 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_6_9_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_6_9_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_6_9_APPEND.md`
+- `README_MILESTONE_S_PACK_6_9.md`
+- `README_MILESTONE_S_PACK_6_9_TH.md`
+- `RUN_MILESTONE_S_PACK_6_9.bat`
+- `RUN_MILESTONE_S_PACK_6_9.ps1`
+- `afip/dataset_usage/__init__.py`
+- `afip/dataset_usage/runtime.py`
+- `config/dataset_usage/usage_policy.json`
+- `data/governance/usage/archive/.gitkeep`
+- `data/governance/usage/dataset_info.json`
+- `data/governance/usage/events/.gitkeep`
+- `data/governance/usage/evidence/.gitkeep`
+- `data/governance/usage/reports/.gitkeep`
+- `data/governance/usage/violations/.gitkeep`
+- `docs/data_dictionary/AFIP_DATASET_USAGE_LEDGER_DATA_DICTIONARY.md`
+- `docs/research/AFIP_DATASET_USAGE_LEDGER_FRAMEWORK.md`
+- `docs/research/AFIP_DATASET_USAGE_LEDGER_RESEARCH_GUIDE.md`
+- `docs/research/AFIP_DATASET_USAGE_LEDGER_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_DATASET_USAGE_LEDGER_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_6_9.py`

@@ -30,3 +30,23 @@ regression tests, and do not stage generated dashboard HTML unless intentionally
 Pack 6.6 adds data quality scoring and research-readiness classification. Apply documentation updates,
 run focused and full regression tests, and keep generated dashboard HTML unstaged unless intentionally changed.
 
+
+## Milestone S Pack 6.7 Handoff
+
+Run focused/full tests. No automatic deletion is permitted.
+
+
+## Milestone S Pack 6.8 Handoff
+
+Replay is offline research only and cannot execute trades.
+
+
+## Milestone S Pack 6.9 Handoff
+
+Record dataset usage before research consumption; no execution authority.
+
+
+## Milestone S Pack 7.0 Handoff
+
+All eight checks must pass. Certification remains research-only and cannot alter execution.
+

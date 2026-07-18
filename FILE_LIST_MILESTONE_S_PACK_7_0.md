@@ -1,0 +1,24 @@
+# Pack 7.0 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_7_0_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_7_0_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_7_0_APPEND.md`
+- `README_MILESTONE_S_PACK_7_0.md`
+- `README_MILESTONE_S_PACK_7_0_TH.md`
+- `RUN_MILESTONE_S_PACK_7_0.bat`
+- `RUN_MILESTONE_S_PACK_7_0.ps1`
+- `afip/data_foundation/__init__.py`
+- `afip/data_foundation/runtime.py`
+- `config/data_foundation/foundation_policy.json`
+- `data/governance/foundation/archive/.gitkeep`
+- `data/governance/foundation/certifications/.gitkeep`
+- `data/governance/foundation/checks/.gitkeep`
+- `data/governance/foundation/dataset_info.json`
+- `data/governance/foundation/evidence/.gitkeep`
+- `data/governance/foundation/reports/.gitkeep`
+- `docs/data_dictionary/AFIP_DATA_FOUNDATION_DATA_DICTIONARY.md`
+- `docs/research/AFIP_DATA_FOUNDATION_INTEGRATION.md`
+- `docs/research/AFIP_DATA_FOUNDATION_OPERATIONS_GUIDE.md`
+- `docs/research/AFIP_DATA_FOUNDATION_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_DATA_FOUNDATION_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_7_0.py`

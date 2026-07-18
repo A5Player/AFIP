@@ -1,0 +1,5 @@
+AFIP Milestone S Pack 6.9
+Focused test result in isolated build environment:
+13 passed
+Execution authority: NONE
+Full repository regression must be run in the target AFIP repository.

@@ -1,0 +1,6 @@
+{
+  "schema_version": "1.0.0",
+  "execution_authority": "NONE",
+  "append_only": true,
+  "human_review_required": true
+}
