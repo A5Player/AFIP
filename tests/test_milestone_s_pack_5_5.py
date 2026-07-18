@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from afip.capital_growth_engine import CapitalGrowthEngine
+from afip.demo_execution_gateway.runtime import DemoProfilePolicy
 from afip.position_policy import confidence_maximum_units
 
 CONFIG = Path(__file__).resolve().parents[1] / "config" / "four_profile_demo.json"
@@ -11,7 +12,16 @@ CONFIG = Path(__file__).resolve().parents[1] / "config" / "four_profile_demo.jso
 
 def profiles():
     payload = json.loads(CONFIG.read_text(encoding="utf-8"))
-    return payload, {item["profile_id"]: item for item in payload["profiles"]}
+    expanded = {}
+    for raw in payload["profiles"]:
+        item = dict(raw)
+        policy = DemoProfilePolicy.from_mapping(raw)
+        item["capital_tiers"] = [
+            {"minimum_balance": level, "lots": list(lots)}
+            for level, lots in policy.capital_tiers
+        ]
+        expanded[item["profile_id"]] = item
+    return payload, expanded
 
 
 @pytest.mark.parametrize(
@@ -28,17 +38,17 @@ def test_confidence_boundaries_are_certified(confidence, units):
 def test_position_policy_is_machine_readable_and_martingale_is_disabled():
     payload, _ = profiles()
     policy = payload["position_policy"]
-    assert policy["version"] == "AFIP_POSITION_POLICY_V2"
+    assert policy["version"] == "AFIP_POSITION_POLICY_V2_1"
     assert policy["martingale_allowed"] is False
     assert "MIN_CONFIDENCE" in policy["final_allocation_rule"]
 
 
-def test_p1_reaches_permanent_010_ceiling_at_16500():
+def test_p1_reaches_permanent_010_ceiling_at_19800():
     _, by_id = profiles()
     p1 = by_id["P1"]
     tiers = tuple((x["minimum_balance"], tuple(x["lots"])) for x in p1["capital_tiers"])
-    below = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=16499.99, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
-    at_cap = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=16500, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
+    below = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=19799.99, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
+    at_cap = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=19800, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
     above = CapitalGrowthEngine.evaluate(mode=p1["allocation_mode"], balance=1_000_000, current_orders=0, capital_tiers=tiers, maximum_orders=p1["maximum_concurrent_orders"])
     assert below.target_lots == (0.09, 0.09, 0.09)
     assert at_cap.target_lots == (0.10, 0.10, 0.10)
@@ -56,16 +66,16 @@ def test_p2_tiers_are_ordered_equal_unit_lots_and_stop_at_100():
     assert p2["maximum_lot_per_order"] == 1.0
 
 
-def test_p3_after_002_increases_001_for_each_450_balance_and_caps_at_1000():
+def test_p3_after_002_increases_001_for_each_600_balance_and_caps_at_1000():
     _, by_id = profiles()
     p3 = by_id["P3"]
     tiers = p3["capital_tiers"]
     growth = tiers[3:]
     for previous, current in zip(growth, growth[1:]):
-        assert current["minimum_balance"] - previous["minimum_balance"] == 450
+        assert current["minimum_balance"] - previous["minimum_balance"] == 600
         assert round(current["lots"][0] - previous["lots"][0], 2) == 0.01
         assert current["lots"] == [current["lots"][0]] * 3
-    assert tiers[-1]["minimum_balance"] == 450000
+    assert tiers[-1]["minimum_balance"] == 600000
     assert tiers[-1]["lots"] == [10.0, 10.0, 10.0]
     assert p3["maximum_lot_per_order"] == 10.0
 

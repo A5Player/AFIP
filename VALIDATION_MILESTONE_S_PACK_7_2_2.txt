@@ -1,0 +1,11 @@
+AFIP Milestone S Pack 7.2.2
+P2 Position Limit Validation
+
+Expected results:
+- P2 maximum_lot_per_order = 1.0
+- P2 final tier = minimum_balance 1545300 with lots [1.0, 1.0, 1.0]
+- Every P2 tier has lot values less than or equal to 1.0
+- P3 maximum_lot_per_order remains 10.0
+- Focused position policy tests pass
+- Full regression tests pass
+- AFIP Local Quality Check passes

@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from afip.capital_growth_engine import CapitalGrowthEngine
+from afip.demo_execution_gateway.runtime import DemoProfilePolicy
 from afip.position_policy import (
     confidence_maximum_units,
     requested_units_within_confidence_ceiling,
@@ -12,7 +13,16 @@ CONFIG = Path(__file__).resolve().parents[1] / "config" / "four_profile_demo.jso
 
 def _profiles():
     payload = json.loads(CONFIG.read_text(encoding="utf-8"))
-    return payload, {item["profile_id"]: item for item in payload["profiles"]}
+    expanded = {}
+    for raw in payload["profiles"]:
+        item = dict(raw)
+        policy = DemoProfilePolicy.from_mapping(raw)
+        item["capital_tiers"] = [
+            {"minimum_balance": level, "lots": list(lots)}
+            for level, lots in policy.capital_tiers
+        ]
+        expanded[item["profile_id"]] = item
+    return payload, expanded
 
 
 def _tier_decision(profile, balance, current_orders=0):
@@ -67,23 +77,23 @@ def test_p1_exact_tiers_and_per_order_ceiling():
     _, profiles = _profiles()
     p1 = profiles["P1"]
     expected = {
-        0: (0.01,), 100: (0.01, 0.01), 300: (0.01, 0.01, 0.01),
-        900: (0.02, 0.02, 0.02), 1800: (0.03, 0.03, 0.03),
-        3000: (0.04, 0.04, 0.04), 4500: (0.05, 0.05, 0.05),
-        6300: (0.06, 0.06, 0.06), 8400: (0.07, 0.07, 0.07),
-        10800: (0.08, 0.08, 0.08), 13500: (0.09, 0.09, 0.09),
-        16500: (0.10, 0.10, 0.10),
+        0: (0.01,), 300: (0.01, 0.01), 900: (0.01, 0.01, 0.01),
+        1800: (0.02, 0.02, 0.02), 3000: (0.03, 0.03, 0.03),
+        4500: (0.04, 0.04, 0.04), 6300: (0.05, 0.05, 0.05),
+        8400: (0.06, 0.06, 0.06), 10800: (0.07, 0.07, 0.07),
+        13500: (0.08, 0.08, 0.08), 16500: (0.09, 0.09, 0.09),
+        19800: (0.10, 0.10, 0.10),
     }
     assert {x["minimum_balance"]: tuple(x["lots"]) for x in p1["capital_tiers"]} == expected
     assert p1["maximum_lot_per_order"] == 0.10
     assert _tier_decision(p1, 1_000_000).target_lots == (0.10, 0.10, 0.10)
 
 
-def test_p2_010_starts_at_15000_and_caps_at_100():
+def test_p2_010_starts_at_19800_and_caps_at_100():
     _, profiles = _profiles()
     p2 = profiles["P2"]
     by_lot = {round(x["lots"][0], 2): x["minimum_balance"] for x in p2["capital_tiers"]}
-    assert by_lot[0.10] == 15000
+    assert by_lot[0.10] == 19800
     assert p2["capital_tiers"][-1]["lots"] == [1.0, 1.0, 1.0]
     assert p2["maximum_lot_per_order"] == 1.0
 
@@ -91,18 +101,15 @@ def test_p2_010_starts_at_15000_and_caps_at_100():
 def test_p3_exact_early_growth_and_caps_at_1000():
     _, profiles = _profiles()
     p3 = profiles["P3"]
-    early = [(x["minimum_balance"], x["lots"]) for x in p3["capital_tiers"][:12]]
+    early = [(x["minimum_balance"], x["lots"]) for x in p3["capital_tiers"][:8]]
     assert early == [
-        (0, [0.01]), (100, [0.01, 0.01]), (300, [0.01, 0.01, 0.01]),
-        (900, [0.02, 0.02, 0.02]), (1350, [0.03, 0.03, 0.03]),
-        (1800, [0.04, 0.04, 0.04]), (2250, [0.05, 0.05, 0.05]),
-        (2700, [0.06, 0.06, 0.06]), (3150, [0.07, 0.07, 0.07]),
-        (3600, [0.08, 0.08, 0.08]), (4050, [0.09, 0.09, 0.09]),
-        (4500, [0.10, 0.10, 0.10]),
+        (0, [0.01]), (200, [0.01, 0.01]), (450, [0.01, 0.01, 0.01]),
+        (1200, [0.02, 0.02, 0.02]), (1800, [0.03, 0.03, 0.03]),
+        (2400, [0.04, 0.04, 0.04]), (3000, [0.05, 0.05, 0.05]),
+        (3600, [0.06, 0.06, 0.06]),
     ]
     assert p3["capital_tiers"][-1]["lots"] == [10.0, 10.0, 10.0]
     assert p3["maximum_lot_per_order"] == 10.0
-
 
 def test_p4_remains_fixed_001_without_growth_or_total_unit_ceiling():
     payload, profiles = _profiles()

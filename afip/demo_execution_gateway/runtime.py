@@ -21,6 +21,7 @@ from typing import Any, Callable, Mapping, Protocol
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime, ProfileOperationalConfig
 from afip.capital_growth_engine import CapitalGrowthEngine
 from afip.position_policy import confidence_maximum_units, requested_units_within_confidence_ceiling
+from afip.position_capacity_formula import capital_tiers_from_profile
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -68,10 +69,7 @@ class DemoProfilePolicy:
             maximum_units=int(raw.get("maximum_units", 1)),
             minimum_confidence=float(raw.get("minimum_confidence", 98.0)),
             allocation_mode=str(raw.get("allocation_mode", "LEGACY_FIXED_UNIT")).strip().upper(),
-            capital_tiers=tuple(
-                (float(item["minimum_balance"]), tuple(float(v) for v in item["lots"]))
-                for item in raw.get("capital_tiers", ())
-            ),
+            capital_tiers=capital_tiers_from_profile(raw),
             maximum_concurrent_orders=int(raw.get("maximum_concurrent_orders", raw.get("maximum_units", 4))),
             maximum_lot_per_order=float(raw.get("maximum_lot_per_order", 0.03)),
             minimum_seconds_between_entries=int(raw.get("minimum_seconds_between_entries", 900)),

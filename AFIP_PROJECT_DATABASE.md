@@ -61,3 +61,11 @@ Added append-only usage events, research readiness enforcement, evidence referen
 
 Integrated all Data Foundation governance layers and added deterministic final research-foundation certification.
 
+
+## Milestone S Pack 7.3 — Deterministic Position Capacity Formula
+
+- Replaced P1-P3 expanded capital-tier configuration arrays with compact deterministic formulas.
+- Preserved `CAPITAL_TIER_TABLE` runtime semantics by expanding formulas during profile policy loading.
+- Preserved support for explicit legacy capital-tier arrays.
+- Added full-curve equivalence regression coverage for P1, P2, and P3.
+- No trading decision, protection, execution, TP, SL, or spread policy changed.

@@ -1,0 +1,14 @@
+# Milestone S Pack 7.2 File List
+- config/four_profile_demo.json
+- tests/test_milestone_s_pack_7_1_position_ceiling_semantics.py
+- tests/test_milestone_s_pack_7_2_position_capacity_policy.py
+- docs/research/AFIP_POSITION_CAPACITY_AND_SCORING_DATA_GUIDE_V2_1.md
+- README_MILESTONE_S_PACK_7_2.md
+- README_MILESTONE_S_PACK_7_2_TH.md
+- RUN_MILESTONE_S_PACK_7_2.ps1
+- RUN_MILESTONE_S_PACK_7_2.bat
+- AFIP_PROJECT_DATABASE_PACK_7_2_APPEND.md
+- HANDOFF_PACK_7_2_APPEND.md
+- FILE_LIST_MILESTONE_S_PACK_7_2.md
+- VALIDATION_MILESTONE_S_PACK_7_2.txt
+- APPLY_MILESTONE_S_PACK_7_2_DOC_UPDATES.ps1

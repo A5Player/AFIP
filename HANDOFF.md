@@ -50,3 +50,7 @@ Record dataset usage before research consumption; no execution authority.
 
 All eight checks must pass. Certification remains research-only and cannot alter execution.
 
+
+## Latest verified development: Milestone S Pack 7.3
+
+Position-capacity configuration for P1-P3 is now stored as deterministic formulas and expanded into the legacy in-memory tier table at policy load time. Runtime allocation mode and Capital Growth Engine behavior remain unchanged. Legacy explicit tables remain supported. Validate with `RUN_MILESTONE_S_PACK_7_3.ps1`, full pytest, and AFIP local quality check before commit.

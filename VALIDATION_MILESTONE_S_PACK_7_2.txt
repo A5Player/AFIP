@@ -1,0 +1,15 @@
+AFIP Milestone S Pack 7.2 Validation
+
+Focused validation:
+13 passed
+
+Full regression:
+2081 passed in 6.70s
+
+Validated areas:
+- Confidence remains a maximum-unit ceiling.
+- P1 balance capacity begins 1 slot below 300, 2 slots at 300, 3 slots at 900, and caps at 0.10 per unit at 19,800.
+- P2 follows the same staircase through 0.10 at 19,800 and continues to a 1.00 per-unit ceiling.
+- P3 begins 1 slot below 200, 2 slots at 200, 3 slots at 450, then grows by 0.01 per 600 balance from 0.02 at 1,200 to 10.00 at 600,000.
+- P4 remains fixed at 0.01 for research.
+- Data origin, scoring, usage, traceability, and future-version guide is present and referenced by configuration.

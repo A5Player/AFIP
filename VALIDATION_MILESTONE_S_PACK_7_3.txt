@@ -1,0 +1,15 @@
+AFIP Milestone S Pack 7.3 Validation
+
+Focused regression: 20 passed
+Full regression: 2088 passed
+Financial Naming Validation: PASS
+AFIP Local Quality Summary: PASS
+
+Environment note:
+The package verification environment used simulation fallback because MetaTrader 5 is not installed in the package workspace. The user's VPS must run the supplied local quality command to verify the connected MT5 environment.
+
+Position-capacity equivalence:
+P1: 12 tiers; final 19,800 -> 0.10 x 3
+P2: 102 tiers; final 1,545,300 -> 1.00 x 3
+P3: 1,002 tiers; final 600,000 -> 10.00 x 3
+P4: RESEARCH_FIXED_001 unchanged
