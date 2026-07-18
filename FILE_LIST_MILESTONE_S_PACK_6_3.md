@@ -1,0 +1,27 @@
+# Milestone S Pack 6.3 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_6_3_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_6_3_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_6_3_APPEND.md`
+- `README_MILESTONE_S_PACK_6_3.md`
+- `README_MILESTONE_S_PACK_6_3_TH.md`
+- `RUN_MILESTONE_S_PACK_6_3.bat`
+- `RUN_MILESTONE_S_PACK_6_3.ps1`
+- `VALIDATION_MILESTONE_S_PACK_6_3.txt`
+- `afip/knowledge_portability/__init__.py`
+- `afip/knowledge_portability/runtime.py`
+- `config/knowledge_portability/portability_policy.json`
+- `data/knowledge/portability/dataset_info.json`
+- `data/knowledge/portability/exports/.gitkeep`
+- `data/knowledge/portability/imports/.gitkeep`
+- `data/knowledge/portability/manifests/.gitkeep`
+- `data/knowledge/portability/quarantine/.gitkeep`
+- `docs/data_dictionary/AFIP_KNOWLEDGE_PORTABILITY_DATA_DICTIONARY.md`
+- `docs/research/AFIP_KNOWLEDGE_PORTABILITY_FRAMEWORK.md`
+- `docs/research/AFIP_KNOWLEDGE_PORTABILITY_MIGRATION_GUIDE.md`
+- `docs/research/AFIP_KNOWLEDGE_PORTABILITY_RECOVERY_RUNBOOK.md`
+- `docs/research/AFIP_KNOWLEDGE_PORTABILITY_RESEARCH_GUIDE.md`
+- `docs/research/AFIP_KNOWLEDGE_PORTABILITY_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_KNOWLEDGE_PORTABILITY_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_6_3.py`
+- `FILE_LIST_MILESTONE_S_PACK_6_3.md`

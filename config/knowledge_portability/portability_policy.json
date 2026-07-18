@@ -1,0 +1,14 @@
+{
+  "schema_version": "afip.knowledge.portability.policy.v1",
+  "execution_authority": "NONE",
+  "promotion_to_execution": "PROHIBITED",
+  "allow_empty_dataset": false,
+  "reject_unmanifested_files": false,
+  "import_mode_default": "VERIFY_ONLY",
+  "overwrite_existing_data": false,
+  "hash_algorithm": "SHA-256",
+  "excluded_names": [
+    ".DS_Store",
+    "Thumbs.db"
+  ]
+}

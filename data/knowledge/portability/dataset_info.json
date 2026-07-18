@@ -1,0 +1,14 @@
+{
+  "dataset": "AFIP Knowledge Portability Registry",
+  "schema_version": "afip.knowledge.portability.v1",
+  "pack": "Milestone S Pack 6.3",
+  "purpose": "Store manifests, export references, isolated imports, and quarantine evidence for durable knowledge reuse.",
+  "directories": {
+    "manifests": "signed-content manifests and audit records",
+    "exports": "portable bundles generated locally",
+    "imports": "verified isolated imports",
+    "quarantine": "rejected or damaged bundle evidence"
+  },
+  "execution_authority": "NONE",
+  "retention": "append-only audit records; never silently overwrite source datasets"
+}

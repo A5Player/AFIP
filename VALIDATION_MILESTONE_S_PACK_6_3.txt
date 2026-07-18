@@ -1,0 +1,8 @@
+AFIP Milestone S Pack 6.3 validation scope
+- Focused tests
+- Deterministic manifest identity
+- SHA-256 integrity detection
+- Safe portable bundle export/import
+- Path traversal protection
+- No broker/order calls
+- Execution authority remains NONE
