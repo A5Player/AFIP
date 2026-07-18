@@ -797,3 +797,18 @@ Runtime Research Data Wiring is implemented as a research-only bridge from exist
 
 ## Milestone S Pack 5.4
 Research Aggregator and Live Dashboard Projection completed. The permanent dashboard research section now reads Trade Case lifecycle, dataset health, checkpoint backlog, and Top 100 pattern statistics without influencing trading.
+
+## Milestone S Pack 5.4.1 — Four-Profile Enablement Recovery
+Root cause: the repository configuration directly contained `enabled=false` for P2 and P3. The loader and Profile Manager behaved correctly by stopping those profiles.
+
+Patch behavior:
+- `config/four_profile_demo.json` now enables P1, P2, P3, and P4.
+- No configuration bypass or runtime override was introduced.
+- Execution remains `LOCKED_SIMULATION_ONLY`; direct/live execution remain disabled.
+- Trading-cost approval remains a separate downstream gate and was not weakened.
+
+After applying the patch, stop stale profile runners, run the Pack 5.4.1 validation, then re-run the MT5 multi-terminal check and demo status check for all four profiles.
+
+## Current continuation — Milestone S Pack 5.5
+
+Position Policy Certification patch prepared. Apply the patch, run `RUN_MILESTONE_S_PACK_5_5.ps1`, then run `python tools/afip_local_quality_check.py`. Do not enable live execution from this pack; execution remains locked by design.

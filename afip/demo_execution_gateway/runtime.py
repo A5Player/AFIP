@@ -20,6 +20,7 @@ from typing import Any, Callable, Mapping, Protocol
 
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime, ProfileOperationalConfig
 from afip.capital_growth_engine import CapitalGrowthEngine
+from afip.position_policy import confidence_maximum_units
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -409,6 +410,7 @@ class DemoExecutionGateway:
             risk = result.get("risk", {})
             cost = result.get("trading_cost_intelligence", {})
             protection = order.get("protection", {})
+            protection_portfolio = order.get("protection_portfolio", {})
 
             if "FALLBACK" in data_status or "FALLBACK" in data_source:
                 return self._report("WAITING", "simulation_fallback_data_blocked", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
@@ -445,8 +447,9 @@ class DemoExecutionGateway:
             current_orders = len(afip_positions)
             account_balance = float(self._value(account, "balance", 0.0) or 0.0)
             growth = self._capital_growth_decision(account_balance, current_orders)
-            allocation_lots = growth.available_lots
-            units = sum(max(1, int(round(lot / 0.01))) for lot in allocation_lots)
+            confidence_unit_cap = confidence_maximum_units(confidence).maximum_units
+            allocation_lots = tuple(growth.available_lots[:confidence_unit_cap])
+            units = len(allocation_lots)
             maximum_orders = 0 if self.policy.allocation_mode == "RESEARCH_FIXED_001" else self.policy.maximum_concurrent_orders
             remaining_order_capacity = -1 if maximum_orders == 0 else max(0, maximum_orders - current_orders)
             allocation_diagnostics = {
@@ -469,7 +472,10 @@ class DemoExecutionGateway:
             if not allocation_lots:
                 return self._report("WAITING", "profile_order_capacity_unavailable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)
 
-            fingerprint = hashlib.sha256(f"{action}|{confidence:.4f}|{sl_points:.2f}|{tp_points:.2f}".encode()).hexdigest()
+            rr_plans = tuple(protection_portfolio.get("unit_plans", ()))
+            if rr_plans and len(rr_plans) < len(allocation_lots):
+                return self._report("BLOCKED", "rr_protection_plan_count_insufficient", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)
+            fingerprint = hashlib.sha256(f"{self.profile.profile_id}|{action}|{confidence:.4f}|{sl_points:.2f}|{tp_points:.2f}".encode()).hexdigest()
             if not self._cooldown_passed(fingerprint):
                 return self._report("WAITING", "duplicate_signal_cooldown_active", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)
 
@@ -479,8 +485,14 @@ class DemoExecutionGateway:
             execution_diagnostics = {**cost_diagnostics, "point_size": point_size, "digits": digits}
 
             tickets: list[int] = []
-            for volume in allocation_lots:
-                request = self._request(mt5, action, sl_points, tp_points, volume)
+            for order_index, volume in enumerate(allocation_lots):
+                unit_plan = rr_plans[order_index] if rr_plans else protection
+                unit_sl_points = float(unit_plan.get("stop_loss_points", sl_points) or sl_points)
+                unit_tp_points = float(unit_plan.get("take_profit_points", tp_points) or tp_points)
+                if unit_sl_points <= 0 or unit_tp_points <= 0:
+                    return self._report("BLOCKED", "rr_unit_protection_missing", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), **execution_diagnostics)
+                request = self._request(mt5, action, unit_sl_points, unit_tp_points, volume)
+                request["comment"] = f"AFIP {self.profile.profile_id} {unit_plan.get('role', 'RR')}"
                 check = mt5.order_check(request)
                 if check is None or int(self._value(check, "retcode", -1)) != 0:
                     reason = self._value(check, "comment", mt5.last_error())

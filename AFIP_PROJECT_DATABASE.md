@@ -833,3 +833,18 @@ Status: IMPLEMENTED (Patch Only)
 - Added dataset health, lifecycle distribution, checkpoint backlog, and pattern statistics.
 - Extended the permanent Research Foundation dashboard projection.
 - Research only; no trading logic, threshold, risk, sizing, or execution changes.
+
+## Milestone S Pack 5.4.1 — Four-Profile Enablement Configuration Recovery
+- Corrected the repository source-of-truth regression in `config/four_profile_demo.json` that left P2 and P3 disabled while P1 and P4 remained enabled.
+- Restored `enabled=true` for P1, P2, P3, and P4 without bypassing the configuration loader, Profile Manager, supervisor, or Demo Execution Gateway.
+- Added regression coverage proving all four profiles are enabled when loaded from the repository configuration.
+- Confirmed execution remains `LOCKED_SIMULATION_ONLY`, with direct execution and live execution disabled for every profile.
+- No trading-cost, spread, risk, confidence, capital, position-sizing, cooldown, or broker safety policy was changed.
+
+## Milestone S Pack 5.5 — Position Policy Certification
+
+- Added a single deterministic confidence-to-unit policy shared by simulation and demo execution.
+- Certified boundaries: below 98.0 = 0; 98.0–98.49 = 1; 98.5–99.49 = 2; 99.5–100 = 3 maximum units.
+- Corrected P1 permanent 0.10 lot tier threshold to balance 15,000.
+- Added regression certification for P2 1.00 lot ceiling, P3 450-balance growth sequence to 10.00 lots, and P4 fixed 0.01 research mode.
+- Live execution remains locked and unchanged.
