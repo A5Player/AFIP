@@ -26,3 +26,10 @@ Added deterministic research-only integrity audits, append-only audit ledgers, m
 quarantine recommendations, recovery runbook, data dictionary, and central governance storage under
 `data/governance/integrity/`. Execution authority remains NONE and automatic repair is prohibited.
 
+
+## Milestone S Pack 6.5 - Central Data Catalog & Dataset Registry
+
+Added a profile-independent central catalog for datasets under `data/`, including stable IDs,
+schema versions, storage paths, owners, producers, classifications, lifecycle states, retention,
+lineage, guides, tags, discovery, validation, and deterministic snapshots. Execution authority remains NONE.
+

@@ -1,0 +1,26 @@
+# Pack 6.5 File List
+
+- `AFIP_PROJECT_DATABASE_PACK_6_5_APPEND.md`
+- `APPLY_MILESTONE_S_PACK_6_5_DOC_UPDATES.ps1`
+- `HANDOFF_PACK_6_5_APPEND.md`
+- `README_MILESTONE_S_PACK_6_5.md`
+- `README_MILESTONE_S_PACK_6_5_TH.md`
+- `RUN_MILESTONE_S_PACK_6_5.bat`
+- `RUN_MILESTONE_S_PACK_6_5.ps1`
+- `VALIDATION_MILESTONE_S_PACK_6_5.txt`
+- `afip/data_catalog/__init__.py`
+- `afip/data_catalog/runtime.py`
+- `config/data_catalog/catalog_policy.json`
+- `data/governance/catalog/archive/.gitkeep`
+- `data/governance/catalog/dataset_info.json`
+- `data/governance/catalog/lineage/.gitkeep`
+- `data/governance/catalog/registry/.gitkeep`
+- `data/governance/catalog/reports/.gitkeep`
+- `data/governance/catalog/snapshots/.gitkeep`
+- `docs/data_dictionary/AFIP_CENTRAL_DATA_CATALOG_DATA_DICTIONARY.md`
+- `docs/research/AFIP_CENTRAL_DATA_CATALOG_FRAMEWORK.md`
+- `docs/research/AFIP_CENTRAL_DATA_CATALOG_MIGRATION_GUIDE.md`
+- `docs/research/AFIP_CENTRAL_DATA_CATALOG_RESEARCH_GUIDE.md`
+- `docs/research/AFIP_CENTRAL_DATA_CATALOG_TECHNICAL_GUIDE.md`
+- `docs/research/AFIP_CENTRAL_DATA_CATALOG_USER_GUIDE.md`
+- `tests/test_milestone_s_pack_6_5.py`

@@ -18,3 +18,9 @@ Pack 6.3 adds research-data portability and recovery. Import defaults to verific
 Pack 6.4 adds knowledge/data integrity monitoring. Apply documentation updates once, run focused and full
 regression tests, and keep runtime dashboard artifacts out of Git unless intentionally updated.
 
+
+## Milestone S Pack 6.5 Handoff
+
+Pack 6.5 adds the central dataset catalog. Apply documentation updates once, run focused and full
+regression tests, and do not stage generated dashboard HTML unless intentionally changed.
+

@@ -1,0 +1,25 @@
+{
+  "dataset_id": "afip-central-data-catalog",
+  "name": "AFIP Central Data Catalog",
+  "category": "DATA_GOVERNANCE",
+  "schema_version": "1.0.0",
+  "created_at": "2026-07-18T00:00:00+07:00",
+  "producer": "AFIP Milestone S Pack 6.5",
+  "owner": "AFIP",
+  "data_classification": "RESEARCH_GOVERNANCE",
+  "lifecycle_status": "ACTIVE",
+  "retention_policy": "KEEP_ALL_CATALOG_SNAPSHOTS",
+  "lineage_parents": [],
+  "guides": [
+    "docs/research/AFIP_CENTRAL_DATA_CATALOG_USER_GUIDE.md",
+    "docs/research/AFIP_CENTRAL_DATA_CATALOG_TECHNICAL_GUIDE.md",
+    "docs/data_dictionary/AFIP_CENTRAL_DATA_CATALOG_DATA_DICTIONARY.md"
+  ],
+  "tags": [
+    "catalog",
+    "registry",
+    "metadata",
+    "lineage"
+  ],
+  "execution_authority": "NONE"
+}
