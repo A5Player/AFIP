@@ -1,0 +1,20 @@
+{
+  "contract_version": "AFIP-RESEARCH-DATA-1.0",
+  "directories": {
+    "events": "runtime\\research\\events\\research_events.jsonl",
+    "rejections": "runtime\\research\\rejections\\rejected_lines.jsonl",
+    "trade_cases": "runtime\\research\\trade_cases"
+  },
+  "latest_ingest": {
+    "accepted_events": 0,
+    "duplicate_events": 33,
+    "output_directory": "runtime\\research",
+    "rejected_lines": 0,
+    "scanned_lines": 33,
+    "source_path": "runtime\\profiles\\p4\\logs\\demo_execution_ledger.jsonl",
+    "status": "READY",
+    "trade_cases_written": 0
+  },
+  "status": "READY",
+  "updated_at_utc": "2026-07-16T15:18:19.873845+00:00"
+}

@@ -3,28 +3,29 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="refresh" content="5" />
 <title>AFIP Dashboard — Milestone H Pack 10</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 24px; background: #f7f7f7; color: #222; }
-header, section { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+body { font-family: Arial, sans-serif; margin: 18px; background: #f4f6f8; color: #17202a; }
+header, section { background: white; border: 1px solid #d9e0e6; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
-.status { font-weight: bold; }
-table { width: 100%; border-collapse: collapse; }
-td { border-top: 1px solid #eee; padding: 6px 4px; vertical-align: top; }
-td:first-child { font-weight: bold; width: 42%; }
-small { color: #555; }
+table { width: 100%; border-collapse: collapse; } td { border-top: 1px solid #eee; padding: 6px 4px; vertical-align: top; } td:first-child { font-weight: bold; width: 42%; } small { color:#555; }
+.operational-heading { display:flex; justify-content:space-between; gap:12px; align-items:flex-end; margin-bottom:10px; }
+.profile-grid { display:grid; grid-template-columns:repeat(4,minmax(245px,1fr)); gap:12px; }
+.profile-card { background:white; border:2px solid #cfd8df; border-radius:14px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.profile-card.ready { border-color:#2e8b57; } .profile-card.waiting { border-color:#d19a00; } .profile-card.blocked,.profile-card.stopped { border-color:#b23b3b; }
+.profile-title { display:flex; justify-content:space-between; gap:8px; align-items:center; } .profile-title h2 { margin:0; font-size:20px; }
+.badge { border-radius:999px; padding:4px 9px; font-size:12px; font-weight:bold; background:#eef2f5; } .badge.ready { background:#dff3e7; } .badge.waiting { background:#fff1c9; } .badge.blocked,.badge.stopped { background:#f8d7da; }
+.profile-primary { font-size:18px; font-weight:bold; margin:7px 0; } .profile-reason { min-height:42px; padding:8px; border-radius:8px; background:#f7f8fa; margin:8px 0; word-break:break-word; }
+.profile-meta { font-size:13px; } .profile-meta td { padding:4px 0; border:0; } .profile-meta td:first-child { width:44%; color:#52616b; } .stale { color:#b23b3b; font-weight:bold; } .fresh { color:#2e8b57; font-weight:bold; }
+summary { cursor:pointer; padding:12px; background:white; border-radius:10px; margin-bottom:12px; }
+@media (max-width:1150px) { .profile-grid { grid-template-columns:repeat(2,minmax(260px,1fr)); } } @media (max-width:650px) { .profile-grid { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
-<header>
-<h1>AFIP Dashboard — Milestone H Pack 10</h1>
-<p class="status">Status: BLOCKED — dashboard_ui_blocked_by_runtime_dependency</p>
-<p>Profile: Balanced | Broker: XM | Symbol: GOLD# | Mode: DEMO | Live Execution: False</p>
-<small>Presentation layer only. No trading logic changed. Live trading remains disabled.</small>
-<nav><ul><li>Runtime</li><li>Intelligence</li><li>Trading</li><li>Analytics</li><li>AFIP Bank</li><li>Research</li><li>System</li><li>Market</li><li>Order Center</li><li>Production Readiness</li></ul></nav>
-</header>
-<div class="grid">
-<section id="four_profile_overview">
+<header><h1>AFIP Dashboard — Milestone H Pack 10</h1><h2>AFIP Operational Dashboard</h2><p><strong>Four-profile demo runtime and account status</strong></p><p>Broker: XM | Symbol: GOLD# | Demo Execution Only | Real-money execution blocked | Live Execution: False</p><small>Generated UTC: 2026-07-18T14:54:28.719064+00:00 | Browser refresh: every 5 seconds</small></header>
+<section><div class="operational-heading"><div><h2 style="margin:0">P1–P4 Live Operational Status</h2><small>ดูส่วนนี้ก่อน: ระบบทำงานไหม เชื่อม MT5 หรือไม่ และกำลังรออะไร</small></div><strong>Runtime 0/4 · MT5 4/4</strong></div><div class="profile-grid"><article class="profile-card stopped"><div class="profile-title"><h2>P1 — High Safety</h2><span class="badge stopped">STOPPED</span></div><div class="profile-primary">STOPPED · MT5 CONNECTED</div><div class="profile-reason"><strong>Waiting / Status reason:</strong><br/>trading_cost_not_approved</div><table class="profile-meta"><tr><td>Account</td><td>****0369</td></tr><tr><td>Server</td><td>XMGlobal-MT5 6</td></tr><tr><td>Runtime</td><td>STOPPED · PID -</td></tr><tr><td>Demo verified / armed</td><td>True / True</td></tr><tr><td>Decision</td><td>BUY · confidence 100.0%</td></tr><tr><td>Order</td><td>ORDER_NOT_SENT · units 0</td></tr><tr><td>Tickets</td><td>None</td></tr><tr><td>Capital policy</td><td>UNKNOWN</td></tr><tr><td>Balance / current tier</td><td>0.0 / N/A</td></tr><tr><td>Tier allocation</td><td>N/A</td></tr><tr><td>Next tier / remaining</td><td>MAX / 0.0</td></tr><tr><td>Withdrawal reference</td><td>N/A</td></tr><tr><td>Latency</td><td>65.83 ms · reconnect 0</td></tr><tr><td>Last update</td><td>2026-07-14T12:57:44.744007+00:00</td></tr><tr><td>Freshness</td><td class="stale">STALE / NOT RECORDED · age 352603 sec</td></tr></table></article><article class="profile-card stopped"><div class="profile-title"><h2>P2 — Balanced</h2><span class="badge stopped">STOPPED</span></div><div class="profile-primary">STOPPED · MT5 CONNECTED</div><div class="profile-reason"><strong>Waiting / Status reason:</strong><br/>trading_cost_not_approved</div><table class="profile-meta"><tr><td>Account</td><td>****6767</td></tr><tr><td>Server</td><td>XMGlobal-MT5 6</td></tr><tr><td>Runtime</td><td>STOPPED · PID -</td></tr><tr><td>Demo verified / armed</td><td>True / True</td></tr><tr><td>Decision</td><td>BUY · confidence 100.0%</td></tr><tr><td>Order</td><td>ORDER_NOT_SENT · units 0</td></tr><tr><td>Tickets</td><td>None</td></tr><tr><td>Capital policy</td><td>UNKNOWN</td></tr><tr><td>Balance / current tier</td><td>0.0 / N/A</td></tr><tr><td>Tier allocation</td><td>N/A</td></tr><tr><td>Next tier / remaining</td><td>MAX / 0.0</td></tr><tr><td>Withdrawal reference</td><td>N/A</td></tr><tr><td>Latency</td><td>0.56 ms · reconnect 0</td></tr><tr><td>Last update</td><td>2026-07-14T12:57:44.744101+00:00</td></tr><tr><td>Freshness</td><td class="stale">STALE / NOT RECORDED · age 352603 sec</td></tr></table></article><article class="profile-card stopped"><div class="profile-title"><h2>P3 — High Risk Within Plan</h2><span class="badge stopped">STOPPED</span></div><div class="profile-primary">STOPPED · MT5 CONNECTED</div><div class="profile-reason"><strong>Waiting / Status reason:</strong><br/>trading_cost_not_approved</div><table class="profile-meta"><tr><td>Account</td><td>****6145</td></tr><tr><td>Server</td><td>XMGlobal-MT5 5</td></tr><tr><td>Runtime</td><td>STOPPED · PID -</td></tr><tr><td>Demo verified / armed</td><td>True / True</td></tr><tr><td>Decision</td><td>BUY · confidence 100.0%</td></tr><tr><td>Order</td><td>ORDER_NOT_SENT · units 0</td></tr><tr><td>Tickets</td><td>None</td></tr><tr><td>Capital policy</td><td>UNKNOWN</td></tr><tr><td>Balance / current tier</td><td>0.0 / N/A</td></tr><tr><td>Tier allocation</td><td>N/A</td></tr><tr><td>Next tier / remaining</td><td>MAX / 0.0</td></tr><tr><td>Withdrawal reference</td><td>N/A</td></tr><tr><td>Latency</td><td>0.5 ms · reconnect 0</td></tr><tr><td>Last update</td><td>2026-07-14T12:57:44.751434+00:00</td></tr><tr><td>Freshness</td><td class="stale">STALE / NOT RECORDED · age 352603 sec</td></tr></table></article><article class="profile-card stopped"><div class="profile-title"><h2>P4 — Research</h2><span class="badge stopped">STOPPED</span></div><div class="profile-primary">STOPPED · MT5 CONNECTED</div><div class="profile-reason"><strong>Waiting / Status reason:</strong><br/>trading_cost_not_approved</div><table class="profile-meta"><tr><td>Account</td><td>****6153</td></tr><tr><td>Server</td><td>XMGlobal-MT5 5</td></tr><tr><td>Runtime</td><td>STOPPED · PID -</td></tr><tr><td>Demo verified / armed</td><td>True / True</td></tr><tr><td>Decision</td><td>BUY · confidence 100.0%</td></tr><tr><td>Order</td><td>ORDER_NOT_SENT · units 0</td></tr><tr><td>Tickets</td><td>None</td></tr><tr><td>Capital policy</td><td>UNKNOWN</td></tr><tr><td>Balance / current tier</td><td>0.0 / N/A</td></tr><tr><td>Tier allocation</td><td>N/A</td></tr><tr><td>Next tier / remaining</td><td>MAX / 0.0</td></tr><tr><td>Withdrawal reference</td><td>N/A</td></tr><tr><td>Latency</td><td>0.49 ms · reconnect 0</td></tr><tr><td>Last update</td><td>2026-07-14T12:57:45.366925+00:00</td></tr><tr><td>Freshness</td><td class="stale">STALE / NOT RECORDED · age 352603 sec</td></tr></table></article></div></section>
+<details><summary><strong>Technical and certification panels</strong> — click to expand</summary><nav><ul><li>Runtime</li><li>Intelligence</li><li>Trading</li><li>Analytics</li><li>AFIP Bank</li><li>Research</li><li>System</li><li>Market</li><li>Order Center</li><li>Production Readiness</li></ul></nav><div class="grid"><section id="four_profile_overview">
 <h2>Four-Profile Demo Overview / ภาพรวม Demo 4 โปรไฟล์</h2>
 <p class="status">READY</p>
 <p>Daily operational view for isolated simulation and demo-only profiles.<br><small>สรุปสถานะโปรไฟล์แบบแยก Runtime สำหรับ Simulation และบัญชี Demo เท่านั้น</small></p>
@@ -32,10 +33,10 @@ small { color: #555; }
 <tr><td>Order Status</td><td>NO_ORDER_SENT</td></tr>
 <tr><td>Simulation</td><td>LOCKED runtime remains available</td></tr>
 <tr><td>Demo Gateway</td><td>DEMO account verification required before broker transmission</td></tr>
-<tr><td>P1</td><td>STOPPED | High Safety | XM | ****0369 | XMGlobal-MT5 6 | MT5: CONNECTED | Latency: 152.43 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
-<tr><td>P2</td><td>STOPPED | Balanced | XM | ****6767 | XMGlobal-MT5 6 | MT5: CONNECTED | Latency: 7.05 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
-<tr><td>P3</td><td>STOPPED | High Risk Within Plan | XM | ****6145 | XMGlobal-MT5 5 | MT5: CONNECTED | Latency: 10.17 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
-<tr><td>P4</td><td>STOPPED | Research | XM | ****6153 | XMGlobal-MT5 5 | MT5: CONNECTED | Latency: 4.19 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr></table>
+<tr><td>P1</td><td>STOPPED | High Safety | XM | ****0369 | XMGlobal-MT5 6 | MT5: CONNECTED | Latency: 65.83 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
+<tr><td>P2</td><td>STOPPED | Balanced | XM | ****6767 | XMGlobal-MT5 6 | MT5: CONNECTED | Latency: 0.56 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
+<tr><td>P3</td><td>STOPPED | High Risk Within Plan | XM | ****6145 | XMGlobal-MT5 5 | MT5: CONNECTED | Latency: 0.5 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr>
+<tr><td>P4</td><td>STOPPED | Research | XM | ****6153 | XMGlobal-MT5 5 | MT5: CONNECTED | Latency: 0.49 ms | Reconnect: 0 | Demo: WAITING / ORDER_NOT_SENT | trading_cost_not_approved</td></tr></table>
 </section>
 <section id="runtime">
 <h2>Dashboard Runtime / สถานะระบบ</h2>
@@ -941,7 +942,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Review when the supervisor produces a new validated instruction.</td></tr>
 <tr><td>Expected Next Action TH</td><td>ทบทวนเมื่อ Supervisor สร้างคำแนะนำที่ผ่านการตรวจรายการใหม่</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-14T13:00:18.496913+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-18T14:55:28.707384+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="execution_intelligence_complete">
@@ -967,7 +968,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Archive the Milestone K certification and continue with Milestone L without enabling live order transmission.</td></tr>
 <tr><td>Expected Next Action TH</td><td>จัดเก็บใบรับรอง Milestone K และดำเนินการต่อที่ Milestone L โดยไม่เปิดการส่งคำสั่งจริง</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-14T13:04:18.497086+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-18T14:59:28.707526+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_foundation">
@@ -993,7 +994,7 @@ small { color: #555; }
 <tr><td>Expected Next Action EN</td><td>Begin deterministic paper-session observation without transmitting an order.</td></tr>
 <tr><td>Expected Next Action TH</td><td>เริ่มการสังเกต Paper Session แบบกำหนดแน่นอนโดยไม่ส่งคำสั่งซื้อขาย</td></tr>
 <tr><td>Confidence / ความมั่นใจ</td><td>100.0</td></tr>
-<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-14T13:04:18.497187+00:00</td></tr>
+<tr><td>Next Review UTC / ทบทวนครั้งถัดไป</td><td>2026-07-18T14:59:28.707617+00:00</td></tr>
 <tr><td>Execution / การดำเนินการ</td><td>LOCKED_SIMULATION_ONLY | NO_ORDER_SENT</td></tr></table>
 </section>
 <section id="paper_execution_session">
@@ -1370,6 +1371,43 @@ small { color: #555; }
 <tr><td>PAPER-DEMO-1 MANAGING Risk / ความเสี่ยง</td><td>risk_pass | EN: Shows the current risk state before any simulated order management action. | TH: แสดงสถานะความเสี่ยงปัจจุบันก่อนการบริหารคำสั่งจำลอง</td></tr>
 <tr><td>PAPER-DEMO-1 MANAGING Next Review Time / เวลาตรวจสอบครั้งถัดไป</td><td>next_runtime_cycle | EN: Shows when AFIP should review the order again. | TH: แสดงเวลาที่ AFIP ควรกลับมาตรวจสอบคำสั่งอีกครั้ง</td></tr></table>
 </section>
+<section id="research_foundation">
+<h2>Trade Case &amp; Historical Research Foundation / ฐานข้อมูล Trade Case และการวิจัยย้อนหลัง</h2>
+<p class="status">READY</p>
+<p>Permanent research-only section. It never changes trading decisions or thresholds.<br><small>ส่วนวิจัยถาวรเท่านั้น ไม่เปลี่ยนการตัดสินใจหรือ Threshold การเทรด</small></p>
+<table><tr><td>Historical Coverage</td><td>UNKNOWN</td></tr>
+<tr><td>Historical Start</td><td>UNKNOWN</td></tr>
+<tr><td>Historical End</td><td>UNKNOWN</td></tr>
+<tr><td>Candle Count</td><td>0</td></tr>
+<tr><td>Tick Count</td><td>0</td></tr>
+<tr><td>Missing Data</td><td>0</td></tr>
+<tr><td>Data Quality</td><td>UNKNOWN</td></tr>
+<tr><td>Replay Completed %</td><td>0.0</td></tr>
+<tr><td>Replay Remaining</td><td>0</td></tr>
+<tr><td>Active Replay</td><td>NONE</td></tr>
+<tr><td>Replay Speed</td><td>RECORDER_ONLY</td></tr>
+<tr><td>Trade Case Count</td><td>1</td></tr>
+<tr><td>Pattern Count</td><td>1</td></tr>
+<tr><td>Unknown Pattern Count</td><td>1</td></tr>
+<tr><td>Historical Simulations</td><td>0</td></tr>
+<tr><td>Recorded Decisions</td><td>0</td></tr>
+<tr><td>Recorded Exits</td><td>0</td></tr>
+<tr><td>Dataset Health</td><td>READY</td></tr>
+<tr><td>Active Lifecycle</td><td>1</td></tr>
+<tr><td>Closed Cases</td><td>0</td></tr>
+<tr><td>Malformed Cases</td><td>0</td></tr>
+<tr><td>Lineage Coverage %</td><td>100.0</td></tr>
+<tr><td>Lifecycle States</td><td>OPEN_OR_SUBMITTED=1</td></tr>
+<tr><td>Pending M15/M30/H1/H4/D1</td><td>M15=0, M30=1, H1=1, H4=1, D1=1</td></tr>
+<tr><td>Similarity %</td><td>0</td></tr>
+<tr><td>Similar Pattern ID</td><td>NONE</td></tr>
+<tr><td>Historical Occurrences</td><td>0</td></tr>
+<tr><td>Historical Win Rate</td><td>0</td></tr>
+<tr><td>Historical Profit Factor</td><td>0</td></tr>
+<tr><td>Research Only</td><td>True</td></tr>
+<tr><td>Affects Trading</td><td>False</td></tr>
+<tr><td>Pattern UNKNOWN</td><td>occurrences=1 | win_rate=0.0 | profit_factor=0.0 | avg_holding=0.0 | avg_mfe=0.0 | avg_mae=0.0 | avg_exit_quality=0.0</td></tr></table>
+</section>
 <section id="production_readiness">
 <h2>Production Readiness / ความพร้อมก่อนใช้งานจริง</h2>
 <p class="status">READY</p>
@@ -1383,7 +1421,6 @@ small { color: #555; }
 <tr><td>Paper Trading</td><td>True</td></tr>
 <tr><td>Demo Trading</td><td>True</td></tr>
 <tr><td>Live Execution</td><td>False</td></tr></table>
-</section>
-</div>
+</section></div></details>
 </body>
 </html>

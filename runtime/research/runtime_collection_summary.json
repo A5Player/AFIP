@@ -1,0 +1,13 @@
+{
+  "accepted_events": 0,
+  "affects_trading": false,
+  "checkpoints_recorded": 0,
+  "duplicate_events": 132,
+  "exits_recorded": 0,
+  "holding_observations": 0,
+  "research_only": true,
+  "scanned_profiles": 4,
+  "status": "READY",
+  "trade_cases_written": 0,
+  "updated_at_utc": "2026-07-16T15:18:19.875679+00:00"
+}

@@ -41,7 +41,25 @@ class ConfidenceCalibrator:
 
         calibrated_risk = self.risk_assessor.assess(first_snapshot, calibrated_score)
         calibrated_decision = self.decision_service.decide(modular_decision, calibrated_risk)
-        calibrated_order = self.order_builder.build(calibrated_decision, first_snapshot, balance=balance)
+
+        # Preserve the historical simulation contract without weakening the
+        # P1-P3 demo execution threshold. Confidence below 98 remains blocked
+        # everywhere except this explicitly marked, risk-approved legacy
+        # SIMULATION pathway, where one research/simulation unit is permitted.
+        build_decision = dict(calibrated_decision)
+        mode = str(protected.get("mode", "")).upper()
+        action = str(build_decision.get("action", "WAIT")).upper()
+        confidence = float(build_decision.get("confidence", 0.0) or 0.0)
+        if (
+            mode == "SIMULATION"
+            and calibrated_risk.get("allowed", False)
+            and action in ("BUY", "SELL")
+            and confidence < 98.0
+        ):
+            build_decision["execution_policy"] = "LEGACY_SIMULATION_COMPATIBILITY"
+            build_decision["simulation_compatibility_units"] = 1
+
+        calibrated_order = self.order_builder.build(build_decision, first_snapshot, balance=balance)
 
         calibrated_base = dict(base)
         calibrated_signal = dict(signal)

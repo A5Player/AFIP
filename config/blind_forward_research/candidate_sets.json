@@ -1,0 +1,10 @@
+{
+  "candidate_set_id": "GOLD_FORWARD_RESEARCH_BASELINE",
+  "version": "1.0.0",
+  "description": "Research candidates only. Values are configuration, never execution policy.",
+  "take_profit_points": [300, 500, 800, 1200],
+  "stop_loss_points": [300, 500, 800, 1200],
+  "time_exit_bars": [4, 8, 16, 32],
+  "same_bar_resolution": "SL_FIRST",
+  "execution_authority": "NONE"
+}

@@ -31,7 +31,7 @@ def test_repository_default_configuration_has_four_isolated_profiles():
     runtime=FourProfileOperationalRuntime()
     profiles=runtime.load()
     assert [p.profile_id for p in profiles]==["P1","P2","P3","P4"]
-    assert [p.enabled for p in profiles]==[True,False,False,True]
+    assert [p.enabled for p in profiles]==[True,True,True,True]
     assert len({str(p.mt5_folder).casefold() for p in profiles})==4
     assert len({str(p.runtime_directory).casefold() for p in profiles})==4
     assert len({str(p.database_path).casefold() for p in profiles})==4

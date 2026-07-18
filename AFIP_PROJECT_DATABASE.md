@@ -864,3 +864,13 @@ Status: IMPLEMENTED (Patch Only)
 - Deterministic IDs, UTC partitions, SHA-256 checksums and manifests.
 - Source catalog covers gold, USD, FX, rates, energy, volatility, indices, crypto, macro, positioning and news.
 - Execution remains unchanged and locked according to existing runtime policy.
+
+## Milestone S Pack 5.8 — Blind Forward Research Engine
+- Added deterministic forward-only candidate evaluation using closed bars strictly after research entry time.
+- Added externally configured TP, SL and time-exit candidate sets; no trading policy is hardcoded into execution.
+- Added MAE, MFE, holding bars, holding seconds and explicit exit reasons.
+- Certified conservative same-bar ambiguity handling as SL First.
+- Added SHA-256 deterministic input and result identities.
+- Added append-only JSONL research results, duplicate protection and manifests.
+- Added research eligibility quarantine for incomplete or failed-quality cases.
+- Research storage remains shared across P1–P4 and execution authority is `NONE`.

@@ -1,0 +1,92 @@
+{
+  "contract_version": "AFIP-RESEARCH-DATA-1.0",
+  "counterfactual_plans": [],
+  "created_at_utc": "2026-07-14T12:50:44.927767+00:00",
+  "data_lineage": {
+    "source_event_id": "EVT-33C8D2353D09B33B14294138",
+    "source_line_number": 26,
+    "source_path": "runtime\\profiles\\p4\\logs\\demo_execution_ledger.jsonl",
+    "source_sha256": "9360919185e78ed7e717f7eb8efdaca3bc90dd41b6fc140de92ef8912ff205ae",
+    "source_type": "DEMO_EXECUTION_LEDGER"
+  },
+  "decision_action": "BUY",
+  "decision_confidence": 100.0,
+  "decision_trace": {
+    "action": "BUY",
+    "allocation_mode": "UNKNOWN",
+    "capital_tier": null,
+    "confidence": 100.0,
+    "risk_approved": true,
+    "target_tier_lots": [],
+    "trading_cost_allowed": false
+  },
+  "event_ids": [
+    "EVT-33C8D2353D09B33B14294138"
+  ],
+  "execution_result": {
+    "allocated_lots": [],
+    "mt5_result_code": null,
+    "mt5_result_comment": "",
+    "order_check_called": false,
+    "order_send_called": false,
+    "reason": "protected_demo_orders_sent",
+    "status": "ORDER_SENT",
+    "tickets": [
+      864122947,
+      864122964,
+      864122971
+    ],
+    "total_allocated_lot": 0.0
+  },
+  "exit_context": {},
+  "holding_timeline": [],
+  "lifecycle_state": "OPEN_OR_SUBMITTED",
+  "market_context": {
+    "caution_spread_points": 0.0,
+    "digits": 0,
+    "max_spread_points": 0.0,
+    "point_size": 0.0,
+    "spread_points": 0.0,
+    "trading_cost_status": "UNKNOWN"
+  },
+  "order_status": "DEMO_ORDER_SENT",
+  "post_trade_checkpoints": {
+    "D1": {
+      "leakage_policy": "OBSERVE_ONLY_AT_OR_AFTER_SCHEDULED_TIME",
+      "market_snapshot": null,
+      "observed_at_utc": null,
+      "scheduled_at_utc": "2026-07-15T12:50:44.927767+00:00",
+      "status": "PENDING"
+    },
+    "H1": {
+      "leakage_policy": "OBSERVE_ONLY_AT_OR_AFTER_SCHEDULED_TIME",
+      "market_snapshot": null,
+      "observed_at_utc": null,
+      "scheduled_at_utc": "2026-07-14T13:50:44.927767+00:00",
+      "status": "PENDING"
+    },
+    "H4": {
+      "leakage_policy": "OBSERVE_ONLY_AT_OR_AFTER_SCHEDULED_TIME",
+      "market_snapshot": null,
+      "observed_at_utc": null,
+      "scheduled_at_utc": "2026-07-14T16:50:44.927767+00:00",
+      "status": "PENDING"
+    },
+    "M30": {
+      "leakage_policy": "OBSERVE_ONLY_AT_OR_AFTER_SCHEDULED_TIME",
+      "market_snapshot": null,
+      "observed_at_utc": null,
+      "scheduled_at_utc": "2026-07-14T13:20:44.927767+00:00",
+      "status": "PENDING"
+    }
+  },
+  "profile_id": "P4",
+  "symbol": "GOLD#",
+  "tickets": [
+    864122947,
+    864122964,
+    864122971
+  ],
+  "trade_case_id": "CASE-01AB87E3398866238BBB5854",
+  "updated_at_utc": "2026-07-14T12:50:44.927767+00:00"
+}

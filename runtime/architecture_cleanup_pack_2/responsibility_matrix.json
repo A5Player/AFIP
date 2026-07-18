@@ -1,0 +1,1541 @@
+{
+  "schema_version": "2.0",
+  "status": "OWNER_SELECTION_PENDING_SOURCE_REVIEW",
+  "owner_registry": {
+    "ORDER_CHECK": {
+      "preferred_owner": "afip/demo_execution_gateway/runtime.py",
+      "preferred_owner_exists": true,
+      "status": "CANDIDATE_NOT_CERTIFIED",
+      "authority_paths": [
+        "afip/demo_execution_gateway/runtime.py"
+      ]
+    },
+    "ORDER_SEND": {
+      "preferred_owner": "afip/demo_execution_gateway/runtime.py",
+      "preferred_owner_exists": true,
+      "status": "CANDIDATE_NOT_CERTIFIED",
+      "authority_paths": [
+        "afip/demo_execution_gateway/runtime.py"
+      ]
+    },
+    "POSITION_SIZING": {
+      "preferred_owner": "afip/adaptive_position_sizing/runtime.py",
+      "preferred_owner_exists": true,
+      "status": "CANDIDATE_NOT_CERTIFIED",
+      "authority_paths": [
+        "afip/adaptive_position_sizing/runtime.py",
+        "afip/capital_allocation/runtime.py",
+        "afip/capital_growth_engine/runtime.py",
+        "afip/configuration_center/config_models.py",
+        "afip/configuration_center/config_policy.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/decision_intelligence_certification/runtime.py",
+        "afip/demo_execution_certification/runtime.py",
+        "afip/demo_execution_gateway/runtime.py",
+        "afip/dynamic_stop_loss/runtime.py",
+        "afip/dynamic_take_profit/runtime.py",
+        "afip/entry_validation/models.py",
+        "afip/entry_validation/runtime.py",
+        "afip/execution/execution_plan_allocator.py",
+        "afip/execution/order_lifecycle_record.py",
+        "afip/execution/order_size_allocator.py",
+        "afip/execution_intelligence_complete/runtime.py",
+        "afip/execution_intelligence_foundation/runtime.py",
+        "afip/execution_supervisor/runtime.py",
+        "afip/explainable_order_center/models.py",
+        "afip/explainable_order_center/runtime.py",
+        "afip/fusion/conflict_priority_resolver.py",
+        "afip/governance/order_submission_audit.py",
+        "afip/governance/pre_trade_compliance.py",
+        "afip/historical_pattern_database/runtime.py",
+        "afip/knowledge_intelligence_complete/runtime.py",
+        "afip/knowledge_intelligence_foundation/runtime.py",
+        "afip/learning_evidence_normalization/runtime.py",
+        "afip/learning_intelligence_foundation/runtime.py",
+        "afip/market/candle_normalizer.py",
+        "afip/market/candle_snapshot_builder.py",
+        "afip/market_intent_intelligence_complete/runtime.py",
+        "afip/models/candle.py",
+        "afip/paper_decision_ledger/runtime.py",
+        "afip/paper_execution_foundation/runtime.py",
+        "afip/paper_execution_session/runtime.py",
+        "afip/paper_outcome_evaluation/runtime.py",
+        "afip/paper_performance_analytics/runtime.py",
+        "afip/paper_performance_certification/runtime.py",
+        "afip/paper_trading/paper_models.py",
+        "afip/paper_trading/paper_runtime.py",
+        "afip/partial_close/runtime.py",
+        "afip/pattern_clustering/runtime.py",
+        "afip/pattern_confidence/runtime.py",
+        "afip/pattern_explainability/runtime.py",
+        "afip/pattern_knowledge_engine/runtime.py",
+        "afip/pattern_similarity_search/runtime.py",
+        "afip/pattern_statistics/runtime.py",
+        "afip/pattern_validation/runtime.py",
+        "afip/portfolio_drawdown_protection/runtime.py",
+        "afip/portfolio_exposure_coordination/runtime.py",
+        "afip/portfolio_governance_validation/runtime.py",
+        "afip/portfolio_intelligence_complete/runtime.py",
+        "afip/portfolio_intelligence_foundation/runtime.py",
+        "afip/portfolio_resilience_certification/runtime.py",
+        "afip/portfolio_stress_validation/runtime.py",
+        "afip/production_certification_architecture_audit/runtime.py",
+        "afip/production_dead_code_audit/runtime.py",
+        "afip/production_duplicate_code_audit/runtime.py",
+        "afip/production_readiness_complete/runtime.py",
+        "afip/production_regression_audit/runtime.py",
+        "afip/runtime_execution_certification/runtime.py",
+        "afip/shadow_execution_observation/runtime.py",
+        "afip/smart_entry/runtime.py",
+        "afip/smart_exit/runtime.py",
+        "afip/trailing_stop/runtime.py",
+        "afip/unit_allocation/models.py",
+        "afip/unit_allocation/runtime.py",
+        "afip/version1_release_candidate/runtime.py"
+      ]
+    },
+    "PROTECTION_PLAN": {
+      "preferred_owner": "afip/protection/sl_tp_planner.py",
+      "preferred_owner_exists": true,
+      "status": "CANDIDATE_NOT_CERTIFIED",
+      "authority_paths": [
+        "afip/demo_execution_gateway/runtime.py",
+        "afip/execution_safety/capital_aware_protection_guard.py",
+        "afip/paper_trading/paper_models.py",
+        "afip/paper_trading/paper_runtime.py",
+        "afip/smart_entry/runtime.py",
+        "afip/smart_exit/runtime.py",
+        "afip/volatility_intelligence/volatility_observation.py"
+      ]
+    },
+    "RISK_APPROVAL": {
+      "preferred_owner": "afip/portfolio/portfolio_risk.py",
+      "preferred_owner_exists": true,
+      "status": "CANDIDATE_NOT_CERTIFIED",
+      "authority_paths": [
+        "afip/adaptive_position_sizing/runtime.py",
+        "afip/execution/execution_plan_allocator.py",
+        "afip/execution/order_size_allocator.py",
+        "afip/intelligence/portfolio_exposure_allocator.py",
+        "afip/learning/optimization_parameter_governor.py",
+        "afip/portfolio/__init__.py",
+        "afip/portfolio/portfolio_risk.py",
+        "afip/portfolio_intelligence/portfolio_observation.py"
+      ]
+    },
+    "UNIT_ALLOCATION": {
+      "preferred_owner": "afip/unit_allocation/runtime.py",
+      "preferred_owner_exists": true,
+      "status": "CANDIDATE_NOT_CERTIFIED",
+      "authority_paths": [
+        "afip/adaptive_position_sizing/runtime.py",
+        "afip/capital_allocation/runtime.py",
+        "afip/dashboard_ui/launcher.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/demo_execution_gateway/runtime.py",
+        "afip/entry_validation/models.py",
+        "afip/entry_validation/runtime.py",
+        "afip/execution_safety/capital_aware_protection_guard.py",
+        "afip/explainable_order_center/runtime.py",
+        "afip/four_profile_operations/runtime.py",
+        "afip/intelligence/portfolio_exposure_allocator.py",
+        "afip/paper_trading/paper_models.py",
+        "afip/paper_trading/paper_runtime.py",
+        "afip/portfolio_decision/models.py",
+        "afip/portfolio_decision/runtime.py",
+        "afip/portfolio_exposure_coordination/runtime.py",
+        "afip/portfolio_risk_engine/runtime.py",
+        "afip/profile_customization/models.py",
+        "afip/profile_customization/runtime.py",
+        "afip/profile_manager/profile_models.py",
+        "afip/profile_manager/profile_policy.py",
+        "afip/profile_manager/profile_report.py",
+        "afip/unit_allocation/models.py",
+        "afip/unit_allocation/runtime.py"
+      ]
+    }
+  },
+  "classifications": [
+    {
+      "authority": "ORDER_CHECK",
+      "module_path": "afip/demo_execution_gateway/runtime.py",
+      "classification": "PRIMARY_CANDIDATE",
+      "preferred_owner": true,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "preferred_by_explicit_cleanup_policy",
+        "consumer_count=0"
+      ]
+    },
+    {
+      "authority": "ORDER_SEND",
+      "module_path": "afip/demo_execution_gateway/runtime.py",
+      "classification": "PRIMARY_CANDIDATE",
+      "preferred_owner": true,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "preferred_by_explicit_cleanup_policy",
+        "consumer_count=0"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/adaptive_position_sizing/runtime.py",
+      "classification": "PRIMARY_CANDIDATE",
+      "preferred_owner": true,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "preferred_by_explicit_cleanup_policy",
+        "consumer_count=0"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/capital_allocation/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/capital_growth_engine/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/demo_execution_gateway/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/configuration_center/config_models.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/configuration_center/config_policy.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/dashboard_ui/runtime.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/decision_intelligence_certification/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/demo_execution_certification/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/demo_execution_gateway/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/dynamic_stop_loss/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/dynamic_take_profit/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/entry_validation/models.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/entry_validation/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/execution/execution_plan_allocator.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/execution/__init__.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/execution/order_lifecycle_record.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/execution/order_size_allocator.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 2,
+      "direct_consumers": [
+        "afip/execution/__init__.py",
+        "afip/execution/execution_plan_allocator.py"
+      ],
+      "reasons": [
+        "consumer_count=2"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/execution_intelligence_complete/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/execution_intelligence_foundation/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/execution_supervisor/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/explainable_order_center/models.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/explainable_order_center/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/fusion/conflict_priority_resolver.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/fusion/confidence_reconciliation.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/governance/order_submission_audit.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/governance/__init__.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/governance/pre_trade_compliance.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/governance/__init__.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/historical_pattern_database/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/knowledge_intelligence_complete/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/knowledge_intelligence_foundation/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/learning_evidence_normalization/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/learning_intelligence_foundation/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/market/candle_normalizer.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/market/candle_snapshot_builder.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/market/candle_snapshot_builder.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 3,
+      "direct_consumers": [
+        "afip/market/candle_batch_processor.py",
+        "afip/market/mt5_market_data_provider.py",
+        "afip/pipeline/candle_signal_workflow.py"
+      ],
+      "reasons": [
+        "consumer_count=3"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/market_intent_intelligence_complete/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/models/candle.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/market/candle_normalizer.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_decision_ledger/runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_execution_foundation/runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_execution_session/runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_outcome_evaluation/runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_performance_analytics/runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_performance_certification/runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_trading/paper_models.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 5,
+      "direct_consumers": [
+        "afip/dashboard_center/__init__.py",
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/production_readiness/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/paper_trading/paper_runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 5,
+      "direct_consumers": [
+        "afip/dashboard_center/__init__.py",
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/production_readiness/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/partial_close/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/pattern_clustering/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/pattern_confidence/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/pattern_explainability/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/pattern_knowledge_engine/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/pattern_similarity_search/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/pattern_statistics/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/pattern_validation/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/portfolio_drawdown_protection/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/portfolio_exposure_coordination/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/portfolio_governance_validation/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/portfolio_intelligence_complete/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/portfolio_intelligence_foundation/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/portfolio_resilience_certification/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/portfolio_stress_validation/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/production_certification_architecture_audit/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/production_dead_code_audit/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/production_duplicate_code_audit/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/production_readiness_complete/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/production_regression_audit/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/runtime_execution_certification/runtime.py",
+      "classification": "CERTIFICATION_OBSERVER",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "certification_or_audit_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/shadow_execution_observation/runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/smart_entry/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/smart_exit/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/trailing_stop/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/unit_allocation/models.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/unit_allocation/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "POSITION_SIZING",
+      "module_path": "afip/version1_release_candidate/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "PROTECTION_PLAN",
+      "module_path": "afip/demo_execution_gateway/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "PROTECTION_PLAN",
+      "module_path": "afip/execution_safety/capital_aware_protection_guard.py",
+      "classification": "SAFETY_GUARD",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "safety_boundary"
+      ]
+    },
+    {
+      "authority": "PROTECTION_PLAN",
+      "module_path": "afip/paper_trading/paper_models.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 5,
+      "direct_consumers": [
+        "afip/dashboard_center/__init__.py",
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/production_readiness/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "PROTECTION_PLAN",
+      "module_path": "afip/paper_trading/paper_runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 5,
+      "direct_consumers": [
+        "afip/dashboard_center/__init__.py",
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/production_readiness/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "PROTECTION_PLAN",
+      "module_path": "afip/smart_entry/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "PROTECTION_PLAN",
+      "module_path": "afip/smart_exit/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "PROTECTION_PLAN",
+      "module_path": "afip/volatility_intelligence/volatility_observation.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/adaptive_position_sizing/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/execution/execution_plan_allocator.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/execution/__init__.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/execution/order_size_allocator.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 2,
+      "direct_consumers": [
+        "afip/execution/__init__.py",
+        "afip/execution/execution_plan_allocator.py"
+      ],
+      "reasons": [
+        "consumer_count=2"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/intelligence/portfolio_exposure_allocator.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/learning/optimization_parameter_governor.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/portfolio/__init__.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/portfolio/portfolio_risk.py",
+      "classification": "PRIMARY_CANDIDATE",
+      "preferred_owner": true,
+      "direct_consumer_count": 2,
+      "direct_consumers": [
+        "afip/portfolio/__init__.py",
+        "afip/portfolio/production_portfolio.py"
+      ],
+      "reasons": [
+        "preferred_by_explicit_cleanup_policy",
+        "consumer_count=2"
+      ]
+    },
+    {
+      "authority": "RISK_APPROVAL",
+      "module_path": "afip/portfolio_intelligence/portfolio_observation.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/adaptive_position_sizing/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/capital_allocation/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/dashboard_ui/launcher.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/locked_simulation_runtime/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/dashboard_ui/runtime.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/demo_execution_gateway/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/entry_validation/models.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/entry_validation/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/execution_safety/capital_aware_protection_guard.py",
+      "classification": "SAFETY_GUARD",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "safety_boundary"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/explainable_order_center/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/four_profile_operations/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 2,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py",
+        "afip/demo_execution_gateway/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=2"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/intelligence/portfolio_exposure_allocator.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/paper_trading/paper_models.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 5,
+      "direct_consumers": [
+        "afip/dashboard_center/__init__.py",
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/production_readiness/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/paper_trading/paper_runtime.py",
+      "classification": "RESEARCH_OR_SIMULATION",
+      "preferred_owner": false,
+      "direct_consumer_count": 5,
+      "direct_consumers": [
+        "afip/dashboard_center/__init__.py",
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py",
+        "afip/dashboard_ui/runtime.py",
+        "afip/production_readiness/runtime.py"
+      ],
+      "reasons": [
+        "non_live_execution_namespace"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/portfolio_decision/models.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/portfolio_decision/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/portfolio_exposure_coordination/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/portfolio_risk_engine/runtime.py",
+      "classification": "LEGACY_OR_UNUSED_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 0,
+      "direct_consumers": [],
+      "reasons": [
+        "no_direct_consumers_detected"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/profile_customization/models.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/profile_customization/runtime.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=1"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/profile_manager/profile_models.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 2,
+      "direct_consumers": [
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=2"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/profile_manager/profile_policy.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 2,
+      "direct_consumers": [
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=2"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/profile_manager/profile_report.py",
+      "classification": "SUPPORTING_CANDIDATE",
+      "preferred_owner": false,
+      "direct_consumer_count": 2,
+      "direct_consumers": [
+        "afip/dashboard_center/dashboard_runtime_status.py",
+        "afip/dashboard_intelligence/runtime.py"
+      ],
+      "reasons": [
+        "consumer_count=2"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/unit_allocation/models.py",
+      "classification": "OBSERVER_OR_MODEL",
+      "preferred_owner": false,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "presentation_or_data_model"
+      ]
+    },
+    {
+      "authority": "UNIT_ALLOCATION",
+      "module_path": "afip/unit_allocation/runtime.py",
+      "classification": "PRIMARY_CANDIDATE",
+      "preferred_owner": true,
+      "direct_consumer_count": 1,
+      "direct_consumers": [
+        "afip/dashboard_ui/runtime.py"
+      ],
+      "reasons": [
+        "preferred_by_explicit_cleanup_policy",
+        "consumer_count=1"
+      ]
+    }
+  ],
+  "blockers": []
+}

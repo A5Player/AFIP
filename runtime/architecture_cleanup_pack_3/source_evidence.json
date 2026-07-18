@@ -1,0 +1,5034 @@
+{
+  "schema_version": "3.0",
+  "status": "SOURCE_EVIDENCE_COLLECTED",
+  "targets": [
+    {
+      "path": "afip/demo_execution_gateway/runtime.py",
+      "module": "afip.demo_execution_gateway.runtime",
+      "imports": [
+        "MetaTrader5",
+        "__future__",
+        "afip.capital_growth_engine",
+        "afip.four_profile_operations.runtime",
+        "afip.runtime.runtime_v1",
+        "dataclasses",
+        "datetime",
+        "hashlib",
+        "json",
+        "math",
+        "os",
+        "pathlib",
+        "signal",
+        "time",
+        "typing"
+      ],
+      "classes": [
+        {
+          "name": "MT5Protocol",
+          "line": 30,
+          "end_line": 41
+        },
+        {
+          "name": "DemoProfilePolicy",
+          "line": 45,
+          "end_line": 113
+        },
+        {
+          "name": "DemoGatewayConfig",
+          "line": 117,
+          "end_line": 129
+        },
+        {
+          "name": "DemoGatewayReport",
+          "line": 133,
+          "end_line": 178
+        },
+        {
+          "name": "DemoExecutionGateway",
+          "line": 181,
+          "end_line": 513
+        },
+        {
+          "name": "DemoExecutionRunner",
+          "line": 516,
+          "end_line": 556
+        }
+      ],
+      "functions": [
+        {
+          "name": "initialize",
+          "line": 31,
+          "end_line": 31,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "shutdown",
+          "line": 32,
+          "end_line": 32,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "last_error",
+          "line": 33,
+          "end_line": 33,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "account_info",
+          "line": 34,
+          "end_line": 34,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "terminal_info",
+          "line": 35,
+          "end_line": 35,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "symbol_select",
+          "line": 36,
+          "end_line": 36,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "symbol_info",
+          "line": 37,
+          "end_line": 37,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "symbol_info_tick",
+          "line": 38,
+          "end_line": 38,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "positions_get",
+          "line": 39,
+          "end_line": 39,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "order_check",
+          "line": 40,
+          "end_line": 40,
+          "relevant_keywords": [
+            "order_check"
+          ],
+          "source": "    def order_check(self, request: Mapping[str, Any]) -> Any: ..."
+        },
+        {
+          "name": "order_send",
+          "line": 41,
+          "end_line": 41,
+          "relevant_keywords": [
+            "order_send"
+          ],
+          "source": "    def order_send(self, request: Mapping[str, Any]) -> Any: ..."
+        },
+        {
+          "name": "from_mapping",
+          "line": 61,
+          "end_line": 79,
+          "relevant_keywords": [
+            "maximum_units",
+            "capital_per_unit"
+          ],
+          "source": "    def from_mapping(cls, raw: Mapping[str, Any]) -> \"DemoProfilePolicy\":\n        return cls(\n            profile_id=str(raw[\"profile_id\"]).strip().upper(),\n            enabled=bool(raw.get(\"enabled\", False)),\n            demo_execution_enabled=bool(raw.get(\"demo_execution_enabled\", False)),\n            capital_per_unit=float(raw.get(\"capital_per_unit\", 1000.0)),\n            maximum_units=int(raw.get(\"maximum_units\", 1)),\n            minimum_confidence=float(raw.get(\"minimum_confidence\", 98.0)),\n            allocation_mode=str(raw.get(\"allocation_mode\", \"LEGACY_FIXED_UNIT\")).strip().upper(),\n            capital_tiers=tuple(\n                (float(item[\"minimum_balance\"]), tuple(float(v) for v in item[\"lots\"]))\n                for item in raw.get(\"capital_tiers\", ())\n            ),\n            maximum_concurrent_orders=int(raw.get(\"maximum_concurrent_orders\", raw.get(\"maximum_units\", 4))),\n            maximum_lot_per_order=float(raw.get(\"maximum_lot_per_order\", 0.03)),\n            minimum_seconds_between_entries=int(raw.get(\"minimum_seconds_between_entries\", 900)),\n            magic=int(raw.get(\"magic\", 26071001)),\n            lot_per_unit=float(raw.get(\"lot_per_unit\", 0.01)),\n        )"
+        },
+        {
+          "name": "validate",
+          "line": 81,
+          "end_line": 113,
+          "relevant_keywords": [
+            "maximum_units",
+            "capital_per_unit"
+          ],
+          "source": "    def validate(self) -> tuple[str, ...]:\n        errors: list[str] = []\n        if self.allocation_mode == \"LEGACY_FIXED_UNIT\":\n            if self.capital_per_unit <= 0:\n                errors.append(\"capital_per_unit_must_be_positive\")\n            if self.maximum_units not in {1, 2, 3, 4}:\n                errors.append(\"maximum_units_must_be_1_to_4\")\n        elif self.allocation_mode == \"CAPITAL_TIER_TABLE\":\n            if not self.capital_tiers:\n                errors.append(\"capital_tiers_required\")\n            previous = -1.0\n            for minimum_balance, lots in self.capital_tiers:\n                if minimum_balance < 0 or minimum_balance <= previous:\n                    errors.append(\"capital_tiers_must_be_strictly_ascending\")\n                    break\n                previous = minimum_balance\n                if not 1 <= len(lots) <= self.maximum_concurrent_orders:\n                    errors.append(\"capital_tier_order_count_out_of_range\")\n                    break\n                if any(lot <= 0 or lot > self.maximum_lot_per_order for lot in lots):\n                    errors.append(\"capital_tier_lot_out_of_range\")\n                    break\n        elif self.allocation_mode == \"RESEARCH_FIXED_001\":\n            pass\n        else:\n            errors.append(\"allocation_mode_unknown\")\n        if self.allocation_mode != \"RESEARCH_FIXED_001\" and self.maximum_concurrent_orders < 1:\n            errors.append(\"maximum_concurrent_orders_must_be_positive\")\n        if not 0 <= self.minimum_confidence <= 100: errors.append(\"minimum_confidence_out_of_range\")\n        if self.minimum_seconds_between_entries < 60: errors.append(\"entry_cooldown_must_be_at_least_60_seconds\")\n        if abs(self.lot_per_unit - 0.01) > 1e-12: errors.append(\"lot_per_unit_must_remain_0_01\")\n        if self.magic <= 0: errors.append(\"magic_must_be_positive\")\n        return tuple(errors)"
+        },
+        {
+          "name": "validate",
+          "line": 123,
+          "end_line": 129,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "as_dict",
+          "line": 177,
+          "end_line": 178,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "__init__",
+          "line": 184,
+          "end_line": 197,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_default_simulate",
+          "line": 200,
+          "end_line": 202,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "armed",
+          "line": 205,
+          "end_line": 208,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_utc",
+          "line": 210,
+          "end_line": 211,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "state_path",
+          "line": 214,
+          "end_line": 215,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "ledger_path",
+          "line": 218,
+          "end_line": 219,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_mt5_module",
+          "line": 221,
+          "end_line": 225,
+          "relevant_keywords": [
+            "atr"
+          ],
+          "source": "    def _mt5_module(self) -> MT5Protocol:\n        if self._mt5 is not None:\n            return self._mt5\n        import MetaTrader5 as mt5\n        return mt5"
+        },
+        {
+          "name": "_value",
+          "line": 228,
+          "end_line": 233,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_write_json",
+          "line": 236,
+          "end_line": 240,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_append_jsonl",
+          "line": 243,
+          "end_line": 246,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_state",
+          "line": 248,
+          "end_line": 254,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_report",
+          "line": 256,
+          "end_line": 276,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "preflight",
+          "line": 278,
+          "end_line": 330,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_existing_positions",
+          "line": 332,
+          "end_line": 336,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_capital_growth_decision",
+          "line": 338,
+          "end_line": 348,
+          "relevant_keywords": [
+            "maximum_units",
+            "capital_per_unit"
+          ],
+          "source": "    def _capital_growth_decision(self, balance: float, current_orders: int):\n        return CapitalGrowthEngine.evaluate(\n            mode=self.policy.allocation_mode,\n            balance=balance,\n            current_orders=current_orders,\n            capital_tiers=self.policy.capital_tiers,\n            maximum_orders=self.policy.maximum_concurrent_orders,\n            legacy_capital_per_unit=self.policy.capital_per_unit,\n            legacy_maximum_units=self.policy.maximum_units,\n            lot_per_unit=self.policy.lot_per_unit,\n        )"
+        },
+        {
+          "name": "_allocation_lots",
+          "line": 350,
+          "end_line": 351,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_cooldown_passed",
+          "line": 353,
+          "end_line": 358,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_request",
+          "line": 360,
+          "end_line": 388,
+          "relevant_keywords": [
+            "sl_points",
+            "tp_points"
+          ],
+          "source": "    def _request(self, mt5: MT5Protocol, action: str, sl_points: float, tp_points: float, volume: float) -> dict[str, Any]:\n        symbol_info = mt5.symbol_info(self.profile.symbol)\n        tick = mt5.symbol_info_tick(self.profile.symbol)\n        point = float(self._value(symbol_info, \"point\", 0.0))\n        digits = int(self._value(symbol_info, \"digits\", 2))\n        if point <= 0 or tick is None:\n            raise ValueError(\"symbol_point_or_tick_unavailable\")\n        buy = action == \"BUY\"\n        price = float(self._value(tick, \"ask\" if buy else \"bid\", 0.0))\n        if price <= 0:\n            raise ValueError(\"entry_price_unavailable\")\n        sl = price - sl_points * point if buy else price + sl_points * point\n        tp = price + tp_points * point if buy else price - tp_points * point\n        order_type = getattr(mt5, \"ORDER_TYPE_BUY\") if buy else getattr(mt5, \"ORDER_TYPE_SELL\")\n        request = {\n            \"action\": getattr(mt5, \"TRADE_ACTION_DEAL\"),\n            \"symbol\": self.profile.symbol,\n            \"volume\": round(float(volume), 2),\n            \"type\": order_type,\n            \"price\": round(price, digits),\n            \"sl\": round(sl, digits),\n            \"tp\": round(tp, digits),\n            \"deviation\": 20,\n            \"magic\": self.policy.magic,\n            \"comment\": f\"AFIP {self.profile.profile_id} DEMO\",\n            \"type_time\": getattr(mt5, \"ORDER_TIME_GTC\"),\n            \"type_filling\": getattr(mt5, \"ORDER_FILLING_IOC\"),\n        }\n        return request"
+        },
+        {
+          "name": "run_cycle",
+          "line": 390,
+          "end_line": 513,
+          "relevant_keywords": [
+            "allocated_units",
+            "order_send",
+            "order_check",
+            "sl_points",
+            "tp_points",
+            "stop_loss",
+            "take_profit"
+          ],
+          "source": "    def run_cycle(self) -> DemoGatewayReport:\n        mt5 = self._mt5_module()\n        try:\n            account, blocked = self.preflight(mt5)\n            if blocked is not None:\n                return blocked\n            assert account is not None\n\n            afip_positions, manual_positions = self._existing_positions(mt5)\n            if manual_positions:\n                return self._report(\"BLOCKED\", \"manual_position_detected_operator_override\", account_trade_mode=\"DEMO\", demo_verified=True)\n\n            result = self._simulate()\n            decision = result.get(\"decision\", {})\n            order = result.get(\"order\", {})\n            action = str(decision.get(\"action\", order.get(\"action\", \"WAIT\"))).upper()\n            confidence = float(decision.get(\"confidence\", 0.0) or 0.0)\n            data_status = str(result.get(\"data_status\", \"\")).upper()\n            data_source = str(result.get(\"data_source\", \"\")).upper()\n            risk = result.get(\"risk\", {})\n            cost = result.get(\"trading_cost_intelligence\", {})\n            protection = order.get(\"protection\", {})\n\n            if \"FALLBACK\" in data_status or \"FALLBACK\" in data_source:\n                return self._report(\"WAITING\", \"simulation_fallback_data_blocked\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence)\n            if action not in {\"BUY\", \"SELL\"}:\n                return self._report(\"WAITING\", \"decision_not_actionable\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence)\n            if confidence < self.policy.minimum_confidence:\n                return self._report(\"WAITING\", \"profile_confidence_below_threshold\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence)\n            if not bool(risk.get(\"allowed\", False)):\n                return self._report(\"WAITING\", \"risk_not_approved\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence)\n\n            cost_status = str(cost.get(\"status\", \"\")).strip().upper()\n            cost_allowed = cost.get(\"allowed\") is True\n            cost_diagnostics = {\n                \"trading_cost_status\": cost_status or \"UNKNOWN\",\n                \"trading_cost_allowed\": cost_allowed,\n                \"spread_points\": float(cost.get(\"spread_points\", 0.0) or 0.0),\n                \"caution_spread_points\": float(cost.get(\"caution_spread_points\", 0.0) or 0.0),\n                \"max_spread_points\": float(cost.get(\"max_spread_points\", 0.0) or 0.0),\n            }\n            if cost_status not in {\"PASS\", \"CAUTION\", \"BLOCK\"}:\n                return self._report(\"BLOCKED\", \"trading_cost_status_unknown\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)\n            if not cost_allowed:\n                return self._report(\"WAITING\", \"trading_cost_not_approved\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)\n            if cost_status == \"BLOCK\":\n                return self._report(\"BLOCKED\", \"trading_cost_contract_inconsistent\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)\n            if str(order.get(\"status\", \"\")).upper() != \"SIMULATION_ORDER_READY\":\n                return self._report(\"WAITING\", \"protected_order_not_ready\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence)\n\n            sl_points = float(protection.get(\"stop_loss_points\", 0.0) or 0.0)\n            tp_points = float(protection.get(\"take_profit_points\", 0.0) or 0.0)\n            if sl_points <= 0 or tp_points <= 0:\n                return self._report(\"BLOCKED\", \"protective_sl_tp_missing\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence)\n\n            current_orders = len(afip_positions)\n            account_balance = float(self._value(account, \"balance\", 0.0) or 0.0)\n            growth = self._capital_growth_decision(account_balance, current_orders)\n            allocation_lots = growth.available_lots\n            units = sum(max(1, int(round(lot / 0.01))) for lot in allocation_lots)\n            maximum_orders = 0 if self.policy.allocation_mode == \"RESEARCH_FIXED_001\" else self.policy.maximum_concurrent_orders\n            remaining_order_capacity = -1 if maximum_orders == 0 else max(0, maximum_orders - current_orders)\n            allocation_diagnostics = {\n                \"allocated_units\": units,\n                \"allocated_orders\": len(allocation_lots),\n                \"allocated_lots\": tuple(allocation_lots),\n                \"total_allocated_lot\": round(sum(allocation_lots), 2),\n                \"order_unit_distribution\": tuple(max(1, int(round(lot / 0.01))) for lot in allocation_lots),\n                \"maximum_orders\": maximum_orders,\n                \"remaining_order_capacity\": remaining_order_capacity,\n                \"allocation_mode\": growth.mode,\n                \"account_balance\": growth.balance,\n                \"current_tier_minimum_balance\": growth.current_tier_minimum_balance,\n                \"target_tier_lots\": growth.target_lots,\n                \"next_tier_balance\": growth.next_tier_balance,\n                \"remaining_to_next_tier\": growth.remaining_to_next_tier,\n                \"maximum_tier_balance\": growth.maximum_tier_balance,\n                \"withdrawal_reference_balance\": growth.withdrawal_reference_balance,\n            }\n            if not allocation_lots:\n                return self._report(\"WAITING\", \"profile_order_capacity_unavailable\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)\n\n            fingerprint = hashlib.sha256(f\"{action}|{confidence:.4f}|{sl_points:.2f}|{tp_points:.2f}\".encode()).hexdigest()\n            if not self._cooldown_passed(fingerprint):\n                return self._report(\"WAITING\", \"duplicate_signal_cooldown_active\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)\n\n            symbol_info = mt5.symbol_info(self.profile.symbol)\n            point_size = float(self._value(symbol_info, \"point\", 0.0) or 0.0)\n            digits = int(self._value(symbol_info, \"digits\", 0) or 0)\n            execution_diagnostics = {**cost_diagnostics, \"point_size\": point_size, \"digits\": digits}\n\n            tickets: list[int] = []\n            for volume in allocation_lots:\n                request = self._request(mt5, action, sl_points, tp_points, volume)\n                check = mt5.order_check(request)\n                if check is None or int(self._value(check, \"retcode\", -1)) != 0:\n                    reason = self._value(check, \"comment\", mt5.last_error())\n                    return self._report(\"BLOCKED\", f\"order_check_failed:{reason}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, mt5_result_code=int(self._value(check, \"retcode\", -1)), mt5_result_comment=str(reason), **execution_diagnostics)\n                result_send = mt5.order_send(request)\n                if result_send is None:\n                    return self._report(\"ERROR\", f\"order_send_returned_none:{mt5.last_error()}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_comment=str(mt5.last_error()), **execution_diagnostics)\n                retcode = int(self._value(result_send, \"retcode\", -1))\n                success_codes = {\n                    int(getattr(mt5, name)) for name in SUCCESS_RETCODE_NAMES if hasattr(mt5, name)\n                }\n                if retcode not in success_codes:\n                    comment = self._value(result_send, \"comment\", \"unknown\")\n                    return self._report(\"ERROR\", f\"order_send_failed:{retcode}:{comment}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(comment), **execution_diagnostics)\n                ticket = int(self._value(result_send, \"order\", self._value(result_send, \"deal\", 0)) or 0)\n                tickets.append(ticket)\n\n            report = self._report(\"ORDER_SENT\", \"protected_demo_orders_sent\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status=\"DEMO_ORDER_SENT\", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, \"comment\", \"\")), **execution_diagnostics)\n            state = report.as_dict()\n            state[\"last_signal_fingerprint\"] = fingerprint\n            state[\"last_order_epoch\"] = time.time()\n            self._write_json(self.state_path, state)\n            return report\n        except Exception as exc:\n            return self._report(\"ERROR\", f\"demo_gateway_error:{type(exc).__name__}:{exc}\")\n        finally:\n            try:\n                mt5.shutdown()\n            except Exception:\n                pass"
+        },
+        {
+          "name": "__init__",
+          "line": 517,
+          "end_line": 521,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "request_stop",
+          "line": 523,
+          "end_line": 524,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_load",
+          "line": 527,
+          "end_line": 531,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "run",
+          "line": 533,
+          "end_line": 556,
+          "relevant_keywords": [],
+          "source": ""
+        }
+      ],
+      "calls": [
+        {
+          "name": "dataclass",
+          "line": 44
+        },
+        {
+          "name": "dataclass",
+          "line": 116
+        },
+        {
+          "name": "dataclass",
+          "line": 132
+        },
+        {
+          "name": "Path",
+          "line": 119
+        },
+        {
+          "name": "cls",
+          "line": 62
+        },
+        {
+          "name": "tuple",
+          "line": 113
+        },
+        {
+          "name": "asdict",
+          "line": 178
+        },
+        {
+          "name": "simulate",
+          "line": 202
+        },
+        {
+          "name": "isoformat",
+          "line": 211
+        },
+        {
+          "name": "isinstance",
+          "line": 231
+        },
+        {
+          "name": "getattr",
+          "line": 233
+        },
+        {
+          "name": "path.parent.mkdir",
+          "line": 237
+        },
+        {
+          "name": "path.with_suffix",
+          "line": 238
+        },
+        {
+          "name": "temporary.write_text",
+          "line": 239
+        },
+        {
+          "name": "temporary.replace",
+          "line": 240
+        },
+        {
+          "name": "path.parent.mkdir",
+          "line": 244
+        },
+        {
+          "name": "payload.update",
+          "line": 267
+        },
+        {
+          "name": "DemoGatewayReport",
+          "line": 268
+        },
+        {
+          "name": "self._state",
+          "line": 269
+        },
+        {
+          "name": "report.as_dict",
+          "line": 270
+        },
+        {
+          "name": "self._write_json",
+          "line": 274
+        },
+        {
+          "name": "self._append_jsonl",
+          "line": 275
+        },
+        {
+          "name": "self.policy.validate",
+          "line": 279
+        },
+        {
+          "name": "mt5.initialize",
+          "line": 295
+        },
+        {
+          "name": "mt5.account_info",
+          "line": 305
+        },
+        {
+          "name": "int",
+          "line": 311
+        },
+        {
+          "name": "mt5.terminal_info",
+          "line": 323
+        },
+        {
+          "name": "list",
+          "line": 333
+        },
+        {
+          "name": "CapitalGrowthEngine.evaluate",
+          "line": 339
+        },
+        {
+          "name": "self._state",
+          "line": 354
+        },
+        {
+          "name": "float",
+          "line": 357
+        },
+        {
+          "name": "mt5.symbol_info",
+          "line": 361
+        },
+        {
+          "name": "mt5.symbol_info_tick",
+          "line": 362
+        },
+        {
+          "name": "float",
+          "line": 363
+        },
+        {
+          "name": "int",
+          "line": 364
+        },
+        {
+          "name": "float",
+          "line": 368
+        },
+        {
+          "name": "self._mt5_module",
+          "line": 391
+        },
+        {
+          "name": "config.validate",
+          "line": 518
+        },
+        {
+          "name": "json.loads",
+          "line": 528
+        },
+        {
+          "name": "next",
+          "line": 529
+        },
+        {
+          "name": "next",
+          "line": 530
+        },
+        {
+          "name": "self._load",
+          "line": 534
+        },
+        {
+          "name": "DemoExecutionGateway",
+          "line": 535
+        },
+        {
+          "name": "errors.append",
+          "line": 108
+        },
+        {
+          "name": "errors.append",
+          "line": 109
+        },
+        {
+          "name": "errors.append",
+          "line": 110
+        },
+        {
+          "name": "abs",
+          "line": 111
+        },
+        {
+          "name": "errors.append",
+          "line": 111
+        },
+        {
+          "name": "errors.append",
+          "line": 112
+        },
+        {
+          "name": "self.profile_id.upper",
+          "line": 124
+        },
+        {
+          "name": "ValueError",
+          "line": 125
+        },
+        {
+          "name": "ValueError",
+          "line": 127
+        },
+        {
+          "name": "ValueError",
+          "line": 129
+        },
+        {
+          "name": "upper",
+          "line": 206
+        },
+        {
+          "name": "upper",
+          "line": 207
+        },
+        {
+          "name": "obj.get",
+          "line": 232
+        },
+        {
+          "name": "json.dumps",
+          "line": 239
+        },
+        {
+          "name": "path.open",
+          "line": 245
+        },
+        {
+          "name": "stream.write",
+          "line": 246
+        },
+        {
+          "name": "self.state_path.exists",
+          "line": 249
+        },
+        {
+          "name": "json.loads",
+          "line": 252
+        },
+        {
+          "name": "self._utc",
+          "line": 265
+        },
+        {
+          "name": "report.as_dict",
+          "line": 275
+        },
+        {
+          "name": "self.profile.mt5_terminal.exists",
+          "line": 292
+        },
+        {
+          "name": "int",
+          "line": 309
+        },
+        {
+          "name": "int",
+          "line": 309
+        },
+        {
+          "name": "casefold",
+          "line": 310
+        },
+        {
+          "name": "self.profile.server.casefold",
+          "line": 310
+        },
+        {
+          "name": "self._value",
+          "line": 311
+        },
+        {
+          "name": "bool",
+          "line": 318
+        },
+        {
+          "name": "bool",
+          "line": 320
+        },
+        {
+          "name": "mt5.symbol_select",
+          "line": 326
+        },
+        {
+          "name": "mt5.symbol_info_tick",
+          "line": 328
+        },
+        {
+          "name": "self._capital_growth_decision",
+          "line": 351
+        },
+        {
+          "name": "state.get",
+          "line": 355
+        },
+        {
+          "name": "self._value",
+          "line": 363
+        },
+        {
+          "name": "self._value",
+          "line": 364
+        },
+        {
+          "name": "ValueError",
+          "line": 366
+        },
+        {
+          "name": "self._value",
+          "line": 368
+        },
+        {
+          "name": "ValueError",
+          "line": 370
+        },
+        {
+          "name": "getattr",
+          "line": 373
+        },
+        {
+          "name": "getattr",
+          "line": 373
+        },
+        {
+          "name": "getattr",
+          "line": 375
+        },
+        {
+          "name": "round",
+          "line": 377
+        },
+        {
+          "name": "round",
+          "line": 379
+        },
+        {
+          "name": "round",
+          "line": 380
+        },
+        {
+          "name": "round",
+          "line": 381
+        },
+        {
+          "name": "getattr",
+          "line": 385
+        },
+        {
+          "name": "getattr",
+          "line": 386
+        },
+        {
+          "name": "self.preflight",
+          "line": 393
+        },
+        {
+          "name": "self._existing_positions",
+          "line": 398
+        },
+        {
+          "name": "self._simulate",
+          "line": 402
+        },
+        {
+          "name": "result.get",
+          "line": 403
+        },
+        {
+          "name": "result.get",
+          "line": 404
+        },
+        {
+          "name": "upper",
+          "line": 405
+        },
+        {
+          "name": "float",
+          "line": 406
+        },
+        {
+          "name": "upper",
+          "line": 407
+        },
+        {
+          "name": "upper",
+          "line": 408
+        },
+        {
+          "name": "result.get",
+          "line": 409
+        },
+        {
+          "name": "result.get",
+          "line": 410
+        },
+        {
+          "name": "order.get",
+          "line": 411
+        },
+        {
+          "name": "upper",
+          "line": 422
+        },
+        {
+          "name": "float",
+          "line": 440
+        },
+        {
+          "name": "float",
+          "line": 441
+        },
+        {
+          "name": "len",
+          "line": 445
+        },
+        {
+          "name": "float",
+          "line": 446
+        },
+        {
+          "name": "self._capital_growth_decision",
+          "line": 447
+        },
+        {
+          "name": "sum",
+          "line": 449
+        },
+        {
+          "name": "hexdigest",
+          "line": 472
+        },
+        {
+          "name": "mt5.symbol_info",
+          "line": 476
+        },
+        {
+          "name": "float",
+          "line": 477
+        },
+        {
+          "name": "int",
+          "line": 478
+        },
+        {
+          "name": "self._report",
+          "line": 501
+        },
+        {
+          "name": "report.as_dict",
+          "line": 502
+        },
+        {
+          "name": "time.time",
+          "line": 504
+        },
+        {
+          "name": "self._write_json",
+          "line": 505
+        },
+        {
+          "name": "config_path.read_text",
+          "line": 528
+        },
+        {
+          "name": "DemoProfilePolicy.from_mapping",
+          "line": 531
+        },
+        {
+          "name": "previous.items",
+          "line": 554
+        },
+        {
+          "name": "upper",
+          "line": 63
+        },
+        {
+          "name": "bool",
+          "line": 64
+        },
+        {
+          "name": "bool",
+          "line": 65
+        },
+        {
+          "name": "float",
+          "line": 66
+        },
+        {
+          "name": "int",
+          "line": 67
+        },
+        {
+          "name": "float",
+          "line": 68
+        },
+        {
+          "name": "upper",
+          "line": 69
+        },
+        {
+          "name": "tuple",
+          "line": 70
+        },
+        {
+          "name": "int",
+          "line": 74
+        },
+        {
+          "name": "float",
+          "line": 75
+        },
+        {
+          "name": "int",
+          "line": 76
+        },
+        {
+          "name": "int",
+          "line": 77
+        },
+        {
+          "name": "float",
+          "line": 78
+        },
+        {
+          "name": "errors.append",
+          "line": 85
+        },
+        {
+          "name": "errors.append",
+          "line": 87
+        },
+        {
+          "name": "datetime.now",
+          "line": 197
+        },
+        {
+          "name": "RuntimeV1",
+          "line": 202
+        },
+        {
+          "name": "astimezone",
+          "line": 211
+        },
+        {
+          "name": "dict",
+          "line": 239
+        },
+        {
+          "name": "self.state_path.read_text",
+          "line": 252
+        },
+        {
+          "name": "self._report",
+          "line": 281
+        },
+        {
+          "name": "self._report",
+          "line": 283
+        },
+        {
+          "name": "self._report",
+          "line": 285
+        },
+        {
+          "name": "self._report",
+          "line": 287
+        },
+        {
+          "name": "self._report",
+          "line": 289
+        },
+        {
+          "name": "self._report",
+          "line": 291
+        },
+        {
+          "name": "self._report",
+          "line": 293
+        },
+        {
+          "name": "str",
+          "line": 296
+        },
+        {
+          "name": "int",
+          "line": 297
+        },
+        {
+          "name": "os.environ.get",
+          "line": 298
+        },
+        {
+          "name": "self._report",
+          "line": 304
+        },
+        {
+          "name": "self._report",
+          "line": 307
+        },
+        {
+          "name": "self._value",
+          "line": 309
+        },
+        {
+          "name": "self._report",
+          "line": 313
+        },
+        {
+          "name": "self._report",
+          "line": 315
+        },
+        {
+          "name": "self._report",
+          "line": 317
+        },
+        {
+          "name": "self._value",
+          "line": 318
+        },
+        {
+          "name": "self._report",
+          "line": 319
+        },
+        {
+          "name": "self._value",
+          "line": 320
+        },
+        {
+          "name": "self._report",
+          "line": 321
+        },
+        {
+          "name": "bool",
+          "line": 324
+        },
+        {
+          "name": "self._report",
+          "line": 325
+        },
+        {
+          "name": "self._report",
+          "line": 327
+        },
+        {
+          "name": "self._report",
+          "line": 329
+        },
+        {
+          "name": "mt5.positions_get",
+          "line": 333
+        },
+        {
+          "name": "state.get",
+          "line": 357
+        },
+        {
+          "name": "time.time",
+          "line": 358
+        },
+        {
+          "name": "float",
+          "line": 377
+        },
+        {
+          "name": "self._report",
+          "line": 400
+        },
+        {
+          "name": "self._report",
+          "line": 414
+        },
+        {
+          "name": "self._report",
+          "line": 416
+        },
+        {
+          "name": "self._report",
+          "line": 418
+        },
+        {
+          "name": "bool",
+          "line": 419
+        },
+        {
+          "name": "self._report",
+          "line": 420
+        },
+        {
+          "name": "cost.get",
+          "line": 423
+        },
+        {
+          "name": "float",
+          "line": 427
+        },
+        {
+          "name": "float",
+          "line": 428
+        },
+        {
+          "name": "float",
+          "line": 429
+        },
+        {
+          "name": "self._report",
+          "line": 432
+        },
+        {
+          "name": "self._report",
+          "line": 434
+        },
+        {
+          "name": "self._report",
+          "line": 436
+        },
+        {
+          "name": "upper",
+          "line": 437
+        },
+        {
+          "name": "self._report",
+          "line": 438
+        },
+        {
+          "name": "self._report",
+          "line": 443
+        },
+        {
+          "name": "max",
+          "line": 451
+        },
+        {
+          "name": "len",
+          "line": 454
+        },
+        {
+          "name": "tuple",
+          "line": 455
+        },
+        {
+          "name": "round",
+          "line": 456
+        },
+        {
+          "name": "tuple",
+          "line": 457
+        },
+        {
+          "name": "self._report",
+          "line": 470
+        },
+        {
+          "name": "self._cooldown_passed",
+          "line": 473
+        },
+        {
+          "name": "self._report",
+          "line": 474
+        },
+        {
+          "name": "self._request",
+          "line": 483
+        },
+        {
+          "name": "mt5.order_check",
+          "line": 484
+        },
+        {
+          "name": "mt5.order_send",
+          "line": 488
+        },
+        {
+          "name": "int",
+          "line": 491
+        },
+        {
+          "name": "int",
+          "line": 498
+        },
+        {
+          "name": "tickets.append",
+          "line": 499
+        },
+        {
+          "name": "self._report",
+          "line": 508
+        },
+        {
+          "name": "mt5.shutdown",
+          "line": 511
+        },
+        {
+          "name": "signal.getsignal",
+          "line": 540
+        },
+        {
+          "name": "signal.signal",
+          "line": 541
+        },
+        {
+          "name": "gateway.run_cycle",
+          "line": 546
+        },
+        {
+          "name": "print",
+          "line": 548
+        },
+        {
+          "name": "raw.get",
+          "line": 64
+        },
+        {
+          "name": "raw.get",
+          "line": 65
+        },
+        {
+          "name": "raw.get",
+          "line": 66
+        },
+        {
+          "name": "raw.get",
+          "line": 67
+        },
+        {
+          "name": "raw.get",
+          "line": 68
+        },
+        {
+          "name": "raw.get",
+          "line": 74
+        },
+        {
+          "name": "raw.get",
+          "line": 75
+        },
+        {
+          "name": "raw.get",
+          "line": 76
+        },
+        {
+          "name": "raw.get",
+          "line": 77
+        },
+        {
+          "name": "raw.get",
+          "line": 78
+        },
+        {
+          "name": "errors.append",
+          "line": 90
+        },
+        {
+          "name": "any",
+          "line": 100
+        },
+        {
+          "name": "errors.append",
+          "line": 106
+        },
+        {
+          "name": "strip",
+          "line": 206
+        },
+        {
+          "name": "strip",
+          "line": 207
+        },
+        {
+          "name": "json.dumps",
+          "line": 246
+        },
+        {
+          "name": "join",
+          "line": 281
+        },
+        {
+          "name": "str",
+          "line": 310
+        },
+        {
+          "name": "self._value",
+          "line": 324
+        },
+        {
+          "name": "int",
+          "line": 334
+        },
+        {
+          "name": "int",
+          "line": 335
+        },
+        {
+          "name": "str",
+          "line": 405
+        },
+        {
+          "name": "decision.get",
+          "line": 406
+        },
+        {
+          "name": "str",
+          "line": 407
+        },
+        {
+          "name": "str",
+          "line": 408
+        },
+        {
+          "name": "risk.get",
+          "line": 419
+        },
+        {
+          "name": "strip",
+          "line": 422
+        },
+        {
+          "name": "protection.get",
+          "line": 440
+        },
+        {
+          "name": "protection.get",
+          "line": 441
+        },
+        {
+          "name": "self._value",
+          "line": 446
+        },
+        {
+          "name": "max",
+          "line": 449
+        },
+        {
+          "name": "sum",
+          "line": 456
+        },
+        {
+          "name": "hashlib.sha256",
+          "line": 472
+        },
+        {
+          "name": "self._value",
+          "line": 477
+        },
+        {
+          "name": "self._value",
+          "line": 478
+        },
+        {
+          "name": "self._value",
+          "line": 486
+        },
+        {
+          "name": "self._report",
+          "line": 487
+        },
+        {
+          "name": "self._report",
+          "line": 490
+        },
+        {
+          "name": "self._value",
+          "line": 491
+        },
+        {
+          "name": "int",
+          "line": 493
+        },
+        {
+          "name": "self._value",
+          "line": 496
+        },
+        {
+          "name": "self._report",
+          "line": 497
+        },
+        {
+          "name": "len",
+          "line": 501
+        },
+        {
+          "name": "tuple",
+          "line": 501
+        },
+        {
+          "name": "str",
+          "line": 501
+        },
+        {
+          "name": "load",
+          "line": 530
+        },
+        {
+          "name": "json.dumps",
+          "line": 548
+        },
+        {
+          "name": "self._sleep",
+          "line": 552
+        },
+        {
+          "name": "signal.signal",
+          "line": 555
+        },
+        {
+          "name": "strip",
+          "line": 63
+        },
+        {
+          "name": "strip",
+          "line": 69
+        },
+        {
+          "name": "raw.get",
+          "line": 74
+        },
+        {
+          "name": "errors.append",
+          "line": 94
+        },
+        {
+          "name": "errors.append",
+          "line": 98
+        },
+        {
+          "name": "errors.append",
+          "line": 101
+        },
+        {
+          "name": "self._clock",
+          "line": 211
+        },
+        {
+          "name": "dict",
+          "line": 246
+        },
+        {
+          "name": "self._value",
+          "line": 310
+        },
+        {
+          "name": "str",
+          "line": 313
+        },
+        {
+          "name": "str",
+          "line": 315
+        },
+        {
+          "name": "str",
+          "line": 317
+        },
+        {
+          "name": "self._value",
+          "line": 334
+        },
+        {
+          "name": "self._value",
+          "line": 335
+        },
+        {
+          "name": "decision.get",
+          "line": 405
+        },
+        {
+          "name": "result.get",
+          "line": 407
+        },
+        {
+          "name": "result.get",
+          "line": 408
+        },
+        {
+          "name": "cost.get",
+          "line": 427
+        },
+        {
+          "name": "cost.get",
+          "line": 428
+        },
+        {
+          "name": "cost.get",
+          "line": 429
+        },
+        {
+          "name": "str",
+          "line": 437
+        },
+        {
+          "name": "int",
+          "line": 449
+        },
+        {
+          "name": "max",
+          "line": 457
+        },
+        {
+          "name": "encode",
+          "line": 472
+        },
+        {
+          "name": "int",
+          "line": 485
+        },
+        {
+          "name": "mt5.last_error",
+          "line": 486
+        },
+        {
+          "name": "getattr",
+          "line": 493
+        },
+        {
+          "name": "hasattr",
+          "line": 493
+        },
+        {
+          "name": "self._value",
+          "line": 498
+        },
+        {
+          "name": "self._value",
+          "line": 501
+        },
+        {
+          "name": "upper",
+          "line": 529
+        },
+        {
+          "name": "profile_id.upper",
+          "line": 529
+        },
+        {
+          "name": "profile_id.upper",
+          "line": 530
+        },
+        {
+          "name": "report.as_dict",
+          "line": 548
+        },
+        {
+          "name": "float",
+          "line": 71
+        },
+        {
+          "name": "tuple",
+          "line": 71
+        },
+        {
+          "name": "raw.get",
+          "line": 72
+        },
+        {
+          "name": "len",
+          "line": 97
+        },
+        {
+          "name": "os.environ.get",
+          "line": 206
+        },
+        {
+          "name": "os.environ.get",
+          "line": 207
+        },
+        {
+          "name": "mt5.last_error",
+          "line": 304
+        },
+        {
+          "name": "mt5.last_error",
+          "line": 307
+        },
+        {
+          "name": "order.get",
+          "line": 405
+        },
+        {
+          "name": "str",
+          "line": 422
+        },
+        {
+          "name": "order.get",
+          "line": 437
+        },
+        {
+          "name": "round",
+          "line": 449
+        },
+        {
+          "name": "int",
+          "line": 457
+        },
+        {
+          "name": "self._value",
+          "line": 485
+        },
+        {
+          "name": "len",
+          "line": 487
+        },
+        {
+          "name": "tuple",
+          "line": 487
+        },
+        {
+          "name": "int",
+          "line": 487
+        },
+        {
+          "name": "str",
+          "line": 487
+        },
+        {
+          "name": "len",
+          "line": 490
+        },
+        {
+          "name": "tuple",
+          "line": 490
+        },
+        {
+          "name": "str",
+          "line": 490
+        },
+        {
+          "name": "len",
+          "line": 497
+        },
+        {
+          "name": "tuple",
+          "line": 497
+        },
+        {
+          "name": "str",
+          "line": 497
+        },
+        {
+          "name": "self._value",
+          "line": 498
+        },
+        {
+          "name": "FourProfileOperationalRuntime",
+          "line": 530
+        },
+        {
+          "name": "str",
+          "line": 63
+        },
+        {
+          "name": "str",
+          "line": 69
+        },
+        {
+          "name": "cost.get",
+          "line": 422
+        },
+        {
+          "name": "round",
+          "line": 457
+        },
+        {
+          "name": "self._value",
+          "line": 487
+        },
+        {
+          "name": "mt5.last_error",
+          "line": 490
+        },
+        {
+          "name": "mt5.last_error",
+          "line": 490
+        },
+        {
+          "name": "type",
+          "line": 508
+        },
+        {
+          "name": "str",
+          "line": 529
+        },
+        {
+          "name": "raw.get",
+          "line": 69
+        },
+        {
+          "name": "float",
+          "line": 71
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 4,
+          "keyword": "atr",
+          "text": "account is a MetaTrader 5 DEMO account. Real/contest accounts, fallback market"
+        },
+        {
+          "line": 6,
+          "keyword": "order_send",
+          "text": "blocked before ``order_send`` is reachable."
+        },
+        {
+          "line": 40,
+          "keyword": "order_check",
+          "text": "def order_check(self, request: Mapping[str, Any]) -> Any: ..."
+        },
+        {
+          "line": 41,
+          "keyword": "order_send",
+          "text": "def order_send(self, request: Mapping[str, Any]) -> Any: ..."
+        },
+        {
+          "line": 49,
+          "keyword": "capital_per_unit",
+          "text": "capital_per_unit: float"
+        },
+        {
+          "line": 50,
+          "keyword": "maximum_units",
+          "text": "maximum_units: int"
+        },
+        {
+          "line": 66,
+          "keyword": "capital_per_unit",
+          "text": "capital_per_unit=float(raw.get(\"capital_per_unit\", 1000.0)),"
+        },
+        {
+          "line": 67,
+          "keyword": "maximum_units",
+          "text": "maximum_units=int(raw.get(\"maximum_units\", 1)),"
+        },
+        {
+          "line": 74,
+          "keyword": "maximum_units",
+          "text": "maximum_concurrent_orders=int(raw.get(\"maximum_concurrent_orders\", raw.get(\"maximum_units\", 4))),"
+        },
+        {
+          "line": 84,
+          "keyword": "capital_per_unit",
+          "text": "if self.capital_per_unit <= 0:"
+        },
+        {
+          "line": 85,
+          "keyword": "capital_per_unit",
+          "text": "errors.append(\"capital_per_unit_must_be_positive\")"
+        },
+        {
+          "line": 86,
+          "keyword": "maximum_units",
+          "text": "if self.maximum_units not in {1, 2, 3, 4}:"
+        },
+        {
+          "line": 87,
+          "keyword": "maximum_units",
+          "text": "errors.append(\"maximum_units_must_be_1_to_4\")"
+        },
+        {
+          "line": 146,
+          "keyword": "allocated_units",
+          "text": "allocated_units: int = 0"
+        },
+        {
+          "line": 163,
+          "keyword": "order_check",
+          "text": "order_check_called: bool = False"
+        },
+        {
+          "line": 164,
+          "keyword": "order_send",
+          "text": "order_send_called: bool = False"
+        },
+        {
+          "line": 224,
+          "keyword": "atr",
+          "text": "import MetaTrader5 as mt5"
+        },
+        {
+          "line": 345,
+          "keyword": "capital_per_unit",
+          "text": "legacy_capital_per_unit=self.policy.capital_per_unit,"
+        },
+        {
+          "line": 346,
+          "keyword": "maximum_units",
+          "text": "legacy_maximum_units=self.policy.maximum_units,"
+        },
+        {
+          "line": 360,
+          "keyword": "sl_points",
+          "text": "def _request(self, mt5: MT5Protocol, action: str, sl_points: float, tp_points: float, volume: float) -> dict[str, Any]:"
+        },
+        {
+          "line": 360,
+          "keyword": "tp_points",
+          "text": "def _request(self, mt5: MT5Protocol, action: str, sl_points: float, tp_points: float, volume: float) -> dict[str, Any]:"
+        },
+        {
+          "line": 371,
+          "keyword": "sl_points",
+          "text": "sl = price - sl_points * point if buy else price + sl_points * point"
+        },
+        {
+          "line": 372,
+          "keyword": "tp_points",
+          "text": "tp = price + tp_points * point if buy else price - tp_points * point"
+        },
+        {
+          "line": 440,
+          "keyword": "sl_points",
+          "text": "sl_points = float(protection.get(\"stop_loss_points\", 0.0) or 0.0)"
+        },
+        {
+          "line": 440,
+          "keyword": "stop_loss",
+          "text": "sl_points = float(protection.get(\"stop_loss_points\", 0.0) or 0.0)"
+        },
+        {
+          "line": 441,
+          "keyword": "tp_points",
+          "text": "tp_points = float(protection.get(\"take_profit_points\", 0.0) or 0.0)"
+        },
+        {
+          "line": 441,
+          "keyword": "take_profit",
+          "text": "tp_points = float(protection.get(\"take_profit_points\", 0.0) or 0.0)"
+        },
+        {
+          "line": 442,
+          "keyword": "sl_points",
+          "text": "if sl_points <= 0 or tp_points <= 0:"
+        },
+        {
+          "line": 442,
+          "keyword": "tp_points",
+          "text": "if sl_points <= 0 or tp_points <= 0:"
+        },
+        {
+          "line": 453,
+          "keyword": "allocated_units",
+          "text": "\"allocated_units\": units,"
+        },
+        {
+          "line": 472,
+          "keyword": "sl_points",
+          "text": "fingerprint = hashlib.sha256(f\"{action}|{confidence:.4f}|{sl_points:.2f}|{tp_points:.2f}\".encode()).hexdigest()"
+        },
+        {
+          "line": 472,
+          "keyword": "tp_points",
+          "text": "fingerprint = hashlib.sha256(f\"{action}|{confidence:.4f}|{sl_points:.2f}|{tp_points:.2f}\".encode()).hexdigest()"
+        },
+        {
+          "line": 483,
+          "keyword": "sl_points",
+          "text": "request = self._request(mt5, action, sl_points, tp_points, volume)"
+        },
+        {
+          "line": 483,
+          "keyword": "tp_points",
+          "text": "request = self._request(mt5, action, sl_points, tp_points, volume)"
+        },
+        {
+          "line": 484,
+          "keyword": "order_check",
+          "text": "check = mt5.order_check(request)"
+        },
+        {
+          "line": 487,
+          "keyword": "order_check",
+          "text": "return self._report(\"BLOCKED\", f\"order_check_failed:{reason}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, mt5_result_code=int(self._value(check, \"retcode\", -1)), mt5_result_comment=str(reason), **execution_diagnostics)"
+        },
+        {
+          "line": 488,
+          "keyword": "order_send",
+          "text": "result_send = mt5.order_send(request)"
+        },
+        {
+          "line": 490,
+          "keyword": "order_send",
+          "text": "return self._report(\"ERROR\", f\"order_send_returned_none:{mt5.last_error()}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_comment=str(mt5.last_error()), **execution_diagnostics)"
+        },
+        {
+          "line": 490,
+          "keyword": "order_check",
+          "text": "return self._report(\"ERROR\", f\"order_send_returned_none:{mt5.last_error()}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_comment=str(mt5.last_error()), **execution_diagnostics)"
+        },
+        {
+          "line": 497,
+          "keyword": "order_send",
+          "text": "return self._report(\"ERROR\", f\"order_send_failed:{retcode}:{comment}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(comment), **execution_diagnostics)"
+        },
+        {
+          "line": 497,
+          "keyword": "order_check",
+          "text": "return self._report(\"ERROR\", f\"order_send_failed:{retcode}:{comment}\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(comment), **execution_diagnostics)"
+        },
+        {
+          "line": 501,
+          "keyword": "order_send",
+          "text": "report = self._report(\"ORDER_SENT\", \"protected_demo_orders_sent\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status=\"DEMO_ORDER_SENT\", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, \"comment\", \"\")), **execution_diagnostics)"
+        },
+        {
+          "line": 501,
+          "keyword": "order_check",
+          "text": "report = self._report(\"ORDER_SENT\", \"protected_demo_orders_sent\", account_trade_mode=\"DEMO\", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status=\"DEMO_ORDER_SENT\", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, \"comment\", \"\")), **execution_diagnostics)"
+        }
+      ]
+    },
+    {
+      "path": "afip/unit_allocation/runtime.py",
+      "module": "afip.unit_allocation.runtime",
+      "imports": [
+        "__future__",
+        "datetime",
+        "models",
+        "typing"
+      ],
+      "classes": [
+        {
+          "name": "UnitAllocationRuntime",
+          "line": 9,
+          "end_line": 113
+        }
+      ],
+      "functions": [
+        {
+          "name": "_number",
+          "line": 22,
+          "end_line": 26,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_integer",
+          "line": 29,
+          "end_line": 33,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "evaluate_one",
+          "line": 35,
+          "end_line": 113,
+          "relevant_keywords": [
+            "allocated_units",
+            "maximum_units",
+            "max_units",
+            "capital_per_unit"
+          ],
+          "source": "    def evaluate_one(self, record: Mapping[str, Any]) -> UnitAllocationReport:\n        now = record.get(\"current_time_utc\") or datetime.now(timezone.utc)\n        if not isinstance(now, datetime):\n            now = datetime.fromisoformat(str(now).replace(\"Z\", \"+00:00\"))\n\n        profile_name = str(record.get(\"profile_name\", \"Balanced\")).strip() or \"Balanced\"\n        profile_key = profile_name.upper()\n        default_capital_per_unit, default_max_units = self.PROFILE_DEFAULTS.get(profile_key, (500.0, 3))\n        capital_per_unit = self._number(record.get(\"capital_per_unit\", default_capital_per_unit), default_capital_per_unit)\n        profile_max_units = self._integer(record.get(\"maximum_units\", record.get(\"profile_max_units\", default_max_units)), default_max_units)\n        available_capital = self._number(record.get(\"available_capital\", record.get(\"equity\", record.get(\"balance\", 0.0))), 0.0)\n        risk_allowed = bool(record.get(\"risk_allowed\", True))\n\n        raw = record.get(\"trade_scores\") or record.get(\"scores\") or ()\n        if not isinstance(raw, (list, tuple)):\n            raw = ()\n        allocations: list[UnitAllocation] = []\n        for index, item in enumerate(raw):\n            if not isinstance(item, Mapping):\n                continue\n            opportunity_id = str(item.get(\"opportunity_id\", f\"OPPORTUNITY_{index + 1}\"))\n            symbol = str(item.get(\"symbol\", \"GOLD#\")).upper()\n            direction = str(item.get(\"direction\", \"WAIT\")).upper()\n            grade = str(item.get(\"grade\", \"REJECT\")).upper()\n            trade_score = self._number(item.get(\"final_score\", item.get(\"trade_score\", 0.0)))\n            upstream_eligible = bool(item.get(\"eligible\", True))\n            score_max_units = self.GRADE_CAPS.get(grade, 0)\n            capital_max_units = int(available_capital // capital_per_unit) if capital_per_unit > 0 else 0\n            units = min(profile_max_units, score_max_units, capital_max_units)\n            eligible = symbol == \"GOLD#\" and direction in {\"BUY\", \"SELL\"} and upstream_eligible and risk_allowed and units > 0\n            if not eligible:\n                units = 0\n            if symbol != \"GOLD#\":\n                en, th = \"Version 1 supports GOLD# only.\", \"เวอร์ชัน 1 รองรับเฉพาะ GOLD#\"\n            elif direction not in {\"BUY\", \"SELL\"}:\n                en, th = \"Direction is not actionable.\", \"ทิศทางยังไม่พร้อมใช้งาน\"\n            elif not upstream_eligible:\n                en, th = \"Trade scoring did not approve this candidate.\", \"การให้คะแนนการซื้อขายยังไม่อนุมัติผู้สมัครนี้\"\n            elif not risk_allowed:\n                en, th = \"Risk policy blocks unit allocation.\", \"นโยบายความเสี่ยงบล็อกการจัดสรร Unit\"\n            elif capital_per_unit <= 0:\n                en, th = \"Capital per unit must be positive.\", \"เงินทุนต่อ Unit ต้องมากกว่าศูนย์\"\n            elif capital_max_units <= 0:\n                en, th = \"Available capital is below one unit requirement.\", \"เงินทุนที่มีต่ำกว่าข้อกำหนดสำหรับ 1 Unit\"\n            elif score_max_units <= 0:\n                en, th = \"Trade grade does not permit any unit.\", \"เกรดการซื้อขายไม่อนุญาต Unit\"\n            else:\n                en = f\"Allocated {units} unit(s) at fixed 0.01 lot per unit; allocation does not authorize execution.\"\n                th = f\"จัดสรร {units} Unit โดยแต่ละ Unit คงที่ 0.01 lot และการจัดสรรไม่ใช่การอนุญาตให้ส่งคำสั่ง\"\n            allocations.append(UnitAllocation(\n                opportunity_id=opportunity_id, symbol=symbol, direction=direction,\n                trade_grade=grade, trade_score=round(trade_score, 4), profile_name=profile_name,\n                capital_per_unit=round(capital_per_unit, 2), available_capital=round(available_capital, 2),\n                profile_max_units=profile_max_units, score_max_units=score_max_units,\n                capital_max_units=capital_max_units, allocated_units=units,\n                lot_per_unit=self.LOT_PER_UNIT, total_lot=round(units * self.LOT_PER_UNIT, 2),\n                eligible=eligible, explanation_en=en, explanation_th=th,\n            ))\n        allocations.sort(key=lambda x: (not x.eligible, -x.trade_score, x.opportunity_id))\n        selected = next((x for x in allocations if x.eligible), None)\n        if selected:\n            status, reason = \"READY\", \"unit_allocation_ready\"\n            next_en = f\"Pass {selected.opportunity_id} with {selected.allocated_units} fixed unit(s) to Entry Validation; allocation does not authorize execution.\"\n            next_th = f\"ส่ง {selected.opportunity_id} พร้อม {selected.allocated_units} Unit คงที่ไปยังการตรวจสอบจุดเข้า โดยการจัดสรรไม่ใช่การอนุญาตให้ส่งคำสั่ง\"\n        else:\n            status, reason = \"WAITING\", \"no_eligible_unit_allocation\"\n            next_en = \"Wait for sufficient score, risk approval, profile capacity, and capital for at least one fixed unit.\"\n            next_th = \"รอคะแนน การอนุมัติความเสี่ยง ความจุโปรไฟล์ และเงินทุนที่เพียงพอสำหรับอย่างน้อย 1 Unit คงที่\"\n        return UnitAllocationReport(\n            status=status, reason=reason, allocations=tuple(allocations),\n            selected_opportunity_id=selected.opportunity_id if selected else \"NONE\",\n            selected_direction=selected.direction if selected else \"WAIT\",\n            allocated_units=selected.allocated_units if selected else 0,\n            lot_per_unit=self.LOT_PER_UNIT, total_lot=selected.total_lot if selected else 0.0,\n            profile_name=profile_name, expected_next_action_en=next_en,\n            expected_next_action_th=next_th,\n            next_review_time_utc=(now.astimezone(timezone.utc) + timedelta(minutes=10)).isoformat(),\n            direct_execution=False,\n        )"
+        }
+      ],
+      "calls": [
+        {
+          "name": "profile_name.upper",
+          "line": 41
+        },
+        {
+          "name": "self.PROFILE_DEFAULTS.get",
+          "line": 42
+        },
+        {
+          "name": "self._number",
+          "line": 43
+        },
+        {
+          "name": "self._integer",
+          "line": 44
+        },
+        {
+          "name": "self._number",
+          "line": 45
+        },
+        {
+          "name": "bool",
+          "line": 46
+        },
+        {
+          "name": "enumerate",
+          "line": 52
+        },
+        {
+          "name": "allocations.sort",
+          "line": 93
+        },
+        {
+          "name": "next",
+          "line": 94
+        },
+        {
+          "name": "UnitAllocationReport",
+          "line": 103
+        },
+        {
+          "name": "max",
+          "line": 24
+        },
+        {
+          "name": "max",
+          "line": 31
+        },
+        {
+          "name": "record.get",
+          "line": 36
+        },
+        {
+          "name": "datetime.now",
+          "line": 36
+        },
+        {
+          "name": "isinstance",
+          "line": 37
+        },
+        {
+          "name": "datetime.fromisoformat",
+          "line": 38
+        },
+        {
+          "name": "strip",
+          "line": 40
+        },
+        {
+          "name": "record.get",
+          "line": 43
+        },
+        {
+          "name": "record.get",
+          "line": 44
+        },
+        {
+          "name": "record.get",
+          "line": 45
+        },
+        {
+          "name": "record.get",
+          "line": 46
+        },
+        {
+          "name": "record.get",
+          "line": 48
+        },
+        {
+          "name": "record.get",
+          "line": 48
+        },
+        {
+          "name": "isinstance",
+          "line": 49
+        },
+        {
+          "name": "str",
+          "line": 55
+        },
+        {
+          "name": "upper",
+          "line": 56
+        },
+        {
+          "name": "upper",
+          "line": 57
+        },
+        {
+          "name": "upper",
+          "line": 58
+        },
+        {
+          "name": "self._number",
+          "line": 59
+        },
+        {
+          "name": "bool",
+          "line": 60
+        },
+        {
+          "name": "self.GRADE_CAPS.get",
+          "line": 61
+        },
+        {
+          "name": "min",
+          "line": 63
+        },
+        {
+          "name": "allocations.append",
+          "line": 84
+        },
+        {
+          "name": "float",
+          "line": 24
+        },
+        {
+          "name": "int",
+          "line": 31
+        },
+        {
+          "name": "replace",
+          "line": 38
+        },
+        {
+          "name": "record.get",
+          "line": 44
+        },
+        {
+          "name": "record.get",
+          "line": 45
+        },
+        {
+          "name": "isinstance",
+          "line": 53
+        },
+        {
+          "name": "item.get",
+          "line": 55
+        },
+        {
+          "name": "item.get",
+          "line": 59
+        },
+        {
+          "name": "item.get",
+          "line": 60
+        },
+        {
+          "name": "int",
+          "line": 62
+        },
+        {
+          "name": "UnitAllocation",
+          "line": 84
+        },
+        {
+          "name": "tuple",
+          "line": 104
+        },
+        {
+          "name": "isoformat",
+          "line": 111
+        },
+        {
+          "name": "str",
+          "line": 40
+        },
+        {
+          "name": "record.get",
+          "line": 45
+        },
+        {
+          "name": "str",
+          "line": 56
+        },
+        {
+          "name": "str",
+          "line": 57
+        },
+        {
+          "name": "str",
+          "line": 58
+        },
+        {
+          "name": "item.get",
+          "line": 59
+        },
+        {
+          "name": "str",
+          "line": 38
+        },
+        {
+          "name": "record.get",
+          "line": 40
+        },
+        {
+          "name": "item.get",
+          "line": 56
+        },
+        {
+          "name": "item.get",
+          "line": 57
+        },
+        {
+          "name": "item.get",
+          "line": 58
+        },
+        {
+          "name": "round",
+          "line": 86
+        },
+        {
+          "name": "round",
+          "line": 87
+        },
+        {
+          "name": "round",
+          "line": 87
+        },
+        {
+          "name": "round",
+          "line": 90
+        },
+        {
+          "name": "now.astimezone",
+          "line": 111
+        },
+        {
+          "name": "timedelta",
+          "line": 111
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 42,
+          "keyword": "max_units",
+          "text": "default_capital_per_unit, default_max_units = self.PROFILE_DEFAULTS.get(profile_key, (500.0, 3))"
+        },
+        {
+          "line": 42,
+          "keyword": "capital_per_unit",
+          "text": "default_capital_per_unit, default_max_units = self.PROFILE_DEFAULTS.get(profile_key, (500.0, 3))"
+        },
+        {
+          "line": 43,
+          "keyword": "capital_per_unit",
+          "text": "capital_per_unit = self._number(record.get(\"capital_per_unit\", default_capital_per_unit), default_capital_per_unit)"
+        },
+        {
+          "line": 44,
+          "keyword": "maximum_units",
+          "text": "profile_max_units = self._integer(record.get(\"maximum_units\", record.get(\"profile_max_units\", default_max_units)), default_max_units)"
+        },
+        {
+          "line": 44,
+          "keyword": "max_units",
+          "text": "profile_max_units = self._integer(record.get(\"maximum_units\", record.get(\"profile_max_units\", default_max_units)), default_max_units)"
+        },
+        {
+          "line": 61,
+          "keyword": "max_units",
+          "text": "score_max_units = self.GRADE_CAPS.get(grade, 0)"
+        },
+        {
+          "line": 62,
+          "keyword": "max_units",
+          "text": "capital_max_units = int(available_capital // capital_per_unit) if capital_per_unit > 0 else 0"
+        },
+        {
+          "line": 62,
+          "keyword": "capital_per_unit",
+          "text": "capital_max_units = int(available_capital // capital_per_unit) if capital_per_unit > 0 else 0"
+        },
+        {
+          "line": 63,
+          "keyword": "max_units",
+          "text": "units = min(profile_max_units, score_max_units, capital_max_units)"
+        },
+        {
+          "line": 75,
+          "keyword": "capital_per_unit",
+          "text": "elif capital_per_unit <= 0:"
+        },
+        {
+          "line": 77,
+          "keyword": "max_units",
+          "text": "elif capital_max_units <= 0:"
+        },
+        {
+          "line": 79,
+          "keyword": "max_units",
+          "text": "elif score_max_units <= 0:"
+        },
+        {
+          "line": 87,
+          "keyword": "capital_per_unit",
+          "text": "capital_per_unit=round(capital_per_unit, 2), available_capital=round(available_capital, 2),"
+        },
+        {
+          "line": 88,
+          "keyword": "max_units",
+          "text": "profile_max_units=profile_max_units, score_max_units=score_max_units,"
+        },
+        {
+          "line": 89,
+          "keyword": "allocated_units",
+          "text": "capital_max_units=capital_max_units, allocated_units=units,"
+        },
+        {
+          "line": 89,
+          "keyword": "max_units",
+          "text": "capital_max_units=capital_max_units, allocated_units=units,"
+        },
+        {
+          "line": 97,
+          "keyword": "allocated_units",
+          "text": "next_en = f\"Pass {selected.opportunity_id} with {selected.allocated_units} fixed unit(s) to Entry Validation; allocation does not authorize execution.\""
+        },
+        {
+          "line": 98,
+          "keyword": "allocated_units",
+          "text": "next_th = f\"ส่ง {selected.opportunity_id} พร้อม {selected.allocated_units} Unit คงที่ไปยังการตรวจสอบจุดเข้า โดยการจัดสรรไม่ใช่การอนุญาตให้ส่งคำสั่ง\""
+        },
+        {
+          "line": 107,
+          "keyword": "allocated_units",
+          "text": "allocated_units=selected.allocated_units if selected else 0,"
+        }
+      ]
+    },
+    {
+      "path": "afip/unit_allocation/models.py",
+      "module": "afip.unit_allocation.models",
+      "imports": [
+        "dataclasses"
+      ],
+      "classes": [
+        {
+          "name": "UnitAllocation",
+          "line": 5,
+          "end_line": 22
+        },
+        {
+          "name": "UnitAllocationReport",
+          "line": 26,
+          "end_line": 39
+        }
+      ],
+      "functions": [],
+      "calls": [
+        {
+          "name": "dataclass",
+          "line": 4
+        },
+        {
+          "name": "dataclass",
+          "line": 25
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 12,
+          "keyword": "capital_per_unit",
+          "text": "capital_per_unit: float"
+        },
+        {
+          "line": 14,
+          "keyword": "max_units",
+          "text": "profile_max_units: int"
+        },
+        {
+          "line": 15,
+          "keyword": "max_units",
+          "text": "score_max_units: int"
+        },
+        {
+          "line": 16,
+          "keyword": "max_units",
+          "text": "capital_max_units: int"
+        },
+        {
+          "line": 17,
+          "keyword": "allocated_units",
+          "text": "allocated_units: int"
+        },
+        {
+          "line": 32,
+          "keyword": "allocated_units",
+          "text": "allocated_units: int"
+        }
+      ]
+    },
+    {
+      "path": "afip/four_profile_operations/runtime.py",
+      "module": "afip.four_profile_operations.runtime",
+      "imports": [
+        "__future__",
+        "ctypes",
+        "dataclasses",
+        "datetime",
+        "json",
+        "os",
+        "pathlib",
+        "signal",
+        "subprocess",
+        "sys",
+        "typing"
+      ],
+      "classes": [
+        {
+          "name": "ProfileOperationalConfig",
+          "line": 24,
+          "end_line": 122
+        },
+        {
+          "name": "FourProfileReport",
+          "line": 126,
+          "end_line": 136
+        },
+        {
+          "name": "FourProfileOperationalRuntime",
+          "line": 139,
+          "end_line": 208
+        },
+        {
+          "name": "FourProfileSupervisor",
+          "line": 210,
+          "end_line": 373
+        }
+      ],
+      "functions": [
+        {
+          "name": "from_mapping",
+          "line": 48,
+          "end_line": 71,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "login",
+          "line": 74,
+          "end_line": 75,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "password_configured",
+          "line": 78,
+          "end_line": 79,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "masked_login",
+          "line": 82,
+          "end_line": 84,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "validate_policy",
+          "line": 86,
+          "end_line": 93,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "status_record",
+          "line": 95,
+          "end_line": 122,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "as_dict",
+          "line": 135,
+          "end_line": 136,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "__init__",
+          "line": 140,
+          "end_line": 141,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "load",
+          "line": 143,
+          "end_line": 145,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_duplicates",
+          "line": 148,
+          "end_line": 157,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "validate",
+          "line": 159,
+          "end_line": 175,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "prepare_isolation",
+          "line": 177,
+          "end_line": 193,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "launch_mt5",
+          "line": 195,
+          "end_line": 208,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "__init__",
+          "line": 212,
+          "end_line": 213,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_pid_path",
+          "line": 216,
+          "end_line": 217,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_worker_command",
+          "line": 220,
+          "end_line": 227,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "start",
+          "line": 229,
+          "end_line": 248,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "stop",
+          "line": 250,
+          "end_line": 263,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "restart",
+          "line": 265,
+          "end_line": 267,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_is_process_running",
+          "line": 270,
+          "end_line": 287,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "status",
+          "line": 289,
+          "end_line": 373,
+          "relevant_keywords": [
+            "allocated_units"
+          ],
+          "source": "    def status(self) -> FourProfileReport:\n        profiles = self.operations.load()\n        errors = self.operations.validate(profiles)\n        records: list[dict[str, Any]] = []\n        for profile in profiles:\n            record = profile.status_record()\n            locked_pid_path = self._pid_path(profile)\n            demo_pid_path = profile.runtime_directory / \"demo_runner.pid\"\n            running = False\n            pid = None\n            runtime_kind = \"STOPPED\"\n            for candidate, kind in ((demo_pid_path, \"DEMO_EXECUTION\"), (locked_pid_path, \"LOCKED_SIMULATION\")):\n                if not candidate.exists():\n                    continue\n                try:\n                    candidate_pid = int(candidate.read_text(encoding=\"utf-8\").strip())\n                    if self._is_process_running(candidate_pid):\n                        pid = candidate_pid\n                        running = True\n                        runtime_kind = kind\n                        break\n                    candidate.unlink(missing_ok=True)\n                except (OSError, ValueError):\n                    candidate.unlink(missing_ok=True)\n            health_path = profile.runtime_directory / \"mt5_health.json\"\n            mt5_health = {}\n            if health_path.exists():\n                try:\n                    mt5_health = json.loads(health_path.read_text(encoding=\"utf-8\"))\n                except (OSError, ValueError, TypeError):\n                    mt5_health = {}\n            demo_state_path = profile.runtime_directory / \"demo_execution_state.json\"\n            demo_state = {}\n            if demo_state_path.exists():\n                try:\n                    demo_state = json.loads(demo_state_path.read_text(encoding=\"utf-8-sig\"))\n                except (OSError, ValueError, TypeError):\n                    demo_state = {}\n            checked_at = demo_state.get(\"checked_at_utc\") or mt5_health.get(\"checked_at_utc\")\n            data_age_seconds = None\n            data_fresh = False\n            if checked_at:\n                try:\n                    checked_dt = datetime.fromisoformat(str(checked_at).replace(\"Z\", \"+00:00\"))\n                    if checked_dt.tzinfo is None:\n                        checked_dt = checked_dt.replace(tzinfo=timezone.utc)\n                    data_age_seconds = max(0, int((datetime.now(timezone.utc) - checked_dt).total_seconds()))\n                    data_fresh = data_age_seconds <= 180\n                except (TypeError, ValueError):\n                    pass\n            record.update({\n                \"runtime_state\": \"RUNNING\" if running else \"STOPPED\",\n                \"runtime_kind\": runtime_kind,\n                \"pid\": pid if running else None,\n                \"mt5_connection\": mt5_health.get(\"connection_status\", \"NOT_CHECKED\"),\n                \"latency_ms\": mt5_health.get(\"latency_ms\"),\n                \"reconnect_attempts\": mt5_health.get(\"reconnect_attempts\", 0),\n                \"mt5_reason\": mt5_health.get(\"reason\", \"MT5 health check not run\"),\n                \"demo_gateway_status\": demo_state.get(\"status\", \"NOT_STARTED\"),\n                \"demo_gateway_reason\": demo_state.get(\"reason\", \"Demo gateway has not run\"),\n                \"demo_verified\": demo_state.get(\"demo_verified\", False),\n                \"demo_armed\": demo_state.get(\"armed\", False),\n                \"demo_order_status\": demo_state.get(\"order_status\", \"ORDER_NOT_SENT\"),\n                \"demo_sent_units\": demo_state.get(\"sent_units\", 0),\n                \"demo_allocated_units\": demo_state.get(\"allocated_units\", 0),\n                \"decision_action\": demo_state.get(\"decision_action\", \"WAIT\"),\n                \"decision_confidence\": demo_state.get(\"decision_confidence\", 0.0),\n                \"tickets\": demo_state.get(\"tickets\", []),\n                \"allocation_mode\": demo_state.get(\"allocation_mode\", \"UNKNOWN\"),\n                \"account_balance\": demo_state.get(\"account_balance\", 0.0),\n                \"current_tier_minimum_balance\": demo_state.get(\"current_tier_minimum_balance\"),\n                \"target_tier_lots\": demo_state.get(\"target_tier_lots\", []),\n                \"allocated_lots\": demo_state.get(\"allocated_lots\", []),\n                \"total_allocated_lot\": demo_state.get(\"total_allocated_lot\", 0.0),\n                \"next_tier_balance\": demo_state.get(\"next_tier_balance\"),\n                \"remaining_to_next_tier\": demo_state.get(\"remaining_to_next_tier\", 0.0),\n                \"maximum_tier_balance\": demo_state.get(\"maximum_tier_balance\"),\n                \"withdrawal_reference_balance\": demo_state.get(\"withdrawal_reference_balance\"),\n                \"execution_mode\": demo_state.get(\"execution\", LOCKED_EXECUTION),\n                \"checked_at_utc\": checked_at or \"NOT_RECORDED\",\n                \"data_age_seconds\": data_age_seconds,\n                \"data_fresh\": data_fresh,\n            })\n            records.append(record)\n        return FourProfileReport(\"READY\" if not errors else \"BLOCKED\", tuple(records), errors)"
+        }
+      ],
+      "calls": [
+        {
+          "name": "dataclass",
+          "line": 23
+        },
+        {
+          "name": "dataclass",
+          "line": 125
+        },
+        {
+          "name": "cls",
+          "line": 49
+        },
+        {
+          "name": "strip",
+          "line": 75
+        },
+        {
+          "name": "bool",
+          "line": 79
+        },
+        {
+          "name": "tuple",
+          "line": 93
+        },
+        {
+          "name": "self.validate_policy",
+          "line": 96
+        },
+        {
+          "name": "asdict",
+          "line": 136
+        },
+        {
+          "name": "Path",
+          "line": 141
+        },
+        {
+          "name": "json.loads",
+          "line": 144
+        },
+        {
+          "name": "tuple",
+          "line": 145
+        },
+        {
+          "name": "tuple",
+          "line": 175
+        },
+        {
+          "name": "self.load",
+          "line": 178
+        },
+        {
+          "name": "self.validate",
+          "line": 180
+        },
+        {
+          "name": "tuple",
+          "line": 192
+        },
+        {
+          "name": "FourProfileReport",
+          "line": 193
+        },
+        {
+          "name": "self.prepare_isolation",
+          "line": 196
+        },
+        {
+          "name": "self.load",
+          "line": 200
+        },
+        {
+          "name": "FourProfileOperationalRuntime",
+          "line": 213
+        },
+        {
+          "name": "self.operations.prepare_isolation",
+          "line": 230
+        },
+        {
+          "name": "self.operations.load",
+          "line": 234
+        },
+        {
+          "name": "self.status",
+          "line": 248
+        },
+        {
+          "name": "self.operations.load",
+          "line": 252
+        },
+        {
+          "name": "self.status",
+          "line": 263
+        },
+        {
+          "name": "self.stop",
+          "line": 266
+        },
+        {
+          "name": "self.start",
+          "line": 267
+        },
+        {
+          "name": "ctypes.windll.kernel32.OpenProcess",
+          "line": 281
+        },
+        {
+          "name": "ctypes.c_ulong",
+          "line": 284
+        },
+        {
+          "name": "ctypes.windll.kernel32.GetExitCodeProcess",
+          "line": 285
+        },
+        {
+          "name": "ctypes.windll.kernel32.CloseHandle",
+          "line": 286
+        },
+        {
+          "name": "self.operations.load",
+          "line": 290
+        },
+        {
+          "name": "self.operations.validate",
+          "line": 291
+        },
+        {
+          "name": "FourProfileReport",
+          "line": 373
+        },
+        {
+          "name": "os.environ.get",
+          "line": 79
+        },
+        {
+          "name": "errors.append",
+          "line": 88
+        },
+        {
+          "name": "errors.append",
+          "line": 89
+        },
+        {
+          "name": "errors.append",
+          "line": 90
+        },
+        {
+          "name": "errors.append",
+          "line": 91
+        },
+        {
+          "name": "errors.append",
+          "line": 92
+        },
+        {
+          "name": "bool",
+          "line": 106
+        },
+        {
+          "name": "str",
+          "line": 107
+        },
+        {
+          "name": "str",
+          "line": 108
+        },
+        {
+          "name": "str",
+          "line": 110
+        },
+        {
+          "name": "str",
+          "line": 111
+        },
+        {
+          "name": "str",
+          "line": 112
+        },
+        {
+          "name": "str",
+          "line": 113
+        },
+        {
+          "name": "str",
+          "line": 114
+        },
+        {
+          "name": "str",
+          "line": 115
+        },
+        {
+          "name": "str",
+          "line": 116
+        },
+        {
+          "name": "self.config_path.read_text",
+          "line": 144
+        },
+        {
+          "name": "casefold",
+          "line": 152
+        },
+        {
+          "name": "self.load",
+          "line": 160
+        },
+        {
+          "name": "len",
+          "line": 162
+        },
+        {
+          "name": "errors.append",
+          "line": 162
+        },
+        {
+          "name": "set",
+          "line": 164
+        },
+        {
+          "name": "errors.append",
+          "line": 164
+        },
+        {
+          "name": "errors.extend",
+          "line": 166
+        },
+        {
+          "name": "errors.extend",
+          "line": 168
+        },
+        {
+          "name": "subprocess.Popen",
+          "line": 207
+        },
+        {
+          "name": "self._pid_path",
+          "line": 237
+        },
+        {
+          "name": "pid_path.exists",
+          "line": 238
+        },
+        {
+          "name": "pid_path.write_text",
+          "line": 247
+        },
+        {
+          "name": "self._pid_path",
+          "line": 255
+        },
+        {
+          "name": "pid_path.unlink",
+          "line": 262
+        },
+        {
+          "name": "ctypes.byref",
+          "line": 285
+        },
+        {
+          "name": "bool",
+          "line": 287
+        },
+        {
+          "name": "profile.status_record",
+          "line": 294
+        },
+        {
+          "name": "self._pid_path",
+          "line": 295
+        },
+        {
+          "name": "health_path.exists",
+          "line": 315
+        },
+        {
+          "name": "demo_state_path.exists",
+          "line": 322
+        },
+        {
+          "name": "record.update",
+          "line": 339
+        },
+        {
+          "name": "records.append",
+          "line": 372
+        },
+        {
+          "name": "tuple",
+          "line": 373
+        },
+        {
+          "name": "upper",
+          "line": 50
+        },
+        {
+          "name": "strip",
+          "line": 51
+        },
+        {
+          "name": "bool",
+          "line": 52
+        },
+        {
+          "name": "bool",
+          "line": 53
+        },
+        {
+          "name": "Path",
+          "line": 54
+        },
+        {
+          "name": "Path",
+          "line": 55
+        },
+        {
+          "name": "upper",
+          "line": 56
+        },
+        {
+          "name": "strip",
+          "line": 57
+        },
+        {
+          "name": "upper",
+          "line": 58
+        },
+        {
+          "name": "strip",
+          "line": 59
+        },
+        {
+          "name": "strip",
+          "line": 60
+        },
+        {
+          "name": "Path",
+          "line": 61
+        },
+        {
+          "name": "Path",
+          "line": 62
+        },
+        {
+          "name": "Path",
+          "line": 63
+        },
+        {
+          "name": "Path",
+          "line": 64
+        },
+        {
+          "name": "Path",
+          "line": 65
+        },
+        {
+          "name": "Path",
+          "line": 66
+        },
+        {
+          "name": "Path",
+          "line": 67
+        },
+        {
+          "name": "upper",
+          "line": 68
+        },
+        {
+          "name": "bool",
+          "line": 69
+        },
+        {
+          "name": "bool",
+          "line": 70
+        },
+        {
+          "name": "os.environ.get",
+          "line": 75
+        },
+        {
+          "name": "ProfileOperationalConfig.from_mapping",
+          "line": 145
+        },
+        {
+          "name": "duplicates.append",
+          "line": 154
+        },
+        {
+          "name": "self._duplicates",
+          "line": 168
+        },
+        {
+          "name": "value.upper",
+          "line": 179
+        },
+        {
+          "name": "profile.runtime_directory.mkdir",
+          "line": 185
+        },
+        {
+          "name": "profile.database_path.parent.mkdir",
+          "line": 186
+        },
+        {
+          "name": "profile.logs_directory.mkdir",
+          "line": 187
+        },
+        {
+          "name": "profile.dashboard_path.parent.mkdir",
+          "line": 188
+        },
+        {
+          "name": "profile.learning_directory.mkdir",
+          "line": 189
+        },
+        {
+          "name": "profile.knowledge_directory.mkdir",
+          "line": 190
+        },
+        {
+          "name": "profile.statistics_directory.mkdir",
+          "line": 191
+        },
+        {
+          "name": "profile.status_record",
+          "line": 192
+        },
+        {
+          "name": "value.upper",
+          "line": 199
+        },
+        {
+          "name": "profile.mt5_terminal.exists",
+          "line": 205
+        },
+        {
+          "name": "str",
+          "line": 225
+        },
+        {
+          "name": "value.upper",
+          "line": 233
+        },
+        {
+          "name": "log_path.open",
+          "line": 245
+        },
+        {
+          "name": "subprocess.Popen",
+          "line": 246
+        },
+        {
+          "name": "str",
+          "line": 247
+        },
+        {
+          "name": "value.upper",
+          "line": 251
+        },
+        {
+          "name": "pid_path.exists",
+          "line": 256
+        },
+        {
+          "name": "os.kill",
+          "line": 259
+        },
+        {
+          "name": "os.kill",
+          "line": 275
+        },
+        {
+          "name": "demo_state.get",
+          "line": 327
+        },
+        {
+          "name": "mt5_health.get",
+          "line": 327
+        },
+        {
+          "name": "raw.get",
+          "line": 52
+        },
+        {
+          "name": "raw.get",
+          "line": 53
+        },
+        {
+          "name": "str",
+          "line": 54
+        },
+        {
+          "name": "str",
+          "line": 55
+        },
+        {
+          "name": "str",
+          "line": 61
+        },
+        {
+          "name": "str",
+          "line": 62
+        },
+        {
+          "name": "str",
+          "line": 63
+        },
+        {
+          "name": "str",
+          "line": 64
+        },
+        {
+          "name": "str",
+          "line": 65
+        },
+        {
+          "name": "str",
+          "line": 66
+        },
+        {
+          "name": "str",
+          "line": 67
+        },
+        {
+          "name": "raw.get",
+          "line": 69
+        },
+        {
+          "name": "raw.get",
+          "line": 70
+        },
+        {
+          "name": "join",
+          "line": 121
+        },
+        {
+          "name": "str",
+          "line": 152
+        },
+        {
+          "name": "errors.append",
+          "line": 173
+        },
+        {
+          "name": "str",
+          "line": 207
+        },
+        {
+          "name": "str",
+          "line": 207
+        },
+        {
+          "name": "os.kill",
+          "line": 240
+        },
+        {
+          "name": "self._worker_command",
+          "line": 246
+        },
+        {
+          "name": "int",
+          "line": 259
+        },
+        {
+          "name": "candidate.exists",
+          "line": 301
+        },
+        {
+          "name": "int",
+          "line": 304
+        },
+        {
+          "name": "self._is_process_running",
+          "line": 305
+        },
+        {
+          "name": "candidate.unlink",
+          "line": 310
+        },
+        {
+          "name": "json.loads",
+          "line": 317
+        },
+        {
+          "name": "json.loads",
+          "line": 324
+        },
+        {
+          "name": "datetime.fromisoformat",
+          "line": 332
+        },
+        {
+          "name": "max",
+          "line": 335
+        },
+        {
+          "name": "mt5_health.get",
+          "line": 343
+        },
+        {
+          "name": "mt5_health.get",
+          "line": 344
+        },
+        {
+          "name": "mt5_health.get",
+          "line": 345
+        },
+        {
+          "name": "mt5_health.get",
+          "line": 346
+        },
+        {
+          "name": "demo_state.get",
+          "line": 347
+        },
+        {
+          "name": "demo_state.get",
+          "line": 348
+        },
+        {
+          "name": "demo_state.get",
+          "line": 349
+        },
+        {
+          "name": "demo_state.get",
+          "line": 350
+        },
+        {
+          "name": "demo_state.get",
+          "line": 351
+        },
+        {
+          "name": "demo_state.get",
+          "line": 352
+        },
+        {
+          "name": "demo_state.get",
+          "line": 353
+        },
+        {
+          "name": "demo_state.get",
+          "line": 354
+        },
+        {
+          "name": "demo_state.get",
+          "line": 355
+        },
+        {
+          "name": "demo_state.get",
+          "line": 356
+        },
+        {
+          "name": "demo_state.get",
+          "line": 357
+        },
+        {
+          "name": "demo_state.get",
+          "line": 358
+        },
+        {
+          "name": "demo_state.get",
+          "line": 359
+        },
+        {
+          "name": "demo_state.get",
+          "line": 360
+        },
+        {
+          "name": "demo_state.get",
+          "line": 361
+        },
+        {
+          "name": "demo_state.get",
+          "line": 362
+        },
+        {
+          "name": "demo_state.get",
+          "line": 363
+        },
+        {
+          "name": "demo_state.get",
+          "line": 364
+        },
+        {
+          "name": "demo_state.get",
+          "line": 365
+        },
+        {
+          "name": "demo_state.get",
+          "line": 366
+        },
+        {
+          "name": "demo_state.get",
+          "line": 367
+        },
+        {
+          "name": "strip",
+          "line": 50
+        },
+        {
+          "name": "str",
+          "line": 51
+        },
+        {
+          "name": "strip",
+          "line": 56
+        },
+        {
+          "name": "str",
+          "line": 57
+        },
+        {
+          "name": "strip",
+          "line": 58
+        },
+        {
+          "name": "str",
+          "line": 59
+        },
+        {
+          "name": "str",
+          "line": 60
+        },
+        {
+          "name": "strip",
+          "line": 68
+        },
+        {
+          "name": "getattr",
+          "line": 152
+        },
+        {
+          "name": "item.validate_policy",
+          "line": 166
+        },
+        {
+          "name": "int",
+          "line": 240
+        },
+        {
+          "name": "pid_path.unlink",
+          "line": 243
+        },
+        {
+          "name": "str",
+          "line": 246
+        },
+        {
+          "name": "strip",
+          "line": 259
+        },
+        {
+          "name": "strip",
+          "line": 304
+        },
+        {
+          "name": "candidate.unlink",
+          "line": 312
+        },
+        {
+          "name": "health_path.read_text",
+          "line": 317
+        },
+        {
+          "name": "demo_state_path.read_text",
+          "line": 324
+        },
+        {
+          "name": "replace",
+          "line": 332
+        },
+        {
+          "name": "checked_dt.replace",
+          "line": 334
+        },
+        {
+          "name": "int",
+          "line": 335
+        },
+        {
+          "name": "raw.get",
+          "line": 55
+        },
+        {
+          "name": "strip",
+          "line": 240
+        },
+        {
+          "name": "Path.cwd",
+          "line": 246
+        },
+        {
+          "name": "total_seconds",
+          "line": 335
+        },
+        {
+          "name": "str",
+          "line": 50
+        },
+        {
+          "name": "Path",
+          "line": 55
+        },
+        {
+          "name": "str",
+          "line": 56
+        },
+        {
+          "name": "str",
+          "line": 58
+        },
+        {
+          "name": "str",
+          "line": 68
+        },
+        {
+          "name": "pid_path.read_text",
+          "line": 259
+        },
+        {
+          "name": "candidate.read_text",
+          "line": 304
+        },
+        {
+          "name": "str",
+          "line": 332
+        },
+        {
+          "name": "str",
+          "line": 55
+        },
+        {
+          "name": "raw.get",
+          "line": 56
+        },
+        {
+          "name": "raw.get",
+          "line": 58
+        },
+        {
+          "name": "raw.get",
+          "line": 68
+        },
+        {
+          "name": "pid_path.read_text",
+          "line": 240
+        },
+        {
+          "name": "datetime.now",
+          "line": 335
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 353,
+          "keyword": "allocated_units",
+          "text": "\"demo_allocated_units\": demo_state.get(\"allocated_units\", 0),"
+        }
+      ]
+    },
+    {
+      "path": "afip/capital_growth_engine/runtime.py",
+      "module": "afip.capital_growth_engine.runtime",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "typing"
+      ],
+      "classes": [
+        {
+          "name": "CapitalGrowthDecision",
+          "line": 9,
+          "end_line": 28
+        },
+        {
+          "name": "CapitalGrowthEngine",
+          "line": 31,
+          "end_line": 123
+        }
+      ],
+      "functions": [
+        {
+          "name": "target_total_lot",
+          "line": 23,
+          "end_line": 24,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "available_total_lot",
+          "line": 27,
+          "end_line": 28,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "evaluate",
+          "line": 35,
+          "end_line": 123,
+          "relevant_keywords": [
+            "maximum_units",
+            "capital_per_unit"
+          ],
+          "source": "    def evaluate(\n        *,\n        mode: str,\n        balance: float,\n        current_orders: int,\n        capital_tiers: Iterable[tuple[float, tuple[float, ...]]] = (),\n        maximum_orders: int = 4,\n        legacy_capital_per_unit: float = 1000.0,\n        legacy_maximum_units: int = 1,\n        lot_per_unit: float = 0.01,\n    ) -> CapitalGrowthDecision:\n        normalized_mode = str(mode).strip().upper()\n        safe_balance = max(0.0, float(balance))\n        safe_current_orders = max(0, int(current_orders))\n        tiers = tuple((float(level), tuple(float(lot) for lot in lots)) for level, lots in capital_tiers)\n\n        if safe_balance <= 0:\n            return CapitalGrowthDecision(\n                mode=normalized_mode,\n                balance=safe_balance,\n                current_orders=safe_current_orders,\n                maximum_orders=max(0, int(maximum_orders)),\n                current_tier_minimum_balance=None,\n                target_lots=(),\n                available_lots=(),\n                next_tier_balance=tiers[0][0] if tiers else None,\n                remaining_to_next_tier=max(0.0, tiers[0][0]) if tiers else 0.0,\n                maximum_tier_balance=tiers[-1][0] if tiers else None,\n                withdrawal_reference_balance=tiers[-1][0] if tiers else None,\n            )\n\n        if normalized_mode == \"CAPITAL_TIER_TABLE\":\n            selected_level: float | None = None\n            selected_lots: tuple[float, ...] = ()\n            next_level: float | None = None\n            for level, lots in tiers:\n                if safe_balance >= level:\n                    selected_level = level\n                    selected_lots = lots\n                else:\n                    next_level = level\n                    break\n            available = selected_lots[safe_current_orders:max(0, int(maximum_orders))]\n            return CapitalGrowthDecision(\n                mode=normalized_mode,\n                balance=safe_balance,\n                current_orders=safe_current_orders,\n                maximum_orders=max(0, int(maximum_orders)),\n                current_tier_minimum_balance=selected_level,\n                target_lots=selected_lots,\n                available_lots=tuple(available),\n                next_tier_balance=next_level,\n                remaining_to_next_tier=round(max(0.0, (next_level or safe_balance) - safe_balance), 2) if next_level is not None else 0.0,\n                maximum_tier_balance=tiers[-1][0] if tiers else None,\n                withdrawal_reference_balance=tiers[-1][0] if tiers else None,\n            )\n\n        if normalized_mode == \"RESEARCH_FIXED_001\":\n            return CapitalGrowthDecision(\n                mode=normalized_mode,\n                balance=safe_balance,\n                current_orders=safe_current_orders,\n                maximum_orders=0,\n                current_tier_minimum_balance=None,\n                target_lots=(float(lot_per_unit),),\n                available_lots=(float(lot_per_unit),),\n                next_tier_balance=None,\n                remaining_to_next_tier=0.0,\n                maximum_tier_balance=None,\n                withdrawal_reference_balance=None,\n            )\n\n        capital_units = max(0, int(safe_balance // float(legacy_capital_per_unit)))\n        capacity = max(0, int(legacy_maximum_units) - safe_current_orders)\n        units = min(capital_units, capacity)\n        lots = tuple(float(lot_per_unit) for _ in range(units))\n        return CapitalGrowthDecision(\n            mode=\"LEGACY_FIXED_UNIT\",\n            balance=safe_balance,\n            current_orders=safe_current_orders,\n            maximum_orders=int(legacy_maximum_units),\n            current_tier_minimum_balance=None,\n            target_lots=lots,\n            available_lots=lots,\n            next_tier_balance=None,\n            remaining_to_next_tier=0.0,\n            maximum_tier_balance=None,\n            withdrawal_reference_balance=None,\n        )"
+        }
+      ],
+      "calls": [
+        {
+          "name": "dataclass",
+          "line": 8
+        },
+        {
+          "name": "round",
+          "line": 24
+        },
+        {
+          "name": "round",
+          "line": 28
+        },
+        {
+          "name": "upper",
+          "line": 46
+        },
+        {
+          "name": "max",
+          "line": 47
+        },
+        {
+          "name": "max",
+          "line": 48
+        },
+        {
+          "name": "tuple",
+          "line": 49
+        },
+        {
+          "name": "max",
+          "line": 107
+        },
+        {
+          "name": "max",
+          "line": 108
+        },
+        {
+          "name": "min",
+          "line": 109
+        },
+        {
+          "name": "tuple",
+          "line": 110
+        },
+        {
+          "name": "CapitalGrowthDecision",
+          "line": 111
+        },
+        {
+          "name": "sum",
+          "line": 24
+        },
+        {
+          "name": "sum",
+          "line": 28
+        },
+        {
+          "name": "float",
+          "line": 47
+        },
+        {
+          "name": "int",
+          "line": 48
+        },
+        {
+          "name": "CapitalGrowthDecision",
+          "line": 52
+        },
+        {
+          "name": "CapitalGrowthDecision",
+          "line": 78
+        },
+        {
+          "name": "CapitalGrowthDecision",
+          "line": 93
+        },
+        {
+          "name": "int",
+          "line": 107
+        },
+        {
+          "name": "strip",
+          "line": 46
+        },
+        {
+          "name": "int",
+          "line": 108
+        },
+        {
+          "name": "float",
+          "line": 110
+        },
+        {
+          "name": "int",
+          "line": 115
+        },
+        {
+          "name": "float",
+          "line": 49
+        },
+        {
+          "name": "tuple",
+          "line": 49
+        },
+        {
+          "name": "max",
+          "line": 56
+        },
+        {
+          "name": "max",
+          "line": 77
+        },
+        {
+          "name": "max",
+          "line": 82
+        },
+        {
+          "name": "tuple",
+          "line": 85
+        },
+        {
+          "name": "float",
+          "line": 107
+        },
+        {
+          "name": "range",
+          "line": 110
+        },
+        {
+          "name": "str",
+          "line": 46
+        },
+        {
+          "name": "int",
+          "line": 56
+        },
+        {
+          "name": "max",
+          "line": 61
+        },
+        {
+          "name": "int",
+          "line": 77
+        },
+        {
+          "name": "int",
+          "line": 82
+        },
+        {
+          "name": "round",
+          "line": 87
+        },
+        {
+          "name": "float",
+          "line": 99
+        },
+        {
+          "name": "float",
+          "line": 100
+        },
+        {
+          "name": "float",
+          "line": 49
+        },
+        {
+          "name": "max",
+          "line": 87
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 42,
+          "keyword": "capital_per_unit",
+          "text": "legacy_capital_per_unit: float = 1000.0,"
+        },
+        {
+          "line": 43,
+          "keyword": "maximum_units",
+          "text": "legacy_maximum_units: int = 1,"
+        },
+        {
+          "line": 107,
+          "keyword": "capital_per_unit",
+          "text": "capital_units = max(0, int(safe_balance // float(legacy_capital_per_unit)))"
+        },
+        {
+          "line": 108,
+          "keyword": "maximum_units",
+          "text": "capacity = max(0, int(legacy_maximum_units) - safe_current_orders)"
+        },
+        {
+          "line": 115,
+          "keyword": "maximum_units",
+          "text": "maximum_orders=int(legacy_maximum_units),"
+        }
+      ]
+    },
+    {
+      "path": "afip/adaptive_position_sizing/runtime.py",
+      "module": "afip.adaptive_position_sizing.runtime",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "hashlib",
+        "json",
+        "math",
+        "typing"
+      ],
+      "classes": [
+        {
+          "name": "AdaptivePositionSizingReport",
+          "line": 12,
+          "end_line": 64
+        },
+        {
+          "name": "AdaptivePositionSizingRuntime",
+          "line": 67,
+          "end_line": 203
+        }
+      ],
+      "functions": [
+        {
+          "name": "as_dict",
+          "line": 63,
+          "end_line": 64,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "evaluate_one",
+          "line": 70,
+          "end_line": 188,
+          "relevant_keywords": [
+            "maximum_units",
+            "capital_per_unit",
+            "base_lot"
+          ],
+          "source": "    def evaluate_one(self, record: Mapping[str, Any]) -> AdaptivePositionSizingReport:\n        foundation_id = str(record.get(\"foundation_id\", \"\")).strip()\n        profile_id = str(record.get(\"profile_id\", \"\")).strip()\n        market_regime = str(record.get(\"market_regime\", \"\")).strip().upper()\n        equity = self._number(record.get(\"equity\"), 0.0)\n        free_margin = self._number(record.get(\"free_margin\"), 0.0)\n        risk_percent = self._number(record.get(\"risk_budget_percent\"), 0.0)\n        stop_points = self._number(record.get(\"stop_distance_points\"), 0.0)\n        value_per_point = self._number(record.get(\"value_per_point_per_unit\"), 0.0)\n        confidence = self._number(record.get(\"confidence_score\"), 0.0)\n        min_capital = self._number(record.get(\"minimum_capital_per_unit\"), 1000.0)\n        margin_per_unit = self._number(record.get(\"margin_required_per_unit\"), 0.0)\n        maximum_units = self._integer(record.get(\"maximum_units\"), 3)\n        base_lot = self._number(record.get(\"base_lot_per_unit\"), 0.01)\n        broker = str(record.get(\"broker\", \"XM\")).strip().upper() or \"XM\"\n        symbol = str(record.get(\"symbol\", \"GOLD#\")).strip().upper() or \"GOLD#\"\n\n        risk_valid = 0.0 < risk_percent <= 5.0 and equity > 0.0\n        stop_valid = stop_points > 0.0 and value_per_point > 0.0\n        margin_valid = free_margin >= 0.0 and margin_per_unit > 0.0\n        confidence_valid = 0.0 <= confidence <= 100.0\n        regime_first = bool(record.get(\"market_regime_before_signal\", True)) and bool(market_regime)\n        lifecycle_valid = bool(record.get(\"independent_trade_plan_required\", True))\n        runner_supported = bool(record.get(\"protected_runner_supported\", True))\n        foundation_ready = bool(record.get(\"portfolio_intelligence_foundation_ready\", False))\n        data_quality = bool(record.get(\"data_quality_certified\", False))\n        future_safe = not bool(record.get(\"future_leakage_detected\", False))\n\n        if confidence >= 90.0:\n            confidence_multiplier = 1.0\n        elif confidence >= 75.0:\n            confidence_multiplier = 0.75\n        elif confidence >= 60.0:\n            confidence_multiplier = 0.5\n        else:\n            confidence_multiplier = 0.0\n\n        risk_budget_amount = equity * risk_percent / 100.0 if risk_valid else 0.0\n        loss_per_unit = stop_points * value_per_point if stop_valid else 0.0\n        raw_units = (risk_budget_amount / loss_per_unit) * confidence_multiplier if loss_per_unit > 0.0 else 0.0\n        capital_limit = floor(equity / min_capital) if min_capital > 0.0 else 0\n        risk_limit = floor(raw_units) if raw_units > 0.0 else 0\n        margin_limit = floor(free_margin / margin_per_unit) if margin_valid else 0\n        recommended = max(0, min(maximum_units, capital_limit, risk_limit, margin_limit))\n\n        blocked: list[str] = []\n        if not foundation_id: blocked.append(\"portfolio_foundation_lineage_missing\")\n        if not foundation_ready: blocked.append(\"portfolio_foundation_not_ready\")\n        if not profile_id: blocked.append(\"profile_id_missing\")\n        if not risk_valid: blocked.append(\"risk_budget_invalid\")\n        if not stop_valid: blocked.append(\"stop_distance_or_value_invalid\")\n        if not margin_valid: blocked.append(\"margin_capacity_invalid\")\n        if not confidence_valid: blocked.append(\"confidence_score_invalid\")\n        if confidence_multiplier == 0.0: blocked.append(\"confidence_below_sizing_threshold\")\n        if not regime_first: blocked.append(\"market_regime_sequence_invalid\")\n        if not lifecycle_valid: blocked.append(\"independent_trade_plan_required\")\n        if not runner_supported: blocked.append(\"protected_runner_policy_missing\")\n        if not data_quality: blocked.append(\"data_quality_not_certified\")\n        if not future_safe: blocked.append(\"future_leakage_detected\")\n        if min_capital <= 0.0: blocked.append(\"minimum_capital_per_unit_invalid\")\n        if maximum_units < 0 or maximum_units > 3: blocked.append(\"maximum_units_policy_violation\")\n        if abs(base_lot - 0.01) > 1e-12: blocked.append(\"base_unit_policy_violation\")\n        if broker != \"XM\": blocked.append(\"broker_policy_violation\")\n        if symbol != \"GOLD#\": blocked.append(\"symbol_policy_violation\")\n        if str(record.get(\"execution_status\", \"LOCKED_SIMULATION_ONLY\")).upper() != \"LOCKED_SIMULATION_ONLY\":\n            blocked.append(\"execution_lock_invalid\")\n        if str(record.get(\"order_status\", \"NO_ORDER_SENT\")).upper() != \"NO_ORDER_SENT\":\n            blocked.append(\"order_status_invalid\")\n        if bool(record.get(\"direct_execution\", False)) or bool(record.get(\"live_execution_enabled\", False)):\n            blocked.append(\"execution_enablement_forbidden\")\n        if bool(record.get(\"broker_request_created\", False)) or bool(record.get(\"order_transmission_attempted\", False)):\n            blocked.append(\"order_transmission_forbidden\")\n\n        ready = not blocked\n        if not ready:\n            recommended = 0\n        identity = {\n            \"foundation_id\": foundation_id,\n            \"profile_id\": profile_id,\n            \"market_regime\": market_regime,\n            \"equity\": round(equity, 8),\n            \"free_margin\": round(free_margin, 8),\n            \"risk_percent\": round(risk_percent, 8),\n            \"stop_points\": round(stop_points, 8),\n            \"value_per_point\": round(value_per_point, 8),\n            \"confidence\": round(confidence, 8),\n            \"minimum_capital_per_unit\": round(min_capital, 8),\n            \"margin_required_per_unit\": round(margin_per_unit, 8),\n            \"maximum_units\": maximum_units,\n            \"recommended_units\": recommended,\n            \"blocked\": sorted(set(blocked)),\n        }\n        sizing_id = \"APS-\" + sha256(json.dumps(identity, sort_keys=True, separators=(\",\", \":\")).encode()).hexdigest()[:16].upper()\n\n        return AdaptivePositionSizingReport(\n            status=\"READY\" if ready else \"BLOCKED\",\n            reason=\"Adaptive position sizing recommendation is ready under research-only authority.\" if ready else \"Adaptive position sizing is blocked by portfolio, risk, margin, confidence, policy or safety controls.\",\n            milestone=\"N\", pack=\"2\", sizing_id=sizing_id, foundation_id=foundation_id,\n            profile_id=profile_id, market_regime=market_regime, equity=round(equity, 8),\n            free_margin=round(free_margin, 8), risk_budget_percent=round(risk_percent, 8),\n            risk_budget_amount=round(risk_budget_amount, 8), stop_distance_points=round(stop_points, 8),\n            value_per_point_per_unit=round(value_per_point, 8), confidence_score=round(confidence, 8),\n            confidence_multiplier=confidence_multiplier, raw_units=round(raw_units, 8),\n            capital_limit_units=max(0, capital_limit), risk_limit_units=max(0, risk_limit),\n            margin_limit_units=max(0, margin_limit), recommended_units=recommended,\n            recommended_lot=round(recommended * base_lot, 8), maximum_units=maximum_units,\n            base_lot_per_unit=base_lot, minimum_capital_per_unit=min_capital,\n            risk_budget_valid=risk_valid, stop_distance_valid=stop_valid,\n            margin_capacity_valid=margin_valid, confidence_valid=confidence_valid,\n            market_regime_before_signal=regime_first,\n            independent_trade_plan_required=lifecycle_valid, protected_runner_supported=runner_supported,\n            adaptive_position_sizing_ready=ready, research_only=True,\n            production_knowledge_approved=False, block_reasons=tuple(sorted(set(blocked))),\n            explanation_reason_en=\"Calculates a bounded unit recommendation from capital, risk, stop distance, margin capacity and confidence while preserving independent position lifecycles.\" if ready else \"No units are recommended until all portfolio, risk, confidence, lineage and safety gates pass.\",\n            explanation_reason_th=\"คำนวณจำนวน Unit แบบมีขอบเขตจากทุน ความเสี่ยง ระยะ Stop Loss ความสามารถด้าน Margin และ Confidence โดยรักษาวงจรชีวิต Position แยกอิสระ\" if ready else \"ไม่แนะนำ Unit จนกว่าเกณฑ์ Portfolio, Risk, Confidence, Lineage และ Safety จะผ่านครบ\",\n            expected_next_action_en=\"Continue to Milestone N Pack 3 — Portfolio Risk Engine.\" if ready else \"Correct blocked sizing evidence and evaluate again.\",\n            expected_next_action_th=\"ดำเนินการต่อ Milestone N Pack 3 — Portfolio Risk Engine\" if ready else \"แก้หลักฐาน Sizing ที่ถูกบล็อกแล้วประเมินใหม่\",\n            broker=broker, symbol=symbol,\n        )"
+        },
+        {
+          "name": "_number",
+          "line": 191,
+          "end_line": 196,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_integer",
+          "line": 199,
+          "end_line": 203,
+          "relevant_keywords": [],
+          "source": ""
+        }
+      ],
+      "calls": [
+        {
+          "name": "dataclass",
+          "line": 11
+        },
+        {
+          "name": "asdict",
+          "line": 64
+        },
+        {
+          "name": "strip",
+          "line": 71
+        },
+        {
+          "name": "strip",
+          "line": 72
+        },
+        {
+          "name": "upper",
+          "line": 73
+        },
+        {
+          "name": "self._number",
+          "line": 74
+        },
+        {
+          "name": "self._number",
+          "line": 75
+        },
+        {
+          "name": "self._number",
+          "line": 76
+        },
+        {
+          "name": "self._number",
+          "line": 77
+        },
+        {
+          "name": "self._number",
+          "line": 78
+        },
+        {
+          "name": "self._number",
+          "line": 79
+        },
+        {
+          "name": "self._number",
+          "line": 80
+        },
+        {
+          "name": "self._number",
+          "line": 81
+        },
+        {
+          "name": "self._integer",
+          "line": 82
+        },
+        {
+          "name": "self._number",
+          "line": 83
+        },
+        {
+          "name": "bool",
+          "line": 92
+        },
+        {
+          "name": "bool",
+          "line": 93
+        },
+        {
+          "name": "bool",
+          "line": 94
+        },
+        {
+          "name": "bool",
+          "line": 95
+        },
+        {
+          "name": "max",
+          "line": 113
+        },
+        {
+          "name": "AdaptivePositionSizingReport",
+          "line": 164
+        },
+        {
+          "name": "record.get",
+          "line": 74
+        },
+        {
+          "name": "record.get",
+          "line": 75
+        },
+        {
+          "name": "record.get",
+          "line": 76
+        },
+        {
+          "name": "record.get",
+          "line": 77
+        },
+        {
+          "name": "record.get",
+          "line": 78
+        },
+        {
+          "name": "record.get",
+          "line": 79
+        },
+        {
+          "name": "record.get",
+          "line": 80
+        },
+        {
+          "name": "record.get",
+          "line": 81
+        },
+        {
+          "name": "record.get",
+          "line": 82
+        },
+        {
+          "name": "record.get",
+          "line": 83
+        },
+        {
+          "name": "upper",
+          "line": 84
+        },
+        {
+          "name": "upper",
+          "line": 85
+        },
+        {
+          "name": "bool",
+          "line": 91
+        },
+        {
+          "name": "bool",
+          "line": 91
+        },
+        {
+          "name": "record.get",
+          "line": 92
+        },
+        {
+          "name": "record.get",
+          "line": 93
+        },
+        {
+          "name": "record.get",
+          "line": 94
+        },
+        {
+          "name": "record.get",
+          "line": 95
+        },
+        {
+          "name": "bool",
+          "line": 96
+        },
+        {
+          "name": "floor",
+          "line": 110
+        },
+        {
+          "name": "floor",
+          "line": 111
+        },
+        {
+          "name": "floor",
+          "line": 112
+        },
+        {
+          "name": "min",
+          "line": 113
+        },
+        {
+          "name": "blocked.append",
+          "line": 116
+        },
+        {
+          "name": "blocked.append",
+          "line": 117
+        },
+        {
+          "name": "blocked.append",
+          "line": 118
+        },
+        {
+          "name": "blocked.append",
+          "line": 119
+        },
+        {
+          "name": "blocked.append",
+          "line": 120
+        },
+        {
+          "name": "blocked.append",
+          "line": 121
+        },
+        {
+          "name": "blocked.append",
+          "line": 122
+        },
+        {
+          "name": "blocked.append",
+          "line": 123
+        },
+        {
+          "name": "blocked.append",
+          "line": 124
+        },
+        {
+          "name": "blocked.append",
+          "line": 125
+        },
+        {
+          "name": "blocked.append",
+          "line": 126
+        },
+        {
+          "name": "blocked.append",
+          "line": 127
+        },
+        {
+          "name": "blocked.append",
+          "line": 128
+        },
+        {
+          "name": "blocked.append",
+          "line": 129
+        },
+        {
+          "name": "blocked.append",
+          "line": 130
+        },
+        {
+          "name": "abs",
+          "line": 131
+        },
+        {
+          "name": "blocked.append",
+          "line": 131
+        },
+        {
+          "name": "blocked.append",
+          "line": 132
+        },
+        {
+          "name": "blocked.append",
+          "line": 133
+        },
+        {
+          "name": "upper",
+          "line": 134
+        },
+        {
+          "name": "blocked.append",
+          "line": 135
+        },
+        {
+          "name": "upper",
+          "line": 136
+        },
+        {
+          "name": "blocked.append",
+          "line": 137
+        },
+        {
+          "name": "bool",
+          "line": 138
+        },
+        {
+          "name": "bool",
+          "line": 138
+        },
+        {
+          "name": "blocked.append",
+          "line": 139
+        },
+        {
+          "name": "bool",
+          "line": 140
+        },
+        {
+          "name": "bool",
+          "line": 140
+        },
+        {
+          "name": "blocked.append",
+          "line": 141
+        },
+        {
+          "name": "round",
+          "line": 150
+        },
+        {
+          "name": "round",
+          "line": 151
+        },
+        {
+          "name": "round",
+          "line": 152
+        },
+        {
+          "name": "round",
+          "line": 153
+        },
+        {
+          "name": "round",
+          "line": 154
+        },
+        {
+          "name": "round",
+          "line": 155
+        },
+        {
+          "name": "round",
+          "line": 156
+        },
+        {
+          "name": "round",
+          "line": 157
+        },
+        {
+          "name": "sorted",
+          "line": 160
+        },
+        {
+          "name": "upper",
+          "line": 162
+        },
+        {
+          "name": "float",
+          "line": 193
+        },
+        {
+          "name": "int",
+          "line": 201
+        },
+        {
+          "name": "str",
+          "line": 71
+        },
+        {
+          "name": "str",
+          "line": 72
+        },
+        {
+          "name": "strip",
+          "line": 73
+        },
+        {
+          "name": "record.get",
+          "line": 91
+        },
+        {
+          "name": "record.get",
+          "line": 96
+        },
+        {
+          "name": "record.get",
+          "line": 138
+        },
+        {
+          "name": "record.get",
+          "line": 138
+        },
+        {
+          "name": "record.get",
+          "line": 140
+        },
+        {
+          "name": "record.get",
+          "line": 140
+        },
+        {
+          "name": "set",
+          "line": 160
+        },
+        {
+          "name": "round",
+          "line": 168
+        },
+        {
+          "name": "round",
+          "line": 169
+        },
+        {
+          "name": "round",
+          "line": 169
+        },
+        {
+          "name": "round",
+          "line": 170
+        },
+        {
+          "name": "round",
+          "line": 170
+        },
+        {
+          "name": "round",
+          "line": 171
+        },
+        {
+          "name": "round",
+          "line": 171
+        },
+        {
+          "name": "round",
+          "line": 172
+        },
+        {
+          "name": "max",
+          "line": 173
+        },
+        {
+          "name": "max",
+          "line": 173
+        },
+        {
+          "name": "max",
+          "line": 174
+        },
+        {
+          "name": "round",
+          "line": 175
+        },
+        {
+          "name": "tuple",
+          "line": 182
+        },
+        {
+          "name": "isfinite",
+          "line": 194
+        },
+        {
+          "name": "record.get",
+          "line": 71
+        },
+        {
+          "name": "record.get",
+          "line": 72
+        },
+        {
+          "name": "strip",
+          "line": 84
+        },
+        {
+          "name": "strip",
+          "line": 85
+        },
+        {
+          "name": "str",
+          "line": 134
+        },
+        {
+          "name": "str",
+          "line": 136
+        },
+        {
+          "name": "sorted",
+          "line": 182
+        },
+        {
+          "name": "str",
+          "line": 73
+        },
+        {
+          "name": "record.get",
+          "line": 134
+        },
+        {
+          "name": "record.get",
+          "line": 136
+        },
+        {
+          "name": "hexdigest",
+          "line": 162
+        },
+        {
+          "name": "set",
+          "line": 182
+        },
+        {
+          "name": "record.get",
+          "line": 73
+        },
+        {
+          "name": "str",
+          "line": 84
+        },
+        {
+          "name": "str",
+          "line": 85
+        },
+        {
+          "name": "record.get",
+          "line": 84
+        },
+        {
+          "name": "record.get",
+          "line": 85
+        },
+        {
+          "name": "sha256",
+          "line": 162
+        },
+        {
+          "name": "encode",
+          "line": 162
+        },
+        {
+          "name": "json.dumps",
+          "line": 162
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 35,
+          "keyword": "maximum_units",
+          "text": "maximum_units: int"
+        },
+        {
+          "line": 36,
+          "keyword": "base_lot",
+          "text": "base_lot_per_unit: float"
+        },
+        {
+          "line": 37,
+          "keyword": "capital_per_unit",
+          "text": "minimum_capital_per_unit: float"
+        },
+        {
+          "line": 80,
+          "keyword": "capital_per_unit",
+          "text": "min_capital = self._number(record.get(\"minimum_capital_per_unit\"), 1000.0)"
+        },
+        {
+          "line": 82,
+          "keyword": "maximum_units",
+          "text": "maximum_units = self._integer(record.get(\"maximum_units\"), 3)"
+        },
+        {
+          "line": 83,
+          "keyword": "base_lot",
+          "text": "base_lot = self._number(record.get(\"base_lot_per_unit\"), 0.01)"
+        },
+        {
+          "line": 113,
+          "keyword": "maximum_units",
+          "text": "recommended = max(0, min(maximum_units, capital_limit, risk_limit, margin_limit))"
+        },
+        {
+          "line": 129,
+          "keyword": "capital_per_unit",
+          "text": "if min_capital <= 0.0: blocked.append(\"minimum_capital_per_unit_invalid\")"
+        },
+        {
+          "line": 130,
+          "keyword": "maximum_units",
+          "text": "if maximum_units < 0 or maximum_units > 3: blocked.append(\"maximum_units_policy_violation\")"
+        },
+        {
+          "line": 131,
+          "keyword": "base_lot",
+          "text": "if abs(base_lot - 0.01) > 1e-12: blocked.append(\"base_unit_policy_violation\")"
+        },
+        {
+          "line": 156,
+          "keyword": "capital_per_unit",
+          "text": "\"minimum_capital_per_unit\": round(min_capital, 8),"
+        },
+        {
+          "line": 158,
+          "keyword": "maximum_units",
+          "text": "\"maximum_units\": maximum_units,"
+        },
+        {
+          "line": 175,
+          "keyword": "maximum_units",
+          "text": "recommended_lot=round(recommended * base_lot, 8), maximum_units=maximum_units,"
+        },
+        {
+          "line": 175,
+          "keyword": "base_lot",
+          "text": "recommended_lot=round(recommended * base_lot, 8), maximum_units=maximum_units,"
+        },
+        {
+          "line": 176,
+          "keyword": "capital_per_unit",
+          "text": "base_lot_per_unit=base_lot, minimum_capital_per_unit=min_capital,"
+        },
+        {
+          "line": 176,
+          "keyword": "base_lot",
+          "text": "base_lot_per_unit=base_lot, minimum_capital_per_unit=min_capital,"
+        }
+      ]
+    },
+    {
+      "path": "afip/protection/sl_tp_planner.py",
+      "module": "afip.protection.sl_tp_planner",
+      "imports": [],
+      "classes": [
+        {
+          "name": "SLTPPlanner",
+          "line": 1,
+          "end_line": 24
+        }
+      ],
+      "functions": [
+        {
+          "name": "plan",
+          "line": 2,
+          "end_line": 24,
+          "relevant_keywords": [
+            "stop_loss",
+            "take_profit"
+          ],
+          "source": "    def plan(self, action: str, entry_price: float, stop_loss_points: float = 3000.0, take_profit_points: float = 500.0, point_size: float = 0.01) -> dict:\n        if action not in (\"BUY\", \"SELL\"):\n            return {\"status\": \"NO_PLAN\", \"reason\": \"no_trade_action\"}\n\n        distance_sl = stop_loss_points * point_size\n        distance_tp = take_profit_points * point_size\n\n        if action == \"BUY\":\n            sl = entry_price - distance_sl\n            tp = entry_price + distance_tp\n        else:\n            sl = entry_price + distance_sl\n            tp = entry_price - distance_tp\n\n        return {\n            \"status\": \"PLANNED\",\n            \"action\": action,\n            \"entry_price\": entry_price,\n            \"sl\": round(sl, 5),\n            \"tp\": round(tp, 5),\n            \"stop_loss_points\": stop_loss_points,\n            \"take_profit_points\": take_profit_points,\n        }"
+        }
+      ],
+      "calls": [
+        {
+          "name": "round",
+          "line": 20
+        },
+        {
+          "name": "round",
+          "line": 21
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 2,
+          "keyword": "stop_loss",
+          "text": "def plan(self, action: str, entry_price: float, stop_loss_points: float = 3000.0, take_profit_points: float = 500.0, point_size: float = 0.01) -> dict:"
+        },
+        {
+          "line": 2,
+          "keyword": "take_profit",
+          "text": "def plan(self, action: str, entry_price: float, stop_loss_points: float = 3000.0, take_profit_points: float = 500.0, point_size: float = 0.01) -> dict:"
+        },
+        {
+          "line": 6,
+          "keyword": "stop_loss",
+          "text": "distance_sl = stop_loss_points * point_size"
+        },
+        {
+          "line": 7,
+          "keyword": "take_profit",
+          "text": "distance_tp = take_profit_points * point_size"
+        },
+        {
+          "line": 22,
+          "keyword": "stop_loss",
+          "text": "\"stop_loss_points\": stop_loss_points,"
+        },
+        {
+          "line": 23,
+          "keyword": "take_profit",
+          "text": "\"take_profit_points\": take_profit_points,"
+        }
+      ]
+    },
+    {
+      "path": "afip/execution_safety/capital_aware_protection_guard.py",
+      "module": "afip.execution_safety.capital_aware_protection_guard",
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "math",
+        "typing"
+      ],
+      "classes": [
+        {
+          "name": "AllocationInput",
+          "line": 9,
+          "end_line": 17
+        },
+        {
+          "name": "AllocationResult",
+          "line": 21,
+          "end_line": 27
+        },
+        {
+          "name": "ProtectionPlan",
+          "line": 31,
+          "end_line": 40
+        },
+        {
+          "name": "SafetyDecision",
+          "line": 44,
+          "end_line": 49
+        }
+      ],
+      "functions": [
+        {
+          "name": "_finite_positive",
+          "line": 52,
+          "end_line": 53,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "allocate_units",
+          "line": 56,
+          "end_line": 98,
+          "relevant_keywords": [
+            "allocated_units",
+            "maximum_units",
+            "capital_per_unit"
+          ],
+          "source": "def allocate_units(data: AllocationInput) -> AllocationResult:\n    \"\"\"Allocate units fail-closed.\n\n    maximum_units is a ceiling, never a target.\n    The final number is the minimum capacity approved by every gate.\n    \"\"\"\n    maximum_units = max(0, int(data.maximum_units))\n    exposure = max(0, int(data.existing_exposure_units))\n    remaining_profile_capacity = max(0, maximum_units - exposure)\n\n    if not _finite_positive(data.capital_per_unit):\n        return AllocationResult(\n            False, 0, 0, remaining_profile_capacity,\n            \"invalid_capital_per_unit\",\n            {\"input\": asdict(data)},\n        )\n\n    available_capital = max(0.0, min(float(data.available_capital), float(data.free_margin)))\n    capital_capacity = max(0, floor(available_capital / float(data.capital_per_unit)))\n\n    capacities = {\n        \"capital_capacity\": capital_capacity,\n        \"confidence_capacity\": max(0, int(data.confidence_units)),\n        \"risk_capacity\": max(0, int(data.risk_units)),\n        \"margin_capacity\": max(0, int(data.margin_units)),\n        \"remaining_profile_capacity\": remaining_profile_capacity,\n    }\n    allocated_units = min(capacities.values()) if capacities else 0\n\n    reason = \"capital_aware_units_approved\" if allocated_units > 0 else \"unit_capacity_unavailable\"\n    return AllocationResult(\n        allowed=allocated_units > 0,\n        allocated_units=allocated_units,\n        capital_capacity=capital_capacity,\n        remaining_profile_capacity=remaining_profile_capacity,\n        reason=reason,\n        trace={\n            \"input\": asdict(data),\n            \"capacities\": capacities,\n            \"final_allocated_units\": allocated_units,\n            \"maximum_units_semantics\": \"CEILING_NOT_TARGET\",\n        },\n    )"
+        },
+        {
+          "name": "validate_protection_plan",
+          "line": 101,
+          "end_line": 147,
+          "relevant_keywords": [
+            "sl_points",
+            "tp_points",
+            "stop_loss",
+            "take_profit"
+          ],
+          "source": "def validate_protection_plan(plan: ProtectionPlan) -> tuple[bool, str, Mapping[str, Any]]:\n    side = str(plan.side).strip().upper()\n    trace: dict[str, Any] = asdict(plan)\n\n    if side not in {\"BUY\", \"SELL\"}:\n        return False, \"invalid_side\", trace\n    if not _finite_positive(plan.entry_price) or not _finite_positive(plan.point_size):\n        return False, \"invalid_market_price_or_point\", trace\n    if plan.stop_loss_price is None or plan.take_profit_price is None:\n        return False, \"protection_plan_unavailable\", trace\n    if not _finite_positive(plan.stop_loss_price) or not _finite_positive(plan.take_profit_price):\n        return False, \"invalid_protection_price\", trace\n    if not str(plan.sl_source).strip() or not str(plan.tp_source).strip():\n        return False, \"protection_source_missing\", trace\n    if not str(plan.planned_horizon).strip():\n        return False, \"planned_horizon_missing\", trace\n\n    if side == \"BUY\":\n        risk_distance = plan.entry_price - plan.stop_loss_price\n        reward_distance = plan.take_profit_price - plan.entry_price\n    else:\n        risk_distance = plan.stop_loss_price - plan.entry_price\n        reward_distance = plan.entry_price - plan.take_profit_price\n\n    if risk_distance <= 0:\n        return False, \"stop_loss_wrong_side\", trace\n    if reward_distance <= 0:\n        return False, \"take_profit_wrong_side\", trace\n\n    sl_points = risk_distance / plan.point_size\n    tp_points = reward_distance / plan.point_size\n    reward_risk = reward_distance / risk_distance\n\n    trace.update({\n        \"sl_points\": sl_points,\n        \"tp_points\": tp_points,\n        \"reward_risk_ratio\": reward_risk,\n    })\n\n    # Explicitly reject the observed legacy fixed fallback.\n    if abs(sl_points - 3000.0) < 1e-9 and abs(tp_points - 500.0) < 1e-9:\n        return False, \"legacy_fixed_sl_tp_fallback_rejected\", trace\n\n    if reward_risk < float(plan.minimum_reward_risk):\n        return False, \"minimum_reward_risk_not_met\", trace\n\n    return True, \"adaptive_protection_approved\", trace"
+        },
+        {
+          "name": "approve_execution",
+          "line": 150,
+          "end_line": 181,
+          "relevant_keywords": [
+            "allocated_units"
+          ],
+          "source": "def approve_execution(\n    allocation_input: AllocationInput,\n    protection_plan: ProtectionPlan,\n) -> SafetyDecision:\n    allocation = allocate_units(allocation_input)\n    protection_allowed, protection_reason, protection_trace = validate_protection_plan(protection_plan)\n\n    if not allocation.allowed:\n        return SafetyDecision(\n            False,\n            allocation.reason,\n            0,\n            allocation.trace,\n            protection_trace,\n        )\n\n    if not protection_allowed:\n        return SafetyDecision(\n            False,\n            protection_reason,\n            0,\n            allocation.trace,\n            protection_trace,\n        )\n\n    return SafetyDecision(\n        True,\n        \"capital_and_protection_approved\",\n        allocation.allocated_units,\n        allocation.trace,\n        protection_trace,\n    )"
+        }
+      ],
+      "calls": [
+        {
+          "name": "dataclass",
+          "line": 8
+        },
+        {
+          "name": "dataclass",
+          "line": 20
+        },
+        {
+          "name": "dataclass",
+          "line": 30
+        },
+        {
+          "name": "dataclass",
+          "line": 43
+        },
+        {
+          "name": "max",
+          "line": 62
+        },
+        {
+          "name": "max",
+          "line": 63
+        },
+        {
+          "name": "max",
+          "line": 64
+        },
+        {
+          "name": "max",
+          "line": 73
+        },
+        {
+          "name": "max",
+          "line": 74
+        },
+        {
+          "name": "AllocationResult",
+          "line": 86
+        },
+        {
+          "name": "upper",
+          "line": 102
+        },
+        {
+          "name": "asdict",
+          "line": 103
+        },
+        {
+          "name": "trace.update",
+          "line": 134
+        },
+        {
+          "name": "allocate_units",
+          "line": 154
+        },
+        {
+          "name": "validate_protection_plan",
+          "line": 155
+        },
+        {
+          "name": "SafetyDecision",
+          "line": 175
+        },
+        {
+          "name": "isfinite",
+          "line": 53
+        },
+        {
+          "name": "int",
+          "line": 62
+        },
+        {
+          "name": "int",
+          "line": 63
+        },
+        {
+          "name": "_finite_positive",
+          "line": 66
+        },
+        {
+          "name": "AllocationResult",
+          "line": 67
+        },
+        {
+          "name": "min",
+          "line": 73
+        },
+        {
+          "name": "floor",
+          "line": 74
+        },
+        {
+          "name": "max",
+          "line": 78
+        },
+        {
+          "name": "max",
+          "line": 79
+        },
+        {
+          "name": "max",
+          "line": 80
+        },
+        {
+          "name": "min",
+          "line": 83
+        },
+        {
+          "name": "strip",
+          "line": 115
+        },
+        {
+          "name": "float",
+          "line": 144
+        },
+        {
+          "name": "SafetyDecision",
+          "line": 158
+        },
+        {
+          "name": "SafetyDecision",
+          "line": 167
+        },
+        {
+          "name": "float",
+          "line": 53
+        },
+        {
+          "name": "float",
+          "line": 53
+        },
+        {
+          "name": "float",
+          "line": 73
+        },
+        {
+          "name": "float",
+          "line": 73
+        },
+        {
+          "name": "int",
+          "line": 78
+        },
+        {
+          "name": "int",
+          "line": 79
+        },
+        {
+          "name": "int",
+          "line": 80
+        },
+        {
+          "name": "capacities.values",
+          "line": 83
+        },
+        {
+          "name": "strip",
+          "line": 102
+        },
+        {
+          "name": "_finite_positive",
+          "line": 107
+        },
+        {
+          "name": "_finite_positive",
+          "line": 107
+        },
+        {
+          "name": "_finite_positive",
+          "line": 111
+        },
+        {
+          "name": "_finite_positive",
+          "line": 111
+        },
+        {
+          "name": "strip",
+          "line": 113
+        },
+        {
+          "name": "strip",
+          "line": 113
+        },
+        {
+          "name": "abs",
+          "line": 141
+        },
+        {
+          "name": "abs",
+          "line": 141
+        },
+        {
+          "name": "asdict",
+          "line": 70
+        },
+        {
+          "name": "float",
+          "line": 74
+        },
+        {
+          "name": "asdict",
+          "line": 93
+        },
+        {
+          "name": "str",
+          "line": 115
+        },
+        {
+          "name": "str",
+          "line": 102
+        },
+        {
+          "name": "str",
+          "line": 113
+        },
+        {
+          "name": "str",
+          "line": 113
+        }
+      ],
+      "keyword_hits": [
+        {
+          "line": 12,
+          "keyword": "capital_per_unit",
+          "text": "capital_per_unit: float"
+        },
+        {
+          "line": 13,
+          "keyword": "maximum_units",
+          "text": "maximum_units: int"
+        },
+        {
+          "line": 23,
+          "keyword": "allocated_units",
+          "text": "allocated_units: int"
+        },
+        {
+          "line": 33,
+          "keyword": "stop_loss",
+          "text": "stop_loss_price: float | None"
+        },
+        {
+          "line": 34,
+          "keyword": "take_profit",
+          "text": "take_profit_price: float | None"
+        },
+        {
+          "line": 47,
+          "keyword": "allocated_units",
+          "text": "allocated_units: int"
+        },
+        {
+          "line": 59,
+          "keyword": "maximum_units",
+          "text": "maximum_units is a ceiling, never a target."
+        },
+        {
+          "line": 62,
+          "keyword": "maximum_units",
+          "text": "maximum_units = max(0, int(data.maximum_units))"
+        },
+        {
+          "line": 64,
+          "keyword": "maximum_units",
+          "text": "remaining_profile_capacity = max(0, maximum_units - exposure)"
+        },
+        {
+          "line": 66,
+          "keyword": "capital_per_unit",
+          "text": "if not _finite_positive(data.capital_per_unit):"
+        },
+        {
+          "line": 69,
+          "keyword": "capital_per_unit",
+          "text": "\"invalid_capital_per_unit\","
+        },
+        {
+          "line": 74,
+          "keyword": "capital_per_unit",
+          "text": "capital_capacity = max(0, floor(available_capital / float(data.capital_per_unit)))"
+        },
+        {
+          "line": 83,
+          "keyword": "allocated_units",
+          "text": "allocated_units = min(capacities.values()) if capacities else 0"
+        },
+        {
+          "line": 85,
+          "keyword": "allocated_units",
+          "text": "reason = \"capital_aware_units_approved\" if allocated_units > 0 else \"unit_capacity_unavailable\""
+        },
+        {
+          "line": 87,
+          "keyword": "allocated_units",
+          "text": "allowed=allocated_units > 0,"
+        },
+        {
+          "line": 88,
+          "keyword": "allocated_units",
+          "text": "allocated_units=allocated_units,"
+        },
+        {
+          "line": 95,
+          "keyword": "allocated_units",
+          "text": "\"final_allocated_units\": allocated_units,"
+        },
+        {
+          "line": 96,
+          "keyword": "maximum_units",
+          "text": "\"maximum_units_semantics\": \"CEILING_NOT_TARGET\","
+        },
+        {
+          "line": 109,
+          "keyword": "stop_loss",
+          "text": "if plan.stop_loss_price is None or plan.take_profit_price is None:"
+        },
+        {
+          "line": 109,
+          "keyword": "take_profit",
+          "text": "if plan.stop_loss_price is None or plan.take_profit_price is None:"
+        },
+        {
+          "line": 111,
+          "keyword": "stop_loss",
+          "text": "if not _finite_positive(plan.stop_loss_price) or not _finite_positive(plan.take_profit_price):"
+        },
+        {
+          "line": 111,
+          "keyword": "take_profit",
+          "text": "if not _finite_positive(plan.stop_loss_price) or not _finite_positive(plan.take_profit_price):"
+        },
+        {
+          "line": 119,
+          "keyword": "stop_loss",
+          "text": "risk_distance = plan.entry_price - plan.stop_loss_price"
+        },
+        {
+          "line": 120,
+          "keyword": "take_profit",
+          "text": "reward_distance = plan.take_profit_price - plan.entry_price"
+        },
+        {
+          "line": 122,
+          "keyword": "stop_loss",
+          "text": "risk_distance = plan.stop_loss_price - plan.entry_price"
+        },
+        {
+          "line": 123,
+          "keyword": "take_profit",
+          "text": "reward_distance = plan.entry_price - plan.take_profit_price"
+        },
+        {
+          "line": 126,
+          "keyword": "stop_loss",
+          "text": "return False, \"stop_loss_wrong_side\", trace"
+        },
+        {
+          "line": 128,
+          "keyword": "take_profit",
+          "text": "return False, \"take_profit_wrong_side\", trace"
+        },
+        {
+          "line": 130,
+          "keyword": "sl_points",
+          "text": "sl_points = risk_distance / plan.point_size"
+        },
+        {
+          "line": 131,
+          "keyword": "tp_points",
+          "text": "tp_points = reward_distance / plan.point_size"
+        },
+        {
+          "line": 135,
+          "keyword": "sl_points",
+          "text": "\"sl_points\": sl_points,"
+        },
+        {
+          "line": 136,
+          "keyword": "tp_points",
+          "text": "\"tp_points\": tp_points,"
+        },
+        {
+          "line": 141,
+          "keyword": "sl_points",
+          "text": "if abs(sl_points - 3000.0) < 1e-9 and abs(tp_points - 500.0) < 1e-9:"
+        },
+        {
+          "line": 141,
+          "keyword": "tp_points",
+          "text": "if abs(sl_points - 3000.0) < 1e-9 and abs(tp_points - 500.0) < 1e-9:"
+        },
+        {
+          "line": 178,
+          "keyword": "allocated_units",
+          "text": "allocation.allocated_units,"
+        }
+      ]
+    },
+    {
+      "path": "afip/portfolio/portfolio_risk.py",
+      "module": "afip.portfolio.portfolio_risk",
+      "imports": [
+        "__future__",
+        "afip.portfolio.concentration_risk",
+        "afip.portfolio.exposure_limit",
+        "afip.portfolio.risk_budget",
+        "dataclasses",
+        "typing"
+      ],
+      "classes": [
+        {
+          "name": "PortfolioRiskSummary",
+          "line": 14,
+          "end_line": 28
+        },
+        {
+          "name": "PortfolioRisk",
+          "line": 31,
+          "end_line": 82
+        }
+      ],
+      "functions": [
+        {
+          "name": "__init__",
+          "line": 34,
+          "end_line": 37,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "evaluate",
+          "line": 39,
+          "end_line": 74,
+          "relevant_keywords": [],
+          "source": ""
+        },
+        {
+          "name": "_number",
+          "line": 77,
+          "end_line": 82,
+          "relevant_keywords": [],
+          "source": ""
+        }
+      ],
+      "calls": [
+        {
+          "name": "dataclass",
+          "line": 13
+        },
+        {
+          "name": "RiskBudget",
+          "line": 35
+        },
+        {
+          "name": "ExposureLimit",
+          "line": 36
+        },
+        {
+          "name": "ConcentrationRisk",
+          "line": 37
+        },
+        {
+          "name": "self._number",
+          "line": 47
+        },
+        {
+          "name": "list",
+          "line": 48
+        },
+        {
+          "name": "sum",
+          "line": 49
+        },
+        {
+          "name": "self.risk_budget.evaluate",
+          "line": 50
+        },
+        {
+          "name": "self.exposure_limit.evaluate",
+          "line": 51
+        },
+        {
+          "name": "self.concentration_risk.evaluate",
+          "line": 52
+        },
+        {
+          "name": "PortfolioRiskSummary",
+          "line": 61
+        },
+        {
+          "name": "self._number",
+          "line": 47
+        },
+        {
+          "name": "failed.append",
+          "line": 55
+        },
+        {
+          "name": "failed.append",
+          "line": 57
+        },
+        {
+          "name": "failed.append",
+          "line": 59
+        },
+        {
+          "name": "isinstance",
+          "line": 78
+        },
+        {
+          "name": "value.get",
+          "line": 78
+        },
+        {
+          "name": "getattr",
+          "line": 78
+        },
+        {
+          "name": "float",
+          "line": 80
+        },
+        {
+          "name": "abs",
+          "line": 49
+        },
+        {
+          "name": "round",
+          "line": 67
+        },
+        {
+          "name": "round",
+          "line": 69
+        },
+        {
+          "name": "tuple",
+          "line": 73
+        },
+        {
+          "name": "self._number",
+          "line": 49
+        },
+        {
+          "name": "self._number",
+          "line": 49
+        }
+      ],
+      "keyword_hits": []
+    }
+  ],
+  "missing_targets": [],
+  "configs": [
+    {
+      "path": "config/four_profile_demo.json",
+      "keyword_hits": [
+        {
+          "line": 28,
+          "text": "\"capital_per_unit\": 1000.0,"
+        },
+        {
+          "line": 29,
+          "text": "\"maximum_units\": 3,"
+        },
+        {
+          "line": 165,
+          "text": "\"capital_per_unit\": 500.0,"
+        },
+        {
+          "line": 166,
+          "text": "\"maximum_units\": 3,"
+        },
+        {
+          "line": 302,
+          "text": "\"capital_per_unit\": 200.0,"
+        },
+        {
+          "line": 303,
+          "text": "\"maximum_units\": 3,"
+        },
+        {
+          "line": 335,
+          "text": "\"capital_per_unit\": 100.0,"
+        },
+        {
+          "line": 336,
+          "text": "\"maximum_units\": 3,"
+        }
+      ]
+    }
+  ],
+  "cross_module_findings": [
+    {
+      "rule": "GATEWAY_IMPORTS_UNIT_ALLOCATION_OWNER",
+      "passed": false,
+      "imports": [
+        "MetaTrader5",
+        "__future__",
+        "afip.capital_growth_engine",
+        "afip.four_profile_operations.runtime",
+        "afip.runtime.runtime_v1",
+        "dataclasses",
+        "datetime",
+        "hashlib",
+        "json",
+        "math",
+        "os",
+        "pathlib",
+        "signal",
+        "time",
+        "typing"
+      ]
+    },
+    {
+      "rule": "GATEWAY_CALLS_ORDER_SEND",
+      "passed": true,
+      "calls": [
+        "mt5.order_check",
+        "mt5.order_send"
+      ]
+    }
+  ]
+}

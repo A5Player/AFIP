@@ -1,0 +1,16 @@
+{
+  "status": "PATCH_APPLIED_EXECUTION_REMAINS_STOPPED",
+  "pack": "MILESTONE_S_CLEANUP_PACK_4_1",
+  "rr_definition": "reward_distance / initial_risk_distance",
+  "profiles_can_share_entry": [
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "cross_profile_duplicate_blocking": false,
+  "per_unit_rr_roles": [
+    "RR_NEAR",
+    "RR_CORE",
+    "RR_RUNNER"
+  ]
+}

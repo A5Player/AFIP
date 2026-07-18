@@ -1,0 +1,355 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "root": "C:\\AFIP",
+  "findings": [
+    {
+      "category": "legacy_tp_500",
+      "path": "tools\\afip_pack_4_9_source_audit.py",
+      "line": 16,
+      "match": "500"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "tools\\afip_pack_4_9_source_audit.py",
+      "line": 17,
+      "match": "500"
+    },
+    {
+      "category": "legacy_sl_3000",
+      "path": "tools\\afip_pack_4_9_source_audit.py",
+      "line": 21,
+      "match": "3000"
+    },
+    {
+      "category": "legacy_sl_3000",
+      "path": "tools\\afip_pack_4_9_source_audit.py",
+      "line": 22,
+      "match": "3000"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\adaptive_position_sizing\\runtime.py",
+      "line": 82,
+      "match": "maximum_units\")"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\adaptive_position_sizing\\runtime.py",
+      "line": 113,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\adaptive_position_sizing\\runtime.py",
+      "line": 158,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\adaptive_position_sizing\\runtime.py",
+      "line": 175,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\broker\\mt5_history_adapter.py",
+      "line": 7,
+      "match": "500"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\capital_allocation\\runtime.py",
+      "line": 253,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\capital_allocation\\runtime.py",
+      "line": 271,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\capital_growth_engine\\runtime.py",
+      "line": 108,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\capital_growth_engine\\runtime.py",
+      "line": 115,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\cot_intelligence\\runtime.py",
+      "line": 34,
+      "match": "500"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\dashboard_ui\\launcher.py",
+      "line": 49,
+      "match": "500"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\dashboard_ui\\runtime.py",
+      "line": 189,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\dashboard_ui\\runtime.py",
+      "line": 1153,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\dashboard_ui\\runtime.py",
+      "line": 1493,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\dashboard_ui\\runtime.py",
+      "line": 477,
+      "match": "500.0"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\demo_execution_gateway\\runtime.py",
+      "line": 67,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\demo_execution_gateway\\runtime.py",
+      "line": 74,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\demo_execution_gateway\\runtime.py",
+      "line": 346,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "order_send",
+      "path": "afip\\demo_execution_gateway\\runtime.py",
+      "line": 41,
+      "match": "order_send("
+    },
+    {
+      "category": "order_send",
+      "path": "afip\\demo_execution_gateway\\runtime.py",
+      "line": 488,
+      "match": "order_send("
+    },
+    {
+      "category": "order_send",
+      "path": "afip\\demo_execution_gateway\\runtime.py",
+      "line": 488,
+      "match": "mt5.order_send("
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\execution_safety\\capital_aware_protection_guard.py",
+      "line": 62,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\execution_safety\\capital_aware_protection_guard.py",
+      "line": 141,
+      "match": "500.0"
+    },
+    {
+      "category": "legacy_sl_3000",
+      "path": "afip\\execution_safety\\capital_aware_protection_guard.py",
+      "line": 141,
+      "match": "3000.0"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\execution_supervisor\\runtime.py",
+      "line": 11,
+      "match": "500"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\explainable_order_center\\runtime.py",
+      "line": 157,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\explainable_order_center\\runtime.py",
+      "line": 160,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\intelligence\\portfolio_exposure_allocator.py",
+      "line": 104,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\knowledge\\market_snapshot_repository.py",
+      "line": 36,
+      "match": "500"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\learning\\adaptive_memory_store.py",
+      "line": 13,
+      "match": "500"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\learning\\adaptive_memory_store.py",
+      "line": 37,
+      "match": "500"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\learning\\adaptive_memory_store.py",
+      "line": 37,
+      "match": "500"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\market\\history_market_data_provider.py",
+      "line": 7,
+      "match": "500"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\paper_trading\\paper_runtime.py",
+      "line": 116,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\paper_trading\\paper_runtime.py",
+      "line": 131,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\paper_trading\\paper_runtime.py",
+      "line": 173,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\portfolio_decision\\runtime.py",
+      "line": 41,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\portfolio_decision\\runtime.py",
+      "line": 44,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\portfolio_decision\\runtime.py",
+      "line": 44,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\portfolio_decision\\runtime.py",
+      "line": 130,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\portfolio_decision\\runtime.py",
+      "line": 154,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "legacy_sl_3000",
+      "path": "afip\\position\\position_sizer.py",
+      "line": 6,
+      "match": "3000.0"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\profile_customization\\models.py",
+      "line": 64,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\profile_manager\\profile_models.py",
+      "line": 107,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\profile_manager\\profile_models.py",
+      "line": 117,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\profile_manager\\profile_models.py",
+      "line": 143,
+      "match": "maximum_units)"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\profile_manager\\profile_models.py",
+      "line": 143,
+      "match": "maximum_units,"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\protection\\sl_tp_planner.py",
+      "line": 2,
+      "match": "500.0"
+    },
+    {
+      "category": "legacy_sl_3000",
+      "path": "afip\\protection\\sl_tp_planner.py",
+      "line": 2,
+      "match": "3000.0"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\shadow_execution_observation\\runtime.py",
+      "line": 95,
+      "match": "500.0"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\shadow_execution_observation\\runtime.py",
+      "line": 95,
+      "match": "500.0"
+    },
+    {
+      "category": "forced_three",
+      "path": "afip\\unit_allocation\\runtime.py",
+      "line": 44,
+      "match": "maximum_units\","
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\unit_allocation\\runtime.py",
+      "line": 15,
+      "match": "500.0"
+    },
+    {
+      "category": "legacy_tp_500",
+      "path": "afip\\unit_allocation\\runtime.py",
+      "line": 42,
+      "match": "500.0"
+    }
+  ],
+  "instruction": "Inspect the exact execution gateway call path. Wire approve_execution() immediately before MT5 order_check/order_send. Never replace maximum_units with forced allocation. Reject missing protection plans."
+}

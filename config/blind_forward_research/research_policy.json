@@ -1,0 +1,15 @@
+{
+  "schema_version": "blind-forward-policy.v1",
+  "mode": "FORWARD_ONLY",
+  "execution_authority": "NONE",
+  "append_only_results": true,
+  "deterministic_input_hash": "SHA256_CANONICAL_JSON",
+  "same_bar_resolution": "SL_FIRST",
+  "require_closed_bar_after_entry": true,
+  "require_data_quality_status": "PASS",
+  "require_market_regime": true,
+  "require_pattern_family": true,
+  "require_features": true,
+  "profiles_share_research_dataset": true,
+  "promotion_to_execution": "PROHIBITED"
+}
