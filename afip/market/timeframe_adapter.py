@@ -1,8 +1,8 @@
+from afip.timeframe_registry import get_minutes, get_supported_timeframes
+
+
 class TimeframeAdapter:
-    DEFAULTS = {"M1":1,"M5":5,"M15":15,"M30":30,"H1":60,"H4":240,"D1":1440}
+    DEFAULTS = {name: get_minutes(name) for name in get_supported_timeframes()}
 
     def to_minutes(self, timeframe: str) -> int:
-        key = timeframe.upper()
-        if key not in self.DEFAULTS:
-            raise ValueError(f"Unsupported timeframe: {timeframe}")
-        return self.DEFAULTS[key]
+        return get_minutes(timeframe)

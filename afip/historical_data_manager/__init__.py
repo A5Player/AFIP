@@ -3,6 +3,7 @@
 from .history_runtime import HistoricalDataManagerRuntime
 from .history_report import HistoricalDataManagerReport
 from .live_runtime import HistoricalDataLiveReport, HistoricalDataLiveRuntime
+from .timeframe_quality import BackfillResult, GapRange, TimeframeDataQuality, TimeframeQualityEvidence
 from .download_pipeline import (
     HistoricalDataDownloadPipeline,
     HistoricalDataDownloadStep,
@@ -18,5 +19,9 @@ __all__ = [
     "HistoricalDataQualityReport",
     "HistoricalDataLiveReport",
     "HistoricalDataLiveRuntime",
+    "BackfillResult",
+    "GapRange",
+    "TimeframeDataQuality",
+    "TimeframeQualityEvidence",
     "default_download_steps",
 ]

@@ -9,9 +9,11 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping, Sequence
 
+from afip.timeframe_registry import get_supported_timeframes
+
 VERSION1_BROKER = "XM"
 VERSION1_SYMBOL = "GOLD#"
-DEFAULT_TIMEFRAMES = ("M1", "M5", "M15", "H1", "H4", "D1")
+DEFAULT_TIMEFRAMES = get_supported_timeframes(capability="historical_collection")
 MIN_QUALITY_SCORE = 99.0
 MIN_RESEARCH_QUALITY_SCORE = 95.0
 
@@ -94,7 +96,7 @@ def default_download_steps() -> tuple[HistoricalDataDownloadStep, ...]:
     return (
         HistoricalDataDownloadStep("connect_mt5", "เชื่อมต่อ MT5", "Validate MT5 terminal and XM account visibility before downloading data.", "mt5_connection_required", "mt5_ready"),
         HistoricalDataDownloadStep("select_gold", "เลือกสัญลักษณ์ทอง", "Resolve and select GOLD# only for Version 1 historical data.", "gold_symbol_required", "gold_selected"),
-        HistoricalDataDownloadStep("download_timeframes", "ดาวน์โหลดหลายกรอบเวลา", "Download M1, M5, M15, H1, H4, and D1 bars for research and walk forward.", "historical_bars_required", "timeframe_bars_downloaded"),
+        HistoricalDataDownloadStep("download_timeframes", "ดาวน์โหลดหลายกรอบเวลา", "Download M1, M5, M15, M30, H1, H4, and D1 bars for research and walk forward.", "historical_bars_required", "timeframe_bars_downloaded"),
         HistoricalDataDownloadStep("validate_quality", "ตรวจคุณภาพข้อมูล", "Validate missing bars, duplicate bars, invalid bars, and quality score.", "quality_validation_required", "quality_report_ready"),
         HistoricalDataDownloadStep("build_datasets", "สร้างชุดข้อมูลวิจัย", "Build separated Research, Walk Forward, and Paper Trading datasets.", "dataset_build_required", "datasets_ready"),
     )

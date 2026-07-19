@@ -47,6 +47,8 @@ class MT5Protocol(Protocol):
 class DemoProfilePolicy:
     profile_id: str
     enabled: bool
+    execution_enabled: bool
+    research_enabled: bool
     demo_execution_enabled: bool
     capital_per_unit: float
     maximum_units: int
@@ -64,6 +66,8 @@ class DemoProfilePolicy:
         return cls(
             profile_id=str(raw["profile_id"]).strip().upper(),
             enabled=bool(raw.get("enabled", False)),
+            execution_enabled=bool(raw.get("execution_enabled", raw.get("enabled", False))),
+            research_enabled=bool(raw.get("research_enabled", raw.get("enabled", False))),
             demo_execution_enabled=bool(raw.get("demo_execution_enabled", False)),
             capital_per_unit=float(raw.get("capital_per_unit", 1000.0)),
             maximum_units=int(raw.get("maximum_units", 1)),
@@ -284,6 +288,8 @@ class DemoExecutionGateway:
             return None, self._report("BLOCKED", ",".join(policy_errors))
         if not self.profile.enabled or not self.policy.enabled:
             return None, self._report("STOPPED", "profile_disabled_by_operator")
+        if not self.profile.execution_enabled or not self.policy.execution_enabled:
+            return None, self._report("STOPPED", "profile_execution_disabled_research_preserved")
         if not self.policy.demo_execution_enabled:
             return None, self._report("BLOCKED", "demo_execution_disabled_in_profile")
         if self.profile.broker != "XM" or self.profile.symbol != "GOLD#":

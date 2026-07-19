@@ -1,0 +1,10 @@
+Validation performed on merged AFIP(36) + successfully applied Phase U Packs 3.3.1 through 3.3.4.
+
+Focused dashboard validation:
+11 passed in 4.92s
+
+Phase U 3.3 and dashboard regression validation:
+35 passed in 5.17s
+
+Live execution policy changed: False
+Order execution authority added: False

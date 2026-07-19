@@ -1,0 +1,25 @@
+AFIP Phase U Pack 3.3.1 - Assistant-side validation
+Date: 2026-07-19
+
+Command:
+python -m pytest tests/test_phase_u_pack_3_2_automatic_research_runtime.py tests/test_phase_u_pack_3_2_1_visible_research_pipeline.py tests/test_phase_u_pack_3_2_2_stale_replay_checkpoint_recovery.py tests/test_phase_u_pack_3_3_1_timeframe_registry.py -q
+
+Result:
+16 passed in 1.67s
+
+Scope verified:
+- Universal ordered timeframe registry
+- M30 metadata and MT5 constant mapping
+- Historical download defaults include M30
+- Chronological replay consumes registry
+- Existing automatic research runtime regressions
+- Existing visible research pipeline regressions
+- Existing stale checkpoint recovery regressions
+
+Not verified by this pack:
+- Live account readiness
+- Lot sizing and capital gating
+- Maximum units
+- SL/TP correctness
+- P1/P4 operational execution configuration
+- M5 1,441/2,000 root cause

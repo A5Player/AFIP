@@ -167,3 +167,40 @@ class FinancialDataLake:
         with path.with_name("manifest.jsonl").open("a", encoding="utf-8", newline="\n") as stream:
             stream.write(canonical_json(manifest) + "\n")
         return LakeWriteResult("APPENDED", record.record_id, relative.as_posix(), checksum, len(encoded), False)
+
+    def append_many(self, records: list[DataLakeRecord] | tuple[DataLakeRecord, ...]) -> tuple[LakeWriteResult, ...]:
+        """Append a batch efficiently while preserving per-record deduplication."""
+        index_cache: dict[Path, set[str]] = {}
+        results: list[LakeWriteResult] = []
+        for record in records:
+            relative = self._relative_path(record)
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            index_path = path.with_name("record_ids.txt")
+            existing = index_cache.get(index_path)
+            if existing is None:
+                existing = set(index_path.read_text(encoding="utf-8").splitlines()) if index_path.exists() else set()
+                index_cache[index_path] = existing
+            if record.record_id in existing:
+                results.append(LakeWriteResult("DUPLICATE_SKIPPED", record.record_id, relative.as_posix(), "", 0, True))
+                continue
+            line = canonical_json(record.to_dict()) + "\n"
+            encoded = line.encode("utf-8")
+            with path.open("ab") as stream:
+                stream.write(encoded)
+            with index_path.open("a", encoding="utf-8", newline="\n") as stream:
+                stream.write(record.record_id + "\n")
+            existing.add(record.record_id)
+            checksum = sha256(encoded).hexdigest()
+            manifest = {
+                "record_id": record.record_id, "record_checksum_sha256": checksum,
+                "relative_path": relative.as_posix(), "bytes_written": len(encoded),
+                "written_at_utc": datetime.now(timezone.utc).isoformat(),
+                "schema_version": record.schema_version, "layer": record.layer,
+                "domain": record.domain, "instrument": record.instrument,
+                "source_id": record.source_id, "research_eligibility": record.research_eligibility,
+            }
+            with path.with_name("manifest.jsonl").open("a", encoding="utf-8", newline="\n") as stream:
+                stream.write(canonical_json(manifest) + "\n")
+            results.append(LakeWriteResult("APPENDED", record.record_id, relative.as_posix(), checksum, len(encoded), False))
+        return tuple(results)

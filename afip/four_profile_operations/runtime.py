@@ -25,6 +25,8 @@ class ProfileOperationalConfig:
     profile_id: str
     profile_name: str
     enabled: bool
+    execution_enabled: bool
+    research_enabled: bool
     launch_mt5: bool
     mt5_folder: Path
     mt5_terminal: Path
@@ -50,6 +52,8 @@ class ProfileOperationalConfig:
             profile_id=str(raw["profile_id"]).strip().upper(),
             profile_name=str(raw["profile_name"]).strip(),
             enabled=bool(raw.get("enabled", False)),
+            execution_enabled=bool(raw.get("execution_enabled", raw.get("enabled", False))),
+            research_enabled=bool(raw.get("research_enabled", raw.get("enabled", False))),
             launch_mt5=bool(raw.get("launch_mt5", False)),
             mt5_folder=Path(str(raw["mt5_folder"])),
             mt5_terminal=Path(str(raw.get("mt5_terminal") or Path(str(raw["mt5_folder"])) / "terminal64.exe")),
@@ -98,7 +102,9 @@ class ProfileOperationalConfig:
             "profile_id": self.profile_id,
             "profile_name": self.profile_name,
             "enabled": self.enabled,
-            "status": "READY" if self.enabled and not policy_errors else ("STOPPED" if not self.enabled else "BLOCKED"),
+            "execution_enabled": self.execution_enabled,
+            "research_enabled": self.research_enabled,
+            "status": "READY" if self.enabled and self.execution_enabled and not policy_errors else ("RESEARCH_ONLY" if self.enabled and self.research_enabled and not self.execution_enabled and not policy_errors else ("STOPPED" if not self.enabled else "BLOCKED")),
             "broker": self.broker,
             "server": self.server,
             "symbol": self.symbol,
@@ -118,7 +124,7 @@ class ProfileOperationalConfig:
             "order_status": NO_ORDER_SENT,
             "direct_execution": False,
             "live_execution": False,
-            "waiting_reason": "Profile disabled by operator" if not self.enabled else (", ".join(policy_errors) if policy_errors else "Waiting for locked simulation runtime start"),
+            "waiting_reason": "Profile disabled by operator" if not self.enabled else ("Execution disabled; research participation preserved" if not self.execution_enabled and self.research_enabled else (", ".join(policy_errors) if policy_errors else "Waiting for locked simulation runtime start")),
         }
 
 
@@ -232,7 +238,7 @@ class FourProfileSupervisor:
             return report
         selected_ids = {value.upper() for value in selected} if selected else None
         for profile in self.operations.load():
-            if not profile.enabled or (selected_ids is not None and profile.profile_id not in selected_ids):
+            if not profile.enabled or not profile.execution_enabled or (selected_ids is not None and profile.profile_id not in selected_ids):
                 continue
             pid_path = self._pid_path(profile)
             if pid_path.exists():

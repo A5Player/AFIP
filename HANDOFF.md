@@ -320,3 +320,70 @@ Run focused tests, Financial Naming, full pytest, Local Quality, then rebuild Da
 ## Phase U Pack 1.1 Handoff
 
 Dashboard compatibility regression corrected. Legacy Milestone H Pack 9 and Pack 10 title markers remain available in generated HTML while the Phase U dashboard remains the visible primary interface.
+
+## Phase U Pack 3 Handoff
+Run `python -m afip.dashboard_ui` to generate three separate dashboards.
+Financial values must come from P1-P4/MT5 runtime sources. No sample financial values are permitted.
+Research ranking is derived from readable JSON/JSONL records under runtime/research, data/research and data/knowledge. Empty categories must show DATA_UNAVAILABLE.
+
+
+## Phase U Pack 3.3.1 Handoff — Universal Timeframe Registry
+- Canonical ordered timeframes: M1, M5, M15, M30, H1, H4, D1.
+- Historical collection and automatic chronological replay now consume the central registry.
+- TimeframeAdapter remains backward compatible and delegates conversion to the registry.
+- No trading, risk, lot sizing, SL, TP or execution policy was changed.
+- Historical and research storage remain append-only.
+- M5 1,441/2,000 replay coverage remains unresolved pending source/runtime evidence certification.
+
+
+## Phase U Pack 3.3.2 Handoff
+M30 historical collection is persisted in the append-only financial data lake. Next work: M30 gap detection/backfill/integrity and evidence-based M5 replay coverage investigation. Real-account readiness remains unclaimed.
+
+## Phase U Pack 3.3.3 Handoff
+
+Status after validation: M30 chronological replay and exact-window coverage evidence available.
+
+Important investigation result: the former M5 1,441 processed count is explained by a 559 next-index checkpoint continuation. Because the legacy replay ID did not bind that checkpoint to first/last timestamps, it was not sufficient evidence of full coverage for the newly downloaded 2,000-bar MT5 window. Pack 3.3.3 preserves the legacy data and starts an append-only exact-window generation.
+
+Safety: Live execution policy remains unchanged and disabled by this research pack.
+
+## Phase U Pack 3.3.4 Handoff — M30 Data Quality and Automatic Backfill
+
+- Universal registered timeframe quality evidence now covers M1, M5, M15, M30, H1, H4, and D1.
+- Automatic Research Status exposes integrity, duplicate, gap, missing-bar, freshness, and backfill evidence.
+- Backfill merging preserves existing records and accepted new bars remain append-only.
+- MT5 backfill is research-only and does not call order_send.
+- No live trading policy or financial risk-control setting was changed.
+
+## Phase U Pack 3.3.5 Handoff — Dashboard Timeframe Research Status
+
+Dashboard 3 now renders structured status evidence for all seven registered timeframes, including M30. It reads `runtime/research/automatic_research_status.json` and visibly reports missing evidence as `NOT_RECORDED` or `DATA_UNAVAILABLE` rather than inventing values.
+
+No live execution, risk, lot sizing, capital gating, SL or TP policy was modified.
+
+## Phase U Pack 3.3.6 Handoff — Profile Execution / Research Separation
+
+Verified intended operational state:
+
+- P1 execution enabled, research enabled
+- P2 execution disabled, research enabled
+- P3 execution disabled, research enabled
+- P4 execution enabled, research enabled
+
+`enabled` remains true for P2/P3, preserving configuration and research participation. Re-enabling later requires only changing `execution_enabled` to true; no data migration is required.
+
+Safety boundary: this pack does not certify real-account readiness and does not verify or change lot sizing, capital gating, maximum units, SL, TP, or execution protection parameters.
+
+## Phase U Pack 3.3.7 Handoff — Phase U Pack 3.3 Closed
+
+Phase U Pack 3.3 is complete after successful local execution of RUN_PHASE_U_PACK_3_3_7.ps1.
+
+Operational state required by this phase:
+
+- P1 execution enabled.
+- P2 execution disabled; configuration/data/research preserved.
+- P3 execution disabled; configuration/data/research preserved.
+- P4 execution enabled.
+- Live execution policy unchanged.
+
+Next work must not claim real-account readiness until actual code and tests certify lot sizing, capital gating, maximum units, SL, TP, execution locks and P1/P4 profile configuration.

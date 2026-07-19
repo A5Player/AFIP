@@ -1,0 +1,17 @@
+AFIP Phase U Pack 3.3.4 Validation
+
+Focused validation:
+24 passed in 1.72s
+
+Phase U Pack 3.2 through 3.3.4 regression:
+32 passed in 2.47s
+
+Validated:
+- M30 registered gap detection
+- Exact missing-bar counts
+- OHLC integrity validation
+- Deterministic duplicate handling
+- Timeframe-specific freshness
+- Provider-driven backfill merge
+- Automatic Research Status quality evidence
+- No live execution authority

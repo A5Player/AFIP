@@ -1,0 +1,15 @@
+./AFIP_PROJECT_DATABASE_PHASE_U_PACK_3_3_1_APPEND.md
+./APPLY_PHASE_U_PACK_3_3_1_DOC_UPDATES.ps1
+./FILE_LIST_PHASE_U_PACK_3_3_1.md
+./HANDOFF_PHASE_U_PACK_3_3_1_APPEND.md
+./PACKAGE_CONTENTS.txt
+./README_PHASE_U_PACK_3_3_1.md
+./README_PHASE_U_PACK_3_3_1_TH.md
+./RUN_PHASE_U_PACK_3_3_1.bat
+./RUN_PHASE_U_PACK_3_3_1.ps1
+./VALIDATION_PHASE_U_PACK_3_3_1.txt
+./afip/automatic_research_runtime/runtime.py
+./afip/historical_data_manager/download_pipeline.py
+./afip/market/timeframe_adapter.py
+./afip/timeframe_registry.py
+./tests/test_phase_u_pack_3_3_1_timeframe_registry.py

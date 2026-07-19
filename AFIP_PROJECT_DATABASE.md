@@ -349,3 +349,85 @@ Status pending local certification. Adds dashboard-visible runtime integration e
 - Preserves Milestone H Pack 9 and Pack 10 HTML title contracts.
 - Preserves the Phase U Runtime Integration title and Runtime Coverage Matrix.
 - No trading or execution behavior changed.
+
+
+## Phase U Pack 2 — Two Separate Dashboards
+
+- Added a dedicated P1-P4 operational dashboard with five-second automatic refresh.
+- Added a separate manually refreshed Intelligence, Engine, Research and Data dashboard.
+- Preserved the historical single-dashboard runtime contract for regression compatibility.
+- Trading logic and execution authority remain unchanged.
+
+## Phase U Pack 3 — Three Dashboards and Real Data Integrity
+- Dashboard 1: P1-P4 operational and financial data, 5-second refresh.
+- Dashboard 2: Intelligence and engine evidence only.
+- Dashboard 3: Research, dataset inventory, counts, Top 10 and Top 100.
+- Financial placeholders removed; missing values remain DATA_UNAVAILABLE.
+- Trading and execution authority unchanged.
+
+## Phase U Pack 3.3.1 — Universal Timeframe Registry
+Status: PATCH DELIVERED; USER-SIDE VALIDATION REQUIRED
+
+Architecture:
+- `afip/timeframe_registry.py` is the canonical deterministic timeframe source.
+- Supported order: M1, M5, M15, M30, H1, H4, D1.
+- Capabilities are recorded per timeframe for historical collection, replay, research, gap detection and dashboard use.
+- Automatic research MT5 mapping resolves constants from registry metadata.
+
+Safety:
+- Live execution authority unchanged.
+- No order send path added.
+- No risk threshold, capital gate, maximum unit, SL or TP policy changed.
+- Append-only research history preserved.
+
+## Phase U Pack 3.3.2 — M30 Historical Collection & Data Lake Integration
+- Added efficient append-only batch persistence for normalized historical OHLC.
+- Connected automatic MT5 closed-bar collection to the financial data lake.
+- Added M30 to read-only historical coverage through the canonical registry.
+- No live execution or trading-policy authority added.
+
+## Phase U Pack 3.3.3 — M30 Chronological Replay & Coverage Evidence
+
+- Added deterministic per-timeframe replay coverage evidence.
+- Replay checkpoints are now scoped to exact source-window identity.
+- Legacy partial checkpoints are retained append-only but are not assumed to prove current-window coverage.
+- M5 2,000/1,441 evidence indicates continuation from index 559 under the legacy ID; exact current-window coverage was not provable.
+- M30 replay remains enabled through the universal timeframe registry.
+- No live execution, risk, lot sizing, SL, TP, or capital policy change.
+
+## Phase U Pack 3.3.4 — M30 Research Data Quality, Gap Detection & Automatic Backfill
+
+Status: implemented as a patch-only research-data extension.
+
+Added deterministic timeframe quality evidence, exact duplicate detection, missing-bar gap ranges, timeframe-specific freshness, provider-driven automatic backfill, MT5 research-only gap backfill support, append-only persistence, and M30 status integration.
+
+Trading policy, order execution, risk thresholds, lot sizing, capital gating, maximum units, SL, and TP were not modified.
+
+## Phase U Pack 3.3.5 — Dashboard Timeframe Research Status
+
+- Added universal timeframe coverage table to Dashboard 3.
+- Displays M1, M5, M15, M30, H1, H4 and D1 coverage, replay, freshness, gap, integrity and research eligibility evidence.
+- Replaced unstructured automatic-research nested dictionary display with selected deterministic status rows.
+- Preserved three-dashboard and legacy redirect compatibility.
+- Presentation-only; no trading-policy or execution authority changes.
+
+## Phase U Pack 3.3.6 — Research Consumer Integration & Operational Profile Execution Control
+
+- Added independent `execution_enabled` and `research_enabled` profile controls.
+- P1/P4 execution enabled; P2/P3 execution disabled while all four profiles remain enabled for research.
+- Demo workers skip execution-disabled profiles.
+- Demo gateway blocks execution-disabled profiles before MT5 access.
+- Research collector retains all research-enabled profiles.
+- M30 remains available to research consumers through the universal timeframe registry.
+- Live trading policy, lot sizing, capital gating, maximum units, SL and TP were not changed.
+
+## Phase U Pack 3.3.7 — Final Integration, Regression & Certification
+
+Status: CERTIFICATION PACK DELIVERED
+
+- Closed Phase U Pack 3.3 integration scope.
+- Certified seven-timeframe registry including M30.
+- Certified historical collection, append-only data lake, replay evidence, gap/backfill, freshness, data quality and dashboard integration.
+- Certified operational execution control: P1/P4 enabled; P2/P3 execution disabled with configuration, history and research preserved.
+- Confirmed live execution policy unchanged and martingale prohibited.
+- Real-account readiness remains explicitly out of scope pending separate lot sizing, capital gating, maximum units, SL, TP and execution-lock certification.

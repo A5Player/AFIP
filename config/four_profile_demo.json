@@ -1,5 +1,5 @@
 {
-  "version": "AFIP-1.0-MILESTONE-S-CLEANUP-PACK-4.1",
+  "version": "AFIP-1.0-PHASE-U-PACK-3.3.6",
   "execution": "LOCKED_SIMULATION_ONLY",
   "profiles": [
     {
@@ -42,7 +42,9 @@
         "one_order_minimum_balance": 0,
         "two_order_minimum_balance": 300,
         "three_order_minimum_balance": 900
-      }
+      },
+      "research_enabled": true,
+      "execution_enabled": true
     },
     {
       "profile_id": "P2",
@@ -84,7 +86,9 @@
         "one_order_minimum_balance": 0,
         "two_order_minimum_balance": 300,
         "three_order_minimum_balance": 900
-      }
+      },
+      "research_enabled": true,
+      "execution_enabled": false
     },
     {
       "profile_id": "P3",
@@ -126,7 +130,9 @@
         "one_order_minimum_balance": 0,
         "two_order_minimum_balance": 200,
         "three_order_minimum_balance": 450
-      }
+      },
+      "research_enabled": true,
+      "execution_enabled": false
     },
     {
       "profile_id": "P4",
@@ -167,7 +173,9 @@
         "scenario_units_unlimited": true,
         "distinct_rr_and_sl_plans": true,
         "operational_emergency_ceiling_env": "AFIP_P4_RESEARCH_ORDER_CEILING"
-      }
+      },
+      "research_enabled": true,
+      "execution_enabled": true
     }
   ],
   "position_policy": {

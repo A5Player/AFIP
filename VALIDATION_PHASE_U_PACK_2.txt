@@ -1,0 +1,9 @@
+Phase U Pack 2 validation target
+
+- Focused Pack 2 tests
+- Milestone H Pack 9 and Pack 10 compatibility tests
+- Phase U Pack 1 and Pack 1.1 tests
+- Financial Naming Validation
+- Full Regression
+- Local Quality
+- Two dashboard build

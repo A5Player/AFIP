@@ -48,6 +48,8 @@ def status() -> dict[str, Any]:
         records.append({
             "profile_id": profile.profile_id,
             "enabled": profile.enabled,
+            "execution_enabled": profile.execution_enabled,
+            "research_enabled": profile.research_enabled,
             "runtime_state": "RUNNING" if running else "STOPPED",
             "pid": pid,
             "gateway_status": state.get("status", "NOT_STARTED"),
@@ -63,7 +65,7 @@ def status() -> dict[str, Any]:
 def start(selected: list[str] | None) -> dict[str, Any]:
     selected_ids = {x.upper() for x in selected} if selected else None
     for profile in FourProfileOperationalRuntime(CONFIG).load():
-        if not profile.enabled or (selected_ids is not None and profile.profile_id not in selected_ids):
+        if not profile.enabled or not profile.execution_enabled or (selected_ids is not None and profile.profile_id not in selected_ids):
             continue
         profile.runtime_directory.mkdir(parents=True, exist_ok=True)
         profile.logs_directory.mkdir(parents=True, exist_ok=True)

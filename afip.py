@@ -44,6 +44,7 @@ def _print_help() -> None:
     print("Available commands:")
     print("  simulate        Run safe simulation pipeline")
     print("  mt5-check       Check real MT5 data connection fallback safely")
+    print("  research-bootstrap  Collect available history and run research replay")
     print("  run-locked-simulation  Run continuous locked simulation acceptance")
     print("  help            Show this help")
 
@@ -56,8 +57,19 @@ def main():
         return
 
     if command == "simulate":
+        from afip.automatic_research_runtime import AutomaticResearchRuntime
+        summary = AutomaticResearchRuntime(ROOT).run()
+        print(f"Automatic Research: {summary.status} | Bars {summary.usable_bars} | Replay {summary.replay_bars_processed}")
         simulate_main = _load_cli_simulate_main()
         simulate_main()
+        return
+
+
+    if command in ("research-bootstrap", "research", "research-replay"):
+        from afip.automatic_research_runtime import AutomaticResearchRuntime
+        summary = AutomaticResearchRuntime(ROOT, progress=lambda message: print(message, flush=True)).run()
+        for key, value in summary.as_dict().items():
+            print(f"{key}: {value}")
         return
 
     if command in ("mt5-check", "mt5-data-check"):
@@ -88,7 +100,7 @@ def main():
         return
 
     print(f"Unknown AFIP command: {command}")
-    print("Available commands: simulate, mt5-check, run-locked-simulation, help")
+    print("Available commands: simulate, research-bootstrap, mt5-check, run-locked-simulation, help")
     raise SystemExit(2)
 
 

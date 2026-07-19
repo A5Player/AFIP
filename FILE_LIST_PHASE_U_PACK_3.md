@@ -1,0 +1,13 @@
+# Phase U Pack 3 File List
+- afip/dashboard_ui/split_runtime.py
+- afip/dashboard_ui/launcher.py
+- afip/dashboard_ui/__main__.py
+- tests/test_phase_u_pack_3_three_dashboards.py
+- RUN_PHASE_U_PACK_3.ps1
+- RUN_PHASE_U_PACK_3.bat
+- APPLY_PHASE_U_PACK_3_DOC_UPDATES.ps1
+- README_PHASE_U_PACK_3.md
+- README_PHASE_U_PACK_3_TH.md
+- AFIP_PROJECT_DATABASE_PHASE_U_PACK_3_APPEND.md
+- HANDOFF_PHASE_U_PACK_3_APPEND.md
+- FILE_LIST_PHASE_U_PACK_3.md

@@ -1,0 +1,15 @@
+AFIP Phase U Pack 3.3.6 validation
+
+Focused runner-equivalent validation:
+16 passed in 2.43s
+
+Phase U Pack 3.3.1 through 3.3.6 regression:
+32 passed in 2.67s
+
+Verified:
+- P1/P4 execution enabled
+- P2/P3 execution disabled before MT5 access
+- all P1-P4 research enabled
+- configuration preserved
+- M30 available to research consumers
+- live/direct execution policy unchanged

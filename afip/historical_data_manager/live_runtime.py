@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping
 
-_TIMEFRAMES = ("M1", "M5", "M15", "H1", "H4", "D1")
+from afip.timeframe_registry import get_supported_timeframes
+
+_TIMEFRAMES = get_supported_timeframes(capability="historical_collection")
 
 @dataclass(frozen=True)
 class HistoricalDataLiveReport:
