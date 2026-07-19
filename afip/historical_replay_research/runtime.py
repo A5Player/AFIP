@@ -195,6 +195,9 @@ class AppendOnlyResearchDataset:
         "walk_forward_windows", "walk_forward_observations", "walk_forward_results",
         "robustness_scenarios", "robustness_results", "promotion_evidence_records",
         "research_standard_versions", "research_standard_selections", "historical_coverage_plans",
+        "runtime_standard_guidance", "historical_market_bars", "historical_backfill_results",
+        "historical_backfill_checkpoints", "mt5_historical_provider_runs",
+        "runtime_decision_traces", "dashboard_research_rankings",
     )
 
     def __init__(self, root: str | Path) -> None:

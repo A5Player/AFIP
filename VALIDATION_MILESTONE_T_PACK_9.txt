@@ -1,0 +1,10 @@
+AFIP Milestone T Pack 9 Validation
+Baseline: Milestone T Pack 8 / 2222 passed
+Focused tests: 14 passed
+Financial Naming: PASS
+Local Quality: PASS
+Full regression: 2236 passed
+Runtime: LOCKED_SIMULATION_ONLY in validation environment
+MT5 package: unavailable in Linux validation; injected gateway tests used
+MT5 order sender: unchanged / none added
+Production safety gates: preserved

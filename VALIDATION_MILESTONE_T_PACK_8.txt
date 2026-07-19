@@ -1,0 +1,7 @@
+Expected local validation:
+- Focused Pack 8 tests: 10 passed
+- Financial Naming: PASS
+- Local Quality: PASS
+- Full regression: previous total + 10 tests
+- Execution remains controlled by existing safety and execution layers
+- No order sender added

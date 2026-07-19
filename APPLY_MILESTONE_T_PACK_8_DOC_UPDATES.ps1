@@ -1,12 +1,12 @@
 $ErrorActionPreference = "Stop"
 function Append-Once([string]$Target, [string]$Source, [string]$Marker) {
-    if (-not (Test-Path $Target)) { throw "Missing target: $Target" }
-    if (-not (Test-Path $Source)) { throw "Missing source: $Source" }
     $content = Get-Content $Target -Raw
     if ($content -match [regex]::Escape($Marker)) { Write-Host "Skipped $Target (already updated)"; return }
     Add-Content -Path $Target -Value "`r`n"
     Get-Content $Source -Raw | Add-Content -Path $Target
     Write-Host "Updated $Target"
 }
-Append-Once "AFIP_PROJECT_DATABASE.md" "AFIP_PROJECT_DATABASE_MILESTONE_T_PACK_7_APPEND.md" "Milestone T Pack 7"
-Append-Once "HANDOFF.md" "HANDOFF_MILESTONE_T_PACK_7_APPEND.md" "Milestone T Pack 7"
+# Repair the missed Pack 7 documentation first.
+& .\APPLY_MILESTONE_T_PACK_7_DOC_UPDATES.ps1
+Append-Once "AFIP_PROJECT_DATABASE.md" "AFIP_PROJECT_DATABASE_MILESTONE_T_PACK_8_APPEND.md" "Milestone T Pack 8"
+Append-Once "HANDOFF.md" "HANDOFF_MILESTONE_T_PACK_8_APPEND.md" "Milestone T Pack 8"
