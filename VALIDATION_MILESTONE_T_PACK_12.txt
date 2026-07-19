@@ -1,0 +1,10 @@
+AFIP Milestone T Pack 12 Validation
+Focused Tests: 16 passed
+Financial Naming: PASS
+Local Quality: PASS
+Full Regression: 2284 passed
+Previous Baseline: 2268 passed
+Added Tests: 16
+Execution: LOCKED_SIMULATION_ONLY
+Execution Permission: FALSE
+MT5 Order Sender: NOT ADDED
