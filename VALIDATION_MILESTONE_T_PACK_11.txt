@@ -1,0 +1,8 @@
+AFIP Milestone T Pack 11
+Focused Tests: 16 passed
+Financial Naming: run on target repository
+Local Quality: run on target repository
+Expected Full Regression: 2268 passed
+Execution: LOCKED_SIMULATION_ONLY
+MT5 Order Sender: NOT ADDED
+Safety Gates: PRESERVED
