@@ -1,0 +1,11 @@
+AFIP Milestone T Pack 13 Validation
+
+Focused tests: 16 passed
+Financial Naming Validation: PASS
+Merged local archive regression: 2179 passed
+
+Note: the supplied AFIP(34).zip predates the user's current Pack 12 commit. The authoritative current repository baseline is 2284 passed. After applying Pack 13 to that repository, the expected full regression count is 2300 passed.
+
+Execution permission: FALSE
+MetaTrader5 import: NOT ADDED
+Order modification/close calls: NOT ADDED
