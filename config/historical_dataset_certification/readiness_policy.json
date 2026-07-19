@@ -1,0 +1,12 @@
+{
+  "required_timeframes": ["M1", "M5", "M15", "M30", "H1", "H4", "D1"],
+  "minimum_valid_records": 100,
+  "minimum_coverage_days": 1.0,
+  "maximum_invalid_ratio_ready": 0.0,
+  "maximum_duplicate_ratio_ready": 0.0,
+  "maximum_missing_ratio_ready": 0.02,
+  "maximum_invalid_ratio_caution": 0.01,
+  "maximum_duplicate_ratio_caution": 0.01,
+  "maximum_missing_ratio_caution": 0.10,
+  "quarantine_on_non_positive_price": true
+}

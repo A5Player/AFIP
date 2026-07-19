@@ -1,0 +1,13 @@
+# Phase U Pack 3.3.11 File List
+
+- .gitignore
+- APPLY_PHASE_U_PACK_3_3_11.ps1
+- APPLY_PHASE_U_PACK_3_3_11_DOC_UPDATES.ps1
+- RUN_PHASE_U_PACK_3_3_11.ps1
+- RUN_PHASE_U_PACK_3_3_11.bat
+- README_PHASE_U_PACK_3_3_11.md
+- README_PHASE_U_PACK_3_3_11_TH.md
+- AFIP_PROJECT_DATABASE_PHASE_U_PACK_3_3_11_APPEND.md
+- HANDOFF_PHASE_U_PACK_3_3_11_APPEND.md
+- FILE_LIST_PHASE_U_PACK_3_3_11.md
+- tests/test_phase_u_pack_3_3_11_runtime_research_git_isolation.py

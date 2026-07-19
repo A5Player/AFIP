@@ -39,3 +39,11 @@ MQL5/Profiles/Tester/
 
 # Local configuration
 .env
+# AFIP Phase U Pack 3.3.11 - runtime research data isolation
+# Runtime-generated research evidence remains local/VPS data and is not source code.
+# Keep directory structure and committed fixtures outside these generated paths.
+runtime/research/automatic/schema_v2/*.jsonl
+runtime/research/historical_data_lake/
+runtime/research/checkpoints/
+runtime/research/exports/
+runtime/research/quarantine/

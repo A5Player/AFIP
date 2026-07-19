@@ -404,3 +404,28 @@ Validation evidence:
 
 No trading logic change. Continue only after applying the documentation append and committing the validated patch.
 
+
+## Phase U Pack 3.3.11 Handoff
+
+Purpose: isolate reproducible runtime research data from Git before large historical research runs.
+
+Apply order:
+1. Extract pack over repository.
+2. Run APPLY_PHASE_U_PACK_3_3_11.ps1.
+3. Run RUN_PHASE_U_PACK_3_3_11.ps1.
+4. Review git status and confirm runtime files still exist locally.
+5. Commit and push only after validation passes.
+
+Next planned pack: Phase U Pack 3.4.1 — Historical Dataset Readiness Certification, including completeness, duplicate, gap, invalid-bar, lineage, quarantine, and drawdown-research readiness requirements.
+
+Safety: Pack 3.3.11 does not certify or arm P1 for real-money execution.
+
+
+## Phase U Pack 3.4.1 Handoff
+
+Historical Dataset Readiness Certification added.
+
+Next target: Phase U Pack 3.4.2 Comprehensive Walk-Forward Research Engine.
+
+Before Pack 3.4.2 research runs, certify the VPS historical dataset and retain the generated readiness report. Only READY and explicitly controlled CAUTION data may enter research. QUARANTINED data must remain isolated.
+

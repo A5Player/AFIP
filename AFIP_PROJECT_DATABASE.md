@@ -442,3 +442,24 @@ Status: CERTIFICATION PACK DELIVERED
 - No trading logic, sizing logic, or order-management behavior changed.
 - Validation: 2409 passed; Local Quality PASS; Dashboard generation PASS.
 
+
+## Phase U Pack 3.3.11 — Runtime Research Data Git Isolation
+
+Status: IMPLEMENTED; validation pending on user repository.
+
+- Runtime-generated automatic research streams are isolated from Git.
+- Historical data lake, checkpoints, exports, and quarantine datasets are local/VPS research assets.
+- Five previously tracked schema-v2 JSONL streams are removed from the Git index without deleting local files.
+- Source code, configuration, tests, documentation, and required fixtures remain version controlled.
+- No trading logic, execution permission, risk, lot, SL, TP, or profile behavior is changed.
+- This pack is a prerequisite for large-scale historical research and Top 10 / Top 100 ranking work.
+
+
+## Phase U Pack 3.4.1 â€” Historical Dataset Readiness Certification
+
+Status: implemented pending local validation.
+
+Added deterministic historical dataset certification before walk-forward research. The certification evaluates required timeframe coverage, OHLC integrity, duplicates, ordering, gaps, missing-record estimates, coverage duration, quality ratios, and research eligibility. Results are classified as READY, CAUTION, or QUARANTINED. Quarantined datasets are prohibited from research ranking and evidence promotion.
+
+This pack is execution-neutral and does not modify profile policy, position sizing, drawdown limits, SL, TP, or order execution authority.
+
