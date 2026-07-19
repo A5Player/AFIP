@@ -203,6 +203,8 @@ class AppendOnlyResearchDataset:
         "certified_plan_runtime_decisions", "profile_operations_read_models",
         "position_care_snapshots", "position_care_decisions", "position_care_dashboard_records",
         "runtime_continuity_checkpoints", "runtime_recovery_decisions",
+        "milestone_t_certification_evidence", "milestone_t_closure_certifications",
+        "milestone_t_final_handoffs",
         "continuity_dashboard_records",
     )
 

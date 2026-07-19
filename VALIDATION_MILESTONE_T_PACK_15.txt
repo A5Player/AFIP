@@ -1,0 +1,8 @@
+AFIP Milestone T Pack 15
+Focused tests expected: 16 passed
+Financial Naming expected: PASS
+Local Quality expected: PASS
+Full regression expected after Pack 14 baseline: 2332 passed
+Execution permission: FALSE
+MT5 order authority: NOT ADDED
+Milestone result after repository validation: MILESTONE_T_CERTIFIED
