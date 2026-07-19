@@ -2,7 +2,7 @@
   "status": "RUNNING",
   "stage": "REPLAY_RESEARCH",
   "reason": "running_chronological_replay_with_available_evidence",
-  "updated_at_utc": "2026-07-19T09:30:54Z",
+  "updated_at_utc": "2026-07-19T12:16:43Z",
   "schema_version": "AFIP-RESEARCH-SCHEMA-V2",
   "live_execution_enabled": false,
   "order_send_called": false

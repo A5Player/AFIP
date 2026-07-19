@@ -104,7 +104,14 @@ class CapitalGrowthEngine:
                 withdrawal_reference_balance=None,
             )
 
-        capital_units = max(0, int(safe_balance // float(legacy_capital_per_unit)))
+        # Legacy fixed-unit sizing is intentionally isolated from CAPITAL_TIER_TABLE.
+        # Fail closed for invalid legacy values instead of dividing by zero.
+        safe_legacy_capital = float(legacy_capital_per_unit)
+        capital_units = (
+            max(0, int(safe_balance // safe_legacy_capital))
+            if safe_legacy_capital > 0.0
+            else 0
+        )
         capacity = max(0, int(legacy_maximum_units) - safe_current_orders)
         units = min(capital_units, capacity)
         lots = tuple(float(lot_per_unit) for _ in range(units))

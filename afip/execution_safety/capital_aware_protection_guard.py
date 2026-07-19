@@ -15,6 +15,8 @@ class AllocationInput:
     risk_units: int
     margin_units: int
     existing_exposure_units: int = 0
+    allocation_mode: str = "LEGACY_FIXED_UNIT"
+    capital_capacity_override: int | None = None
 
 
 @dataclass(frozen=True)
@@ -63,15 +65,25 @@ def allocate_units(data: AllocationInput) -> AllocationResult:
     exposure = max(0, int(data.existing_exposure_units))
     remaining_profile_capacity = max(0, maximum_units - exposure)
 
-    if not _finite_positive(data.capital_per_unit):
-        return AllocationResult(
-            False, 0, 0, remaining_profile_capacity,
-            "invalid_capital_per_unit",
-            {"input": asdict(data)},
-        )
-
+    allocation_mode = str(data.allocation_mode).strip().upper()
     available_capital = max(0.0, min(float(data.available_capital), float(data.free_margin)))
-    capital_capacity = max(0, floor(available_capital / float(data.capital_per_unit)))
+
+    if allocation_mode == "CAPITAL_TIER_TABLE":
+        if data.capital_capacity_override is None:
+            return AllocationResult(
+                False, 0, 0, remaining_profile_capacity,
+                "capital_tier_capacity_missing",
+                {"input": asdict(data)},
+            )
+        capital_capacity = max(0, int(data.capital_capacity_override))
+    else:
+        if not _finite_positive(data.capital_per_unit):
+            return AllocationResult(
+                False, 0, 0, remaining_profile_capacity,
+                "invalid_capital_per_unit",
+                {"input": asdict(data)},
+            )
+        capital_capacity = max(0, floor(available_capital / float(data.capital_per_unit)))
 
     capacities = {
         "capital_capacity": capital_capacity,

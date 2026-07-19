@@ -31,7 +31,7 @@ def run_check(check: Check) -> bool:
 def main() -> int:
     checks: Iterable[Check] = (
         Check("Financial Naming Validation", [sys.executable, "tools/validate_financial_naming.py"]),
-        Check("AFIP Simulation", [sys.executable, "afip.py", "simulate"]),
+        Check("AFIP Deterministic Simulation", [sys.executable, "-m", "afip.cli.simulate"]),
         Check("MT5 Data Check", [sys.executable, "afip.py", "mt5-check"]),
         Check("Pytest", [sys.executable, "-m", "pytest", "-q"]),
     )

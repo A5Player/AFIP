@@ -1,0 +1,11 @@
+AFIP Phase U Pack 3.3.9 Validation
+
+Local targeted validation:
+- tests/test_production_milestone_h_pack_5.py
+- tests/test_production_milestone_h_pack_9.py
+
+Result:
+14 passed
+
+Additional pack-specific tests included.
+Full repository regression must be run on the user's current repository.

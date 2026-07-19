@@ -25,8 +25,6 @@ class ProfileOperationalConfig:
     profile_id: str
     profile_name: str
     enabled: bool
-    execution_enabled: bool
-    research_enabled: bool
     launch_mt5: bool
     mt5_folder: Path
     mt5_terminal: Path
@@ -42,6 +40,8 @@ class ProfileOperationalConfig:
     learning_directory: Path
     knowledge_directory: Path
     statistics_directory: Path
+    execution_enabled: bool = True
+    research_enabled: bool = True
     execution: str = LOCKED_EXECUTION
     direct_execution: bool = False
     live_execution: bool = False

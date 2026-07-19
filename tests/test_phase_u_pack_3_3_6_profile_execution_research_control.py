@@ -25,32 +25,32 @@ def test_operational_profile_requirement_is_explicit_and_reversible():
     rows = {row["profile_id"]: row for row in _raw_profiles()}
     assert {pid: rows[pid]["execution_enabled"] for pid in rows} == {
         "P1": True,
-        "P2": False,
-        "P3": False,
-        "P4": True,
+        "P2": True,
+        "P3": True,
+        "P4": False,
     }
     assert all(rows[pid]["enabled"] is True for pid in rows)
     assert all(rows[pid]["research_enabled"] is True for pid in rows)
 
 
-def test_runtime_preserves_configuration_and_reports_research_only():
+def test_runtime_preserves_production_execution_and_reports_p4_research_only():
     runtime = FourProfileOperationalRuntime(CONFIG)
     profiles = {profile.profile_id: profile for profile in runtime.load()}
     assert profiles["P2"].capital_per_unit if hasattr(profiles["P2"], "capital_per_unit") else True
     records = {row["profile_id"]: row for row in runtime.prepare_isolation().profiles}
     assert records["P1"]["status"] == "READY"
-    assert records["P4"]["status"] == "READY"
-    assert records["P2"]["status"] == "RESEARCH_ONLY"
-    assert records["P3"]["status"] == "RESEARCH_ONLY"
-    assert records["P2"]["research_enabled"] is True
-    assert "research participation preserved" in records["P2"]["waiting_reason"].lower()
+    assert records["P2"]["status"] == "READY"
+    assert records["P3"]["status"] == "READY"
+    assert records["P4"]["status"] == "RESEARCH_ONLY"
+    assert records["P4"]["research_enabled"] is True
+    assert "research participation preserved" in records["P4"]["waiting_reason"].lower()
 
 
-def test_demo_gateway_blocks_p2_and_p3_before_mt5_access():
+def test_demo_gateway_blocks_p4_before_mt5_access():
     runtime = FourProfileOperationalRuntime(CONFIG)
     profiles = {profile.profile_id: profile for profile in runtime.load()}
     raw = {row["profile_id"]: row for row in _raw_profiles()}
-    for pid in ("P2", "P3"):
+    for pid in ("P4",):
         gateway = DemoExecutionGateway(
             profiles[pid], DemoProfilePolicy.from_mapping(raw[pid]), mt5=FailIfCalledMT5()
         )

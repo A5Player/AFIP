@@ -115,7 +115,7 @@ class HistoricalDataDownloadPipeline:
         missing_bars = max(0, _int(record.get("missing_bars", 0), 0))
         duplicate_bars = max(0, _int(record.get("duplicate_bars", 0), 0))
         invalid_bars = max(0, _int(record.get("invalid_bars", 0), 0))
-        expected_bars = requested_days * 24 * max(1, len(timeframes))
+        expected_bars = requested_days * 24 * len(DEFAULT_TIMEFRAMES)
         validation_items: list[str] = []
         if broker != VERSION1_BROKER:
             validation_items.append("version1_xm_only_required")

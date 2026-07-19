@@ -51,19 +51,19 @@ def test_profile_execution_control_matches_operational_requirement():
     profiles = {row["profile_id"]: row for row in payload["profiles"]}
     assert {pid: profiles[pid]["execution_enabled"] for pid in profiles} == {
         "P1": True,
-        "P2": False,
-        "P3": False,
-        "P4": True,
+        "P2": True,
+        "P3": True,
+        "P4": False,
     }
     assert all(profiles[pid]["enabled"] is True for pid in profiles)
     assert all(profiles[pid]["research_enabled"] is True for pid in profiles)
 
 
-def test_p2_p3_are_research_only_without_configuration_removal():
+def test_p4_is_research_only_without_configuration_removal():
     runtime = FourProfileOperationalRuntime(CONFIG)
     loaded = {item.profile_id: item for item in runtime.load()}
     records = {row["profile_id"]: row for row in runtime.prepare_isolation().profiles}
-    for pid in ("P2", "P3"):
+    for pid in ("P4",):
         assert pid in loaded
         assert records[pid]["status"] == "RESEARCH_ONLY"
         assert records[pid]["execution_enabled"] is False

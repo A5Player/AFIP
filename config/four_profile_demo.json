@@ -1,5 +1,5 @@
 {
-  "version": "AFIP-1.0-PHASE-U-PACK-3.3.6",
+  "version": "AFIP-1.0-PHASE-U-PACK-3.3.10",
   "execution": "LOCKED_SIMULATION_ONLY",
   "profiles": [
     {
@@ -44,7 +44,9 @@
         "three_order_minimum_balance": 900
       },
       "research_enabled": true,
-      "execution_enabled": true
+      "execution_enabled": true,
+      "sizing_authority": "CAPITAL_TIER_TABLE",
+      "capital_per_unit_legacy_only": true
     },
     {
       "profile_id": "P2",
@@ -88,7 +90,9 @@
         "three_order_minimum_balance": 900
       },
       "research_enabled": true,
-      "execution_enabled": false
+      "execution_enabled": true,
+      "sizing_authority": "CAPITAL_TIER_TABLE",
+      "capital_per_unit_legacy_only": true
     },
     {
       "profile_id": "P3",
@@ -132,7 +136,9 @@
         "three_order_minimum_balance": 450
       },
       "research_enabled": true,
-      "execution_enabled": false
+      "execution_enabled": true,
+      "sizing_authority": "CAPITAL_TIER_TABLE",
+      "capital_per_unit_legacy_only": true
     },
     {
       "profile_id": "P4",
@@ -175,7 +181,8 @@
         "operational_emergency_ceiling_env": "AFIP_P4_RESEARCH_ORDER_CEILING"
       },
       "research_enabled": true,
-      "execution_enabled": true
+      "execution_enabled": false,
+      "sizing_authority": "RESEARCH_FIXED_001"
     }
   ],
   "position_policy": {

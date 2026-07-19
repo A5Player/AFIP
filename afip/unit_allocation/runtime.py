@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping
 
+from afip.capital_growth_engine import CapitalGrowthEngine
+from afip.position_capacity_formula import capital_tiers_from_profile
 from .models import UnitAllocation, UnitAllocationReport
 
 
@@ -40,10 +42,25 @@ class UnitAllocationRuntime:
         profile_name = str(record.get("profile_name", "Balanced")).strip() or "Balanced"
         profile_key = profile_name.upper()
         default_capital_per_unit, default_max_units = self.PROFILE_DEFAULTS.get(profile_key, (500.0, 3))
+        allocation_mode = str(record.get("allocation_mode", "LEGACY_FIXED_UNIT")).strip().upper()
         capital_per_unit = self._number(record.get("capital_per_unit", default_capital_per_unit), default_capital_per_unit)
         profile_max_units = self._integer(record.get("maximum_units", record.get("profile_max_units", default_max_units)), default_max_units)
+        maximum_orders = self._integer(record.get("maximum_concurrent_orders", profile_max_units), profile_max_units)
+        current_orders = self._integer(record.get("current_orders", record.get("existing_orders", 0)), 0)
         available_capital = self._number(record.get("available_capital", record.get("equity", record.get("balance", 0.0))), 0.0)
         risk_allowed = bool(record.get("risk_allowed", True))
+
+        capital_tiers = capital_tiers_from_profile(record) if allocation_mode == "CAPITAL_TIER_TABLE" else ()
+        tier_decision = CapitalGrowthEngine.evaluate(
+            mode=allocation_mode,
+            balance=available_capital,
+            current_orders=current_orders,
+            capital_tiers=capital_tiers,
+            maximum_orders=maximum_orders,
+            legacy_capital_per_unit=capital_per_unit,
+            legacy_maximum_units=profile_max_units,
+            lot_per_unit=self.LOT_PER_UNIT,
+        )
 
         raw = record.get("trade_scores") or record.get("scores") or ()
         if not isinstance(raw, (list, tuple)):
@@ -59,7 +76,10 @@ class UnitAllocationRuntime:
             trade_score = self._number(item.get("final_score", item.get("trade_score", 0.0)))
             upstream_eligible = bool(item.get("eligible", True))
             score_max_units = self.GRADE_CAPS.get(grade, 0)
-            capital_max_units = int(available_capital // capital_per_unit) if capital_per_unit > 0 else 0
+            if allocation_mode == "CAPITAL_TIER_TABLE":
+                capital_max_units = len(tier_decision.available_lots)
+            else:
+                capital_max_units = int(available_capital // capital_per_unit) if capital_per_unit > 0 else 0
             units = min(profile_max_units, score_max_units, capital_max_units)
             eligible = symbol == "GOLD#" and direction in {"BUY", "SELL"} and upstream_eligible and risk_allowed and units > 0
             if not eligible:
@@ -72,8 +92,8 @@ class UnitAllocationRuntime:
                 en, th = "Trade scoring did not approve this candidate.", "การให้คะแนนการซื้อขายยังไม่อนุมัติผู้สมัครนี้"
             elif not risk_allowed:
                 en, th = "Risk policy blocks unit allocation.", "นโยบายความเสี่ยงบล็อกการจัดสรร Unit"
-            elif capital_per_unit <= 0:
-                en, th = "Capital per unit must be positive.", "เงินทุนต่อ Unit ต้องมากกว่าศูนย์"
+            elif allocation_mode == "LEGACY_FIXED_UNIT" and capital_per_unit <= 0:
+                en, th = "Capital per unit must be positive for legacy fixed-unit sizing.", "เงินทุนต่อ Unit ต้องมากกว่าศูนย์สำหรับการคำนวณแบบ Legacy"
             elif capital_max_units <= 0:
                 en, th = "Available capital is below one unit requirement.", "เงินทุนที่มีต่ำกว่าข้อกำหนดสำหรับ 1 Unit"
             elif score_max_units <= 0:
