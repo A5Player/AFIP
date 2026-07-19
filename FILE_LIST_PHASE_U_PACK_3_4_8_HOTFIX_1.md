@@ -1,0 +1,10 @@
+# File List
+
+- afip/dashboard_ui/home.py
+- tests/test_phase_u_pack_3_4_8_command_center.py
+- RUN_PHASE_U_PACK_3_4_8_COMMAND_CENTER.ps1
+- RUN_PHASE_U_PACK_3_4_8_COMMAND_CENTER.bat
+- README_PHASE_U_PACK_3_4_8_HOTFIX_1_TH.md
+- README_PHASE_U_PACK_3_4_8_HOTFIX_1.md
+- FILE_LIST_PHASE_U_PACK_3_4_8_HOTFIX_1.md
+- HANDOFF_PHASE_U_PACK_3_4_8_HOTFIX_1_APPEND.md

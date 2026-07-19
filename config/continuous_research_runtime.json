@@ -1,0 +1,10 @@
+{
+  "schema_version": "phase_u_pack_3_4_10",
+  "interval_seconds": 300,
+  "minimum_interval_seconds": 60,
+  "append_only": true,
+  "research_only": true,
+  "execution_authority": false,
+  "minimum_certification_samples": 1000,
+  "human_review_required": true
+}

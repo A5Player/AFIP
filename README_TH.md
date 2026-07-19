@@ -1,29 +1,26 @@
-# AFIP Position Sizing Source Collection Pack
+# AFIP Phase U — Dashboard Home & Runtime Exit Fix
 
-ชุดนี้ใช้ดึงเฉพาะไฟล์ Source ที่จำเป็นสำหรับแก้ Position Sizing Authority อย่างปลอดภัยจาก Repository ล่าสุดบนเครื่องคอม
+แพตช์เฉพาะจุดนี้แก้ 2 ปัญหา:
 
-## วิธีใช้
+1. `afip_dashboard.html` เปลี่ยนเป็นหน้า Home เชื่อม Dashboard 3 หน้า
+2. `python -m afip.dashboard_ui` ไม่รัน Automatic Research แบบเต็มโดยอัตโนมัติอีกต่อไป จึงสร้าง Dashboard และคืน PowerShell prompt ได้ตามปกติ
 
-1. แตก ZIP นี้ลงที่ราก Repository เช่น `C:\AFIP`
-2. เปิด PowerShell ที่ `C:\AFIP`
-3. รัน:
+Automatic Research ยังไม่ได้ถูกลบ สามารถสั่งอย่างตั้งใจได้ด้วย:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\COLLECT_AFIP_POSITION_SIZING_SOURCE.ps1
+$env:AFIP_DASHBOARD_RUN_RESEARCH="YES"
+python -m afip.dashboard_ui
+Remove-Item Env:AFIP_DASHBOARD_RUN_RESEARCH
 ```
 
-หรือดับเบิลคลิก:
+## ติดตั้ง
 
-```text
-COLLECT_AFIP_POSITION_SIZING_SOURCE.bat
+แตก ZIP ลงโฟลเดอร์ชั่วคราว แล้วเปิด PowerShell ที่ `C:\AFIP`:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+& "<โฟลเดอร์แพตช์>\INSTALL_PHASE_U_DASHBOARD_HOME_RUNTIME_FIX.ps1"
+.\RUN_PHASE_U_DASHBOARD_HOME_RUNTIME_FIX.ps1
 ```
 
-ระบบจะสร้างไฟล์ประมาณ:
-
-```text
-AFIP_POSITION_SIZING_SOURCE_YYYYMMDD_HHMMSS.zip
-```
-
-ให้อัปโหลด ZIP ที่สร้างกลับมา แล้วจึงสามารถสร้าง Patch แบบไฟล์ทับได้ตรงกับ Source และ Commit ปัจจุบัน
-
-ชุดนี้ไม่แก้ Runtime ไม่เปลี่ยน Config ไม่เปิด Execution และไม่แตะข้อมูลบัญชี
+แพตช์ไม่แก้ Trading Engine, Position Sizing, SL/TP, Profile Policy หรือ Execution Authority

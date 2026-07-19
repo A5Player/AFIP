@@ -489,3 +489,16 @@ Required validation:
 - full regression
 
 Runtime research outputs must remain outside Git where applicable.
+
+<!-- PHASE_U_PACK_3_4_9_BEGIN -->
+## Phase U Pack 3.4.9 Handoff
+
+Direct overlay implements Financial Data Integrity & Intelligence Runtime Certification. Cross-market research has no execution authority and all relationships remain RESEARCH_ONLY. Full tests: 2451 passed. Local Quality: PASS. Run `RUN_PHASE_U_PACK_3_4_9.ps1` on Windows with the intended XM MT5 terminal open to collect actual market data. Missing providers and symbols must remain DATA_UNAVAILABLE.
+<!-- PHASE_U_PACK_3_4_9_END -->
+## Phase U Final Integration
+
+- Added bounded one-shot research orchestration.
+- Collector timeout prevents indefinite MT5/provider blocking.
+- Final status is recorded at `runtime/research/final_research_run.json`.
+- Research-only; execution authority remains false.
+- Push only after local validation and a successful one-shot runtime run.

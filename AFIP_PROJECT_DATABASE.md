@@ -529,3 +529,12 @@ Safety:
 - No profile risk modification.
 - Drawdown limits are non-compensating.
 - Research outputs remain evidence until separate execution controls approve an order.
+
+<!-- PHASE_U_PACK_3_4_9_BEGIN -->
+## Phase U Pack 3.4.9 — Financial Data Integrity & Intelligence Runtime Certification
+
+Implemented real-source-only financial and intelligence certification, P1-P4/portfolio integrity reporting, MT5 cross-market research collection, 24H/3D/5D/7D evidence windows, research-only influence evidence, gold-mining AISC source registration, dashboard expansion, and strict DATA_UNAVAILABLE behavior. Full repository regression: 2451 passed. Local Quality: PASS in validation environment. Actual Windows MT5/provider connectivity must still be verified on the deployment machine and must not be marked READY before runtime evidence exists.
+<!-- PHASE_U_PACK_3_4_9_END -->
+## Phase U Final Integration — Bounded Research Runtime
+
+The Phase U final integration establishes a deterministic one-shot research entry point with explicit time limits, auditable step output, real-source-only behavior, and no trading execution authority. Provider failure or timeout is surfaced explicitly and must never be converted to READY or substituted with fallback financial/intelligence values.
