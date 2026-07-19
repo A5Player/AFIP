@@ -429,3 +429,63 @@ Next target: Phase U Pack 3.4.2 Comprehensive Walk-Forward Research Engine.
 
 Before Pack 3.4.2 research runs, certify the VPS historical dataset and retain the generated readiness report. Only READY and explicitly controlled CAUTION data may enter research. QUARANTINED data must remain isolated.
 
+
+
+## Phase U Pack 3.4.3 Handoff
+
+Component: Multi-Dimensional Research Ranking
+
+Required validation:
+- targeted tests
+- financial naming validation
+- full regression
+
+Runtime research outputs must remain outside Git where applicable.
+
+
+## Phase U Pack 3.4.4 Handoff
+
+Component: Research Evidence Consumer
+
+Required validation:
+- targeted tests
+- financial naming validation
+- full regression
+
+Runtime research outputs must remain outside Git where applicable.
+
+
+## Phase U Pack 3.4.5 Handoff
+
+Component: Research Dashboard
+
+Required validation:
+- targeted tests
+- financial naming validation
+- full regression
+
+Runtime research outputs must remain outside Git where applicable.
+
+
+## Phase U Pack 3.4.6 Handoff
+
+Component: Production Research Certification
+
+Required validation:
+- targeted tests
+- financial naming validation
+- full regression
+
+Runtime research outputs must remain outside Git where applicable.
+
+
+## Phase U Pack 3.4.7 Handoff
+
+Component: Blind Historical Research Replay Engine
+
+Required validation:
+- targeted tests
+- financial naming validation
+- full regression
+
+Runtime research outputs must remain outside Git where applicable.

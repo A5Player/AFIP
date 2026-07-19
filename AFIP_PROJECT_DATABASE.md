@@ -463,3 +463,69 @@ Added deterministic historical dataset certification before walk-forward researc
 
 This pack is execution-neutral and does not modify profile policy, position sizing, drawdown limits, SL, TP, or order execution authority.
 
+
+
+## Phase U Pack 3.4.2 — Comprehensive Walk-Forward Research Engine
+
+Status: implemented as a patch-only research component.
+
+Safety:
+- No direct order transmission.
+- No profile risk modification.
+- Drawdown limits are non-compensating.
+- Research outputs remain evidence until separate execution controls approve an order.
+
+
+## Phase U Pack 3.4.3 — Multi-Dimensional Research Ranking
+
+Status: implemented as a patch-only research component.
+
+Safety:
+- No direct order transmission.
+- No profile risk modification.
+- Drawdown limits are non-compensating.
+- Research outputs remain evidence until separate execution controls approve an order.
+
+
+## Phase U Pack 3.4.4 — Research Evidence Consumer
+
+Status: implemented as a patch-only research component.
+
+Safety:
+- No direct order transmission.
+- No profile risk modification.
+- Drawdown limits are non-compensating.
+- Research outputs remain evidence until separate execution controls approve an order.
+
+
+## Phase U Pack 3.4.5 — Research Dashboard
+
+Status: implemented as a patch-only research component.
+
+Safety:
+- No direct order transmission.
+- No profile risk modification.
+- Drawdown limits are non-compensating.
+- Research outputs remain evidence until separate execution controls approve an order.
+
+
+## Phase U Pack 3.4.6 — Production Research Certification
+
+Status: implemented as a patch-only research component.
+
+Safety:
+- No direct order transmission.
+- No profile risk modification.
+- Drawdown limits are non-compensating.
+- Research outputs remain evidence until separate execution controls approve an order.
+
+
+## Phase U Pack 3.4.7 — Blind Historical Research Replay Engine
+
+Status: implemented as a patch-only research component.
+
+Safety:
+- No direct order transmission.
+- No profile risk modification.
+- Drawdown limits are non-compensating.
+- Research outputs remain evidence until separate execution controls approve an order.

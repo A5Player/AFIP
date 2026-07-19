@@ -1,0 +1,6 @@
+{
+  "maximum_drawdown_percentage": 20.0,
+  "minimum_certified_candidates": 1,
+  "minimum_eligible_windows": 1,
+  "require_dataset_ready": true
+}

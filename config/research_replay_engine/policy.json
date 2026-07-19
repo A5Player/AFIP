@@ -1,0 +1,5 @@
+{
+  "starting_equity": 10000.0,
+  "maximum_drawdown_percentage": 20.0,
+  "stop_on_drawdown_limit": true
+}

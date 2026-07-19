@@ -1,0 +1,12 @@
+{
+  "maximum_drawdown_percentage": 20.0,
+  "minimum_trade_count": 30,
+  "minimum_expectancy": 0.0,
+  "minimum_profit_factor": 1.0,
+  "minimum_out_of_sample_windows": 1,
+  "drawdown_weight": 0.3,
+  "expectancy_weight": 0.2,
+  "profit_factor_weight": 0.2,
+  "recovery_weight": 0.15,
+  "stability_weight": 0.15
+}

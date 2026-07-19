@@ -1,0 +1,9 @@
+{
+  "training_size": 100,
+  "validation_size": 30,
+  "out_of_sample_size": 30,
+  "step_size": 30,
+  "minimum_trades": 20,
+  "maximum_drawdown_percentage": 20.0,
+  "minimum_profit_factor": 1.05
+}
