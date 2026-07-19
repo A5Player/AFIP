@@ -1,0 +1,6 @@
+AFIP Milestone T Pack 14
+Focused tests expected: 16 passed
+Financial Naming expected: PASS
+Full regression expected on Pack 13 repository: 2316 passed
+Execution permission: FALSE
+MT5 order send/change/close: NOT ADDED

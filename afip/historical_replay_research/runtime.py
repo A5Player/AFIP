@@ -202,6 +202,8 @@ class AppendOnlyResearchDataset:
         "capital_capacity_snapshots", "recovery_reconciliations",
         "certified_plan_runtime_decisions", "profile_operations_read_models",
         "position_care_snapshots", "position_care_decisions", "position_care_dashboard_records",
+        "runtime_continuity_checkpoints", "runtime_recovery_decisions",
+        "continuity_dashboard_records",
     )
 
     def __init__(self, root: str | Path) -> None:

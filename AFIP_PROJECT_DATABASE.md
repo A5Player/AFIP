@@ -326,3 +326,10 @@ Validation: 16 focused tests; 2284 full tests; Financial Naming PASS; Local Qual
 - Added holding, break-even, trailing-stop, partial-close, full-close, and safe-mode recommendations.
 - Added append-only datasets: position_care_snapshots, position_care_decisions, position_care_dashboard_records.
 - Execution permission remains permanently false in this layer.
+
+
+## Milestone T Pack 14 — Unattended Continuity and Recovery Supervision
+
+Status: FOUNDATION COMPLETE
+
+Added deterministic runtime continuity checkpoints, restart reconciliation, position-ledger comparison, interruption recovery decisions, safe-state escalation and operations read models. New datasets: runtime_continuity_checkpoints, runtime_recovery_decisions and continuity_dashboard_records. Execution permission remains false.
