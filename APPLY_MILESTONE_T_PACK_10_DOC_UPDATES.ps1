@@ -14,5 +14,8 @@ function Append-Once {
     Write-Host "Updated $Target"
 }
 
-Append-Once "AFIP_PROJECT_DATABASE.md" "AFIP_PROJECT_DATABASE_MILESTONE_T_PACK_9_APPEND.md" "Milestone T Pack 9"
-Append-Once "HANDOFF.md" "HANDOFF_MILESTONE_T_PACK_9_APPEND.md" "Milestone T Pack 9"
+if (Test-Path ".\APPLY_MILESTONE_T_PACK_9_DOC_UPDATES.ps1") {
+    & ".\APPLY_MILESTONE_T_PACK_9_DOC_UPDATES.ps1"
+}
+Append-Once "AFIP_PROJECT_DATABASE.md" "AFIP_PROJECT_DATABASE_MILESTONE_T_PACK_10_APPEND.md" "Milestone T Pack 10"
+Append-Once "HANDOFF.md" "HANDOFF_MILESTONE_T_PACK_10_APPEND.md" "Milestone T Pack 10"

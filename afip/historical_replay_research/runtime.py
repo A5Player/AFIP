@@ -197,7 +197,7 @@ class AppendOnlyResearchDataset:
         "research_standard_versions", "research_standard_selections", "historical_coverage_plans",
         "runtime_standard_guidance", "historical_market_bars", "historical_backfill_results",
         "historical_backfill_checkpoints", "mt5_historical_provider_runs",
-        "runtime_decision_traces", "dashboard_research_rankings",
+        "runtime_decision_traces", "dashboard_research_rankings", "adaptive_plan_rankings",
     )
 
     def __init__(self, root: str | Path) -> None:

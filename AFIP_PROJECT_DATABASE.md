@@ -219,3 +219,46 @@ Validation: 24 focused tests; 2212 full regression tests.
 - Historical backfill is earliest-available to latest-closed, deduplicated, provenance-preserving, and append-only.
 - No MT5 order sender or automatic execution authorization is added.
 
+
+
+
+## Milestone T Pack 9 — MT5 Historical Provider, Resumable Backfill, Decision Trace Wiring & Dashboard Data Contract Foundation
+
+Status: COMPLETE
+
+Added:
+- `afip.mt5_historical_integration`
+- broker symbol resolution
+- resumable historical backfill checkpoints
+- provider run evidence and runtime decision traces
+- dashboard research rankings
+
+Dashboard architecture decision:
+- Page 1 Operations: P1-P4 together without vertical scrolling as the design target; refresh every 5-10 seconds, default 5 seconds.
+- Page 2 Intelligence/Engine: manual refresh, preserve scroll position, Top 10 visible and Top 100 expandable by graph pattern and market situation.
+- All unshown research records remain stored; dashboard reports the count beyond Top 100.
+
+Execution remains governed by existing safety gates. No order sender was added.
+
+
+
+## Milestone T Pack 10 - Adaptive Multi-Objective Plan Ranking
+
+Status: Completed
+
+Architecture added:
+
+- Capital Preservation Gate
+- Evidence Reliability Gate
+- Context-aware bounded weight adaptation
+- Profile-specific ranking weights for P1-P4
+- Conservative win-rate and risk-adjusted performance selection
+- Deterministic Top 10 and Top 100 dashboard ranking records
+- Append-only adaptive_plan_rankings dataset
+
+Locked policy:
+
+AFIP does not select the highest-profit plan. AFIP selects the most reliable, capital-preserving, context-appropriate and risk-adjusted plan. Profit is an outcome, not the first selection criterion.
+
+Runtime execution permission remains outside this module.
+
