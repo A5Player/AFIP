@@ -194,6 +194,7 @@ class AppendOnlyResearchDataset:
         "exit_evidence_evaluations", "exit_policy_comparisons",
         "walk_forward_windows", "walk_forward_observations", "walk_forward_results",
         "robustness_scenarios", "robustness_results", "promotion_evidence_records",
+        "research_standard_versions", "research_standard_selections", "historical_coverage_plans",
     )
 
     def __init__(self, root: str | Path) -> None:
