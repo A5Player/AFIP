@@ -47,3 +47,7 @@ runtime/research/historical_data_lake/
 runtime/research/checkpoints/
 runtime/research/exports/
 runtime/research/quarantine/
+
+# AFIP runtime research data
+runtime/research/historical_data_lake/
+runtime/profiles/*/demo_execution_state.json
