@@ -1,0 +1,4 @@
+Expected focused compatibility result: all selected tests passed.
+Expected Financial Naming: PASS.
+Expected full regression on current repository: 2339 passed.
+Expected AFIP Local Quality Summary: PASS.

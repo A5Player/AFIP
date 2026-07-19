@@ -340,3 +340,12 @@ Status: COMPLETE after repository validation.
 
 Added production evidence certification, deterministic milestone closure, final handoff contract, append-only certification datasets, and permanent execution denial. Milestone T requires Packs 11–15 and complete regression evidence.
 
+
+## Phase U Pack 1 — Runtime Coverage Matrix and Dashboard Integration Foundation
+Status pending local certification. Adds dashboard-visible runtime integration evidence. Execution permission remains false.
+
+## Phase U Pack 1.1 — Dashboard Backward Compatibility Patch
+
+- Preserves Milestone H Pack 9 and Pack 10 HTML title contracts.
+- Preserves the Phase U Runtime Integration title and Runtime Coverage Matrix.
+- No trading or execution behavior changed.

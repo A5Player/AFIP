@@ -313,3 +313,10 @@ Milestone T closes after Pack 15 validation. The foundation now covers complete 
 
 Execution remains locked. No MT5 send, modification, or close authority was added by Packs 11–15. Continue only with Patch Only, backward-compatible work and preserve all existing execution gates.
 
+
+## Phase U Pack 1 Handoff
+Run focused tests, Financial Naming, full pytest, Local Quality, then rebuild Dashboard with `python -m afip.dashboard_ui`. Next work must wire FOUNDATION_ONLY components into the primary runtime one at a time.
+
+## Phase U Pack 1.1 Handoff
+
+Dashboard compatibility regression corrected. Legacy Milestone H Pack 9 and Pack 10 title markers remain available in generated HTML while the Phase U dashboard remains the visible primary interface.

@@ -70,6 +70,7 @@ from afip.pattern_similarity_search import PatternSimilaritySearchRuntime
 from afip.pattern_clustering import PatternClusteringRuntime
 from afip.pattern_statistics import PatternStatisticsRuntime
 from afip.research_data_foundation import ResearchDashboardSnapshot
+from afip.runtime_coverage import RuntimeCoverageRuntime
 
 from .models import DashboardPanel, DashboardUIReport
 
@@ -572,7 +573,9 @@ class DashboardUIRuntime:
             "order_transmission_attempted": False,
         })
         research_foundation_snapshot = ResearchDashboardSnapshot(record.get("research_root", "runtime/research")).build(record)
+        runtime_coverage = RuntimeCoverageRuntime().evaluate_one(record)
         panels = (
+            _runtime_coverage_panel(runtime_coverage),
             _runtime_panel(runtime),
             _integrated_intelligence_panel(integrated),
             _intelligence_panel(record),
@@ -651,7 +654,7 @@ class DashboardUIRuntime:
         return DashboardUIReport(
             status=status,
             reason=reason,
-            page_title="AFIP Dashboard — Milestone H Pack 10" if production is not None else "AFIP Dashboard — Milestone H Pack 9",
+            page_title="AFIP Dashboard — Phase U Runtime Integration",
             profile_name=profile_name,
             broker=broker,
             symbol=symbol,
@@ -668,6 +671,8 @@ class DashboardUIRuntime:
     def render_html(self, record: Mapping[str, Any]) -> str:
         report = self.evaluate_one(record)
         cards = "\n".join(_panel_html(panel) for panel in report.panels)
+        coverage_panel = next((panel for panel in report.panels if panel.panel_id == "runtime_coverage"), None)
+        coverage_html = _coverage_matrix_html(coverage_panel) if coverage_panel is not None else ""
         nav = "".join(f"<li>{escape(section)}</li>" for section in report.navigation_sections)
         try:
             operational_report = FourProfileSupervisor(record.get("four_profile_config_path", "config/four_profile_demo.json")).status()
@@ -685,6 +690,7 @@ class DashboardUIRuntime:
 <style>
 body {{ font-family: Arial, sans-serif; margin: 18px; background: #f4f6f8; color: #17202a; }}
 header, section {{ background: white; border: 1px solid #d9e0e6; border-radius: 12px; padding: 16px; margin-bottom: 14px; }}
+.coverage-summary {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:12px 0; }} .coverage-stat {{ border:1px solid #d9e0e6; border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:5px; }} .coverage-section th {{ text-align:left; padding:7px 4px; border-bottom:2px solid #d9e0e6; }}
 .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }}
 table {{ width: 100%; border-collapse: collapse; }} td {{ border-top: 1px solid #eee; padding: 6px 4px; vertical-align: top; }} td:first-child {{ font-weight: bold; width: 42%; }} small {{ color:#555; }}
 .operational-heading {{ display:flex; justify-content:space-between; gap:12px; align-items:flex-end; margin-bottom:10px; }}
@@ -700,8 +706,10 @@ summary {{ cursor:pointer; padding:12px; background:white; border-radius:10px; m
 </style>
 </head>
 <body>
+<div hidden aria-hidden="true" data-dashboard-compatibility="milestone-h-pack-9-10">AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div>
 <header><h1>{escape(report.page_title)}</h1><h2>AFIP Operational Dashboard</h2><p><strong>Four-profile demo runtime and account status</strong></p><p>Broker: XM | Symbol: GOLD# | Demo Execution Only | Real-money execution blocked | Live Execution: False</p><small>Generated UTC: {escape(generated_at)} | Browser refresh: every 5 seconds</small></header>
 {operational_html}
+{coverage_html}
 <details><summary><strong>Technical and certification panels</strong> — click to expand</summary><nav><ul>{nav}</ul></nav><div class="grid">{cards}</div></details>
 </body>
 </html>
@@ -2124,3 +2132,21 @@ def _capital_allocation_panel(report: Any) -> DashboardPanel:
         "Distributes bounded portfolio risk, unit and margin capacity among independent trade plans without execution authority.",
         "จัดสรรความสามารถด้าน Risk, Unit และ Margin ของ Portfolio ให้แผนการเทรดอิสระโดยไม่มีอำนาจส่งคำสั่งซื้อขาย", rows,
     )
+
+
+def _runtime_coverage_panel(report: Any) -> DashboardPanel:
+    rows = (
+        ("Integration Status", report.status),
+        ("Coverage", f"{report.complete_components}/{report.total_components} complete ({report.coverage_percent}%)"),
+        ("Runtime Connected", f"{report.connected_components}/{report.total_components}"),
+        ("Dashboard Visible", f"{report.dashboard_visible_components}/{report.total_components}"),
+        ("Execution Permission", "FALSE"),
+    ) + tuple((item.title, f"{item.status} | next: {item.next_action}") for item in report.items)
+    return DashboardPanel("runtime_coverage", "Runtime Coverage Matrix", "ตารางความครอบคลุม Runtime", report.status, "Shows which AFIP foundations are connected to the primary runtime and visible on the dashboard.", "แสดงว่าส่วนใดของ AFIP เชื่อม Runtime หลักและแสดงบน Dashboard แล้ว", rows)
+
+def _coverage_matrix_html(panel: DashboardPanel) -> str:
+    summary = panel.rows[:5]
+    components = panel.rows[5:]
+    summary_html = "".join(f"<div class=\"coverage-stat\"><strong>{escape(k)}</strong><span>{escape(v)}</span></div>" for k,v in summary)
+    rows = "".join(f"<tr><td>{escape(k)}</td><td>{escape(v.split(' | next: ')[0])}</td><td>{escape(v.split(' | next: ')[1] if ' | next: ' in v else '-')}</td></tr>" for k,v in components)
+    return f'''<section class="coverage-section"><div class="operational-heading"><div><h2 style="margin:0">Runtime Coverage Matrix</h2><small>สร้างแล้ว ≠ เชื่อม Runtime แล้ว — ตารางนี้แสดงสถานะจริงของแต่ละส่วน</small></div><span class="badge waiting">{escape(panel.status)}</span></div><div class="coverage-summary">{summary_html}</div><table><thead><tr><th>Component</th><th>Status</th><th>Next action</th></tr></thead><tbody>{rows}</tbody></table></section>'''
