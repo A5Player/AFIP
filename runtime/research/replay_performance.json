@@ -1,0 +1,12 @@
+{
+  "recorded_at_utc": "2026-07-21T06:14:56Z",
+  "schema_version": "AFIP-RESEARCH-SCHEMA-V2",
+  "bars_processed": 0,
+  "elapsed_seconds": 424.188016,
+  "bars_per_second": 0.0,
+  "dashboard_updates": 0,
+  "observatory_updates": 0,
+  "progress_interval_policy": "explicit_or_adaptive_1_percent_bounded_5_to_50",
+  "live_execution_enabled": false,
+  "order_send_called": false
+}

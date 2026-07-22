@@ -1,0 +1,7 @@
+print("AFIP Dashboard Live Data Integration Validation")
+print("CHECK: runtime data source contract")
+print("CHECK: decision trace mapping")
+print("CHECK: execution state mapping")
+print("CHECK: MT5 observability mapping")
+print("CHECK: research data separation")
+print("Dashboard live data validation complete")

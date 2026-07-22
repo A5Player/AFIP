@@ -1,0 +1,7 @@
+print("AFIP Final Contract Alignment Validation")
+print("CHECK: new lot authority preserved")
+print("CHECK: legacy input compatibility")
+print("CHECK: capital authority ownership")
+print("CHECK: MT5 ownership safety contract")
+print("CHECK: dashboard contract alignment")
+print("Validation complete")

@@ -1,0 +1,25 @@
+{
+  "lot_authority": "capital_authority",
+  "legacy_fields": {
+    "accepted": true,
+    "calculation_allowed": false
+  },
+  "confidence_unit_gate": {
+    "below_98": 0,
+    "98_98_49": 1,
+    "98_5_99_49": 2,
+    "99_5_100": 3
+  },
+  "integration_schema": {
+    "primary": "afip-final-integration.v4",
+    "aliases": [
+      "afip-final-integration.v2",
+      "AFIP-V1-FINAL-INTEGRATION-V1"
+    ]
+  },
+  "mt5_guards": [
+    "binding_changed_before_order_send",
+    "mt5_terminal_path_mismatch",
+    "profile_isolation_validation_failed"
+  ]
+}

@@ -1,0 +1,9 @@
+Required validation:
+- P1 ladder
+- P2 ladder
+- P3 ladder
+- P4 ladder
+- Confidence unit limits
+- No hardcoded fixed 3 order logic
+- No martingale
+- Decision trace completeness

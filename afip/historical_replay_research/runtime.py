@@ -19,6 +19,7 @@ from afip.research_replay import ChronologicalReplay, ReplayCandle
 
 SnapshotProvider = Callable[[tuple[ReplayCandle, ...], "ReplayClock"], Mapping[str, Any]]
 CandidateProvider = Callable[["ReplaySnapshot"], Iterable[Mapping[str, Any]]]
+ReplayProgressCallback = Callable[[Mapping[str, Any]], None]
 
 
 def _utc_now() -> str:
@@ -211,6 +212,29 @@ class AppendOnlyResearchDataset:
     def __init__(self, root: str | Path) -> None:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
+        # Append state is loaded once per dataset.  The previous implementation
+        # reparsed the complete JSONL file twice for every appended record,
+        # turning replay persistence into quadratic work.
+        self._append_state: dict[str, tuple[int, str]] = {}
+
+    def _load_append_state(self, dataset_name: str) -> tuple[int, str]:
+        cached = self._append_state.get(dataset_name)
+        if cached is not None:
+            return cached
+        path = self.path_for(dataset_name)
+        count = 0
+        checksum = "GENESIS"
+        if path.exists():
+            with path.open("r", encoding="utf-8") as stream:
+                for line in stream:
+                    if not line.strip():
+                        continue
+                    envelope = json.loads(line)
+                    count += 1
+                    checksum = str(envelope.get("chain_checksum", checksum))
+        state = (count, checksum)
+        self._append_state[dataset_name] = state
+        return state
 
     def path_for(self, dataset_name: str) -> Path:
         if dataset_name not in self.DATASET_NAMES:
@@ -219,16 +243,17 @@ class AppendOnlyResearchDataset:
 
     def append(self, dataset_name: str, record: Mapping[str, Any]) -> dict[str, Any]:
         path = self.path_for(dataset_name)
-        previous_checksum = self.last_chain_checksum(dataset_name)
+        record_count, previous_checksum = self._load_append_state(dataset_name)
         envelope = {
             "dataset_name": dataset_name,
-            "record_sequence": self.count(dataset_name) + 1,
+            "record_sequence": record_count + 1,
             "previous_chain_checksum": previous_checksum,
             "record": dict(record),
         }
         envelope["chain_checksum"] = _canonical_checksum(envelope)
         with path.open("a", encoding="utf-8", newline="\n") as stream:
             stream.write(json.dumps(envelope, sort_keys=True, ensure_ascii=False) + "\n")
+        self._append_state[dataset_name] = (record_count + 1, str(envelope["chain_checksum"]))
         return envelope
 
     def records(self, dataset_name: str) -> tuple[dict[str, Any], ...]:
@@ -242,11 +267,10 @@ class AppendOnlyResearchDataset:
         return tuple(values)
 
     def count(self, dataset_name: str) -> int:
-        return len(self.records(dataset_name))
+        return self._load_append_state(dataset_name)[0]
 
     def last_chain_checksum(self, dataset_name: str) -> str:
-        records = self.records(dataset_name)
-        return str(records[-1]["chain_checksum"]) if records else "GENESIS"
+        return self._load_append_state(dataset_name)[1]
 
     def verify(self, dataset_name: str) -> bool:
         previous = "GENESIS"
@@ -312,6 +336,8 @@ class HistoricalReplayRunner:
         candles: Sequence[ReplayCandle | Mapping[str, Any]],
         resume: bool = False,
         maximum_bars: int | None = None,
+        progress_callback: ReplayProgressCallback | None = None,
+        progress_interval_bars: int = 1,
     ) -> ReplayRunSummary:
         required = {
             "replay_id": replay_id,
@@ -331,6 +357,9 @@ class HistoricalReplayRunner:
             if maximum_bars <= 0:
                 raise ValueError("maximum_bars must be positive")
             stop_index = min(stop_index, start_index + maximum_bars)
+
+        if progress_interval_bars <= 0:
+            raise ValueError("progress_interval_bars must be positive")
 
         candidate_sequence = self.dataset.count("candidates")
         timeline_sequence = self.dataset.count("timeline")
@@ -406,6 +435,18 @@ class HistoricalReplayRunner:
             self.dataset.append("timeline", event.as_dict())
             written["timeline"] += 1
             bars_processed += 1
+            if progress_callback is not None and (bars_processed == 1 or bars_processed % progress_interval_bars == 0 or replay_index + 1 >= stop_index):
+                progress_callback({
+                    "replay_id": replay_id,
+                    "research_run_id": research_run_id,
+                    "replay_index": replay_index,
+                    "processed_this_run": bars_processed,
+                    "covered_bars": replay_index + 1,
+                    "total_bars": replay.candle_count,
+                    "replay_timestamp_utc": clock.replay_timestamp_utc,
+                    "candidates_generated": candidates_generated,
+                    "completed": replay_index + 1 >= replay.candle_count,
+                })
 
         completed = stop_index >= replay.candle_count
         written["run_summaries"] = 1

@@ -1,0 +1,17 @@
+{
+  "flow": [
+    "decision",
+    "confidence_authority",
+    "capital_authority",
+    "lot_authority",
+    "risk_approval",
+    "execution_gateway",
+    "mt5_router"
+  ],
+  "profiles": [
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ]
+}

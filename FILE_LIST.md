@@ -1,0 +1,8 @@
+- afip/automatic_research_runtime/runtime.py
+- tests/test_revision_4_research_separation.py
+- START_AFIP_RESEARCH_BACKGROUND.ps1
+- STOP_AFIP_RESEARCH_BACKGROUND.ps1
+- STATUS_AFIP_RESEARCH_BACKGROUND.ps1
+- INSTALL_REVISION_4.ps1
+- RUN_REVISION_4_TESTS.ps1
+- README_TH.md

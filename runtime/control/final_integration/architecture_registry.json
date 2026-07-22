@@ -1,0 +1,40 @@
+{
+  "schema_version": "afip-final-architecture.v1",
+  "status": "READY",
+  "generated_at_utc": "2026-07-21T06:46:28Z",
+  "runtime_authorities": [
+    "TRADING_RUNTIME",
+    "RESEARCH_RUNTIME"
+  ],
+  "dashboard_authority": "runtime/dashboard/afip_dashboard.html",
+  "data_lake_authority": "runtime/research/historical_data_lake",
+  "incremental_index": "runtime/research/research_file_index.json",
+  "canonical_entry_points": [
+    "START_AFIP.ps1",
+    "STOP_AFIP.ps1",
+    "STATUS_AFIP.ps1"
+  ],
+  "compatibility_entry_points": [
+    "BUILD_AFIP_DASHBOARD_4.ps1",
+    "BUILD_AFIP_DASHBOARD_4_ONCE.ps1",
+    "BUILD_AFIP_DASHBOARD_LIVE_ONCE.ps1",
+    "BUILD_AFIP_PRODUCTION_DASHBOARD_ONCE.ps1",
+    "BUILD_PHASE_U_RESEARCH_LIVE_DASHBOARD.ps1",
+    "RUN_AFIP_FINAL_RESEARCH.ps1",
+    "START_AFIP_DASHBOARD_4_LIVE.ps1",
+    "START_AFIP_DASHBOARD_LIVE_MT5.ps1",
+    "START_AFIP_LONG_RUN.ps1",
+    "START_AFIP_PRODUCTION_DASHBOARD.ps1",
+    "START_AFIP_RESEARCH_BACKGROUND.ps1",
+    "START_AFIP_SAFE.ps1",
+    "START_PHASE_U_PACK_3_4_10_CONTINUOUS.ps1",
+    "START_PHASE_U_PACK_3_4_11_CONTINUOUS.ps1",
+    "STATUS_AFIP_LONG_RUN.ps1",
+    "STATUS_AFIP_RESEARCH_BACKGROUND.ps1",
+    "STOP_AFIP_EMERGENCY.ps1",
+    "STOP_AFIP_LONG_RUN.ps1",
+    "STOP_AFIP_RESEARCH_BACKGROUND.ps1",
+    "STOP_PHASE_U_PACK_3_4_10_CONTINUOUS.ps1"
+  ],
+  "blockers": []
+}

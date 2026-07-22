@@ -111,12 +111,13 @@ def test_p3_exact_early_growth_and_caps_at_1000():
     assert p3["capital_tiers"][-1]["lots"] == [10.0, 10.0, 10.0]
     assert p3["maximum_lot_per_order"] == 10.0
 
-def test_p4_remains_fixed_001_without_growth_or_total_unit_ceiling():
+def test_p4_uses_same_position_ceiling_semantics_as_execution_profiles():
     payload, profiles = _profiles()
     p4 = profiles["P4"]
-    assert p4["allocation_mode"] == "RESEARCH_FIXED_001"
-    assert p4["maximum_concurrent_orders"] == 0
+    assert p4["allocation_mode"] == "CAPITAL_TIER_TABLE"
+    assert p4["maximum_concurrent_orders"] == 1
+    assert p4["maximum_units"] == 1
     assert p4["maximum_lot_per_order"] == 0.01
-    assert p4["capital_tiers"] == []
+    assert p4["execution_enabled"] is True
     assert payload["position_policy"]["automatic_fill_to_ceiling"] is False
     assert payload["position_policy"]["missing_intelligence_request_default_units"] == 1

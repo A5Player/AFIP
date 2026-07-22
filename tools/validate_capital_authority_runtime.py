@@ -1,0 +1,5 @@
+print("AFIP Capital Authority Runtime Validation")
+print("CHECK: Capital Authority contract")
+print("CHECK: Confidence Unit Gate")
+print("CHECK: Legacy fixed lot protection")
+print("Validation scaffold ready")

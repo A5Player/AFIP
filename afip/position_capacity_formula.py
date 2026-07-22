@@ -14,14 +14,54 @@ def _lot(value: Decimal) -> float:
     return float(value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 
+def _explicit_ladder(raw: Mapping[str, Any]) -> tuple[tuple[float, tuple[float, ...]], ...]:
+    rows = raw.get("tiers", ())
+    if not isinstance(rows, (list, tuple)) or not rows:
+        raise ValueError("capital_tier_formula_explicit_tiers_required")
+    result: list[tuple[float, tuple[float, ...]]] = []
+    previous = Decimal("-1")
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise ValueError("capital_tier_formula_explicit_row_invalid")
+        balance = Decimal(str(row.get("minimum_balance", "0")))
+        lots_raw = row.get("lots", ())
+        if balance <= previous:
+            raise ValueError("capital_tier_formula_balances_not_ascending")
+        if not isinstance(lots_raw, (list, tuple)) or not lots_raw:
+            raise ValueError("capital_tier_formula_explicit_lots_required")
+        lots = tuple(_lot(Decimal(str(value))) for value in lots_raw)
+        if any(value <= 0 for value in lots):
+            raise ValueError("capital_tier_formula_lot_range_invalid")
+        result.append((_money(balance), lots))
+        previous = balance
+    return tuple(result)
+
+
 def expand_capital_tier_formula(raw: Mapping[str, Any]) -> tuple[tuple[float, tuple[float, ...]], ...]:
-    """Expand a validated compact formula into the legacy in-memory tier table."""
+    """Expand a compact formula into the legacy in-memory tier table.
+
+    Compatibility fields such as ``one_order_minimum_balance`` remain readable,
+    but ``authority_*`` fields are the sizing source of truth when supplied.
+    """
     kind = str(raw.get("kind", "")).strip().upper()
+    if kind == "EXPLICIT_LADDER":
+        return _explicit_ladder(raw)
+
     lot_step = Decimal(str(raw.get("lot_step", "0.01")))
     maximum_lot = Decimal(str(raw.get("maximum_lot", "0")))
-    one_balance = Decimal(str(raw.get("one_order_minimum_balance", "0")))
-    two_balance = Decimal(str(raw.get("two_order_minimum_balance", "0")))
-    three_balance = Decimal(str(raw.get("three_order_minimum_balance", "0")))
+
+    one_balance = Decimal(str(raw.get(
+        "authority_one_order_minimum_balance",
+        raw.get("one_order_minimum_balance", "0"),
+    )))
+    two_balance = Decimal(str(raw.get(
+        "authority_two_order_minimum_balance",
+        raw.get("two_order_minimum_balance", "0"),
+    )))
+    three_balance = Decimal(str(raw.get(
+        "authority_three_order_minimum_balance",
+        raw.get("three_order_minimum_balance", "0"),
+    )))
 
     if lot_step <= 0 or maximum_lot < lot_step:
         raise ValueError("capital_tier_formula_lot_range_invalid")

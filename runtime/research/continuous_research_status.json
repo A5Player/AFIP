@@ -1,0 +1,12 @@
+{
+  "schema_version": "phase_u_pack_3_4_11",
+  "status": "RUNNING",
+  "stage": "MT5_TIMEFRAME_COLLECTION",
+  "reason": "loading_closed_bars_M1_to_D1",
+  "updated_at_utc": "2026-07-20T14:14:19.449027Z",
+  "interval_seconds": 300,
+  "execution_authority": false,
+  "live_execution_enabled": false,
+  "order_send_called": false,
+  "cycle_started_at_utc": "2026-07-20T14:14:19.448976Z"
+}

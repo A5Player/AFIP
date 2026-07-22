@@ -27,7 +27,7 @@ def test_operational_profile_requirement_is_explicit_and_reversible():
         "P1": True,
         "P2": True,
         "P3": True,
-        "P4": False,
+        "P4": True,
     }
     assert all(rows[pid]["enabled"] is True for pid in rows)
     assert all(rows[pid]["research_enabled"] is True for pid in rows)
@@ -41,26 +41,19 @@ def test_runtime_preserves_production_execution_and_reports_p4_research_only():
     assert records["P1"]["status"] == "READY"
     assert records["P2"]["status"] == "READY"
     assert records["P3"]["status"] == "READY"
-    assert records["P4"]["status"] == "RESEARCH_ONLY"
+    assert records["P4"]["status"] in {"READY", "BLOCKED"}
     assert records["P4"]["research_enabled"] is True
-    assert "research participation preserved" in records["P4"]["waiting_reason"].lower()
+    assert "protected execution runtime" in records["P4"]["waiting_reason"].lower()
 
 
-def test_demo_gateway_blocks_p4_before_mt5_access():
+def test_p4_is_enabled_for_real_execution_with_fixed_single_unit():
     runtime = FourProfileOperationalRuntime(CONFIG)
     profiles = {profile.profile_id: profile for profile in runtime.load()}
     raw = {row["profile_id"]: row for row in _raw_profiles()}
-    for pid in ("P4",):
-        gateway = DemoExecutionGateway(
-            profiles[pid], DemoProfilePolicy.from_mapping(raw[pid]), mt5=FailIfCalledMT5()
-        )
-        account, report = gateway.preflight(FailIfCalledMT5())
-        assert account is None
-        assert report is not None
-        assert report.status == "STOPPED"
-        assert report.reason == "profile_execution_disabled_research_preserved"
-        assert report.order_send_called is False
-
+    assert profiles["P4"].execution_enabled is True
+    assert raw["P4"]["maximum_units"] == 1
+    assert raw["P4"]["maximum_concurrent_orders"] == 1
+    assert raw["P4"]["maximum_lot_per_order"] == 0.01
 
 def test_research_collector_keeps_execution_disabled_profiles_eligible():
     profiles = FourProfileOperationalRuntime(CONFIG).load()

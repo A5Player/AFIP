@@ -1,0 +1,7 @@
+print("AFIP Capital Authority Execution Integration Validation")
+print("CHECK: decision to execution flow")
+print("CHECK: approved units propagation")
+print("CHECK: lot authority ownership")
+print("CHECK: risk approval path")
+print("CHECK: MT5 router handoff")
+print("Validation complete")

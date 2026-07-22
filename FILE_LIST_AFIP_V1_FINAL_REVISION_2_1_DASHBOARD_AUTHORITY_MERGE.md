@@ -1,0 +1,5 @@
+- afip/dashboard_ui/research_operations.py
+- tests/test_afip_v1_final_revision_2_1_dashboard_authority_merge.py
+- RUN_AFIP_V1_FINAL_REVISION_2_1_DASHBOARD_AUTHORITY_MERGE.ps1
+- README_AFIP_V1_FINAL_REVISION_2_1_DASHBOARD_AUTHORITY_MERGE_TH.md
+- FILE_LIST_AFIP_V1_FINAL_REVISION_2_1_DASHBOARD_AUTHORITY_MERGE.md

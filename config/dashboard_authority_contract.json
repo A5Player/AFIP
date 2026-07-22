@@ -1,0 +1,16 @@
+{
+  "panels": [
+    "executive_overview",
+    "capital_authority",
+    "decision_trace",
+    "execution",
+    "profiles",
+    "research",
+    "runtime_observatory"
+  ],
+  "source_of_truth": [
+    "capital_authority",
+    "risk_authority",
+    "execution_authority"
+  ]
+}

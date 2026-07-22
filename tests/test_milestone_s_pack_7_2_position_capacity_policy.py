@@ -70,8 +70,9 @@ def test_p3_latest_capacity_curve_and_ceiling():
     assert p["P3"]["maximum_lot_per_order"] == 10.0
 
 
-def test_p4_remains_fixed_research_001():
+def test_p4_uses_unified_execution_capacity_policy():
     _,p=profiles(); p4=p["P4"]
-    assert p4["allocation_mode"] == "RESEARCH_FIXED_001"
+    assert p4["allocation_mode"] == "CAPITAL_TIER_TABLE"
     assert p4["maximum_lot_per_order"] == 0.01
-    assert p4["capital_tiers"] == []
+    assert p4["maximum_concurrent_orders"] == 1
+    assert p4["execution_enabled"] is True

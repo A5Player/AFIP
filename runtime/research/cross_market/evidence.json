@@ -1,0 +1,152 @@
+{
+  "schema_version": "phase_u_pack_3_4_10",
+  "generated_at": "2026-07-19T17:30:26.835266Z",
+  "execution_authority": false,
+  "observation_count": 12,
+  "relationships": [
+    {
+      "source_id": "BITCOIN",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": -0.0,
+      "influence_score_percent": 0.0,
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    },
+    {
+      "source_id": "ETHEREUM",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": 0.0,
+      "influence_score_percent": 0.0,
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    },
+    {
+      "source_id": "EURUSD",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": -0.0,
+      "influence_score_percent": 0.0,
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    },
+    {
+      "source_id": "GBPUSD",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": 0.0,
+      "influence_score_percent": 0.0,
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    },
+    {
+      "source_id": "SILVER",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": "DATA_UNAVAILABLE",
+      "influence_score_percent": "DATA_UNAVAILABLE",
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    },
+    {
+      "source_id": "USDCHF",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": -0.0,
+      "influence_score_percent": 0.0,
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    },
+    {
+      "source_id": "USDCNH",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": "DATA_UNAVAILABLE",
+      "influence_score_percent": "DATA_UNAVAILABLE",
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    },
+    {
+      "source_id": "USDJPY",
+      "sample_size": 12,
+      "tested_period_start": "2026-07-19T16:49:32.040984Z",
+      "tested_period_end": "2026-07-19T17:30:26.484060Z",
+      "correlation": 0.0,
+      "influence_score_percent": 0.0,
+      "stability_score_percent": 1.2,
+      "statistical_confidence": "DATA_UNAVAILABLE",
+      "certification_status": "RESEARCH_ONLY",
+      "trading_eligible": false,
+      "last_certified": "DATA_UNAVAILABLE",
+      "evidence_requirements": {
+        "minimum_samples": 1000,
+        "minimum_regime_coverage": 4,
+        "human_review_required": true
+      }
+    }
+  ]
+}

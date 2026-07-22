@@ -1,0 +1,7 @@
+{
+  "primary_schema": "afip-final-integration.v4",
+  "compatibility_aliases": [
+    "afip-final-integration.v2",
+    "AFIP-V1-FINAL-INTEGRATION-V1"
+  ]
+}

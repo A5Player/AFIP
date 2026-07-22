@@ -1,0 +1,52 @@
+{
+  "audit_warning_count": 8,
+  "checked_file_count": 26,
+  "duration_seconds": 2.793,
+  "mode": "CHANGED_FILES",
+  "policy": "AUDIT_ONLY_CHANGED_FILES",
+  "runtime_blocking": false,
+  "schema_version": "afip-financial-naming-fast.v2",
+  "status": "PASS",
+  "violations": [
+    {
+      "file": "afip\\dashboard_ui\\home.py",
+      "replacement": "trading objective",
+      "term": "mission"
+    },
+    {
+      "file": "afip\\dashboard_ui\\home.py",
+      "replacement": "price objective",
+      "term": "target"
+    },
+    {
+      "file": "afip\\dashboard_ui\\split_runtime.py",
+      "replacement": "price objective",
+      "term": "target"
+    },
+    {
+      "file": "afip\\demo_execution_gateway\\runtime.py",
+      "replacement": "validation intelligence",
+      "term": "guard"
+    },
+    {
+      "file": "afip\\demo_execution_gateway\\runtime.py",
+      "replacement": "price objective",
+      "term": "target"
+    },
+    {
+      "file": "afip\\four_profile_operations\\runtime.py",
+      "replacement": "price objective",
+      "term": "target"
+    },
+    {
+      "file": "tests\\test_milestone_s_pack_5_5.py",
+      "replacement": "price objective",
+      "term": "target"
+    },
+    {
+      "file": "tests\\test_milestone_s_pack_7_1_position_ceiling_semantics.py",
+      "replacement": "price objective",
+      "term": "target"
+    }
+  ]
+}

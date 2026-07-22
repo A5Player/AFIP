@@ -1,0 +1,8 @@
+- afip/dashboard_ui/home.py
+- afip/dashboard_ui/launcher.py
+- afip/dashboard_ui/__main__.py
+- afip/dashboard_ui/research_operations.py
+- START_AFIP_DASHBOARD_4_LIVE.ps1
+- BUILD_AFIP_DASHBOARD_4_ONCE.ps1
+- CLEAN_BROKEN_DASHBOARD_HOTFIX.ps1
+- README_PHASE_U_DASHBOARD_PROFESSIONAL_RESTORE_TH.md

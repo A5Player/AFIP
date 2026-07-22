@@ -1,0 +1,37 @@
+{
+  "schema_version": "afip-sequential-profile-router.v3",
+  "status": "RUNNING",
+  "pid": 6920,
+  "cycle": 1,
+  "mode": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
+  "concurrent_profile_workers": 0,
+  "active_profile_worker": null,
+  "updated_at_utc": "2026-07-21T07:13:07.138875+00:00",
+  "updated_at_epoch": 1784617987.1389234,
+  "profiles_processed": [
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "profile_workers": [
+    {
+      "profile_id": "P1",
+      "worker_pid": 7772,
+      "return_code": 0,
+      "log": "runtime\\execution\\profile_cycles\\p1.log"
+    },
+    {
+      "profile_id": "P2",
+      "worker_pid": 6816,
+      "return_code": 0,
+      "log": "runtime\\execution\\profile_cycles\\p2.log"
+    },
+    {
+      "profile_id": "P3",
+      "worker_pid": 9648,
+      "return_code": 0,
+      "log": "runtime\\execution\\profile_cycles\\p3.log"
+    }
+  ],
+  "profile_errors": []
+}

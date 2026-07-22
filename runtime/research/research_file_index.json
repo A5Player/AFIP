@@ -1,0 +1,142 @@
+{
+  "schema_version": "research-file-index.v1",
+  "updated_at_utc": "2026-07-21T06:08:14Z",
+  "lake_files_scanned": 5003,
+  "lake_records_scanned": 37603,
+  "skipped_unchanged_non_ohlc_files": 14,
+  "files": {
+    "runtime\\research\\continuous_research_status.json": {
+      "fingerprint": "394:1784556859439908700",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\final_research_run.json": {
+      "fingerprint": "2103:1784479911424395000",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\phase_v_major_status.json": {
+      "fingerprint": "515624:1784612433370191400",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\replay_performance.json": {
+      "fingerprint": "386:1784612433298720100",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\research_engine_status.json": {
+      "fingerprint": "187:1784614071432649700",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\research_index.json": {
+      "fingerprint": "667:1784459782171328500",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\research_live_status.json": {
+      "fingerprint": "1984:1784482638237363600",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\runtime_collection_summary.json": {
+      "fingerprint": "329:1784459782171328500",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\runtime_observatory_status.json": {
+      "fingerprint": "997:1784614071870274300",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\runtime_observatory_timeline.jsonl": {
+      "fingerprint": "2399562:1784614071885903300",
+      "contains_ohlc": false,
+      "records_scanned": 9266,
+      "rejected_records": 9266,
+      "usable_bars": 0
+    },
+    "runtime\\research\\cross_market\\collector_status.json": {
+      "fingerprint": "343:1784482226871149000",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\cross_market\\evidence.json": {
+      "fingerprint": "5299:1784482226845602300",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\cross_market\\latest.json": {
+      "fingerprint": "67914:1784482226769923400",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "runtime\\research\\cross_market\\observations.jsonl": {
+      "fingerprint": "562859:1784482226769923400",
+      "contains_ohlc": false,
+      "records_scanned": 12,
+      "rejected_records": 12,
+      "usable_bars": 0
+    },
+    "runtime\\research\\events\\research_events.jsonl": {
+      "fingerprint": "145238:1784459782155675100",
+      "contains_ohlc": false,
+      "records_scanned": 132,
+      "rejected_records": 132,
+      "usable_bars": 0
+    },
+    "runtime\\research\\trade_cases\\CASE-01AB87E3398866238BBB5854.json": {
+      "fingerprint": "2758:1784459782171328500",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "data\\research\\replay\\dataset_info.json": {
+      "fingerprint": "238:1784459780686765600",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "data\\knowledge\\certification\\dataset_info.json": {
+      "fingerprint": "633:1784459780655496600",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    },
+    "data\\knowledge\\portability\\dataset_info.json": {
+      "fingerprint": "638:1784459780655496600",
+      "contains_ohlc": false,
+      "records_scanned": 1,
+      "rejected_records": 1,
+      "usable_bars": 0
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "lot_policy_source": "new_capital_authority",
+  "legacy_fixed_lot_allowed": false,
+  "confidence_units": {
+    "below_98": 0,
+    "98_98_49": 1,
+    "98_5_99_49": 2,
+    "99_5_100": 3
+  },
+  "execution_pipeline": [
+    "decision",
+    "confidence",
+    "capital_authority",
+    "lot_authority",
+    "risk_approval",
+    "execution_gateway",
+    "mt5_router"
+  ]
+}

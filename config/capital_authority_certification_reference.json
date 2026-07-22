@@ -1,0 +1,14 @@
+{
+  "confidence_gate": {
+    "below_98": 0,
+    "98.0_98.49": 1,
+    "98.5_99.49": 2,
+    "99.5_100": 3
+  },
+  "profiles": {
+    "P1": "Conservative",
+    "P2": "Balanced",
+    "P3": "Aggressive",
+    "P4": "Experimental"
+  }
+}

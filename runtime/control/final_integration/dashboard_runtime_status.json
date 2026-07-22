@@ -1,0 +1,7 @@
+{
+  "status": "ERROR",
+  "cycles": 3995,
+  "reason": "PermissionError: [WinError 5] Access is denied: 'C:\\\\AFIP\\\\source\\\\runtime\\\\dashboard\\\\afip_dashboard.html.tmp' -> 'C:\\\\AFIP\\\\source\\\\runtime\\\\dashboard\\\\afip_dashboard.html'",
+  "updated_at_utc": "2026-07-21T11:04:28Z",
+  "execution_authority": false
+}

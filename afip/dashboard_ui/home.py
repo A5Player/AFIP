@@ -1,6 +1,6 @@
 """AFIP unified dashboard command center.
 
-Presentation-only shell for the three standalone AFIP dashboards.  It does not
+Presentation-only shell for the four standalone AFIP dashboards.  It does not
 start research, connect to MT5, mutate runtime state, or change execution
 permission.
 """
@@ -43,6 +43,13 @@ def render_dashboard_home() -> str:
             "Research & Data",
             "afip_research_data_dashboard.html",
         ),
+        (
+            "loading",
+            "📡",
+            "Data Loading",
+            "Data Loading & Research Operations",
+            "afip_research_operations_dashboard.html",
+        ),
     )
     navigation = "".join(
         f'<button class="nav-item{" active" if index == 0 else ""}" '
@@ -66,21 +73,21 @@ def render_dashboard_home() -> str:
 .shell{{display:grid;grid-template-columns:270px minmax(0,1fr);height:100vh}}
 .sidebar{{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--side),#0a1220);border-right:1px solid var(--line);min-width:0}}
 .brand{{padding:22px 20px 18px;border-bottom:1px solid var(--line)}} .brand-badge{{display:inline-block;padding:5px 9px;border-radius:999px;background:#1f6f4a;font-size:10px;font-weight:800;letter-spacing:.07em}}
-.brand h1{{font-size:20px;margin:12px 0 5px}} .brand p{{font-size:12px;color:var(--muted);margin:0;line-height:1.45}}
+.brand h1{{font-size:18px;margin:10px 0 4px;line-height:1.15}} .brand p{{font-size:12px;color:var(--muted);margin:0;line-height:1.45}}
 .navigation{{display:flex;flex-direction:column;gap:7px;padding:16px 12px}}
 .nav-item{{display:flex;align-items:center;gap:12px;width:100%;border:1px solid transparent;border-radius:11px;background:transparent;color:var(--text);padding:12px;text-align:left;cursor:pointer}}
 .nav-item:hover{{background:#ffffff0b;border-color:#ffffff12}} .nav-item.active{{background:var(--side2);border-color:#3b536f;box-shadow:inset 3px 0 0 var(--accent)}}
-.nav-icon{{width:28px;text-align:center;font-size:21px}} .nav-item strong{{display:block;font-size:14px}} .nav-item small{{display:block;color:var(--muted);font-size:10px;margin-top:3px}}
+.nav-icon{{width:24px;min-width:24px;text-align:center;font-size:17px;line-height:1}} .nav-item strong{{display:block;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}} .nav-item small{{display:block;color:var(--muted);font-size:9px;margin-top:2px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .side-footer{{margin-top:auto;padding:14px 18px;border-top:1px solid var(--line);font-size:10px;line-height:1.55;color:var(--muted)}}
 .workspace{{display:grid;grid-template-rows:58px minmax(0,1fr);min-width:0;background:var(--canvas)}}
 .toolbar{{display:flex;align-items:center;gap:12px;padding:0 18px;background:#fff;color:#172033;border-bottom:1px solid #d7dfeb}}
-.mobile-menu{{display:none;border:0;background:#eef2f7;border-radius:8px;padding:8px 10px;cursor:pointer}} .toolbar h2{{margin:0;font-size:17px}}
+.mobile-menu{{display:none;border:0;background:#eef2f7;border-radius:8px;padding:8px 10px;cursor:pointer}} .toolbar h2{{margin:0;font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .toolbar-actions{{margin-left:auto;display:flex;gap:8px}} .toolbar button,.toolbar a{{border:1px solid #ced8e5;background:#fff;color:#26364c;border-radius:8px;padding:7px 10px;font-size:12px;text-decoration:none;cursor:pointer}}
 .frame-wrap{{position:relative;min-height:0;background:#fff}} iframe{{display:block;width:100%;height:100%;border:0;background:#fff}}
 .loading{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#eef2f7;color:#53647a;font-weight:700;z-index:2}} .loading.hidden{{display:none}}
 @media(max-width:820px){{.shell{{grid-template-columns:1fr}} .sidebar{{position:fixed;inset:0 auto 0 0;width:270px;z-index:20;transform:translateX(-100%);transition:.18s transform}} .sidebar.open{{transform:translateX(0)}} .mobile-menu{{display:inline-block}}}}
 </style></head><body>
-<div class="shell"><aside class="sidebar" id="sidebar"><div class="brand"><span class="brand-badge">AFIP · COMMAND CENTER</span><h1>AFIP Gold</h1><p>Operations · Intelligence · Research<br>ศูนย์บัญชาการ Dashboard แบบหน้าเดียว</p></div>
+<div class="shell"><aside class="sidebar" id="sidebar"><div class="brand"><span class="brand-badge">AFIP · COMMAND CENTER</span><h1>AFIP Gold</h1><p>Operations · Intelligence · Research · Data Loading<br>ศูนย์บัญชาการ Dashboard แบบหน้าเดียว</p></div>
 <nav class="navigation" aria-label="AFIP dashboards">{navigation}</nav>
 <div class="side-footer">Presentation-only shell<br>No MT5 or execution-authority mutation<br>Generated {escape(generated)}</div></aside>
 <main class="workspace"><header class="toolbar"><button class="mobile-menu" id="mobileMenu" type="button" aria-label="Open menu">☰</button><h2 id="pageTitle">P1–P4 Operations</h2><div class="toolbar-actions"><button id="refresh" type="button">↻ Refresh</button><a id="openStandalone" href="afip_profiles_dashboard.html" target="_blank" rel="noopener">Open standalone</a></div></header>

@@ -1,0 +1,1 @@
+python tools/validate_contract_alignment_patch.py

@@ -1,0 +1,1 @@
+python tools/validate_dashboard_live_data_integration.py

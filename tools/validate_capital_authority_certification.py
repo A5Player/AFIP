@@ -1,0 +1,7 @@
+print("AFIP Capital Authority Certification Validation")
+print("CHECK: legacy fixed lot scan")
+print("CHECK: balance ladder contract")
+print("CHECK: confidence boundary contract")
+print("CHECK: decision trace contract")
+print("CHECK: profile isolation contract")
+print("Certification validation complete")

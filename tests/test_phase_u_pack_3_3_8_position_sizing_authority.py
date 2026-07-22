@@ -21,8 +21,9 @@ def test_p1_to_p3_use_tier_table_as_only_declared_sizing_authority():
     for pid in ("P1", "P2", "P3"):
         assert profiles[pid]["execution_enabled"] is True
         assert profiles[pid]["allocation_mode"] == "CAPITAL_TIER_TABLE"
-        assert profiles[pid]["sizing_authority"] == "CAPITAL_TIER_TABLE"
-        assert profiles[pid]["capital_per_unit_legacy_only"] is True
+        assert profiles[pid]["sizing_authority"] == "CAPITAL_TIER_FORMULA_ONLY"
+        assert "capital_per_unit" not in profiles[pid]
+        assert "capital_per_unit_legacy_only" not in profiles[pid]
 
 def test_latest_approved_balance_curves_are_preserved():
     profiles = _profiles()

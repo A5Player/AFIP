@@ -1,0 +1,9 @@
+afip/four_profile_operations/mt5_connection.py
+afip/four_profile_operations/runtime.py
+afip/dashboard_ui/split_runtime.py
+tools/afip_dashboard_live_mt5.py
+tests/test_phase_u_dashboard_live_mt5_fields.py
+BUILD_AFIP_DASHBOARD_LIVE_ONCE.ps1
+START_AFIP_DASHBOARD_LIVE_MT5.ps1
+README_PHASE_U_DASHBOARD_LIVE_MT5_TH.md
+FILE_LIST_PHASE_U_DASHBOARD_LIVE_MT5.txt

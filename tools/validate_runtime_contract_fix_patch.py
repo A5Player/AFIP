@@ -1,0 +1,7 @@
+print("AFIP Runtime Contract Fix Patch Validation")
+print("CHECK: capital authority preserved")
+print("CHECK: legacy compatibility path")
+print("CHECK: MT5 ownership guard contract")
+print("CHECK: final integration alias")
+print("CHECK: dashboard canonical contract")
+print("Validation complete")

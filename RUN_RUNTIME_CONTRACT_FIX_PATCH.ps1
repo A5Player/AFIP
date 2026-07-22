@@ -1,0 +1,1 @@
+python tools/validate_runtime_contract_fix_patch.py

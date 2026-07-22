@@ -1,0 +1,11 @@
+{
+  "sources": [
+    "capital_authority_state",
+    "decision_trace",
+    "execution_state",
+    "mt5_health",
+    "profile_status",
+    "research_data_lake"
+  ],
+  "no_trading_logic_in_dashboard": true
+}

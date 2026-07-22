@@ -1,0 +1,3 @@
+## AFIP Version 1.0 Final Integration
+
+Introduced a non-destructive final integration authority based on the latest repository state. The production architecture is formally reduced to two runtime authorities: Trading Runtime and Research Runtime. Research has no order-send authority. Dashboard generation is consolidated into one canonical HTML output and one machine-readable central status. Existing runtime, dashboard, replay, observatory, data-lake and file-index implementations are delegated to rather than reimplemented. Legacy entry points remain compatibility-only until long-run certification.

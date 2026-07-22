@@ -1,0 +1,17 @@
+{
+  "lot_authority": "capital_authority",
+  "legacy_fields": {
+    "mode": "compatibility_only",
+    "calculation_allowed": false
+  },
+  "integration_versions": [
+    "afip-final-integration.v4",
+    "afip-final-integration.v2",
+    "AFIP-V1-FINAL-INTEGRATION-V1"
+  ],
+  "mt5_safety_checks": [
+    "binding_changed_before_order_send",
+    "mt5_terminal_path_mismatch",
+    "profile_isolation_validation_failed"
+  ]
+}

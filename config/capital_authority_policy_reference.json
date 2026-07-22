@@ -1,0 +1,14 @@
+{
+  "confidence_units": {
+    "<98": 0,
+    "98.0-98.49": 1,
+    "98.5-99.49": 2,
+    "99.5-100": 3
+  },
+  "profiles": {
+    "P1": "balance_ladder",
+    "P2": "balance_ladder",
+    "P3": "aggressive_balance_ladder",
+    "P4": "experimental_balance_ladder"
+  }
+}

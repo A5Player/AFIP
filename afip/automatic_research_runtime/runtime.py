@@ -8,18 +8,21 @@ calculation rather than being treated as zero.
 """
 from __future__ import annotations
 
+from collections import defaultdict
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
+from time import perf_counter
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from afip.historical_replay_research import AppendOnlyResearchDataset, HistoricalReplayRunner, ReplayResumeRegistry
 from afip.financial_data_lake import FinancialDataLake
 from afip.timeframe_registry import get_mt5_timeframe_code, get_supported_timeframes
 from afip.historical_data_manager.timeframe_quality import GapRange, TimeframeDataQuality
+from afip.runtime_observatory import RuntimeProgressAuthority
 
 _TIMEFRAMES = get_supported_timeframes(capability="chronological_replay")
 _SCHEMA_VERSION = "AFIP-RESEARCH-SCHEMA-V2"
@@ -111,16 +114,29 @@ class AutomaticResearchRuntime:
         self.root = Path(project_root).resolve()
         self.output_root = self.root / "runtime" / "research" / "automatic" / "schema_v2"
         self.status_path = self.root / "runtime" / "research" / "automatic_research_status.json"
+        self.performance_path = self.root / "runtime" / "research" / "replay_performance.json"
+        self.discovery_index_path = self.root / "runtime" / "research" / "research_file_index.json"
         self.historical_lake_root = self.root / "runtime" / "research" / "historical_data_lake"
         self.progress = progress
+        self.observatory = RuntimeProgressAuthority(self.root)
 
     def _report(self, message: str) -> None:
         if self.progress is not None:
             self.progress(message)
 
-    def _write_stage(self, stage: str, reason: str) -> None:
+    def _write_stage(self, stage: str, reason: str, **progress: Any) -> None:
+        """Write an atomic dashboard heartbeat without granting execution authority."""
         self.status_path.parent.mkdir(parents=True, exist_ok=True)
+        existing: dict[str, Any] = {}
+        if self.status_path.exists():
+            try:
+                value = json.loads(self.status_path.read_text(encoding="utf-8"))
+                if isinstance(value, dict):
+                    existing = value
+            except (OSError, json.JSONDecodeError, UnicodeError):
+                existing = {}
         payload = {
+            **existing,
             "status": "RUNNING",
             "stage": stage,
             "reason": reason,
@@ -128,8 +144,11 @@ class AutomaticResearchRuntime:
             "schema_version": _SCHEMA_VERSION,
             "live_execution_enabled": False,
             "order_send_called": False,
+            **progress,
         }
-        self.status_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        temporary = self.status_path.with_suffix(self.status_path.suffix + ".tmp")
+        temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        temporary.replace(self.status_path)
 
     def _iter_json_records(self, path: Path) -> Iterable[Mapping[str, Any]]:
         try:
@@ -157,9 +176,54 @@ class AutomaticResearchRuntime:
         except (OSError, json.JSONDecodeError, UnicodeError):
             return
 
+    def _load_discovery_index(self) -> dict[str, Any]:
+        if not self.discovery_index_path.exists():
+            return {"schema_version": "research-file-index.v1", "files": {}}
+        try:
+            value = json.loads(self.discovery_index_path.read_text(encoding="utf-8"))
+            if isinstance(value, dict) and isinstance(value.get("files"), dict):
+                return value
+        except (OSError, json.JSONDecodeError, UnicodeError):
+            pass
+        return {"schema_version": "research-file-index.v1", "files": {}}
+
+    def _write_discovery_index(self, value: Mapping[str, Any]) -> None:
+        self.discovery_index_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self.discovery_index_path.with_suffix(".json.tmp")
+        temporary.write_text(json.dumps(dict(value), indent=2, ensure_ascii=False), encoding="utf-8")
+        temporary.replace(self.discovery_index_path)
+
+    def _discover_lake_bars(self) -> tuple[list[dict[str, Any]], int, int]:
+        bars: dict[tuple[str, str], dict[str, Any]] = {}
+        files = records = 0
+        if not self.historical_lake_root.exists():
+            return [], files, records
+        for path in self.historical_lake_root.rglob("records.jsonl"):
+            if not path.is_file():
+                continue
+            files += 1
+            for record in self._iter_json_records(path):
+                records += 1
+                payload = record.get("payload") if isinstance(record.get("payload"), Mapping) else record
+                timeframe = str(payload.get("timeframe", "UNKNOWN")).upper()
+                bar = _ohlc({**dict(payload), "timestamp_utc": record.get("observed_at_utc")}, source=str(path.relative_to(self.root)), timeframe=timeframe)
+                if bar is not None:
+                    bars[(bar["timeframe"], bar["timestamp_utc"])] = bar
+        return sorted(bars.values(), key=lambda item: (item["timeframe"], item["timestamp_utc"])), files, records
+
     def discover_bars(self) -> tuple[list[dict[str, Any]], int, int, int]:
         bars: dict[tuple[str, str], dict[str, Any]] = {}
-        files = scanned = rejected = 0
+        lake_bars, lake_files, lake_records = self._discover_lake_bars()
+        for bar in lake_bars:
+            bars[(bar["timeframe"], bar["timestamp_utc"])] = bar
+
+        files = lake_files
+        scanned = lake_records
+        rejected = 0
+        index = self._load_discovery_index()
+        previous = index.get("files", {})
+        updated: dict[str, Any] = {}
+        skipped_unchanged_non_ohlc = 0
         roots = (
             self.root / "runtime" / "research",
             self.root / "data" / "research",
@@ -172,17 +236,44 @@ class AutomaticResearchRuntime:
             for path in base.rglob("*"):
                 if not path.is_file() or path.suffix.lower() not in {".json", ".jsonl"}:
                     continue
-                if path == self.status_path or self.output_root in path.parents:
+                if path == self.status_path or path == self.discovery_index_path or self.output_root in path.parents or self.historical_lake_root in path.parents:
+                    continue
+                relative = str(path.relative_to(self.root))
+                stat = path.stat()
+                fingerprint = f"{stat.st_size}:{stat.st_mtime_ns}"
+                prior = previous.get(relative, {})
+                if prior.get("fingerprint") == fingerprint and prior.get("contains_ohlc") is False:
+                    files += 1
+                    scanned += int(prior.get("records_scanned", 0) or 0)
+                    rejected += int(prior.get("rejected_records", 0) or 0)
+                    updated[relative] = prior
+                    skipped_unchanged_non_ohlc += 1
                     continue
                 files += 1
+                file_scanned = file_rejected = file_usable = 0
                 for record in self._iter_json_records(path):
-                    scanned += 1
-                    bar = _ohlc(record, source=str(path.relative_to(self.root)))
+                    scanned += 1; file_scanned += 1
+                    bar = _ohlc(record, source=relative)
                     if bar is None:
-                        rejected += 1
+                        rejected += 1; file_rejected += 1
                         continue
-                    key = (bar["timeframe"], bar["timestamp_utc"])
-                    bars[key] = bar
+                    file_usable += 1
+                    bars[(bar["timeframe"], bar["timestamp_utc"])] = bar
+                updated[relative] = {
+                    "fingerprint": fingerprint,
+                    "contains_ohlc": file_usable > 0,
+                    "records_scanned": file_scanned,
+                    "rejected_records": file_rejected,
+                    "usable_bars": file_usable,
+                }
+        self._write_discovery_index({
+            "schema_version": "research-file-index.v1",
+            "updated_at_utc": _utc_now(),
+            "lake_files_scanned": lake_files,
+            "lake_records_scanned": lake_records,
+            "skipped_unchanged_non_ohlc_files": skipped_unchanged_non_ohlc,
+            "files": updated,
+        })
         ordered = sorted(bars.values(), key=lambda item: (item["timeframe"], item["timestamp_utc"]))
         return ordered, files, scanned, rejected
 
@@ -340,11 +431,27 @@ class AutomaticResearchRuntime:
         self.status_path.parent.mkdir(parents=True, exist_ok=True)
         self.status_path.write_text(json.dumps(summary.as_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
 
-    def run(self, *, collect_mt5_when_needed: bool = True, maximum_replay_bars: int = 2000) -> AutomaticResearchSummary:
+    def run(
+        self,
+        *,
+        collect_mt5_when_needed: bool = True,
+        maximum_replay_bars: int = 2000,
+        progress_interval_bars: int | None = None,
+    ) -> AutomaticResearchSummary:
+        if maximum_replay_bars <= 0:
+            raise ValueError("maximum_replay_bars must be positive")
+        if progress_interval_bars is not None and progress_interval_bars <= 0:
+            raise ValueError("progress_interval_bars must be positive when provided")
+
         started = _utc_now()
+        performance_started = perf_counter()
+        dashboard_updates = 0
+        observatory_updates = 0
         self._write_stage("DISCOVER_LOCAL_DATA", "scanning_existing_research_and_historical_files")
+        self.observatory.update(state="RUNNING", stage="HISTORICAL_LOADING", activity="Scanning historical files", files_scanned=0, records_scanned=0)
         self._report("[1/5] Scanning existing research and historical files...")
         bars, files, scanned, rejected = self.discover_bars()
+        self.observatory.update(state="RUNNING", stage="HISTORICAL_LOADING", activity="Historical file scan completed", files_scanned=files, records_scanned=scanned, ohlc_accepted=len(bars), rejected_records=rejected)
         self._report(f"      Files: {files} | Records: {scanned} | Usable OHLC: {len(bars)} | Non-OHLC: {rejected}")
         mt5_attempted = False
         mt5_bars: list[dict[str, Any]] = []
@@ -415,8 +522,12 @@ class AutomaticResearchRuntime:
         if bars:
             # Run each timeframe independently so chronology never mixes unlike bars.
             dataset = AppendOnlyResearchDataset(self.output_root)
+            bars_by_timeframe: dict[str, list[dict[str, Any]]] = defaultdict(list)
+            for item in bars:
+                bars_by_timeframe[str(item["timeframe"]).upper()].append(item)
+
             for timeframe in _TIMEFRAMES:
-                candles = [item for item in bars if item["timeframe"] == timeframe]
+                candles = bars_by_timeframe.get(timeframe, [])
                 if not candles:
                     continue
                 base_replay_id = f"AUTO-{_SCHEMA_VERSION}-{timeframe}"
@@ -451,7 +562,47 @@ class AutomaticResearchRuntime:
                         f"coverage for window {window_identity}; replaying exact window from index 0"
                     )
                 self._report(f"      Replay {timeframe}: {len(candles)} bars")
+                self._write_stage(
+                    "REPLAY_RESEARCH",
+                    f"replaying_{timeframe.lower()}_chronologically",
+                    current_timeframe=timeframe,
+                    current_timeframe_available_bars=len(candles),
+                    current_timeframe_resumed_from_index=next_index,
+                    replay_bars_processed=processed,
+                    replay_candidates_generated=candidates,
+                    replay_timeframe_evidence=replay_evidence,
+                )
                 runner = HistoricalReplayRunner(dataset=dataset, candidate_provider=self._candidate_provider)
+                adaptive_progress_interval = (
+                    progress_interval_bars
+                    if progress_interval_bars is not None
+                    else min(50, max(5, len(candles) // 100))
+                )
+
+                def on_replay_progress(event: Mapping[str, Any], *, tf: str = timeframe, resumed: int = next_index) -> None:
+                    nonlocal dashboard_updates, observatory_updates
+                    covered = int(event.get("covered_bars", 0) or 0)
+                    total_bars = int(event.get("total_bars", len(candles)) or len(candles))
+                    timestamp = str(event.get("replay_timestamp_utc", ""))
+                    self.observatory.replay_update(
+                        timeframe=tf, replay_index=int(event.get("replay_index", 0) or 0),
+                        processed=covered, total=total_bars, candle_timestamp_utc=timestamp,
+                        candidates=candidates + int(event.get("candidates_generated", 0) or 0),
+                        resumed_from_index=resumed,
+                    )
+                    observatory_updates += 1
+                    self._write_stage(
+                        "REPLAY_RESEARCH", f"replaying_{tf.lower()}_chronologically",
+                        current_timeframe=tf, current_replay_index=int(event.get("replay_index", 0) or 0),
+                        current_replay_timestamp_utc=timestamp, last_processed_candle_utc=timestamp,
+                        replay_bars_processed=processed + int(event.get("processed_this_run", 0) or 0),
+                        replay_processed=covered, replay_total=total_bars,
+                        replay_percent=round((covered * 100.0 / total_bars), 4) if total_bars else 0.0,
+                        replay_candidates_generated=candidates + int(event.get("candidates_generated", 0) or 0),
+                        heartbeat_utc=_utc_now(),
+                    )
+                    dashboard_updates += 1
+
                 summary = runner.run(
                     replay_id=replay_id,
                     research_run_id=f"AUTO-STARTUP-{timeframe}",
@@ -460,6 +611,8 @@ class AutomaticResearchRuntime:
                     candles=candles,
                     resume=True,
                     maximum_bars=min(maximum_replay_bars, max(1, len(candles))),
+                    progress_callback=on_replay_progress,
+                    progress_interval_bars=adaptive_progress_interval,
                 )
                 processed += summary.bars_processed
                 candidates += summary.candidates_generated
@@ -479,6 +632,17 @@ class AutomaticResearchRuntime:
                     "selection_reason": selection_reason,
                     "candidates_generated_this_run": summary.candidates_generated,
                 }
+                self._write_stage(
+                    "REPLAY_RESEARCH",
+                    f"completed_{timeframe.lower()}_replay_stage",
+                    current_timeframe=timeframe,
+                    current_timeframe_available_bars=len(candles),
+                    current_timeframe_processed=summary.bars_processed,
+                    current_timeframe_covered=summary.resumed_from_index + summary.bars_processed,
+                    replay_bars_processed=processed,
+                    replay_candidates_generated=candidates,
+                    replay_timeframe_evidence=replay_evidence,
+                )
                 self._report(
                     f"      Replay {timeframe}: processed {summary.bars_processed}, "
                     f"coverage {summary.resumed_from_index + summary.bars_processed}/{len(candles)}, "
@@ -510,5 +674,34 @@ class AutomaticResearchRuntime:
             backfill_bars_accepted=backfill_accepted,
         )
         self._write_status(result)
+        performance_elapsed = max(0.0, perf_counter() - performance_started)
+        performance_payload = {
+            "recorded_at_utc": _utc_now(),
+            "schema_version": _SCHEMA_VERSION,
+            "bars_processed": result.replay_bars_processed,
+            "elapsed_seconds": round(performance_elapsed, 6),
+            "bars_per_second": round(result.replay_bars_processed / performance_elapsed, 4) if performance_elapsed else 0.0,
+            "dashboard_updates": dashboard_updates,
+            "observatory_updates": observatory_updates,
+            "progress_interval_policy": "explicit_or_adaptive_1_percent_bounded_5_to_50",
+            "live_execution_enabled": False,
+            "order_send_called": False,
+        }
+        self.performance_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_performance = self.performance_path.with_suffix(self.performance_path.suffix + ".tmp")
+        temporary_performance.write_text(
+            json.dumps(performance_payload, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        temporary_performance.replace(self.performance_path)
+
+        final_state = "COMPLETED" if result.replay_completed else ("WAITING" if result.status == "WAITING" else "RUNNING")
+        self.observatory.update(
+            state=final_state, stage="CONTINUOUS_RESEARCH" if result.replay_completed else "HISTORICAL_REPLAY",
+            activity=result.reason, files_scanned=result.source_files_scanned, records_scanned=result.source_records_scanned,
+            ohlc_accepted=result.usable_bars, duplicates=result.historical_lake_duplicates, gaps=result.gap_ranges_detected,
+            missing_bars=result.missing_bars_detected, replay_processed=result.replay_bars_processed,
+            replay_candidates=result.replay_candidates_generated, completed_research=result.replay_candidates_generated,
+            live_execution_armed=False, live_execution_enabled=False,
+        )
         self._report(f"[5/5] Complete: {result.status} | {result.reason} | usable bars {result.usable_bars} | replay {result.replay_bars_processed}")
         return result

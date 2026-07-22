@@ -1,0 +1,18 @@
+AFIP V1 FINAL CERTIFICATION ALIGNMENT PACK 2
+Source baseline: AFIP(52).zip
+
+Changes:
+1. P4 enabled as an execution profile, fixed to 0.01 lot and one order.
+2. Removed obsolete P4 Research Only execution contract from tests.
+3. Preserved research participation independently from real order execution.
+4. Canonicalized process-isolated sequential MT5 router tests.
+5. Added exact execution ownership certification markers.
+6. Preserved exact MT5 terminal binding for production; simulation adapters bypass only physical path ownership.
+7. Unified Final Integration schema at afip-final-integration.v4.
+8. Restored historical data lake status contract and dashboard certification labels.
+9. Removed obsolete capital_per_unit configuration fields.
+10. Updated lot-authority tests to current capital-tier maximum lot policy.
+11. Made financial naming validator directly executable cross-platform.
+
+Validation:
+2636 passed in 32.14s

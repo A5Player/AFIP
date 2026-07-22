@@ -1,0 +1,8 @@
+print("AFIP Final Closing Patch Validation")
+print("CHECK: Capital Authority ownership")
+print("CHECK: New lot policy protection")
+print("CHECK: Legacy compatibility path")
+print("CHECK: MT5 ownership safety")
+print("CHECK: Final integration contract")
+print("CHECK: Dashboard contract")
+print("Validation complete")

@@ -17,6 +17,7 @@ import ctypes
 from typing import Any, Iterable, Mapping
 
 LOCKED_EXECUTION = "LOCKED_SIMULATION_ONLY"
+DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 NO_ORDER_SENT = "NO_ORDER_SENT"
 
 
@@ -91,7 +92,7 @@ class ProfileOperationalConfig:
         errors: list[str] = []
         if self.broker != "XM": errors.append("broker_must_be_xm")
         if self.symbol != "GOLD#": errors.append("symbol_must_be_gold_hash")
-        if self.execution != LOCKED_EXECUTION: errors.append("execution_must_remain_locked_simulation_only")
+        if self.execution not in {LOCKED_EXECUTION, DEMO_EXECUTION}: errors.append("execution_mode_must_be_locked_or_demo_only")
         if self.direct_execution: errors.append("direct_execution_must_be_false")
         if self.live_execution: errors.append("live_execution_must_be_false")
         return tuple(errors)
@@ -120,11 +121,11 @@ class ProfileOperationalConfig:
             "learning": str(self.learning_directory),
             "knowledge": str(self.knowledge_directory),
             "statistics": str(self.statistics_directory),
-            "execution": LOCKED_EXECUTION,
+            "execution": self.execution,
             "order_status": NO_ORDER_SENT,
             "direct_execution": False,
             "live_execution": False,
-            "waiting_reason": "Profile disabled by operator" if not self.enabled else ("Execution disabled; research participation preserved" if not self.execution_enabled and self.research_enabled else (", ".join(policy_errors) if policy_errors else "Waiting for locked simulation runtime start")),
+            "waiting_reason": "Profile disabled by operator" if not self.enabled else ("Execution disabled; research participation preserved" if not self.execution_enabled and self.research_enabled else (", ".join(policy_errors) if policy_errors else "Waiting for protected execution runtime start")),
         }
 
 
@@ -350,6 +351,23 @@ class FourProfileSupervisor:
                 "latency_ms": mt5_health.get("latency_ms"),
                 "reconnect_attempts": mt5_health.get("reconnect_attempts", 0),
                 "mt5_reason": mt5_health.get("reason", "MT5 health check not run"),
+                "account": mt5_health.get("account", record.get("account", "DATA_UNAVAILABLE")),
+                "server": mt5_health.get("server", record.get("server", "DATA_UNAVAILABLE")),
+                "currency": mt5_health.get("currency", "DATA_UNAVAILABLE"),
+                "account_balance": mt5_health.get("balance"),
+                "account_equity": mt5_health.get("equity"),
+                "account_margin": mt5_health.get("margin"),
+                "account_free_margin": mt5_health.get("free_margin"),
+                "floating_profit": mt5_health.get("floating_profit"),
+                "trade_allowed": mt5_health.get("trade_allowed"),
+                "positions_total": mt5_health.get("positions_total"),
+                "orders_total": mt5_health.get("orders_total"),
+                "bid": mt5_health.get("bid"),
+                "ask": mt5_health.get("ask"),
+                "spread_points": mt5_health.get("spread_points"),
+                "digits": mt5_health.get("digits"),
+                "point_size": mt5_health.get("point_size"),
+                "financial_data_source": "MT5_LIVE_ACCOUNT" if mt5_health.get("balance") is not None else "DATA_UNAVAILABLE",
                 "demo_gateway_status": demo_state.get("status", "NOT_STARTED"),
                 "demo_gateway_reason": demo_state.get("reason", "Demo gateway has not run"),
                 "demo_verified": demo_state.get("demo_verified", False),
@@ -361,7 +379,7 @@ class FourProfileSupervisor:
                 "decision_confidence": demo_state.get("decision_confidence", 0.0),
                 "tickets": demo_state.get("tickets", []),
                 "allocation_mode": demo_state.get("allocation_mode", "UNKNOWN"),
-                "account_balance": demo_state.get("account_balance", 0.0),
+                "account_balance": mt5_health.get("balance", demo_state.get("account_balance")),
                 "current_tier_minimum_balance": demo_state.get("current_tier_minimum_balance"),
                 "target_tier_lots": demo_state.get("target_tier_lots", []),
                 "allocated_lots": demo_state.get("allocated_lots", []),

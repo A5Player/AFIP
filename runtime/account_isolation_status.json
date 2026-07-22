@@ -1,0 +1,65 @@
+{
+  "schema_version": "afip-account-isolation.v2",
+  "status": "PASS",
+  "safe_to_start": true,
+  "execution_model": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
+  "errors": [],
+  "profiles": [
+    {
+      "profile_id": "P1",
+      "status": "PASS",
+      "mode": "EXECUTION",
+      "configured_login": "****0369",
+      "actual_login": "****0369",
+      "configured_server": "XMGlobal-MT5 6",
+      "actual_server": "XMGlobal-MT5 6",
+      "configured_terminal": "C:\\XM Global MT5 P1",
+      "actual_terminal": "C:\\XM Global MT5 P1",
+      "login_match": true,
+      "server_match": true,
+      "terminal_match": true
+    },
+    {
+      "profile_id": "P2",
+      "status": "PASS",
+      "mode": "EXECUTION",
+      "configured_login": "****6767",
+      "actual_login": "****6767",
+      "configured_server": "XMGlobal-MT5 6",
+      "actual_server": "XMGlobal-MT5 6",
+      "configured_terminal": "C:\\XM Global MT5 P2",
+      "actual_terminal": "C:\\XM Global MT5 P2",
+      "login_match": true,
+      "server_match": true,
+      "terminal_match": true
+    },
+    {
+      "profile_id": "P3",
+      "status": "PASS",
+      "mode": "EXECUTION",
+      "configured_login": "****6145",
+      "actual_login": "****6145",
+      "configured_server": "XMGlobal-MT5 5",
+      "actual_server": "XMGlobal-MT5 5",
+      "configured_terminal": "C:\\XM Global MT5 P3",
+      "actual_terminal": "C:\\XM Global MT5 P3",
+      "login_match": true,
+      "server_match": true,
+      "terminal_match": true
+    },
+    {
+      "profile_id": "P4",
+      "status": "PASS",
+      "mode": "RESEARCH_ONLY",
+      "configured_login": "****6153",
+      "actual_login": "****6153",
+      "configured_server": "XMGlobal-MT5 5",
+      "actual_server": "XMGlobal-MT5 5",
+      "configured_terminal": "C:\\XM Global MT5 P4",
+      "actual_terminal": "C:\\XM Global MT5 P4",
+      "login_match": true,
+      "server_match": true,
+      "terminal_match": true
+    }
+  ]
+}

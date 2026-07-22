@@ -1,0 +1,39 @@
+{
+  "schema_version": "phase_u_final_integration_v1",
+  "generated_at": "2026-07-19T16:51:51.436165Z",
+  "status": "PASS",
+  "execution_authority": false,
+  "research_mode": "ONE_SHOT_BOUNDED",
+  "steps": [
+    {
+      "name": "pack_regression",
+      "status": "PASS",
+      "return_code": 0,
+      "started_at": "2026-07-19T16:51:38.575619Z",
+      "finished_at": "2026-07-19T16:51:45.669240Z",
+      "timeout_seconds": 300,
+      "stdout": ".............                                                            [100%]\n13 passed in 5.44s\n",
+      "stderr": ""
+    },
+    {
+      "name": "one_shot_research",
+      "status": "PASS",
+      "return_code": 0,
+      "started_at": "2026-07-19T16:51:45.669308Z",
+      "finished_at": "2026-07-19T16:51:48.441883Z",
+      "timeout_seconds": 900,
+      "stdout": "{\n  \"schema_version\": \"phase_u_pack_3_4_10\",\n  \"last_cycle\": \"2026-07-19T16:51:48.374084Z\",\n  \"status\": \"COMPLETE\",\n  \"latest\": \"C:\\\\AFIP\\\\source\\\\runtime\\\\research\\\\cross_market\\\\latest.json\",\n  \"evidence\": \"C:\\\\AFIP\\\\source\\\\runtime\\\\research\\\\cross_market\\\\evidence.json\",\n  \"interval_seconds\": 300,\n  \"execution_authority\": false\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "dashboard_generation",
+      "status": "PASS",
+      "return_code": 0,
+      "started_at": "2026-07-19T16:51:48.441946Z",
+      "finished_at": "2026-07-19T16:51:51.436094Z",
+      "timeout_seconds": 180,
+      "stdout": "AFIP Dashboard Home generated: runtime\\dashboard\\afip_dashboard.html\nAFIP Dashboard 1 generated: runtime\\dashboard\\afip_profiles_dashboard.html\nAFIP Dashboard 2 generated: runtime\\dashboard\\afip_intelligence_engine_dashboard.html\nAFIP Dashboard 3 generated: runtime\\dashboard\\afip_research_data_dashboard.html\nDashboard 1 refreshes every 5 seconds. Dashboards 2 and 3 refresh manually.\nAutomatic research is not run synchronously during dashboard generation.\nFinancial placeholders are disabled. Live execution authority remains unchanged.\n",
+      "stderr": ""
+    }
+  ]
+}

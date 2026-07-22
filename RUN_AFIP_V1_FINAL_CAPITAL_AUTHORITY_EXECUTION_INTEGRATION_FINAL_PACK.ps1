@@ -1,0 +1,1 @@
+python tools/validate_capital_authority_execution_integration.py

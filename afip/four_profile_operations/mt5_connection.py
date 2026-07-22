@@ -5,7 +5,7 @@ It never enables live execution and never sends an order.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -48,6 +48,23 @@ class MT5ProfileHealth:
     order_status: str = NO_ORDER_SENT
     direct_execution: bool = False
     live_execution: bool = False
+    currency: str = "DATA_UNAVAILABLE"
+    balance: float | None = None
+    equity: float | None = None
+    margin: float | None = None
+    free_margin: float | None = None
+    floating_profit: float | None = None
+    # Backward-compatible schema aliases retained for existing consumers.
+    margin_free: float | None = None
+    profit: float | None = None
+    trade_allowed: bool | None = None
+    positions_total: int | None = None
+    orders_total: int | None = None
+    bid: float | None = None
+    ask: float | None = None
+    spread_points: float | None = None
+    digits: int | None = None
+    point_size: float | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -173,6 +190,38 @@ class MT5MultiTerminalConnectionManager:
                 actual_server or profile.server, str(profile.mt5_terminal),
                 "MT5 terminal connected and GOLD# data ready" if ok else "; ".join(reason_parts),
                 checked_at,
+            )
+            tick = adapter.symbol_info_tick(profile.symbol) if symbol_available else None
+            symbol_info = getattr(adapter, "symbol_info", lambda _s: None)(profile.symbol) if symbol_available else None
+            positions = getattr(adapter, "positions_get", lambda **_k: ()) (symbol=profile.symbol) or ()
+            orders = getattr(adapter, "orders_get", lambda **_k: ()) (symbol=profile.symbol) or ()
+            point_size = self._value(symbol_info, "point")
+            bid = self._value(tick, "bid")
+            ask = self._value(tick, "ask")
+            spread_points = None
+            try:
+                if point_size and bid is not None and ask is not None:
+                    spread_points = round((float(ask) - float(bid)) / float(point_size), 2)
+            except (TypeError, ValueError, ZeroDivisionError):
+                spread_points = None
+            health = replace(
+                health,
+                currency=str(self._value(account_info, "currency", "DATA_UNAVAILABLE")),
+                balance=self._value(account_info, "balance"),
+                equity=self._value(account_info, "equity"),
+                margin=self._value(account_info, "margin"),
+                free_margin=self._value(account_info, "margin_free"),
+                floating_profit=self._value(account_info, "profit"),
+                margin_free=self._value(account_info, "margin_free"),
+                profit=self._value(account_info, "profit"),
+                trade_allowed=self._value(account_info, "trade_allowed"),
+                positions_total=len(positions),
+                orders_total=len(orders),
+                bid=bid,
+                ask=ask,
+                spread_points=spread_points,
+                digits=self._value(symbol_info, "digits"),
+                point_size=point_size,
             )
             self._write_health(profile, health)
             return health

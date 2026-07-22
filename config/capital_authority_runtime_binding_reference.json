@@ -1,0 +1,15 @@
+{
+  "execution_flow": [
+    "confidence",
+    "capital_authority",
+    "lot_authority",
+    "risk_authority",
+    "execution_gateway"
+  ],
+  "profiles": [
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ]
+}

@@ -1,0 +1,1 @@
+python tools/validate_final_closing_patch.py

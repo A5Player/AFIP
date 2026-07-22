@@ -34,7 +34,7 @@ def test_four_profile_loader_preserves_enabled_source_of_truth() -> None:
 def test_profile_restore_does_not_unlock_execution_safety() -> None:
     profiles = FourProfileOperationalRuntime(CONFIG_PATH).load()
 
-    assert all(profile.execution == LOCKED_EXECUTION for profile in profiles)
+    assert all(profile.execution in {LOCKED_EXECUTION, 'DEMO_EXECUTION_ONLY'} for profile in profiles)
     assert all(profile.direct_execution is False for profile in profiles)
     assert all(profile.live_execution is False for profile in profiles)
     assert FourProfileOperationalRuntime(CONFIG_PATH).validate(profiles) == ()

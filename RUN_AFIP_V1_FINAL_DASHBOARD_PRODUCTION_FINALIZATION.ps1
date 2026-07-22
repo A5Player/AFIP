@@ -1,0 +1,1 @@
+python tools/validate_dashboard_production_finalization.py

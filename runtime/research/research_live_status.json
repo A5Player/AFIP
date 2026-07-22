@@ -1,0 +1,72 @@
+{
+  "schema_version": "phase_u_research_live_observability_v1",
+  "generated_at": "2026-07-19T17:37:18.237430Z",
+  "status": "RUNNING",
+  "stage": "DASHBOARD_RENDER",
+  "reason": "dashboard_snapshot_generated",
+  "execution_authority": false,
+  "live_execution_enabled": false,
+  "order_send_called": false,
+  "timeframe_coverage": {
+    "M1": {
+      "status": "DATA_UNAVAILABLE",
+      "file_count": 0,
+      "record_count": "DATA_UNAVAILABLE",
+      "bytes": 0,
+      "last_write_utc": "DATA_UNAVAILABLE"
+    },
+    "M5": {
+      "status": "DATA_UNAVAILABLE",
+      "file_count": 0,
+      "record_count": "DATA_UNAVAILABLE",
+      "bytes": 0,
+      "last_write_utc": "DATA_UNAVAILABLE"
+    },
+    "M15": {
+      "status": "DATA_UNAVAILABLE",
+      "file_count": 0,
+      "record_count": "DATA_UNAVAILABLE",
+      "bytes": 0,
+      "last_write_utc": "DATA_UNAVAILABLE"
+    },
+    "M30": {
+      "status": "DATA_UNAVAILABLE",
+      "file_count": 0,
+      "record_count": "DATA_UNAVAILABLE",
+      "bytes": 0,
+      "last_write_utc": "DATA_UNAVAILABLE"
+    },
+    "H1": {
+      "status": "DATA_UNAVAILABLE",
+      "file_count": 0,
+      "record_count": "DATA_UNAVAILABLE",
+      "bytes": 0,
+      "last_write_utc": "DATA_UNAVAILABLE"
+    },
+    "H4": {
+      "status": "DATA_UNAVAILABLE",
+      "file_count": 0,
+      "record_count": "DATA_UNAVAILABLE",
+      "bytes": 0,
+      "last_write_utc": "DATA_UNAVAILABLE"
+    },
+    "D1": {
+      "status": "DATA_UNAVAILABLE",
+      "file_count": 0,
+      "record_count": "DATA_UNAVAILABLE",
+      "bytes": 0,
+      "last_write_utc": "DATA_UNAVAILABLE"
+    }
+  },
+  "historical_data_lake": {
+    "file_count": 2508,
+    "root": "runtime\\research\\historical_data_lake"
+  },
+  "cross_market": {
+    "pipeline_stage": "RESEARCH_DATABASE",
+    "gold_samples": 4999,
+    "source_count": 25,
+    "observation_count": 12,
+    "last_cycle": "2026-07-19T17:30:26.846914Z"
+  }
+}

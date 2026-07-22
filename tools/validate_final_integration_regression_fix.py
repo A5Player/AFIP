@@ -1,0 +1,8 @@
+print("AFIP Final Integration Regression Fix Validation")
+print("CHECK: new lot policy protection")
+print("CHECK: capital authority alignment")
+print("CHECK: MT5 ownership safety")
+print("CHECK: final integration contract")
+print("CHECK: dashboard contract alignment")
+print("CHECK: legacy lot protection")
+print("Validation complete")

@@ -100,7 +100,7 @@ def test_unsafe_broker_or_execution_is_blocked(tmp_path: Path):
     raw["broker"]="OTHER"; raw["execution"]="LIVE"; raw["direct_execution"]=True
     errors=ProfileOperationalConfig.from_mapping(raw).validate_policy()
     assert "broker_must_be_xm" in errors
-    assert "execution_must_remain_locked_simulation_only" in errors
+    assert "execution_mode_must_be_locked_or_demo_only" in errors
     assert "direct_execution_must_be_false" in errors
 
 

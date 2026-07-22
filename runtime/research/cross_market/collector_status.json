@@ -1,0 +1,9 @@
+{
+  "schema_version": "phase_u_pack_3_4_10",
+  "last_cycle": "2026-07-19T17:30:26.846914Z",
+  "status": "COMPLETE",
+  "latest": "C:\\AFIP\\source\\runtime\\research\\cross_market\\latest.json",
+  "evidence": "C:\\AFIP\\source\\runtime\\research\\cross_market\\evidence.json",
+  "interval_seconds": 300,
+  "execution_authority": false
+}

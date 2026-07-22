@@ -7,6 +7,7 @@ from .runtime import DashboardUIRuntime
 from .split_runtime import ThreeDashboardRuntime, TwoDashboardRuntime
 from .home import write_dashboard_home
 from .cross_market import write_cross_market_dashboard
+from .research_operations import write_research_operations
 from afip.automatic_research_runtime import AutomaticResearchRuntime
 
 
@@ -53,9 +54,8 @@ def launch_three_dashboards(
     """
     if _research_bootstrap_requested(run_research_bootstrap):
         AutomaticResearchRuntime(project_root).run()
-    paths = ThreeDashboardRuntime().write_three_dashboards(
-        record or default_dashboard_record(), output_directory, project_root
+    from .dashboard_authority import DashboardAuthority
+    result = DashboardAuthority().build_all(
+        output_directory, record or default_dashboard_record(), project_root
     )
-    write_cross_market_dashboard(output_directory, project_root)
-    write_dashboard_home(output_directory)
-    return paths
+    return result.profiles, result.intelligence, result.research

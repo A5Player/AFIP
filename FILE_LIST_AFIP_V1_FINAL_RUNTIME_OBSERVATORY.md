@@ -1,0 +1,19 @@
+# Patch Files
+
+afip/runtime_observatory.py
+afip/historical_replay_research/runtime.py
+afip/automatic_research_runtime/runtime.py
+afip/phase_v_major/__init__.py
+afip/dashboard_ui/research_operations.py
+afip/dashboard_ui/split_runtime.py
+afip/dashboard_ui/authority_snapshot.py
+tests/test_afip_v1_final_runtime_observatory.py
+README_AFIP_V1_FINAL_RUNTIME_OBSERVATORY.md
+README_AFIP_V1_FINAL_RUNTIME_OBSERVATORY_TH.md
+VALIDATION_AFIP_V1_FINAL_RUNTIME_OBSERVATORY.md
+RUN_AFIP_V1_FINAL_RUNTIME_OBSERVATORY.ps1
+RUN_AFIP_V1_FINAL_RUNTIME_OBSERVATORY.bat
+INSTALL_AFIP_V1_FINAL_RUNTIME_OBSERVATORY.ps1
+
+AFIP_PROJECT_DATABASE_V1_FINAL_RUNTIME_OBSERVATORY_APPEND.md
+HANDOFF_AFIP_V1_FINAL_RUNTIME_OBSERVATORY_APPEND.md

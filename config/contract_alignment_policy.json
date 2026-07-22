@@ -1,0 +1,20 @@
+{
+  "lot_authority": "capital_authority",
+  "legacy_sizing_fields": "compatibility_only",
+  "legacy_lot_calculation": false,
+  "confidence_gate": {
+    "below_98": 0,
+    "98_98_49": 1,
+    "98_5_99_49": 2,
+    "99_5_100": 3
+  },
+  "execution_authority": [
+    "decision",
+    "confidence",
+    "capital_authority",
+    "lot_authority",
+    "risk_approval",
+    "execution_gateway",
+    "mt5_router"
+  ]
+}

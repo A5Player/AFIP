@@ -1,0 +1,8 @@
+{
+  "mode": "DATA_ONLY",
+  "maximum_replay_bars_per_cycle": 5000,
+  "minimum_usable_bars": 1000,
+  "require_replay_completion": true,
+  "require_manual_live_arm": true,
+  "continuous_interval_seconds": 300
+}

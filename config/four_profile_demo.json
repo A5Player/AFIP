@@ -1,10 +1,10 @@
 {
-  "version": "AFIP-1.0-PHASE-U-PACK-3.3.10",
+  "version": "AFIP-1.0-FINAL-CAPITAL-TIER-AUTHORITY",
   "execution": "LOCKED_SIMULATION_ONLY",
   "profiles": [
     {
       "profile_id": "P1",
-      "profile_name": "High Safety",
+      "profile_name": "Conservative",
       "enabled": true,
       "launch_mt5": false,
       "mt5_folder": "C:\\XM Global MT5 P1",
@@ -25,7 +25,6 @@
       "direct_execution": false,
       "live_execution": false,
       "demo_execution_enabled": true,
-      "capital_per_unit": 1000.0,
       "maximum_units": 3,
       "minimum_confidence": 98.0,
       "magic": 26071001,
@@ -39,14 +38,17 @@
         "lot_step": 0.01,
         "maximum_lot": 0.1,
         "balance_multiplier": 300,
-        "one_order_minimum_balance": 0,
+        "one_order_minimum_balance": 1000,
         "two_order_minimum_balance": 300,
-        "three_order_minimum_balance": 900
+        "three_order_minimum_balance": 900,
+        "authority_one_order_minimum_balance": 0,
+        "authority_two_order_minimum_balance": 300,
+        "authority_three_order_minimum_balance": 900
       },
       "research_enabled": true,
       "execution_enabled": true,
-      "sizing_authority": "CAPITAL_TIER_TABLE",
-      "capital_per_unit_legacy_only": true
+      "sizing_authority": "CAPITAL_TIER_FORMULA_ONLY",
+      "lot_authority": "SINGLE_LOT_AUTHORITY"
     },
     {
       "profile_id": "P2",
@@ -71,7 +73,6 @@
       "direct_execution": false,
       "live_execution": false,
       "demo_execution_enabled": true,
-      "capital_per_unit": 500.0,
       "maximum_units": 3,
       "minimum_confidence": 98.0,
       "magic": 26071002,
@@ -85,18 +86,21 @@
         "lot_step": 0.01,
         "maximum_lot": 1.0,
         "balance_multiplier": 300,
-        "one_order_minimum_balance": 0,
+        "one_order_minimum_balance": 500,
         "two_order_minimum_balance": 300,
-        "three_order_minimum_balance": 900
+        "three_order_minimum_balance": 900,
+        "authority_one_order_minimum_balance": 0,
+        "authority_two_order_minimum_balance": 300,
+        "authority_three_order_minimum_balance": 900
       },
       "research_enabled": true,
       "execution_enabled": true,
-      "sizing_authority": "CAPITAL_TIER_TABLE",
-      "capital_per_unit_legacy_only": true
+      "sizing_authority": "CAPITAL_TIER_FORMULA_ONLY",
+      "lot_authority": "SINGLE_LOT_AUTHORITY"
     },
     {
       "profile_id": "P3",
-      "profile_name": "High Risk Within Plan",
+      "profile_name": "Aggressive",
       "enabled": true,
       "launch_mt5": false,
       "mt5_folder": "C:\\XM Global MT5 P3",
@@ -117,7 +121,6 @@
       "direct_execution": false,
       "live_execution": false,
       "demo_execution_enabled": true,
-      "capital_per_unit": 200.0,
       "maximum_units": 3,
       "minimum_confidence": 98.0,
       "magic": 26071003,
@@ -131,18 +134,21 @@
         "lot_step": 0.01,
         "maximum_lot": 10.0,
         "balance_per_lot_step": 600,
-        "one_order_minimum_balance": 0,
+        "one_order_minimum_balance": 200,
         "two_order_minimum_balance": 200,
-        "three_order_minimum_balance": 450
+        "three_order_minimum_balance": 450,
+        "authority_one_order_minimum_balance": 0,
+        "authority_two_order_minimum_balance": 200,
+        "authority_three_order_minimum_balance": 450
       },
       "research_enabled": true,
       "execution_enabled": true,
-      "sizing_authority": "CAPITAL_TIER_TABLE",
-      "capital_per_unit_legacy_only": true
+      "sizing_authority": "CAPITAL_TIER_FORMULA_ONLY",
+      "lot_authority": "SINGLE_LOT_AUTHORITY"
     },
     {
       "profile_id": "P4",
-      "profile_name": "Research",
+      "profile_name": "Experimental",
       "enabled": true,
       "launch_mt5": false,
       "mt5_folder": "C:\\XM Global MT5 P4",
@@ -159,30 +165,39 @@
       "learning_directory": "runtime/profiles/p4/learning",
       "knowledge_directory": "runtime/profiles/p4/knowledge",
       "statistics_directory": "runtime/profiles/p4/statistics",
-      "execution": "LOCKED_SIMULATION_ONLY",
+      "execution": "DEMO_EXECUTION_ONLY",
       "direct_execution": false,
       "live_execution": false,
       "demo_execution_enabled": true,
-      "capital_per_unit": 100.0,
-      "maximum_units": 0,
+      "maximum_units": 1,
       "minimum_confidence": 98.0,
       "magic": 26071004,
       "lot_per_unit": 0.01,
       "minimum_seconds_between_entries": 900,
-      "allocation_mode": "RESEARCH_FIXED_001",
-      "maximum_concurrent_orders": 0,
+      "allocation_mode": "CAPITAL_TIER_TABLE",
+      "maximum_concurrent_orders": 1,
       "maximum_lot_per_order": 0.01,
-      "capital_tiers": [],
-      "research_unit_policy": {
-        "lot_growth_enabled": false,
-        "lot_per_order": 0.01,
-        "scenario_units_unlimited": true,
-        "distinct_rr_and_sl_plans": true,
-        "operational_emergency_ceiling_env": "AFIP_P4_RESEARCH_ORDER_CEILING"
-      },
       "research_enabled": true,
-      "execution_enabled": false,
-      "sizing_authority": "RESEARCH_FIXED_001"
+      "execution_enabled": true,
+      "sizing_authority": "CAPITAL_TIER_FORMULA_ONLY",
+      "lot_authority": "SINGLE_LOT_AUTHORITY",
+      "capital_tiers": [],
+      "capital_tier_formula": {
+        "kind": "EXPLICIT_LADDER",
+        "lot_step": 0.01,
+        "maximum_lot": 0.01,
+        "one_order_minimum_balance": 0,
+        "two_order_minimum_balance": 999999999,
+        "three_order_minimum_balance": 999999999,
+        "tiers": [
+          {
+            "minimum_balance": 0,
+            "lots": [
+              0.01
+            ]
+          }
+        ]
+      }
     }
   ],
   "position_policy": {
@@ -209,7 +224,7 @@
         "maximum_units": 3
       }
     ],
-    "final_allocation_rule": "MIN_CONFIDENCE_BALANCE_PROFILE_RISK_MARGIN_TRADING_COST_EXECUTION_CAPACITY",
+    "final_allocation_rule": "MIN_CONFIDENCE_BALANCE_PROFILE_RISK_MARGIN_TRADING_COST_EXECUTION_CAPACITY_REQUESTED",
     "martingale_allowed": false,
     "ceiling_semantics": "MAXIMUM_CAPACITY_NOT_AUTOMATIC_TARGET",
     "unit_selection_rule": "MIN_INTELLIGENCE_REQUEST_CONFIDENCE_CEILING_BALANCE_TIER_AVAILABLE_SLOTS_PROFILE_RISK_MARGIN_TRADING_COST_EXECUTION_CAPACITY",
@@ -217,6 +232,8 @@
     "automatic_fill_to_ceiling": false,
     "balance_tier_semantics": "MAXIMUM_LOT_SIZE_PER_UNIT_AND_MAXIMUM_AVAILABLE_SLOTS",
     "profile_semantics": "GROWTH_RATE_AND_RISK_CEILING",
-    "data_guide": "docs/research/AFIP_POSITION_CAPACITY_AND_SCORING_DATA_GUIDE_V2_1.md"
+    "data_guide": "docs/research/AFIP_POSITION_CAPACITY_AND_SCORING_DATA_GUIDE_V2_1.md",
+    "single_source_of_truth": "afip.lot_authority.calculate_lot_authority",
+    "lot_authority_version": "AFIP_LOT_AUTHORITY_FINAL_CAPITAL_TIER_V2"
   }
 }

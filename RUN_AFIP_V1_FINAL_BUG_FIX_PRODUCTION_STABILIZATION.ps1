@@ -1,0 +1,1 @@
+python tools/validate_production_stabilization.py

@@ -80,10 +80,12 @@ def test_p3_after_002_increases_001_for_each_600_balance_and_caps_at_1000():
     assert p3["maximum_lot_per_order"] == 10.0
 
 
-def test_p4_is_fixed_001_research_without_lot_growth():
+def test_p4_uses_unified_experimental_execution_policy():
     _, by_id = profiles()
     p4 = by_id["P4"]
-    assert p4["allocation_mode"] == "RESEARCH_FIXED_001"
+    assert p4["allocation_mode"] == "CAPITAL_TIER_TABLE"
+    assert p4["sizing_authority"] == "CAPITAL_TIER_FORMULA_ONLY"
     assert p4["lot_per_unit"] == 0.01
     assert p4["maximum_lot_per_order"] == 0.01
-    assert p4["capital_tiers"] == []
+    assert p4["maximum_concurrent_orders"] == 1
+    assert p4["execution_enabled"] is True

@@ -1,0 +1,9 @@
+{
+  "schema_version": "AFIP_V1_PRODUCTION_RUNTIME_AUTHORITY_V1",
+  "status": "READY",
+  "removed_stale_control_files": [
+    "runtime\\execution\\sequential_router.pid"
+  ],
+  "removed_count": 1,
+  "updated_at_utc": "2026-07-21T07:49:08.512613+00:00"
+}
