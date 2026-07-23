@@ -32,6 +32,7 @@ from afip.capital_growth_engine import CapitalGrowthEngine
 from afip.position_policy import confidence_maximum_units
 from afip.position_capacity_formula import capital_tiers_from_profile
 from afip.lot_authority import calculate_lot_authority
+from afip.production_runtime_authority import reclaim_stale_lock
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -120,7 +121,7 @@ class DemoProfilePolicy:
                 if not 1 <= len(lots) <= self.maximum_concurrent_orders:
                     errors.append("capital_tier_order_count_out_of_range")
                     break
-                if any(lot <= 0 or lot > self.maximum_lot_per_order for lot in lots):
+                if any(lot <= 0 or (lot - self.maximum_lot_per_order) > 1e-12 for lot in lots):
                     errors.append("capital_tier_lot_out_of_range")
                     break
         elif self.allocation_mode == "RESEARCH_FIXED_001":
@@ -324,6 +325,12 @@ class DemoExecutionGateway:
 
     @property
     def routing_lock_path(self) -> Path:
+        # Injected MT5 adapters are deterministic test/simulation doubles. Keep
+        # their lock inside the profile runtime directory so regression tests do
+        # not contend with a live production routing lock. Real MT5 execution
+        # retains the single global account-routing authority.
+        if self._mt5 is not None:
+            return self.profile.runtime_directory / "account_routing.lock"
         return Path("runtime/execution/account_routing.lock")
 
     def _acquire_routing_lock(self, timeout_seconds: float = 45.0) -> tuple[int | None, str]:
@@ -409,6 +416,14 @@ class DemoExecutionGateway:
         if not self.profile.mt5_terminal.exists():
             return None, self._report("BLOCKED", "mt5_terminal_not_found")
 
+        # Reset any inherited/stale MetaTrader5 bridge session before binding the
+        # exact profile terminal. This is required even in short-lived workers
+        # because Windows terminal discovery can otherwise reuse the first live
+        # terminal (commonly P1).
+        try:
+            mt5.shutdown()
+        except Exception:
+            pass
         initialized = mt5.initialize(
             path=str(self.profile.mt5_terminal),
             login=int(self.profile.login),
@@ -440,9 +455,15 @@ class DemoExecutionGateway:
         terminal = mt5.terminal_info()
         if terminal is not None and not bool(self._value(terminal, "connected", True)):
             return None, self._report("BLOCKED", "mt5_terminal_disconnected", account_trade_mode="DEMO")
-        # Terminal ownership is deliberately not enforced here. Intelligence,
-        # trading-cost and position-sizing gates must run first. The authoritative
-        # binding check occurs immediately before order_check/order_send.
+        binding_ok, actual_login, _actual_server, terminal_path = self._binding_snapshot(mt5)
+        if not binding_ok:
+            return None, self._report(
+                "BLOCKED", "exact_profile_binding_mismatch",
+                account_trade_mode="DEMO", demo_verified=True,
+                connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"),
+                connected_terminal_folder=terminal_path or "UNKNOWN",
+                configured_terminal_folder=str(self.profile.mt5_folder),
+            )
         if not mt5.symbol_select(self.profile.symbol, True):
             return None, self._report("BLOCKED", "gold_symbol_select_failed", account_trade_mode="DEMO")
         if mt5.symbol_info_tick(self.profile.symbol) is None:
