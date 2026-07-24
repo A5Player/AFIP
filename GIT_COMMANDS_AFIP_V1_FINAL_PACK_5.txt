@@ -1,0 +1,6 @@
+cd C:\AFIP\source
+git add .
+git commit -m "Complete AFIP V1 Pack 5 production cleanup and final certification"
+git push origin main
+git log -1 --oneline
+git status
