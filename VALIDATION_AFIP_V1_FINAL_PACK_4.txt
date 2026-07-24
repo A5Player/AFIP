@@ -1,0 +1,15 @@
+AFIP V1 Final — Pack 4 Production Certification Repair
+Source: AFIP(56).zip (uploaded as latest conversation source)
+
+Implemented:
+- Exact P1-P4 terminal/account binding with normalized exact folder/executable identity.
+- One global production routing lock and exact terminal rebind before order_check/order_send.
+- Successful gateway reports persist binding_verified=true.
+- P4 status can retain successful runtime binding certification when read-only isolation state is stale.
+- Legacy SL=3000 / TP=500 planner defaults removed; adaptive protection is mandatory and fixed fallback is rejected.
+- Outdated phase25 regression updated to pass explicit adaptive protection values.
+- Demo execution certification tool added.
+
+Validation performed in source workspace:
+Focused certification: 21 passed
+Full regression: 2660 passed

@@ -8,12 +8,41 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+import subprocess
+import time
 
 from afip.demo_execution_gateway import DemoExecutionGateway, DemoProfilePolicy
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime
 
 CONFIG = Path("config/four_profile_demo.json")
+
+
+def _ensure_target_terminal(profile) -> None:
+    """Start the exact portable MT5 terminal before importing the bridge.
+
+    MetaTrader5 terminal discovery may otherwise attach a fresh worker to the
+    first already-running terminal. Starting the configured executable first
+    gives Windows and the bridge an unambiguous target without stopping any
+    other profile terminal.
+    """
+    if os.name != "nt":
+        return
+    terminal = Path(profile.mt5_terminal)
+    if not terminal.exists():
+        return
+    try:
+        subprocess.Popen(
+            [str(terminal), "/portable"],
+            cwd=str(terminal.parent),
+            close_fds=True,
+            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+        )
+        time.sleep(2.0)
+    except OSError:
+        # The gateway remains fail-closed and will report initialize/binding errors.
+        return
 
 
 def run_once(profile_id: str, config_path: Path = CONFIG) -> dict:
@@ -39,6 +68,7 @@ def run_once(profile_id: str, config_path: Path = CONFIG) -> dict:
         }
 
     policy = DemoProfilePolicy.from_mapping(raw_profile)
+    _ensure_target_terminal(profile)
     return DemoExecutionGateway(profile, policy).run_cycle().as_dict()
 
 

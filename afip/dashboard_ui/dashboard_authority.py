@@ -10,6 +10,7 @@ INTELLIGENCE_FILENAME = "afip_intelligence_engine_dashboard.html"
 RESEARCH_FILENAME = "afip_research_data_dashboard.html"
 OPERATIONS_FILENAME = "afip_research_operations_dashboard.html"
 CROSS_MARKET_FILENAME = "afip_cross_market_intelligence_dashboard.html"
+CONTROL_CENTER_FILENAME = "afip_control_center.html"
 POLICY_VERSION = "AFIP_V1_SINGLE_DASHBOARD_AUTHORITY_V2"
 
 
@@ -22,6 +23,7 @@ class DashboardBuildResult:
     research: Path
     research_operations: Path
     cross_market: Path
+    control_center: Path
     policy_version: str = POLICY_VERSION
 
 
@@ -47,6 +49,7 @@ class DashboardAuthority:
         from .cross_market import render_cross_market_dashboard
         from .research_operations import render_research_operations
         from .launcher import default_dashboard_record
+        from .control_center import render_control_center
 
         directory = Path(output_directory)
         directory.mkdir(parents=True, exist_ok=True)
@@ -57,8 +60,9 @@ class DashboardAuthority:
         p3 = _atomic_text(directory / RESEARCH_FILENAME, renderer.render_research_html(data, project_root))
         cross = _atomic_text(directory / CROSS_MARKET_FILENAME, render_cross_market_dashboard(project_root))
         operations = _atomic_text(directory / OPERATIONS_FILENAME, render_research_operations(project_root))
+        control = _atomic_text(directory / CONTROL_CENTER_FILENAME, render_control_center(project_root))
         home = _atomic_text(directory / HOME_FILENAME, render_dashboard_home())
-        return DashboardBuildResult(directory, home, p1, p2, p3, operations, cross)
+        return DashboardBuildResult(directory, home, p1, p2, p3, operations, cross, control)
 
     def build_live(
         self,

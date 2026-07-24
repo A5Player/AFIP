@@ -1,0 +1,6 @@
+cd C:\AFIP\source
+git status
+git diff -- afip/demo_execution_gateway/runtime.py afip/protection/sl_tp_planner.py tools/afip_demo_execution_control.py tools/afip_v1_pack_4_demo_execution_certification.py tests/test_phase25_position_protection.py tests/test_afip_v1_pack_4_production_certification_repair.py
+git add afip/demo_execution_gateway/runtime.py afip/protection/sl_tp_planner.py tools/afip_demo_execution_control.py tools/afip_v1_pack_4_demo_execution_certification.py tests/test_phase25_position_protection.py tests/test_afip_v1_pack_4_production_certification_repair.py
+git commit -m "Complete AFIP V1 Pack 4 production certification repair"
+git push origin main

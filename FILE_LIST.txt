@@ -1,10 +1,8 @@
-afip/production_certification/incremental_financial_naming.py
-afip/production_certification/runtime.py
-afip/final_integration/dashboard.py
-afip/final_integration/runtime.py
-afip/dashboard_ui/dashboard_authority.py
-afip/dashboard_ui/research_operations.py
-tools/afip_final_integration.py
-INSTALL_AFIP_V1_FINAL_RUNTIME_DASHBOARD_FIX.ps1
-README_TH.txt
+afip/demo_execution_gateway/runtime.py
+tools/afip_profile_execution_once.py
+tests/test_afip_v1_runtime_execution_repair_pack_1.py
+INSTALL_AFIP_V1_RUNTIME_EXECUTION_REPAIR_PACK_1.ps1
+RUN_AFIP_V1_RUNTIME_EXECUTION_REPAIR_PACK_1.ps1
+RUN_AFIP_V1_RUNTIME_EXECUTION_REPAIR_PACK_1.bat
+README_TH.md
 FILE_LIST.txt

@@ -1,7 +1,7 @@
 {
-  "audit_warning_count": 8,
-  "checked_file_count": 26,
-  "duration_seconds": 2.793,
+  "audit_warning_count": 5,
+  "checked_file_count": 5,
+  "duration_seconds": 1.812,
   "mode": "CHANGED_FILES",
   "policy": "AUDIT_ONLY_CHANGED_FILES",
   "runtime_blocking": false,
@@ -19,11 +19,6 @@
       "term": "target"
     },
     {
-      "file": "afip\\dashboard_ui\\split_runtime.py",
-      "replacement": "price objective",
-      "term": "target"
-    },
-    {
       "file": "afip\\demo_execution_gateway\\runtime.py",
       "replacement": "validation intelligence",
       "term": "guard"
@@ -34,17 +29,7 @@
       "term": "target"
     },
     {
-      "file": "afip\\four_profile_operations\\runtime.py",
-      "replacement": "price objective",
-      "term": "target"
-    },
-    {
-      "file": "tests\\test_milestone_s_pack_5_5.py",
-      "replacement": "price objective",
-      "term": "target"
-    },
-    {
-      "file": "tests\\test_milestone_s_pack_7_1_position_ceiling_semantics.py",
+      "file": "tools\\afip_profile_execution_once.py",
       "replacement": "price objective",
       "term": "target"
     }

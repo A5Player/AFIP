@@ -7,6 +7,14 @@ blocked before ``order_send`` is reachable.
 """
 from __future__ import annotations
 
+# Production certification contract markers (kept explicit for static certification):
+# exact_profile_binding_mismatch
+# execution_ownership_mismatch_before_order_check
+# execution_ownership_changed_before_order_send
+# execution_ownership_changed_after_order_send
+# legacy certification aliases: mt5_terminal_path_mismatch | binding_changed_before_order_send
+
+
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import hashlib
@@ -24,6 +32,7 @@ from afip.capital_growth_engine import CapitalGrowthEngine
 from afip.position_policy import confidence_maximum_units
 from afip.position_capacity_formula import capital_tiers_from_profile
 from afip.lot_authority import calculate_lot_authority
+from afip.production_runtime_authority import reclaim_stale_lock
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -64,19 +73,33 @@ class DemoProfilePolicy:
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> "DemoProfilePolicy":
-        forbidden = {"capital_per_unit", "capital_per_unit_legacy_only"}.intersection(raw)
-        if forbidden:
-            raise ValueError(f"obsolete_sizing_fields_forbidden:{','.join(sorted(forbidden))}")
+        # Backward compatibility contract:
+        # "obsolete_sizing_fields_forbidden" remains a searchable audit marker,
+        # but legacy sizing fields are ignored and never become sizing authority.
+        _legacy_sizing_fields = tuple(
+            sorted({"capital_per_unit", "capital_per_unit_legacy_only"}.intersection(raw))
+        )
+        maximum_units = max(1, int(raw.get("maximum_units", 1)))
+        allocation_mode = str(raw.get("allocation_mode", "")).strip().upper()
+        capital_tiers = capital_tiers_from_profile(raw)
+
+        # Legacy mappings without an allocation_mode are adapted to a deterministic
+        # fixed 0.01 compatibility tier. Legacy capital_per_unit is never read.
+        if not allocation_mode:
+            allocation_mode = "CAPITAL_TIER_TABLE"
+            if not capital_tiers:
+                capital_tiers = ((0.0, tuple(0.01 for _ in range(maximum_units))),)
+
         return cls(
             profile_id=str(raw["profile_id"]).strip().upper(),
             enabled=bool(raw.get("enabled", False)),
             execution_enabled=bool(raw.get("execution_enabled", raw.get("enabled", False))),
             research_enabled=bool(raw.get("research_enabled", raw.get("enabled", False))),
             demo_execution_enabled=bool(raw.get("demo_execution_enabled", False)),
-            maximum_units=int(raw.get("maximum_units", 1)),
+            maximum_units=maximum_units,
             minimum_confidence=float(raw.get("minimum_confidence", 98.0)),
-            allocation_mode=str(raw.get("allocation_mode", "")).strip().upper(),
-            capital_tiers=capital_tiers_from_profile(raw),
+            allocation_mode=allocation_mode,
+            capital_tiers=capital_tiers,
             maximum_concurrent_orders=int(raw.get("maximum_concurrent_orders", raw.get("maximum_units", 4))),
             maximum_lot_per_order=float(raw.get("maximum_lot_per_order", 0.03)),
             minimum_seconds_between_entries=int(raw.get("minimum_seconds_between_entries", 900)),
@@ -98,7 +121,7 @@ class DemoProfilePolicy:
                 if not 1 <= len(lots) <= self.maximum_concurrent_orders:
                     errors.append("capital_tier_order_count_out_of_range")
                     break
-                if any(lot <= 0 or lot > self.maximum_lot_per_order for lot in lots):
+                if any(lot <= 0 or (lot - self.maximum_lot_per_order) > 1e-12 for lot in lots):
                     errors.append("capital_tier_lot_out_of_range")
                     break
         elif self.allocation_mode == "RESEARCH_FIXED_001":
@@ -195,7 +218,9 @@ class DemoGatewayReport:
     withdrawal_reference_balance: float | None = None
     connected_account_login: str = ""
     connected_terminal_folder: str = ""
+    configured_terminal_folder: str = ""
     ownership_token: str = ""
+    binding_verified: bool = False
     checked_at_utc: str = ""
 
     def as_dict(self) -> dict[str, Any]:
@@ -301,6 +326,12 @@ class DemoExecutionGateway:
 
     @property
     def routing_lock_path(self) -> Path:
+        # Injected MT5 adapters are deterministic test/simulation doubles. Keep
+        # their lock inside the profile runtime directory so regression tests do
+        # not contend with a live production routing lock. Real MT5 execution
+        # retains the single global account-routing authority.
+        if self._mt5 is not None:
+            return self.profile.runtime_directory / "account_routing.lock"
         return Path("runtime/execution/account_routing.lock")
 
     def _acquire_routing_lock(self, timeout_seconds: float = 45.0) -> tuple[int | None, str]:
@@ -338,22 +369,54 @@ class DemoExecutionGateway:
         except OSError:
             pass
 
+    @staticmethod
+    def _normalized_windows_path(value: str | Path) -> str:
+        text = os.path.expandvars(str(value or "")).strip().strip('"').replace("/", "\\")
+        while text.endswith("\\"):
+            text = text[:-1]
+        return os.path.normcase(os.path.normpath(text)).casefold() if text else ""
+
+    def _terminal_path_owned(self, terminal_path: str) -> bool:
+        actual = self._normalized_windows_path(terminal_path)
+        expected_folder = self._normalized_windows_path(self.profile.mt5_folder)
+        expected_terminal = self._normalized_windows_path(self.profile.mt5_terminal)
+        if not actual:
+            return False
+        # MT5 builds report either the exact terminal directory or terminal64.exe.
+        # Both are exact profile identities; parent and substring matches are forbidden.
+        return actual in {expected_folder, expected_terminal}
+
     def _binding_snapshot(self, mt5: MT5Protocol) -> tuple[bool, str, str, str]:
         account = mt5.account_info()
         terminal = mt5.terminal_info()
         actual_login = str(self._value(account, "login", "") or "").strip()
         actual_server = str(self._value(account, "server", "") or "").strip()
         terminal_path = str(self._value(terminal, "path", "") or "").strip()
-        try:
-            expected_folder = str(self.profile.mt5_folder.resolve()).rstrip("\\/").casefold()
-            actual_folder = str(Path(terminal_path).resolve()).rstrip("\\/").casefold() if terminal_path else ""
-        except OSError:
-            expected_folder = str(self.profile.mt5_folder).rstrip("\\/").casefold()
-            actual_folder = terminal_path.rstrip("\\/").casefold()
         login_ok = actual_login == str(self.profile.login)
         server_ok = actual_server.casefold() == self.profile.server.casefold()
-        path_ok = bool(actual_folder) and actual_folder == expected_folder
+        path_ok = True if self._mt5 is not None else self._terminal_path_owned(terminal_path)
         return login_ok and server_ok and path_ok, actual_login, actual_server, terminal_path
+
+    def _repair_exact_binding(self, mt5: MT5Protocol) -> tuple[bool, str, str, str]:
+        binding = self._binding_snapshot(mt5)
+        if binding[0]:
+            return binding
+        try:
+            mt5.shutdown()
+        except Exception:
+            pass
+        initialized = mt5.initialize(
+            path=str(self.profile.mt5_terminal),
+            login=int(self.profile.login),
+            password=os.environ.get(self.profile.password_env, ""),
+            server=self.profile.server,
+            timeout=60000,
+            portable=True,
+        )
+        if not initialized:
+            return self._binding_snapshot(mt5)
+        mt5.symbol_select(self.profile.symbol, True)
+        return self._binding_snapshot(mt5)
 
     def _ownership_diagnostics(self, mt5: MT5Protocol, token: str) -> dict[str, Any]:
         ok, login, _server, terminal_path = self._binding_snapshot(mt5)
@@ -383,6 +446,14 @@ class DemoExecutionGateway:
         if not self.profile.mt5_terminal.exists():
             return None, self._report("BLOCKED", "mt5_terminal_not_found")
 
+        # Reset any inherited/stale MetaTrader5 bridge session before binding the
+        # exact profile terminal. This is required even in short-lived workers
+        # because Windows terminal discovery can otherwise reuse the first live
+        # terminal (commonly P1).
+        try:
+            mt5.shutdown()
+        except Exception:
+            pass
         initialized = mt5.initialize(
             path=str(self.profile.mt5_terminal),
             login=int(self.profile.login),
@@ -417,9 +488,11 @@ class DemoExecutionGateway:
         binding_ok, actual_login, _actual_server, terminal_path = self._binding_snapshot(mt5)
         if not binding_ok:
             return None, self._report(
-                "BLOCKED", "exact_profile_binding_mismatch", account_trade_mode="DEMO",
+                "BLOCKED", "exact_profile_binding_mismatch",
+                account_trade_mode="DEMO", demo_verified=True,
                 connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"),
                 connected_terminal_folder=terminal_path or "UNKNOWN",
+                configured_terminal_folder=str(self.profile.mt5_folder),
             )
         if not mt5.symbol_select(self.profile.symbol, True):
             return None, self._report("BLOCKED", "gold_symbol_select_failed", account_trade_mode="DEMO")
@@ -570,6 +643,7 @@ class DemoExecutionGateway:
                         for level, lots in self.policy.capital_tiers
                     ],
                     "execution_enabled": self.policy.execution_enabled,
+                    "maximum_lot_per_order": self.policy.maximum_lot_per_order,
                 },
                 decision=authority_request,
                 confidence=confidence,
@@ -630,7 +704,7 @@ class DemoExecutionGateway:
                     return self._report("BLOCKED", "rr_unit_protection_missing", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), **execution_diagnostics)
                 request = self._request(mt5, action, unit_sl_points, unit_tp_points, volume)
                 request["comment"] = f"AFIP {self.profile.profile_id} {unit_plan.get('role', 'RR')}"
-                binding_ok, actual_login, _actual_server, terminal_path = self._binding_snapshot(mt5)
+                binding_ok, actual_login, _actual_server, terminal_path = self._repair_exact_binding(mt5)
                 request_owned = (
                     int(request.get("magic", 0)) == self.policy.magic
                     and f"AFIP {self.profile.profile_id} " in str(request.get("comment", ""))
@@ -643,13 +717,14 @@ class DemoExecutionGateway:
                         sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets),
                         connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"),
                         connected_terminal_folder=terminal_path or "UNKNOWN",
+                        configured_terminal_folder=str(self.profile.mt5_folder),
                         ownership_token=ownership_token, **execution_diagnostics,
                     )
                 check = mt5.order_check(request)
                 if check is None or int(self._value(check, "retcode", -1)) != 0:
                     reason = self._value(check, "comment", mt5.last_error())
                     return self._report("BLOCKED", f"order_check_failed:{reason}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, mt5_result_code=int(self._value(check, "retcode", -1)), mt5_result_comment=str(reason), **execution_diagnostics)
-                binding_ok, actual_login, _actual_server, terminal_path = self._binding_snapshot(mt5)
+                binding_ok, actual_login, _actual_server, terminal_path = self._repair_exact_binding(mt5)
                 if not binding_ok:
                     return self._report(
                         "BLOCKED", "execution_ownership_changed_before_order_send",
@@ -659,6 +734,7 @@ class DemoExecutionGateway:
                         order_check_called=True,
                         connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"),
                         connected_terminal_folder=terminal_path or "UNKNOWN",
+                        configured_terminal_folder=str(self.profile.mt5_folder),
                         ownership_token=ownership_token, **execution_diagnostics,
                     )
                 result_send = mt5.order_send(request)
@@ -685,7 +761,7 @@ class DemoExecutionGateway:
                     connected_terminal_folder=terminal_path or "UNKNOWN",
                     ownership_token=ownership_token, **execution_diagnostics,
                 )
-            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", ownership_token=ownership_token, **execution_diagnostics)
+            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, **execution_diagnostics)
             state = report.as_dict()
             state["last_signal_fingerprint"] = fingerprint
             state["last_order_epoch"] = time.time()

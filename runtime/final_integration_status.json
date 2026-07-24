@@ -1,14 +1,17 @@
 {
   "schema_version": "afip-final-integration.v4",
   "status": "STOPPED",
-  "updated_at_utc": "2026-07-21T06:46:28Z",
+  "updated_at_utc": "2026-07-22T15:58:02Z",
   "trading_runtime": {
     "status": "READY",
     "execution": "DEMO_EXECUTION_ONLY",
     "router": {
-      "mode": "SINGLE_PROCESS_SEQUENTIAL_MT5",
+      "mode": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
       "pid": null,
       "running": false,
+      "state": "RUNNING",
+      "cycle": 1,
+      "profile_errors": [],
       "concurrent_profile_workers": 0
     },
     "profiles": [
@@ -19,16 +22,18 @@
         "research_enabled": true,
         "runtime_state": "STOPPED",
         "pid": null,
-        "router_mode": "SINGLE_PROCESS_SEQUENTIAL_MT5",
-        "gateway_status": "WAITING",
-        "gateway_reason": "profile_order_capacity_unavailable",
+        "router_mode": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
+        "gateway_status": "ORDER_SENT",
+        "gateway_reason": "protected_demo_orders_sent",
         "demo_verified": true,
         "armed": true,
-        "order_status": "ORDER_NOT_SENT",
-        "sent_units": 0,
-        "connected_account_login": "",
-        "connected_terminal_folder": "",
-        "ownership_token": "",
+        "order_status": "DEMO_ORDER_SENT",
+        "sent_units": 1,
+        "connected_account_login": "****0369",
+        "connected_terminal_folder": "C:\\XM Global MT5 P1",
+        "last_execution_account_login": "****0369",
+        "last_execution_terminal_folder": "C:\\XM Global MT5 P1",
+        "ownership_token": "P1:2992:92e646ea5d1a4d4f82d6d5f759ce4d4e",
         "binding_verified": true
       },
       {
@@ -38,16 +43,18 @@
         "research_enabled": true,
         "runtime_state": "STOPPED",
         "pid": null,
-        "router_mode": "SINGLE_PROCESS_SEQUENTIAL_MT5",
+        "router_mode": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
         "gateway_status": "BLOCKED",
         "gateway_reason": "execution_ownership_mismatch_before_order_check",
         "demo_verified": true,
         "armed": true,
         "order_status": "ORDER_NOT_SENT",
         "sent_units": 0,
-        "connected_account_login": "****0369",
-        "connected_terminal_folder": "C:\\XM Global MT5 P1",
-        "ownership_token": "P2:7480:8ce466af658341438a237021ce702f28",
+        "connected_account_login": "****6767",
+        "connected_terminal_folder": "C:\\XM Global MT5 P2",
+        "last_execution_account_login": "****0369",
+        "last_execution_terminal_folder": "C:\\XM Global MT5 P1",
+        "ownership_token": "P2:1172:942039a48f41422ca139cdcfc3e95a93",
         "binding_verified": true
       },
       {
@@ -57,34 +64,38 @@
         "research_enabled": true,
         "runtime_state": "STOPPED",
         "pid": null,
-        "router_mode": "SINGLE_PROCESS_SEQUENTIAL_MT5",
+        "router_mode": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
         "gateway_status": "BLOCKED",
         "gateway_reason": "execution_ownership_mismatch_before_order_check",
         "demo_verified": true,
         "armed": true,
         "order_status": "ORDER_NOT_SENT",
         "sent_units": 0,
-        "connected_account_login": "****0369",
-        "connected_terminal_folder": "C:\\XM Global MT5 P1",
-        "ownership_token": "P3:7480:ffa500162b394f2dbec1c6a27d4d79a5",
+        "connected_account_login": "****6145",
+        "connected_terminal_folder": "C:\\XM Global MT5 P3",
+        "last_execution_account_login": "****0369",
+        "last_execution_terminal_folder": "C:\\XM Global MT5 P1",
+        "ownership_token": "P3:7252:94840b7ff6094ce9bd1fd5c2a2905170",
         "binding_verified": true
       },
       {
         "profile_id": "P4",
         "enabled": true,
-        "execution_enabled": false,
+        "execution_enabled": true,
         "research_enabled": true,
-        "runtime_state": "RESEARCH_ONLY",
+        "runtime_state": "STOPPED",
         "pid": null,
-        "router_mode": "SINGLE_PROCESS_SEQUENTIAL_MT5",
-        "gateway_status": "STOPPED",
-        "gateway_reason": "profile_execution_disabled_research_preserved",
+        "router_mode": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
+        "gateway_status": "BLOCKED",
+        "gateway_reason": "capital_tier_lot_out_of_range",
         "demo_verified": false,
         "armed": true,
         "order_status": "ORDER_NOT_SENT",
         "sent_units": 0,
         "connected_account_login": "****6153",
         "connected_terminal_folder": "C:\\XM Global MT5 P4",
+        "last_execution_account_login": "",
+        "last_execution_terminal_folder": "",
         "ownership_token": "",
         "binding_verified": true
       }
@@ -13441,7 +13452,7 @@
   "architecture": {
     "schema_version": "afip-final-architecture.v1",
     "status": "READY",
-    "generated_at_utc": "2026-07-21T06:46:28Z",
+    "generated_at_utc": "2026-07-22T15:58:02Z",
     "runtime_authorities": [
       "TRADING_RUNTIME",
       "RESEARCH_RUNTIME"
@@ -13476,6 +13487,15 @@
       "STOP_AFIP_RESEARCH_BACKGROUND.ps1",
       "STOP_PHASE_U_PACK_3_4_10_CONTINUOUS.ps1"
     ],
-    "blockers": []
+    "blockers": [],
+    "execution_authority_in_research": false,
+    "historical_data_lake": {
+      "incremental_index": "runtime/research/research_file_index.json",
+      "execution_authority": false
+    }
+  },
+  "historical_data_lake": {
+    "incremental_index": "runtime/research/research_file_index.json",
+    "execution_authority": false
   }
 }

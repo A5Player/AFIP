@@ -50,6 +50,13 @@ def render_dashboard_home() -> str:
             "Data Loading & Research Operations",
             "afip_research_operations_dashboard.html",
         ),
+        (
+            "control",
+            "🎛️",
+            "Control Center",
+            "AFIP Production Control Center",
+            "afip_control_center.html",
+        ),
     )
     navigation = "".join(
         f'<button class="nav-item{" active" if index == 0 else ""}" '

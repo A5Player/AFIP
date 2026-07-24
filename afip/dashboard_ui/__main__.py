@@ -13,6 +13,7 @@ def main()->int:
     print(f"AFIP Dashboard 2 generated: {p2}", flush=True)
     print(f"AFIP Dashboard 3 generated: {p3}", flush=True)
     print(f"AFIP Dashboard 4 generated: {p1.parent / 'afip_research_operations_dashboard.html'}", flush=True)
+    print(f"AFIP Control Center generated: {p1.parent / 'afip_control_center.html'}", flush=True)
     print("Dashboard 1 refreshes every 5 seconds. Dashboards 2 and 3 refresh manually.", flush=True)
     print("Automatic research is not run synchronously during dashboard generation.", flush=True)
     print("Financial placeholders are disabled. Live execution authority remains unchanged.", flush=True)
