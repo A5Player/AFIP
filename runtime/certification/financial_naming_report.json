@@ -1,7 +1,7 @@
 {
   "audit_warning_count": 0,
   "checked_file_count": 0,
-  "duration_seconds": 0.242,
+  "duration_seconds": 0.264,
   "mode": "NO_SOURCE_CHANGES",
   "policy": "AUDIT_ONLY_CHANGED_FILES",
   "runtime_blocking": false,

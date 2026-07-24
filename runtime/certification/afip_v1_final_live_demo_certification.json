@@ -1,14 +1,17 @@
 {
-  "schema_version": "afip-account-isolation.v2",
+  "schema_version": "afip-v1-final-live-demo-certification.v1",
   "status": "PASS",
-  "safe_to_start": true,
-  "execution_model": "SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5",
-  "errors": [],
+  "certification": "AFIP_V1_PRODUCTION_CERTIFIED",
+  "mode": "READ_ONLY_NO_ORDER_SENT",
+  "order_check_called": false,
+  "order_send_called": false,
+  "source_authority": "EXISTING_ACCOUNT_ISOLATION_RUNTIME",
   "profiles": [
     {
       "profile_id": "P1",
-      "status": "PASS",
-      "mode": "EXECUTION",
+      "binding_verified": true,
+      "isolation_status": "PASS",
+      "reason": "exact_terminal_account_binding_verified",
       "configured_login": "****0369",
       "actual_login": "****0369",
       "configured_server": "XMGlobal-MT5 6",
@@ -21,8 +24,9 @@
     },
     {
       "profile_id": "P2",
-      "status": "PASS",
-      "mode": "EXECUTION",
+      "binding_verified": true,
+      "isolation_status": "PASS",
+      "reason": "exact_terminal_account_binding_verified",
       "configured_login": "****6767",
       "actual_login": "****6767",
       "configured_server": "XMGlobal-MT5 6",
@@ -35,8 +39,9 @@
     },
     {
       "profile_id": "P3",
-      "status": "PASS",
-      "mode": "EXECUTION",
+      "binding_verified": true,
+      "isolation_status": "PASS",
+      "reason": "exact_terminal_account_binding_verified",
       "configured_login": "****6145",
       "actual_login": "****6145",
       "configured_server": "XMGlobal-MT5 5",
@@ -49,8 +54,9 @@
     },
     {
       "profile_id": "P4",
-      "status": "PASS",
-      "mode": "EXECUTION",
+      "binding_verified": true,
+      "isolation_status": "PASS",
+      "reason": "exact_terminal_account_binding_verified",
       "configured_login": "****6153",
       "actual_login": "****6153",
       "configured_server": "XMGlobal-MT5 5",
@@ -61,5 +67,6 @@
       "server_match": true,
       "terminal_match": true
     }
-  ]
+  ],
+  "errors": []
 }
