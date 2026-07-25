@@ -1,5 +1,5 @@
 from __future__ import annotations
-import argparse, json, os
+import argparse, json, os, subprocess
 from pathlib import Path
 from typing import Any
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime
@@ -13,9 +13,33 @@ def normalize(path: str) -> str:
     try: return str(Path(path).resolve()).rstrip("\\/").casefold()
     except OSError: return str(path).rstrip("\\/").casefold()
 
+def is_windows() -> bool:
+    return os.name == "nt"
+
+
+def running_terminal_paths() -> list[str]:
+    """Return running terminal64.exe paths without starting any terminal."""
+    if not is_windows():
+        return []
+    command = [
+        "powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+        "Get-CimInstance Win32_Process -Filter \"Name='terminal64.exe'\" | "
+        "Select-Object -ExpandProperty ExecutablePath | ConvertTo-Json -Compress",
+    ]
+    try:
+        completed = subprocess.run(command, capture_output=True, text=True, timeout=15, check=False)
+        if completed.returncode != 0 or not completed.stdout.strip():
+            return []
+        value = json.loads(completed.stdout)
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError):
+        return []
+    rows = value if isinstance(value, list) else [value]
+    return [normalize(str(row)) for row in rows if row]
+
 def verify(config: Path) -> dict[str, Any]:
     profiles=FourProfileOperationalRuntime(config).load()
     rows=[]; errors=[]; seen_login={}; seen_folder={}
+    running_paths = running_terminal_paths()
     for p in profiles:
         if not p.enabled:
             rows.append({'profile_id':p.profile_id,'status':'SKIPPED','reason':'profile_disabled'})
@@ -27,6 +51,12 @@ def verify(config: Path) -> dict[str, Any]:
         seen_folder[folder]=p.profile_id
         if login in seen_login: errors.append(f'duplicate_login:{seen_login[login]}:{p.profile_id}')
         seen_login[login]=p.profile_id
+        terminal_path = normalize(str(p.mt5_terminal))
+        matching_processes = sum(1 for item in running_paths if item == terminal_path)
+        if is_windows() and matching_processes == 0:
+            reason='mt5_terminal_not_running_manual_start_required'; errors.append(f'{p.profile_id}:{reason}'); rows.append({'profile_id':p.profile_id,'status':'BLOCKED','reason':reason,'configured_terminal':str(p.mt5_terminal),'mt5_auto_launch':False}); continue
+        if matching_processes > 1:
+            reason='duplicate_mt5_terminal_process'; errors.append(f'{p.profile_id}:{reason}'); rows.append({'profile_id':p.profile_id,'status':'BLOCKED','reason':reason,'configured_terminal':str(p.mt5_terminal),'running_processes':matching_processes,'mt5_auto_launch':False}); continue
         mt5=None
         try:
             import MetaTrader5 as mt5
@@ -46,7 +76,7 @@ def verify(config: Path) -> dict[str, Any]:
             try:
                 if mt5 is not None: mt5.shutdown()
             except Exception: pass
-    return {'schema_version':'afip-account-isolation.v2','status':'PASS' if not errors else 'BLOCKED','safe_to_start':not errors,'execution_model':'SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5','errors':errors,'profiles':rows}
+    return {'schema_version':'afip-account-isolation.v3','status':'PASS' if not errors else 'BLOCKED','safe_to_start':not errors,'execution_model':'SINGLE_SUPERVISOR_PROCESS_ISOLATED_MT5','mt5_auto_launch':False,'manual_mt5_required':True,'errors':errors,'profiles':rows}
 
 def main()->int:
     ap=argparse.ArgumentParser(); ap.add_argument('--config',default='config/four_profile_demo.json'); ap.add_argument('--output',default='runtime/account_isolation_status.json'); args=ap.parse_args()
