@@ -40,14 +40,66 @@ def atomic_json(path: Path, payload: Mapping[str, Any]) -> Path:
 
 
 def process_alive(pid: int | None) -> bool:
+    """Check whether a process exists without signalling it on Windows."""
     if not pid or pid <= 0:
         return False
+
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        STILL_ACTIVE = 259
+        ERROR_ACCESS_DENIED = 5
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+
+        kernel32.OpenProcess.argtypes = [
+            wintypes.DWORD,
+            wintypes.BOOL,
+            wintypes.DWORD,
+        ]
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+
+        kernel32.GetExitCodeProcess.argtypes = [
+            wintypes.HANDLE,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
+        kernel32.GetExitCodeProcess.restype = wintypes.BOOL
+
+        kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+        kernel32.CloseHandle.restype = wintypes.BOOL
+
+        handle = kernel32.OpenProcess(
+            PROCESS_QUERY_LIMITED_INFORMATION,
+            False,
+            pid,
+        )
+
+        if not handle:
+            return ctypes.get_last_error() == ERROR_ACCESS_DENIED
+
+        try:
+            exit_code = wintypes.DWORD()
+
+            if not kernel32.GetExitCodeProcess(
+                handle,
+                ctypes.byref(exit_code),
+            ):
+                return False
+
+            return exit_code.value == STILL_ACTIVE
+        finally:
+            kernel32.CloseHandle(handle)
+
     try:
         os.kill(pid, 0)
+    except PermissionError:
+        return True
     except OSError:
         return False
-    return True
 
+    return True
 
 def file_age_seconds(path: Path) -> float | None:
     try:
