@@ -38,10 +38,12 @@ def _explicit_ladder(raw: Mapping[str, Any]) -> tuple[tuple[float, tuple[float, 
 
 
 def expand_capital_tier_formula(raw: Mapping[str, Any]) -> tuple[tuple[float, tuple[float, ...]], ...]:
-    """Expand a compact formula into the legacy in-memory tier table.
+    """Expand the Maximum Lot Size + Maximum Lot Unit authority.
 
-    Compatibility fields such as ``one_order_minimum_balance`` remain readable,
-    but ``authority_*`` fields are the sizing source of truth when supplied.
+    ``initial_tiers`` is the production sizing source of truth.  The older
+    one/two/three-order balance fields remain readable only for backward
+    compatibility with archived configurations and tests; new production
+    configuration must not depend on them.
     """
     kind = str(raw.get("kind", "")).strip().upper()
     if kind == "EXPLICIT_LADDER":
@@ -49,36 +51,48 @@ def expand_capital_tier_formula(raw: Mapping[str, Any]) -> tuple[tuple[float, tu
 
     lot_step = Decimal(str(raw.get("lot_step", "0.01")))
     maximum_lot = Decimal(str(raw.get("maximum_lot", "0")))
-
-    one_balance = Decimal(str(raw.get(
-        "authority_one_order_minimum_balance",
-        raw.get("one_order_minimum_balance", "0"),
-    )))
-    two_balance = Decimal(str(raw.get(
-        "authority_two_order_minimum_balance",
-        raw.get("two_order_minimum_balance", "0"),
-    )))
-    three_balance = Decimal(str(raw.get(
-        "authority_three_order_minimum_balance",
-        raw.get("three_order_minimum_balance", "0"),
-    )))
-
     if lot_step <= 0 or maximum_lot < lot_step:
         raise ValueError("capital_tier_formula_lot_range_invalid")
     steps_decimal = maximum_lot / lot_step
     if steps_decimal != steps_decimal.to_integral_value():
         raise ValueError("capital_tier_formula_maximum_lot_not_aligned")
-    if not (one_balance < two_balance < three_balance):
-        raise ValueError("capital_tier_formula_initial_balances_invalid")
 
-    tiers: list[tuple[float, tuple[float, ...]]] = [
-        (_money(one_balance), (_lot(lot_step),)),
-        (_money(two_balance), (_lot(lot_step), _lot(lot_step))),
-        (_money(three_balance), (_lot(lot_step), _lot(lot_step), _lot(lot_step))),
-    ]
+    initial_raw = raw.get("initial_tiers")
+    if initial_raw is not None:
+        if not isinstance(initial_raw, (list, tuple)) or len(initial_raw) != 3:
+            raise ValueError("capital_tier_formula_initial_tiers_required")
+        initial = _explicit_ladder({"tiers": initial_raw})
+        expected_counts = (1, 2, 3)
+        if tuple(len(lots) for _, lots in initial) != expected_counts:
+            raise ValueError("capital_tier_formula_initial_unit_counts_invalid")
+        if any(any(abs(lot - float(lot_step)) > 1e-12 for lot in lots) for _, lots in initial):
+            raise ValueError("capital_tier_formula_initial_lot_size_invalid")
+        tiers = list(initial)
+    else:
+        # Archived compatibility only.  These fields never override
+        # ``initial_tiers`` when the production field is present.
+        one_balance = Decimal(str(raw.get(
+            "authority_one_order_minimum_balance",
+            raw.get("one_order_minimum_balance", "0"),
+        )))
+        two_balance = Decimal(str(raw.get(
+            "authority_two_order_minimum_balance",
+            raw.get("two_order_minimum_balance", "0"),
+        )))
+        three_balance = Decimal(str(raw.get(
+            "authority_three_order_minimum_balance",
+            raw.get("three_order_minimum_balance", "0"),
+        )))
+        if not (one_balance < two_balance < three_balance):
+            raise ValueError("capital_tier_formula_initial_balances_invalid")
+        tiers = [
+            (_money(one_balance), (_lot(lot_step),)),
+            (_money(two_balance), (_lot(lot_step), _lot(lot_step))),
+            (_money(three_balance), (_lot(lot_step), _lot(lot_step), _lot(lot_step))),
+        ]
 
     maximum_steps = int(steps_decimal)
-    previous_balance = three_balance
+    previous_balance = Decimal(str(tiers[-1][0]))
     for step_index in range(2, maximum_steps + 1):
         lot = lot_step * step_index
         if kind == "TRIANGULAR_BALANCE":

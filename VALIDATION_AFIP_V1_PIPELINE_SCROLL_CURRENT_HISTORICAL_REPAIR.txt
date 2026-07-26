@@ -1,0 +1,12 @@
+AFIP V1 Pipeline Scroll & Current/Historical Evidence Repair
+
+Focused tests: 9 passed
+Full regression: 2728 passed
+Dashboard generation: PASS
+
+Scope:
+- Dashboard presentation only
+- No trading logic changes
+- No authority recalculation changes
+- No MT5 initialization changes
+- No order-send changes

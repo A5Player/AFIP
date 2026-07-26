@@ -1,0 +1,9 @@
+afip/runtime_truth.py
+afip/dashboard_data_contract.py
+afip/dashboard_ui/split_runtime.py
+afip/live_mt5_dashboard.py
+tests/test_afip_v1_single_runtime_truth_refactor.py
+README_AFIP_V1_SINGLE_RUNTIME_TRUTH_BIG_PACK.md
+FILE_LIST_AFIP_V1_SINGLE_RUNTIME_TRUTH_BIG_PACK.txt
+RUN_AFIP_V1_SINGLE_RUNTIME_TRUTH_BIG_PACK.ps1
+RUN_AFIP_V1_SINGLE_RUNTIME_TRUTH_BIG_PACK.bat

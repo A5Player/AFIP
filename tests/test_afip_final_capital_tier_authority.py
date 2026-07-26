@@ -33,6 +33,19 @@ def test_obsolete_capital_per_unit_fields_are_absent():
     assert '"capital_per_unit_legacy_only"' not in text
 
 
+def test_old_order_minimum_fields_are_absent_from_production_config():
+    text = CONFIG.read_text(encoding="utf-8")
+    for field in (
+        "one_order_minimum_balance",
+        "two_order_minimum_balance",
+        "three_order_minimum_balance",
+        "authority_one_order_minimum_balance",
+        "authority_two_order_minimum_balance",
+        "authority_three_order_minimum_balance",
+    ):
+        assert f'"{field}"' not in text
+
+
 @pytest.mark.parametrize(
     "profile_id,balance,units,lot",
     [

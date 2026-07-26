@@ -1,0 +1,15 @@
+AFIP V1 Final Production Certification Pack 2
+
+Files:
+- afip/dashboard_bottom_safety.py
+- RUN_AFIP_V1_FINAL_PRODUCTION_CERTIFICATION_PACK_2.ps1
+- README_AFIP_V1_FINAL_PRODUCTION_CERTIFICATION_PACK_2_TH.md
+- FILE_LIST_AFIP_V1_FINAL_PRODUCTION_CERTIFICATION_PACK_2.txt
+
+Purpose:
+- Final dashboard bottom safety regression repair
+- Source-level and idempotent
+- No trading logic changes
+
+Revision 1:
+- Skip Copy-Item when source and destination are the same file.

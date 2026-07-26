@@ -1,0 +1,9 @@
+AFIP Maximum Lot Size + Maximum Lot Unit Authority Final Patch
+
+Focused certification:
+39 passed in 0.26s
+
+Full regression on supplied partial source archive:
+2735 passed, 19 failed in 13.87s
+
+The 19 failures are missing-artifact failures caused by the supplied archive not containing root launchers, documentation, runtime dashboard HTML, data certification files, or .git metadata. No full-regression failure was caused by the modified Maximum Lot Authority source or its focused tests.

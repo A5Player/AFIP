@@ -1,0 +1,6 @@
+AFIP V1 Dashboard Health, Market & No-Event Semantics Repair
+Focused tests: 7 passed
+Full regression: 2711 passed
+Trading logic changed: NO
+Execution authority changed: NO
+MT5 order send changed: NO

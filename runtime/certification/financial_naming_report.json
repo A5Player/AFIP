@@ -1,11 +1,37 @@
 {
-  "audit_warning_count": 0,
-  "checked_file_count": 0,
-  "duration_seconds": 0.264,
-  "mode": "NO_SOURCE_CHANGES",
+  "audit_warning_count": 5,
+  "checked_file_count": 21,
+  "duration_seconds": 0.087,
+  "mode": "CHANGED_FILES",
   "policy": "AUDIT_ONLY_CHANGED_FILES",
   "runtime_blocking": false,
   "schema_version": "afip-financial-naming-fast.v2",
   "status": "PASS",
-  "violations": []
+  "violations": [
+    {
+      "file": "afip\\dashboard_ui\\home.py",
+      "replacement": "trading objective",
+      "term": "mission"
+    },
+    {
+      "file": "afip\\dashboard_ui\\home.py",
+      "replacement": "price objective",
+      "term": "target"
+    },
+    {
+      "file": "afip\\dashboard_ui\\split_runtime.py",
+      "replacement": "price objective",
+      "term": "target"
+    },
+    {
+      "file": "afip\\demo_execution_gateway\\runtime.py",
+      "replacement": "validation intelligence",
+      "term": "guard"
+    },
+    {
+      "file": "afip\\demo_execution_gateway\\runtime.py",
+      "replacement": "price objective",
+      "term": "target"
+    }
+  ]
 }

@@ -50,8 +50,10 @@ class MT5Adapter:
         return self.enabled and self.mt5_client is not None
 
     def initialize(self) -> dict:
-        if not self.is_available():
-            return {"available": False, "initialized": False, "reason": "mt5_adapter_disabled_or_package_missing"}
+        if not self.enabled:
+            return {"available": False, "initialized": False, "reason": "mt5_adapter_disabled_by_policy"}
+        if self.mt5_client is None:
+            return {"available": False, "initialized": False, "reason": "metatrader5_package_unavailable"}
 
         initialize = getattr(self.mt5_client, "initialize", None)
         if initialize is None:

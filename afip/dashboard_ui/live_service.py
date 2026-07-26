@@ -23,7 +23,7 @@ def run_live_dashboard(
     while True:
         started = time.perf_counter()
         try:
-            report = MT5MultiTerminalConnectionManager(config_path).check(reconnect_attempts=0)
+            report = MT5MultiTerminalConnectionManager(config_path).check(reconnect_attempts=0, active=False)
             print(
                 f"MT5 live snapshot: {report['connected_profiles']}/{report['checked_profiles']} connected",
                 flush=True,

@@ -1,5 +1,5 @@
 {
-  "version": "AFIP-1.0-FINAL-CAPITAL-TIER-AUTHORITY",
+  "version": "AFIP-1.0-MAXIMUM-LOT-SIZE-UNIT-AUTHORITY-V4",
   "execution": "LOCKED_SIMULATION_ONLY",
   "profiles": [
     {
@@ -38,12 +38,29 @@
         "lot_step": 0.01,
         "maximum_lot": 0.1,
         "balance_multiplier": 300,
-        "one_order_minimum_balance": 1000,
-        "two_order_minimum_balance": 300,
-        "three_order_minimum_balance": 900,
-        "authority_one_order_minimum_balance": 0,
-        "authority_two_order_minimum_balance": 300,
-        "authority_three_order_minimum_balance": 900
+        "initial_tiers": [
+          {
+            "minimum_balance": 0,
+            "lots": [
+              0.01
+            ]
+          },
+          {
+            "minimum_balance": 300,
+            "lots": [
+              0.01,
+              0.01
+            ]
+          },
+          {
+            "minimum_balance": 900,
+            "lots": [
+              0.01,
+              0.01,
+              0.01
+            ]
+          }
+        ]
       },
       "research_enabled": true,
       "execution_enabled": true,
@@ -86,12 +103,29 @@
         "lot_step": 0.01,
         "maximum_lot": 1.0,
         "balance_multiplier": 300,
-        "one_order_minimum_balance": 500,
-        "two_order_minimum_balance": 300,
-        "three_order_minimum_balance": 900,
-        "authority_one_order_minimum_balance": 0,
-        "authority_two_order_minimum_balance": 300,
-        "authority_three_order_minimum_balance": 900
+        "initial_tiers": [
+          {
+            "minimum_balance": 0,
+            "lots": [
+              0.01
+            ]
+          },
+          {
+            "minimum_balance": 300,
+            "lots": [
+              0.01,
+              0.01
+            ]
+          },
+          {
+            "minimum_balance": 900,
+            "lots": [
+              0.01,
+              0.01,
+              0.01
+            ]
+          }
+        ]
       },
       "research_enabled": true,
       "execution_enabled": true,
@@ -134,12 +168,29 @@
         "lot_step": 0.01,
         "maximum_lot": 10.0,
         "balance_per_lot_step": 600,
-        "one_order_minimum_balance": 200,
-        "two_order_minimum_balance": 200,
-        "three_order_minimum_balance": 450,
-        "authority_one_order_minimum_balance": 0,
-        "authority_two_order_minimum_balance": 200,
-        "authority_three_order_minimum_balance": 450
+        "initial_tiers": [
+          {
+            "minimum_balance": 0,
+            "lots": [
+              0.01
+            ]
+          },
+          {
+            "minimum_balance": 200,
+            "lots": [
+              0.01,
+              0.01
+            ]
+          },
+          {
+            "minimum_balance": 450,
+            "lots": [
+              0.01,
+              0.01,
+              0.01
+            ]
+          }
+        ]
       },
       "research_enabled": true,
       "execution_enabled": true,
@@ -186,9 +237,6 @@
         "kind": "EXPLICIT_LADDER",
         "lot_step": 0.01,
         "maximum_lot": 0.01,
-        "one_order_minimum_balance": 0,
-        "two_order_minimum_balance": 999999999,
-        "three_order_minimum_balance": 999999999,
         "tiers": [
           {
             "minimum_balance": 0,
@@ -234,6 +282,6 @@
     "profile_semantics": "GROWTH_RATE_AND_RISK_CEILING",
     "data_guide": "docs/research/AFIP_POSITION_CAPACITY_AND_SCORING_DATA_GUIDE_V2_1.md",
     "single_source_of_truth": "afip.lot_authority.calculate_lot_authority",
-    "lot_authority_version": "AFIP_LOT_AUTHORITY_FINAL_CAPITAL_TIER_V2"
+    "lot_authority_version": "AFIP_LOT_AUTHORITY_MAXIMUM_LOT_SIZE_UNIT_V4"
   }
 }

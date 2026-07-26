@@ -1,0 +1,10 @@
+afip/dashboard_data_contract.py
+afip/live_mt5_dashboard.py
+afip/dashboard_ui/split_runtime.py
+afip/dashboard_ui/live_service.py
+afip/four_profile_operations/mt5_connection.py
+tools/afip_mt5_multi_terminal_check.py
+tests/test_afip_v1_runtime_truth_passive_monitoring_final.py
+tests/test_afip_v1_dashboard_passive_truth_completion.py
+README_AFIP_V1_PASSIVE_MONITORING_DASHBOARD_TRUTH_COMPLETION.md
+RUN_AFIP_V1_PASSIVE_MONITORING_DASHBOARD_TRUTH_COMPLETION.ps1

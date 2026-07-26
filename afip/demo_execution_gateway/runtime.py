@@ -15,7 +15,7 @@ from __future__ import annotations
 # legacy certification aliases: mt5_terminal_path_mismatch | binding_changed_before_order_send
 
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -221,6 +221,12 @@ class DemoGatewayReport:
     configured_terminal_folder: str = ""
     ownership_token: str = ""
     binding_verified: bool = False
+    execution_trace_id: str = ""
+    trace_stage: str = "UNKNOWN"
+    reason_chain: tuple[str, ...] = ()
+    authority_snapshot: dict[str, Any] = field(default_factory=dict)
+    intelligence_snapshot: dict[str, Any] = field(default_factory=dict)
+    decision_pipeline: tuple[str, ...] = ()
     checked_at_utc: str = ""
 
     def as_dict(self) -> dict[str, Any]:
@@ -244,6 +250,8 @@ class DemoExecutionGateway:
         self._mt5 = mt5
         self._simulate = simulate or self._default_simulate
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._active_trace_id = ""
+        self._active_intelligence_snapshot: dict[str, Any] = {}
 
     @staticmethod
     def _default_simulate() -> dict[str, Any]:
@@ -302,7 +310,125 @@ class DemoExecutionGateway:
         except (OSError, ValueError, TypeError):
             return {}
 
+    @staticmethod
+    def _trace_stage(status: str, reason: str) -> str:
+        text = str(reason).lower()
+        if "routing_lock" in text or "profile_binding" in text or "ownership" in text:
+            return "EXECUTION_OWNERSHIP"
+        if "fallback_data" in text or "tick_unavailable" in text or "symbol" in text:
+            return "MARKET_DATA"
+        if "decision" in text or "confidence" in text:
+            return "DECISION"
+        if "risk" in text:
+            return "RISK_AUTHORITY"
+        if "trading_cost" in text or "spread" in text:
+            return "TRADING_COST_AUTHORITY"
+        if "capacity" in text or "allocation" in text or "lot" in text:
+            return "LOT_CAPITAL_AUTHORITY"
+        if "protection" in text or "rr_" in text or "stop" in text or "take_profit" in text:
+            return "SL_TP_AUTHORITY"
+        if "order_check" in text:
+            return "MT5_ORDER_CHECK"
+        if "order_send" in text or status == "ORDER_SENT":
+            return "MT5_ORDER_SEND"
+        if status in {"BLOCKED", "STOPPED"}:
+            return "PREFLIGHT"
+        return "RUNTIME"
+
+    @staticmethod
+    def _compact_mapping(value: Any, keys: tuple[str, ...]) -> dict[str, Any]:
+        if not isinstance(value, Mapping):
+            return {}
+        return {key: value[key] for key in keys if key in value}
+
+    @classmethod
+    def _intelligence_snapshot(cls, result: Mapping[str, Any]) -> dict[str, Any]:
+        modular = result.get("modular_intelligence", {})
+        decision = result.get("decision", {})
+        risk = result.get("risk", {})
+        order = result.get("order", {})
+        protection = order.get("protection", {}) if isinstance(order, Mapping) else {}
+        confluence = result.get("multi_timeframe_confluence", {})
+        calibration = result.get("confidence_calibration", {})
+        cost = result.get("trading_cost_intelligence", {})
+        snapshot = {
+            "data": {
+                "status": result.get("data_status"),
+                "source": result.get("data_source"),
+                "symbol": result.get("symbol"),
+                "primary_timeframe": result.get("primary_timeframe"),
+            },
+            "market_regime": cls._compact_mapping(
+                modular.get("market_regime", {}) if isinstance(modular, Mapping) else {},
+                ("status", "regime", "market_regime", "confidence", "reason"),
+            ),
+            "pattern": cls._compact_mapping(
+                modular.get("pattern", modular.get("pattern_intelligence", {})) if isinstance(modular, Mapping) else {},
+                ("status", "pattern", "pattern_name", "family", "direction", "confidence", "score", "reason"),
+            ),
+            "confluence": cls._compact_mapping(
+                confluence,
+                ("status", "primary_timeframe", "direction", "score", "confidence", "agreement", "reason"),
+            ),
+            "decision": cls._compact_mapping(
+                decision,
+                ("action", "confidence", "score", "reason", "requested_units", "market_regime"),
+            ),
+            "confidence_calibration": cls._compact_mapping(
+                calibration,
+                ("status", "raw_confidence", "calibrated_confidence", "confidence", "reason"),
+            ),
+            "risk": cls._compact_mapping(
+                risk,
+                ("allowed", "status", "risk_score", "risk_level", "reasons", "reason"),
+            ),
+            "sl_tp": cls._compact_mapping(
+                protection,
+                ("stop_loss_points", "take_profit_points", "risk_reward_ratio", "stop_loss_source", "take_profit_source", "reason"),
+            ),
+            "trading_cost": cls._compact_mapping(
+                cost,
+                ("status", "allowed", "spread_points", "caution_spread_points", "max_spread_points", "reason"),
+            ),
+            "order": cls._compact_mapping(
+                order,
+                ("status", "action", "reason"),
+            ),
+        }
+        return {key: value for key, value in snapshot.items() if value}
+
+    @staticmethod
+    def _decision_pipeline(snapshot: Mapping[str, Any]) -> tuple[str, ...]:
+        stages = (
+            ("data", "MARKET_DATA"),
+            ("market_regime", "MARKET_REGIME"),
+            ("pattern", "PATTERN_INTELLIGENCE"),
+            ("confluence", "MULTI_TIMEFRAME_CONFLUENCE"),
+            ("decision", "DECISION_INTELLIGENCE"),
+            ("confidence_calibration", "CONFIDENCE_CALIBRATION"),
+            ("risk", "RISK_AUTHORITY"),
+            ("sl_tp", "SL_TP_AUTHORITY"),
+            ("trading_cost", "TRADING_COST_AUTHORITY"),
+            ("order", "EXECUTION_READINESS"),
+        )
+        return tuple(label for key, label in stages if snapshot.get(key))
+
+    @staticmethod
+    def _authority_snapshot(payload: Mapping[str, Any]) -> dict[str, Any]:
+        keys = (
+            "decision_action", "decision_confidence", "balance", "equity",
+            "confidence_units", "capital_units", "risk_units",
+            "profile_max_units", "execution_safety_units", "approved_units",
+            "approved_lots", "total_approved_lot", "limiting_gate",
+            "sizing_reason", "policy_version", "allocated_lots",
+            "maximum_orders", "remaining_order_capacity",
+            "trading_cost_status", "trading_cost_allowed", "spread_points",
+            "caution_spread_points", "max_spread_points", "point_size", "digits",
+        )
+        return {key: payload[key] for key in keys if key in payload}
+
     def _report(self, status: str, reason: str, **updates: Any) -> DemoGatewayReport:
+        trace_id = self._active_trace_id or f"AFIP-{self.profile.profile_id}-{uuid.uuid4().hex}"
         payload = {
             "profile_id": self.profile.profile_id,
             "status": status,
@@ -311,9 +437,15 @@ class DemoExecutionGateway:
             "server": self.profile.server,
             "symbol": self.profile.symbol,
             "armed": self.armed,
+            "execution_trace_id": trace_id,
             "checked_at_utc": self._utc(),
         }
         payload.update(updates)
+        payload.setdefault("trace_stage", self._trace_stage(status, reason))
+        payload.setdefault("reason_chain", (payload["trace_stage"], status, reason))
+        payload.setdefault("authority_snapshot", self._authority_snapshot(payload))
+        payload.setdefault("intelligence_snapshot", dict(self._active_intelligence_snapshot))
+        payload.setdefault("decision_pipeline", self._decision_pipeline(payload["intelligence_snapshot"]))
         report = DemoGatewayReport(**payload)
         persistent = self._state()
         stored = report.as_dict()
@@ -559,6 +691,7 @@ class DemoExecutionGateway:
         return request
 
     def run_cycle(self) -> DemoGatewayReport:
+        self._active_trace_id = f"AFIP-{self.profile.profile_id}-{uuid.uuid4().hex}"
         fd, token = self._acquire_routing_lock()
         if fd is None:
             return self._report("WAITING", "account_routing_lock_busy", ownership_token=token)
@@ -566,6 +699,8 @@ class DemoExecutionGateway:
             return self._run_cycle_under_lock(token)
         finally:
             self._release_routing_lock(fd, token)
+            self._active_trace_id = ""
+            self._active_intelligence_snapshot = {}
 
     def _run_cycle_under_lock(self, ownership_token: str) -> DemoGatewayReport:
         mt5 = self._mt5_module()
@@ -580,6 +715,7 @@ class DemoExecutionGateway:
                 return self._report("BLOCKED", "manual_position_detected_operator_override", account_trade_mode="DEMO", demo_verified=True)
 
             result = self._simulate()
+            self._active_intelligence_snapshot = self._intelligence_snapshot(result)
             decision = result.get("decision", {})
             order = result.get("order", {})
             action = str(decision.get("action", order.get("action", "WAIT"))).upper()
@@ -695,13 +831,21 @@ class DemoExecutionGateway:
             digits = int(self._value(symbol_info, "digits", 0) or 0)
             execution_diagnostics = {**cost_diagnostics, "point_size": point_size, "digits": digits}
 
-            tickets: list[int] = []
+            # Build and validate the complete order batch before sending any order.
+            # This prevents a later order_check failure from leaving a partially
+            # transmitted multi-order signal.
+            prepared_requests: list[dict[str, Any]] = []
             for order_index, volume in enumerate(allocation_lots):
                 unit_plan = rr_plans[order_index] if rr_plans else protection
                 unit_sl_points = float(unit_plan.get("stop_loss_points", sl_points) or sl_points)
                 unit_tp_points = float(unit_plan.get("take_profit_points", tp_points) or tp_points)
                 if unit_sl_points <= 0 or unit_tp_points <= 0:
-                    return self._report("BLOCKED", "rr_unit_protection_missing", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), **execution_diagnostics)
+                    return self._report(
+                        "BLOCKED", "rr_unit_protection_missing",
+                        account_trade_mode="DEMO", demo_verified=True,
+                        decision_action=action, decision_confidence=confidence,
+                        **allocation_diagnostics, **execution_diagnostics,
+                    )
                 request = self._request(mt5, action, unit_sl_points, unit_tp_points, volume)
                 request["comment"] = f"AFIP {self.profile.profile_id} {unit_plan.get('role', 'RR')}"
                 binding_ok, actual_login, _actual_server, terminal_path = self._repair_exact_binding(mt5)
@@ -714,7 +858,7 @@ class DemoExecutionGateway:
                         "BLOCKED", "execution_ownership_mismatch_before_order_check",
                         account_trade_mode="DEMO", demo_verified=True,
                         decision_action=action, decision_confidence=confidence,
-                        sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets),
+                        **allocation_diagnostics,
                         connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"),
                         connected_terminal_folder=terminal_path or "UNKNOWN",
                         configured_terminal_folder=str(self.profile.mt5_folder),
@@ -723,7 +867,19 @@ class DemoExecutionGateway:
                 check = mt5.order_check(request)
                 if check is None or int(self._value(check, "retcode", -1)) != 0:
                     reason = self._value(check, "comment", mt5.last_error())
-                    return self._report("BLOCKED", f"order_check_failed:{reason}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, mt5_result_code=int(self._value(check, "retcode", -1)), mt5_result_comment=str(reason), **execution_diagnostics)
+                    return self._report(
+                        "BLOCKED", f"order_check_failed:{reason}",
+                        account_trade_mode="DEMO", demo_verified=True,
+                        decision_action=action, decision_confidence=confidence,
+                        **allocation_diagnostics, order_check_called=True,
+                        mt5_result_code=int(self._value(check, "retcode", -1)),
+                        mt5_result_comment=str(reason), **execution_diagnostics,
+                    )
+                prepared_requests.append(request)
+
+            tickets: list[int] = []
+            retcode: int | None = None
+            for request in prepared_requests:
                 binding_ok, actual_login, _actual_server, terminal_path = self._repair_exact_binding(mt5)
                 if not binding_ok:
                     return self._report(
@@ -739,14 +895,29 @@ class DemoExecutionGateway:
                     )
                 result_send = mt5.order_send(request)
                 if result_send is None:
-                    return self._report("ERROR", f"order_send_returned_none:{mt5.last_error()}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_comment=str(mt5.last_error()), **execution_diagnostics)
+                    return self._report(
+                        "ERROR", f"order_send_returned_none:{mt5.last_error()}",
+                        account_trade_mode="DEMO", demo_verified=True,
+                        decision_action=action, decision_confidence=confidence,
+                        sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets),
+                        order_check_called=True, order_send_called=True,
+                        mt5_result_comment=str(mt5.last_error()), **execution_diagnostics,
+                    )
                 retcode = int(self._value(result_send, "retcode", -1))
                 success_codes = {
                     int(getattr(mt5, name)) for name in SUCCESS_RETCODE_NAMES if hasattr(mt5, name)
                 }
                 if retcode not in success_codes:
                     comment = self._value(result_send, "comment", "unknown")
-                    return self._report("ERROR", f"order_send_failed:{retcode}:{comment}", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(comment), **execution_diagnostics)
+                    return self._report(
+                        "ERROR", f"order_send_failed:{retcode}:{comment}",
+                        account_trade_mode="DEMO", demo_verified=True,
+                        decision_action=action, decision_confidence=confidence,
+                        sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets),
+                        order_check_called=True, order_send_called=True,
+                        mt5_result_code=retcode, mt5_result_comment=str(comment),
+                        **execution_diagnostics,
+                    )
                 ticket = int(self._value(result_send, "order", self._value(result_send, "deal", 0)) or 0)
                 tickets.append(ticket)
 

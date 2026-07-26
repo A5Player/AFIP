@@ -1,11 +1,13 @@
-# AFIP V1 Runtime Certification Repair Pack 2
+# AFIP V1 Runtime Truth Contract Final
 
-แพ็กซ่อมแบบ Patch Only สำหรับ 17 regression failures หลังติดตั้ง Control Center Pack 1
+แพตช์นี้แก้ Regression เดียวที่เหลืออยู่: `broker_session_state` หายจาก Runtime Truth contract
 
-สิ่งที่แก้:
-- คืน Router ให้ใช้ Authority เดิม: Sequential + short-lived child process + process-isolated MT5
-- ลบ Architecture แบบ one-process-per-profile ที่ซ้ำและขัดกับ regression contract
-- เพิ่ม import ของ `reclaim_stale_lock` จาก Production Runtime Authority เดิม
-- แยก lock ของ injected MT5 test adapter ไปไว้ใน profile runtime เพื่อไม่ให้ pytest ชนกับ production lock ที่กำลังใช้งาน
+การแก้ไข:
+- คืน field `broker_session_state` เพื่อ Backward Compatibility
+- PASSIVE process ที่ยังไม่มี active broker verification = `NOT_VERIFIED`
+- terminal/process ที่หยุด = `DISCONNECTED`
+- active verified connection = `CONNECTED`
+- คง `session_state` รุ่นใหม่ไว้โดยไม่สร้าง Runtime Authority ซ้ำ
+- ไม่แตะ Signal, Lot Authority, SL/TP, Risk Gate หรือ Execution Authority
 
-แพ็กนี้ไม่แก้ Capital Gating, Lot, SL, TP, Confidence, Trading Cost หรือ Order Policy
+วิธีใช้: แตก ZIP ที่อื่น แล้วคัดลอกทุกไฟล์ทับ `C:\AFIP` จากนั้นรันสคริปต์ที่ root ของโครงการ

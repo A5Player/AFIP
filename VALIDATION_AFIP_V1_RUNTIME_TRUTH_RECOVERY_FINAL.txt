@@ -1,0 +1,18 @@
+AFIP V1 Runtime Truth Recovery Final
+Source: supplied AFIP(63).zip
+
+Changed-file compilation: PASS
+Focused Runtime Truth/Dashboard suite: 49 passed
+Full pytest regression: 2753 passed in 10.59s
+
+Known unrelated compileall blockers present before this patch:
+- tools/afip_financial_architecture_freeze.py syntax error
+- tools/afip_naming_migration.py syntax error
+
+Trading logic changed: NO
+Lot size changed: NO
+SL/TP changed: NO
+Safety gate changed: NO
+Signal threshold changed: NO
+Live trading enabled: NO
+Active MT5 diagnostic run automatically: NO

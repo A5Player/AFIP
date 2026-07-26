@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import time
+import os
+import subprocess
 from typing import Any, Callable, Protocol
 
 from .runtime import LOCKED_EXECUTION, NO_ORDER_SENT, FourProfileOperationalRuntime, ProfileOperationalConfig
@@ -65,6 +67,11 @@ class MT5ProfileHealth:
     spread_points: float | None = None
     digits: int | None = None
     point_size: float | None = None
+    monitoring_mode: str = "ACTIVE"
+    process_alive: bool | None = None
+    evidence_kind: str = "LIVE"
+    snapshot_checked_at_utc: str | None = None
+    snapshot_age_seconds: int | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -101,6 +108,132 @@ class MT5MultiTerminalConnectionManager:
         (profile.runtime_directory / "mt5_health.json").write_text(
             json.dumps(health.as_dict(), indent=2), encoding="utf-8"
         )
+
+
+    @staticmethod
+    def _normal_path(value: str | Path) -> str:
+        text = os.path.abspath(os.path.expandvars(str(value))).replace("/", "\\")
+        return os.path.normcase(text.rstrip("\\"))
+
+    @classmethod
+    def _running_terminal_paths(cls) -> set[str]:
+        """Return terminal64.exe paths without starting or attaching to MT5."""
+        paths: set[str] = set()
+        try:
+            import psutil  # type: ignore
+            for proc in psutil.process_iter(["name", "exe"]):
+                try:
+                    if str(proc.info.get("name") or "").lower() != "terminal64.exe":
+                        continue
+                    exe = proc.info.get("exe")
+                    if exe:
+                        paths.add(cls._normal_path(exe))
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        if paths or os.name != "nt":
+            return paths
+        # psutil is optional. PowerShell/CIM is available on supported Windows hosts.
+        command = [
+            "powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+            "$ErrorActionPreference='SilentlyContinue'; "
+            "Get-CimInstance Win32_Process -Filter \"Name='terminal64.exe'\" | "
+            "ForEach-Object { $_.ExecutablePath }",
+        ]
+        try:
+            completed = subprocess.run(command, capture_output=True, text=True, timeout=8, check=False)
+            for line in completed.stdout.splitlines():
+                line = line.strip()
+                if line:
+                    paths.add(cls._normal_path(line))
+        except Exception:
+            pass
+        return paths
+
+    def _terminal_process_alive(self, terminal_path: str | Path) -> bool:
+        """Return process truth for one configured terminal without MT5 attachment.
+
+        Kept as a small instance seam for backward-compatible tests and callers;
+        the implementation remains the same read-only executable-path authority.
+        """
+        return self._normal_path(terminal_path) in self._running_terminal_paths()
+
+    @staticmethod
+    def _read_json(path: Path) -> dict[str, Any]:
+        try:
+            value = json.loads(path.read_text(encoding="utf-8-sig"))
+            return value if isinstance(value, dict) else {}
+        except Exception:
+            return {}
+
+    def _write_live_snapshot(self, profile: ProfileOperationalConfig, health: MT5ProfileHealth) -> None:
+        profile.runtime_directory.mkdir(parents=True, exist_ok=True)
+        (profile.runtime_directory / "mt5_live_snapshot.json").write_text(
+            json.dumps(health.as_dict(), indent=2), encoding="utf-8"
+        )
+
+    def check_profile_passive(
+        self, profile: ProfileOperationalConfig, running_paths: set[str] | None = None
+    ) -> MT5ProfileHealth:
+        """Observe the configured terminal process. Never call MT5.initialize()."""
+        checked = datetime.now(timezone.utc)
+        checked_at = checked.isoformat()
+        exists = profile.mt5_terminal.exists()
+        if running_paths is None:
+            alive = exists and self._terminal_process_alive(profile.mt5_terminal)
+        else:
+            # Preserve a caller-supplied process snapshot while retaining the
+            # per-terminal compatibility seam used by focused passive tests.
+            alive = exists and self._normal_path(profile.mt5_terminal) in running_paths
+            if not alive and running_paths == set():
+                alive = exists and self._terminal_process_alive(profile.mt5_terminal)
+        snapshot_path = profile.runtime_directory / "mt5_live_snapshot.json"
+        snapshot = self._read_json(snapshot_path)
+        if not snapshot:
+            previous = self._read_json(profile.runtime_directory / "mt5_health.json")
+            if str(previous.get("monitoring_mode", "ACTIVE")).upper() == "ACTIVE":
+                snapshot = previous
+        snapshot_time = snapshot.get("snapshot_checked_at_utc") or snapshot.get("checked_at_utc")
+        snapshot_age = None
+        if snapshot_time:
+            try:
+                parsed = datetime.fromisoformat(str(snapshot_time).replace("Z", "+00:00"))
+                snapshot_age = max(0, int((checked - parsed.astimezone(timezone.utc)).total_seconds()))
+            except (TypeError, ValueError):
+                snapshot_age = None
+        if not profile.enabled:
+            status, reason = "STOPPED", "Profile disabled by operator"
+        elif not exists:
+            status, reason = "BLOCKED", "Configured terminal64.exe not found"
+        elif not alive:
+            status, reason = "DISCONNECTED", "Configured MT5 process is not running (passive observation)"
+        else:
+            status, reason = "CONNECTED_PASSIVE", "Configured MT5 process is running; broker session was not mutated"
+        use_snapshot = bool(snapshot)
+        def snap(name: str, default: Any = None) -> Any:
+            return snapshot.get(name, default) if use_snapshot else default
+        health = MT5ProfileHealth(
+            profile_id=profile.profile_id, enabled=bool(profile.enabled), connection_status=status,
+            terminal_exists=exists, initialized=False, authenticated=False, account_match=False,
+            server_match=False, symbol_available=False, tick_available=False, latency_ms=None,
+            reconnect_attempts=0, account=str(snap("account", profile.masked_login)),
+            server=str(snap("server", profile.server)), terminal_path=str(profile.mt5_terminal),
+            reason=reason, checked_at_utc=checked_at, currency=str(snap("currency", "DATA_UNAVAILABLE")),
+            balance=snap("balance"), equity=snap("equity"), margin=snap("margin"),
+            free_margin=snap("free_margin", snap("margin_free")),
+            floating_profit=snap("floating_profit", snap("profit")),
+            margin_free=snap("margin_free", snap("free_margin")), profit=snap("profit", snap("floating_profit")),
+            trade_allowed=snap("trade_allowed") if alive else False,
+            positions_total=snap("positions_total", 0), orders_total=snap("orders_total", 0),
+            bid=snap("bid"), ask=snap("ask"), spread_points=snap("spread_points"),
+            digits=snap("digits"), point_size=snap("point_size"), monitoring_mode="PASSIVE",
+            process_alive=alive, evidence_kind="LAST_SNAPSHOT" if use_snapshot else "PROCESS_ONLY",
+            snapshot_checked_at_utc=str(snapshot_time) if snapshot_time else None,
+            snapshot_age_seconds=snapshot_age,
+        )
+        self._write_health(profile, health)
+        return health
 
     def check_profile(self, profile: ProfileOperationalConfig, reconnect_attempts: int = 1) -> MT5ProfileHealth:
         checked_at = datetime.now(timezone.utc).isoformat()
@@ -221,8 +354,10 @@ class MT5MultiTerminalConnectionManager:
                 ask=ask,
                 spread_points=spread_points,
                 digits=self._value(symbol_info, "digits"),
-                point_size=point_size,
+                point_size=point_size, monitoring_mode="ACTIVE", process_alive=True,
+                evidence_kind="LIVE", snapshot_checked_at_utc=checked_at, snapshot_age_seconds=0,
             )
+            self._write_live_snapshot(profile, health)
             self._write_health(profile, health)
             return health
         except Exception as exc:
@@ -241,21 +376,24 @@ class MT5MultiTerminalConnectionManager:
                 except Exception:
                     pass
 
-    def check(self, selected: list[str] | None = None, reconnect_attempts: int = 1) -> dict[str, Any]:
+    def check(self, selected: list[str] | None = None, reconnect_attempts: int = 1, *, active: bool = True) -> dict[str, Any]:
         profiles = self.operations.load()
         errors = self.operations.validate(profiles)
         selected_ids = {value.upper() for value in selected} if selected else None
         results = []
+        running_paths = None if active else self._running_terminal_paths()
         for profile in profiles:
             if selected_ids is not None and profile.profile_id not in selected_ids:
                 continue
-            results.append(self.check_profile(profile, reconnect_attempts).as_dict())
-        connected = sum(1 for item in results if item["connection_status"] == "CONNECTED")
+            health = self.check_profile(profile, reconnect_attempts) if active else self.check_profile_passive(profile, running_paths)
+            results.append(health.as_dict())
+        connected = sum(1 for item in results if item["connection_status"] in {"CONNECTED", "CONNECTED_PASSIVE"})
         return {
             "status": "READY" if not errors else "BLOCKED",
             "connected_profiles": connected,
             "checked_profiles": len(results),
             "profiles": results,
+            "monitoring_mode": "ACTIVE" if active else "PASSIVE",
             "validation_errors": list(errors),
             "execution": LOCKED_EXECUTION,
             "order_status": NO_ORDER_SENT,

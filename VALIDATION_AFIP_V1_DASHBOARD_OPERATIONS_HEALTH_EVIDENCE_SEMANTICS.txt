@@ -1,0 +1,18 @@
+AFIP V1 Dashboard Operations Health & Evidence Semantics
+
+Focused validation:
+8 passed
+
+Full regression:
+2715 passed in 14.08s
+
+Expected installed repository total:
+2715 passed
+
+Safety:
+- Read-only dashboard changes only
+- No trading logic change
+- No capital or lot authority change
+- No SL/TP change
+- No routing change
+- No MT5 order check or order send change

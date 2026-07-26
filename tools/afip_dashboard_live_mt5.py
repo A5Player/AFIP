@@ -8,7 +8,7 @@ from afip.dashboard_ui.launcher import launch_three_dashboards
 
 def run_once(root: Path) -> None:
     manager = MT5MultiTerminalConnectionManager(root / 'config' / 'four_profile_demo.json')
-    report = manager.check(reconnect_attempts=1)
+    report = manager.check(reconnect_attempts=0, active=False)
     print(f"🔌 MT5 live snapshot: {report['connected_profiles']}/{report['checked_profiles']} connected", flush=True)
     launch_three_dashboards(root / 'runtime' / 'dashboard', project_root=root)
     print(f"📊 Dashboard updated: {root / 'runtime' / 'dashboard' / 'afip_dashboard.html'}", flush=True)

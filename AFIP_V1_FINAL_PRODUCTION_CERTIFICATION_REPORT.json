@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "changed_path_count": 120,
+  "errors": [],
+  "warnings": [],
+  "policy": {
+    "trading_logic_modified_by_this_pack": false,
+    "runtime_started_by_this_pack": false,
+    "mt5_started_by_this_pack": false,
+    "git_staging_performed_by_this_pack": false
+  }
+}

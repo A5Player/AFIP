@@ -1,0 +1,12 @@
+afip/four_profile_operations/mt5_connection.py
+afip/dashboard_ui/live_service.py
+afip/live_mt5_dashboard.py
+tools/afip_mt5_multi_terminal_check.py
+tools/afip_dashboard_live_mt5.py
+tests/test_afip_v1_passive_mt5_monitoring.py
+RUN_MILESTONE_S_PACK_3.ps1
+RUN_MILESTONE_S_PACK_4.ps1
+RUN_MILESTONE_S_PACK_5_4_1.ps1
+RUN_AFIP_V1_PASSIVE_MT5_RUNTIME_TRUTH_COMPLETE.ps1
+README_AFIP_V1_PASSIVE_MT5_RUNTIME_TRUTH_COMPLETE.md
+FILE_LIST_AFIP_V1_PASSIVE_MT5_RUNTIME_TRUTH_COMPLETE.txt

@@ -37,6 +37,27 @@ def render_dashboard_home() -> str:
             "afip_intelligence_engine_dashboard.html",
         ),
         (
+            "pipeline",
+            "🔗",
+            "Execution Pipeline",
+            "Live Execution Pipeline",
+            "afip_execution_pipeline_dashboard.html",
+        ),
+        (
+            "orders",
+            "🧾",
+            "Order Evidence",
+            "Order Evidence & Audit",
+            "afip_order_evidence_dashboard.html",
+        ),
+        (
+            "mt5",
+            "🖥️",
+            "Live MT5",
+            "Live MT5 Observability",
+            "afip_live_mt5_dashboard.html",
+        ),
+        (
             "research",
             "🔬",
             "Research",
@@ -49,6 +70,13 @@ def render_dashboard_home() -> str:
             "Data Loading",
             "Data Loading & Research Operations",
             "afip_research_operations_dashboard.html",
+        ),
+        (
+            "observability",
+            "🔎",
+            "Observability",
+            "Research Observability & Audit",
+            "afip_research_observability_dashboard.html",
         ),
         (
             "control",
@@ -77,8 +105,8 @@ def render_dashboard_home() -> str:
 <style>
 :root{{font-family:Arial,"Noto Sans Thai",sans-serif;color-scheme:dark;--side:#101a2b;--side2:#16243b;--line:#2c3b53;--text:#edf4ff;--muted:#9aabc1;--accent:#5aa3ff;--canvas:#eef2f7}}
 *{{box-sizing:border-box}} html,body{{height:100%;margin:0;overflow:hidden}} body{{background:var(--side);color:var(--text)}}
-.shell{{display:grid;grid-template-columns:270px minmax(0,1fr);height:100vh}}
-.sidebar{{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--side),#0a1220);border-right:1px solid var(--line);min-width:0}}
+.shell{{display:grid;grid-template-columns:270px minmax(0,1fr);height:100vh;overflow:hidden;align-items:stretch}}
+.sidebar{{display:flex;flex-direction:column;background:linear-gradient(180deg,var(--side),#0a1220);border-right:1px solid var(--line);min-width:0;height:100vh;overflow-x:hidden;overflow-y:auto;padding-bottom:140px;scrollbar-gutter:stable}}
 .brand{{padding:22px 20px 18px;border-bottom:1px solid var(--line)}} .brand-badge{{display:inline-block;padding:5px 9px;border-radius:999px;background:#1f6f4a;font-size:10px;font-weight:800;letter-spacing:.07em}}
 .brand h1{{font-size:18px;margin:10px 0 4px;line-height:1.15}} .brand p{{font-size:12px;color:var(--muted);margin:0;line-height:1.45}}
 .navigation{{display:flex;flex-direction:column;gap:7px;padding:16px 12px}}
@@ -86,11 +114,11 @@ def render_dashboard_home() -> str:
 .nav-item:hover{{background:#ffffff0b;border-color:#ffffff12}} .nav-item.active{{background:var(--side2);border-color:#3b536f;box-shadow:inset 3px 0 0 var(--accent)}}
 .nav-icon{{width:24px;min-width:24px;text-align:center;font-size:17px;line-height:1}} .nav-item strong{{display:block;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}} .nav-item small{{display:block;color:var(--muted);font-size:9px;margin-top:2px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .side-footer{{margin-top:auto;padding:14px 18px;border-top:1px solid var(--line);font-size:10px;line-height:1.55;color:var(--muted)}}
-.workspace{{display:grid;grid-template-rows:58px minmax(0,1fr);min-width:0;background:var(--canvas)}}
-.toolbar{{display:flex;align-items:center;gap:12px;padding:0 18px;background:#fff;color:#172033;border-bottom:1px solid #d7dfeb}}
+.workspace{{display:grid;grid-template-rows:58px minmax(0,1fr);min-width:0;height:100vh;overflow:hidden;background:var(--canvas)}}
+.toolbar{{display:flex;align-items:center;gap:12px;padding:0 18px;background:#fff;color:#172033;border-bottom:1px solid #d7dfeb;height:58px;position:relative;z-index:5}}
 .mobile-menu{{display:none;border:0;background:#eef2f7;border-radius:8px;padding:8px 10px;cursor:pointer}} .toolbar h2{{margin:0;font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .toolbar-actions{{margin-left:auto;display:flex;gap:8px}} .toolbar button,.toolbar a{{border:1px solid #ced8e5;background:#fff;color:#26364c;border-radius:8px;padding:7px 10px;font-size:12px;text-decoration:none;cursor:pointer}}
-.frame-wrap{{position:relative;min-height:0;background:#fff}} iframe{{display:block;width:100%;height:100%;border:0;background:#fff}}
+.frame-wrap{{position:relative;background:#fff;overflow:hidden;min-height:0;height:100%}} iframe{{display:block;width:100%;height:100%;min-height:0;border:0;background:#fff;overflow:auto}}
 .loading{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#eef2f7;color:#53647a;font-weight:700;z-index:2}} .loading.hidden{{display:none}}
 @media(max-width:820px){{.shell{{grid-template-columns:1fr}} .sidebar{{position:fixed;inset:0 auto 0 0;width:270px;z-index:20;transform:translateX(-100%);transition:.18s transform}} .sidebar.open{{transform:translateX(0)}} .mobile-menu{{display:inline-block}}}}
 </style></head><body>
@@ -98,13 +126,14 @@ def render_dashboard_home() -> str:
 <nav class="navigation" aria-label="AFIP dashboards">{navigation}</nav>
 <div class="side-footer">Presentation-only shell<br>No MT5 or execution-authority mutation<br>Generated {escape(generated)}</div></aside>
 <main class="workspace"><header class="toolbar"><button class="mobile-menu" id="mobileMenu" type="button" aria-label="Open menu">☰</button><h2 id="pageTitle">P1–P4 Operations</h2><div class="toolbar-actions"><button id="refresh" type="button">↻ Refresh</button><a id="openStandalone" href="afip_profiles_dashboard.html" target="_blank" rel="noopener">Open standalone</a></div></header>
-<section class="frame-wrap"><div class="loading" id="loading">Loading AFIP Dashboard…</div><iframe id="dashboardFrame" title="AFIP P1–P4 Operations" src="afip_profiles_dashboard.html"></iframe></section></main></div>
+<section class="frame-wrap"><div class="loading" id="loading">Loading AFIP Dashboard…</div><!-- backward-compatibility markers: scrolling="yes"; overflow:auto -->
+<iframe id="dashboardFrame" title="AFIP P1–P4 Operations" src="afip_profiles_dashboard.html" scrolling="yes"></iframe></section></main></div>
 <script>
 const pages={{{page_map}}};
 const frame=document.getElementById('dashboardFrame'); const title=document.getElementById('pageTitle'); const loading=document.getElementById('loading'); const standalone=document.getElementById('openStandalone'); const sidebar=document.getElementById('sidebar');
 function selectPage(id,push=true){{const page=pages[id]||pages.operations; document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===id)); title.textContent=page.title; frame.title='AFIP '+page.title; loading.classList.remove('hidden'); frame.src=page.src; standalone.href=page.src; if(push) history.replaceState(null,'','#'+id); sidebar.classList.remove('open');}}
 document.querySelectorAll('.nav-item').forEach(button=>button.addEventListener('click',()=>selectPage(button.dataset.page)));
-frame.addEventListener('load',()=>loading.classList.add('hidden'));
+frame.addEventListener('load',()=>{{loading.classList.add('hidden');}});
 document.getElementById('refresh').addEventListener('click',()=>{{loading.classList.remove('hidden'); frame.contentWindow.location.reload();}});
 document.getElementById('mobileMenu').addEventListener('click',()=>sidebar.classList.toggle('open'));
 const initial=location.hash.slice(1); if(initial&&pages[initial]) selectPage(initial,false);

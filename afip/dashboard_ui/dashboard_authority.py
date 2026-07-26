@@ -53,8 +53,12 @@ class DashboardAuthority:
 
         directory = Path(output_directory)
         directory.mkdir(parents=True, exist_ok=True)
+        from afip.dashboard_data_contract import build_dashboard_contract
+        contract = build_dashboard_contract(project_root)
         renderer = ThreeDashboardRuntime()
         data = dict(record or default_dashboard_record())
+        data["dashboard_data_contract"] = contract
+        data["profiles"] = contract.get("profiles", [])
         p1 = _atomic_text(directory / PROFILE_FILENAME, renderer.render_profiles_html(data))
         p2 = _atomic_text(directory / INTELLIGENCE_FILENAME, renderer.render_intelligence_html(data))
         p3 = _atomic_text(directory / RESEARCH_FILENAME, renderer.render_research_html(data, project_root))

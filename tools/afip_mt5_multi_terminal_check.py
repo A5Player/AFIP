@@ -5,17 +5,24 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from afip.four_profile_operations.mt5_connection import MT5MultiTerminalConnectionManager
 
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="AFIP isolated MT5 multi-terminal connection check")
+    parser = argparse.ArgumentParser(description="AFIP MT5 multi-terminal observation/check")
     parser.add_argument("--config", default="config/four_profile_demo.json")
     parser.add_argument("--profiles", nargs="*", default=None)
+    parser.add_argument("--active", action="store_true", help="Explicitly allow MT5 initialize/login connectivity diagnostics")
     parser.add_argument("--reconnect-attempts", type=int, default=1)
     args = parser.parse_args()
-    report = MT5MultiTerminalConnectionManager(args.config).check(args.profiles, max(0, args.reconnect_attempts))
+    report = MT5MultiTerminalConnectionManager(args.config).check(
+        args.profiles, max(0, args.reconnect_attempts), active=args.active
+    )
     print(json.dumps(report, indent=2, default=str))
-    print("Execution: LOCKED_SIMULATION_ONLY | NO_ORDER_SENT")
+    print(f"Monitoring: {report['monitoring_mode']} | Execution: LOCKED_SIMULATION_ONLY | NO_ORDER_SENT")
     bad = {"BLOCKED", "DISCONNECTED", "DEGRADED", "ERROR"}
-    return 2 if report["validation_errors"] or any(p["connection_status"] in bad for p in report["profiles"] if p["enabled"]) else 0
+    return 2 if report["validation_errors"] or any(
+        p["connection_status"] in bad for p in report["profiles"] if p["enabled"]
+    ) else 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

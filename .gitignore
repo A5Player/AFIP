@@ -62,3 +62,8 @@ payload/tests/test_afip_v1_pack_4_production_certification_repair.py
 payload/tests/test_phase25_position_protection.py
 payload/tools/afip_demo_execution_control.py
 payload/tools/afip_v1_pack_4_demo_execution_certification.py
+# AFIP V1 runtime-only generated state
+/runtime/dashboard/dashboard_runtime.json
+/runtime/profiles/*/mt5_live_snapshot.json
+/AFIP_MAXIMUM_LOT_AUTHORITY_FINAL_PATCH/
+/AFIP_CAPITAL_AUTHORITY_AUDIT.txt

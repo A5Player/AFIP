@@ -1,0 +1,19 @@
+AFIP V1 Final Production Certification Pack
+
+Files:
+- RUN_AFIP_V1_FINAL_PRODUCTION_CERTIFICATION.ps1
+- tools/afip_v1_final_production_certification.py
+- README_AFIP_V1_FINAL_PRODUCTION_CERTIFICATION_TH.md
+- FILE_LIST_AFIP_V1_FINAL_PRODUCTION_CERTIFICATION.txt
+
+Scope:
+- Repository cleanup
+- Generated runtime artifact exclusion
+- Focused production certification
+- No trading logic changes
+- No MT5 launch
+- No runtime launch
+- No automatic Git staging/commit/push
+
+Revision 1:
+- Fix Test-GitTracked so untracked files do not terminate PowerShell under ErrorActionPreference=Stop.

@@ -1,0 +1,5 @@
+Expected after installation:
+- Pipeline scroll reaches MT5 Order Send and page bottom.
+- One browser scrollbar only; no nested iframe scrollbar.
+- Dashboard iframe resizes again after each 5-second internal refresh.
+- Trading logic unchanged.
