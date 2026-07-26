@@ -28,6 +28,7 @@ import uuid
 from typing import Any, Callable, Mapping, Protocol
 
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime, ProfileOperationalConfig
+from afip.four_profile_operations.mt5_connection import MT5MultiTerminalConnectionManager
 from afip.capital_growth_engine import CapitalGrowthEngine
 from afip.position_policy import confidence_maximum_units
 from afip.position_capacity_formula import capital_tiers_from_profile
@@ -529,10 +530,20 @@ class DemoExecutionGateway:
         path_ok = True if self._mt5 is not None else self._terminal_path_owned(terminal_path)
         return login_ok and server_ok and path_ok, actual_login, actual_server, terminal_path
 
+    def _manual_terminal_running(self) -> bool:
+        """Read process truth without invoking the MetaTrader5 bridge."""
+        if os.name != "nt":
+            return True
+        return MT5MultiTerminalConnectionManager._normal_path(self.profile.mt5_terminal) in (
+            MT5MultiTerminalConnectionManager._running_terminal_paths()
+        )
+
     def _repair_exact_binding(self, mt5: MT5Protocol) -> tuple[bool, str, str, str]:
         binding = self._binding_snapshot(mt5)
         if binding[0]:
             return binding
+        if not self._manual_terminal_running():
+            return False, "", "", ""
         try:
             mt5.shutdown()
         except Exception:
@@ -577,6 +588,9 @@ class DemoExecutionGateway:
             return None, self._report("BLOCKED", "mt5_credentials_not_configured")
         if not self.profile.mt5_terminal.exists():
             return None, self._report("BLOCKED", "mt5_terminal_not_found")
+
+        if not self._manual_terminal_running():
+            return None, self._report("BLOCKED", "mt5_terminal_not_running_manual_start_required")
 
         # Reset any inherited/stale MetaTrader5 bridge session before binding the
         # exact profile terminal. This is required even in short-lived workers

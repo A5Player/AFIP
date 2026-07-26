@@ -204,6 +204,7 @@ class FourProfileOperationalRuntime:
         if report.validation_errors:
             return report
         selected_ids = {value.upper() for value in selected} if selected else None
+        errors: list[str] = []
         for profile in self.load():
             if not profile.enabled or not profile.launch_mt5:
                 continue
@@ -211,8 +212,12 @@ class FourProfileOperationalRuntime:
                 continue
             if not profile.mt5_terminal.exists():
                 continue
-            subprocess.Popen([str(profile.mt5_terminal), "/portable"], cwd=str(profile.mt5_folder))
-        return report
+            # Production policy: the operator is the only MT5 process authority.
+            # This compatibility command is intentionally fail-closed and never
+            # starts terminal64.exe.
+            errors.append(f"{profile.profile_id}:manual_mt5_start_required_auto_launch_forbidden")
+        records = tuple(profile.status_record() for profile in self.load())
+        return FourProfileReport("BLOCKED" if errors else report.status, records, tuple(errors))
 
 class FourProfileSupervisor:
     """Starts and stops isolated locked-simulation worker processes per profile."""

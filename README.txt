@@ -1,20 +1,20 @@
-AFIP V1 FINAL CAPITAL AUTHORITY FINAL ALIGNMENT PATCH
+AFIP V1 MT5 Existing Session IPC Fix
 
-Purpose:
-Minimal capital contract alignment.
+This patch removes portable=True from the two MT5 runtime authorities so AFIP
+targets the manually opened P1-P4 sessions instead of launching separate portable
+instances.
 
-Changes:
-- Keep CAPITAL_TIER_TABLE as execution allocation contract.
-- Restore legacy compatibility flag.
-- Keep P4 as experimental execution profile with conservative 0.01 lot.
-
-Files:
-- config/four_profile_demo.json
-- afip/position_capacity_formula.py
+Files inspected:
+- tools\afip_verify_account_isolation.py
+- afip\demo_execution_gateway\runtime.py
 
 Install:
-Copy files over matching paths under C:\AFIP\source
+cd <extracted folder>
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+.\INSTALL_AFIP_V1_MT5_EXISTING_SESSION_IPC_FIX.ps1 -ProjectRoot C:\AFIP
 
-Validate:
-cd C:\AFIP\source
-python -m pytest -q
+Then confirm exactly four terminal64.exe processes remain and run:
+cd C:\AFIP
+.\START_AFIP.ps1
+
+This patch does not change lot size, SL/TP, signal thresholds, risk, or order policy.

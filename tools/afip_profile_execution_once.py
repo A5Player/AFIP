@@ -10,8 +10,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-import subprocess
-import time
 
 from afip.demo_execution_gateway import DemoExecutionGateway, DemoProfilePolicy
 from afip.four_profile_operations.runtime import FourProfileOperationalRuntime
@@ -19,30 +17,22 @@ from afip.four_profile_operations.runtime import FourProfileOperationalRuntime
 CONFIG = Path("config/four_profile_demo.json")
 
 
-def _ensure_target_terminal(profile) -> None:
-    """Start the exact portable MT5 terminal before importing the bridge.
+def _require_target_terminal_running(profile) -> None:
+    """Fail closed unless exactly one configured MT5 process already exists.
 
-    MetaTrader5 terminal discovery may otherwise attach a fresh worker to the
-    first already-running terminal. Starting the configured executable first
-    gives Windows and the bridge an unambiguous target without stopping any
-    other profile terminal.
+    This is a read-only process check. It never starts, reconnects, or logs in a
+    terminal. The user remains the sole MT5 process authority.
     """
+    from tools.afip_verify_account_isolation import normalize, running_terminal_paths
+
     if os.name != "nt":
         return
-    terminal = Path(profile.mt5_terminal)
-    if not terminal.exists():
-        return
-    try:
-        subprocess.Popen(
-            [str(terminal), "/portable"],
-            cwd=str(terminal.parent),
-            close_fds=True,
-            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
-        )
-        time.sleep(2.0)
-    except OSError:
-        # The gateway remains fail-closed and will report initialize/binding errors.
-        return
+    target = normalize(str(profile.mt5_terminal))
+    matches = sum(1 for path in running_terminal_paths() if path == target)
+    if matches == 0:
+        raise RuntimeError("mt5_terminal_not_running_manual_start_required")
+    if matches > 1:
+        raise RuntimeError("duplicate_mt5_terminal_process")
 
 
 def run_once(profile_id: str, config_path: Path = CONFIG) -> dict:
@@ -68,7 +58,7 @@ def run_once(profile_id: str, config_path: Path = CONFIG) -> dict:
         }
 
     policy = DemoProfilePolicy.from_mapping(raw_profile)
-    _ensure_target_terminal(profile)
+    _require_target_terminal_running(profile)
     return DemoExecutionGateway(profile, policy).run_cycle().as_dict()
 
 

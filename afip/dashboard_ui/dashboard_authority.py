@@ -89,8 +89,9 @@ class DashboardAuthority:
         renderer = ThreeDashboardRuntime()
         data = dict(record or default_dashboard_record())
         return {
-            "profiles": _atomic_text(directory / PROFILE_FILENAME, renderer.render_profiles_html(data)),
-            "intelligence": _atomic_text(directory / INTELLIGENCE_FILENAME, renderer.render_intelligence_html(data)),
-            "research_operations": _atomic_text(directory / OPERATIONS_FILENAME, render_research_operations(project_root)),
+            # Fast pages: home, research and data-loading/operations are refreshed
+            # every fast cycle.  These renderers read existing JSON evidence only.
             "home": _atomic_text(directory / HOME_FILENAME, render_dashboard_home()),
+            "research": _atomic_text(directory / RESEARCH_FILENAME, renderer.render_research_html(data, project_root)),
+            "research_operations": _atomic_text(directory / OPERATIONS_FILENAME, render_research_operations(project_root)),
         }

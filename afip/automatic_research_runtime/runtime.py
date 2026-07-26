@@ -40,6 +40,16 @@ def _number(value: Any) -> float | None:
     return result
 
 
+
+def _relative_key(path: Path, root: Path) -> str:
+    """Return a stable repository-relative key on Windows and POSIX."""
+    return path.relative_to(root).as_posix()
+
+
+def _looks_like_ohlc_record(record: Mapping[str, Any]) -> bool:
+    keys = {str(key).lower() for key in record.keys()}
+    return bool(keys.intersection({"open", "high", "low", "close", "tick_volume", "volume"}))
+
 def _timestamp(record: Mapping[str, Any]) -> str | None:
     for key in ("timestamp_utc", "time_utc", "closed_at_utc", "timestamp", "time"):
         value = record.get(key)
@@ -206,7 +216,7 @@ class AutomaticResearchRuntime:
                 records += 1
                 payload = record.get("payload") if isinstance(record.get("payload"), Mapping) else record
                 timeframe = str(payload.get("timeframe", "UNKNOWN")).upper()
-                bar = _ohlc({**dict(payload), "timestamp_utc": record.get("observed_at_utc")}, source=str(path.relative_to(self.root)), timeframe=timeframe)
+                bar = _ohlc({**dict(payload), "timestamp_utc": record.get("observed_at_utc")}, source=_relative_key(path, self.root), timeframe=timeframe)
                 if bar is not None:
                     bars[(bar["timeframe"], bar["timestamp_utc"])] = bar
         return sorted(bars.values(), key=lambda item: (item["timeframe"], item["timestamp_utc"])), files, records
@@ -221,7 +231,8 @@ class AutomaticResearchRuntime:
         scanned = lake_records
         rejected = 0
         index = self._load_discovery_index()
-        previous = index.get("files", {})
+        previous_raw = index.get("files", {})
+        previous = {str(key).replace("\\", "/"): value for key, value in previous_raw.items()}
         updated: dict[str, Any] = {}
         skipped_unchanged_non_ohlc = 0
         roots = (
@@ -238,31 +249,39 @@ class AutomaticResearchRuntime:
                     continue
                 if path == self.status_path or path == self.discovery_index_path or self.output_root in path.parents or self.historical_lake_root in path.parents:
                     continue
-                relative = str(path.relative_to(self.root))
+                relative = _relative_key(path, self.root)
                 stat = path.stat()
                 fingerprint = f"{stat.st_size}:{stat.st_mtime_ns}"
                 prior = previous.get(relative, {})
                 if prior.get("fingerprint") == fingerprint and prior.get("contains_ohlc") is False:
                     files += 1
                     scanned += int(prior.get("records_scanned", 0) or 0)
-                    rejected += int(prior.get("rejected_records", 0) or 0)
-                    updated[relative] = prior
+                    updated[relative] = {**prior, "classification": prior.get("classification", "NON_OHLC_SKIPPED"), "invalid_ohlc_records": int(prior.get("invalid_ohlc_records", 0) or 0), "rejected_records": int(prior.get("invalid_ohlc_records", 0) or 0)}
                     skipped_unchanged_non_ohlc += 1
                     continue
                 files += 1
-                file_scanned = file_rejected = file_usable = 0
+                file_scanned = file_rejected = file_usable = file_non_ohlc = 0
                 for record in self._iter_json_records(path):
                     scanned += 1; file_scanned += 1
+                    if not _looks_like_ohlc_record(record):
+                        file_non_ohlc += 1
+                        continue
                     bar = _ohlc(record, source=relative)
                     if bar is None:
                         rejected += 1; file_rejected += 1
                         continue
                     file_usable += 1
                     bars[(bar["timeframe"], bar["timestamp_utc"])] = bar
+                classification = "OHLC_ACCEPTED" if file_usable else ("INVALID_OHLC" if file_rejected else "NON_OHLC_SKIPPED")
+                if classification == "NON_OHLC_SKIPPED":
+                    skipped_unchanged_non_ohlc += 1
                 updated[relative] = {
                     "fingerprint": fingerprint,
+                    "classification": classification,
                     "contains_ohlc": file_usable > 0,
                     "records_scanned": file_scanned,
+                    "non_ohlc_records_skipped": file_non_ohlc,
+                    "invalid_ohlc_records": file_rejected,
                     "rejected_records": file_rejected,
                     "usable_bars": file_usable,
                 }
@@ -271,6 +290,9 @@ class AutomaticResearchRuntime:
             "updated_at_utc": _utc_now(),
             "lake_files_scanned": lake_files,
             "lake_records_scanned": lake_records,
+            "non_ohlc_files_skipped": sum(1 for item in updated.values() if item.get("classification") == "NON_OHLC_SKIPPED" or (item.get("contains_ohlc") is False and int(item.get("invalid_ohlc_records", item.get("rejected_records", 0)) or 0) == 0)),
+            "non_ohlc_records_skipped": sum(int(item.get("non_ohlc_records_skipped", 0) or 0) for item in updated.values()),
+            "invalid_ohlc_records_rejected": sum(int(item.get("invalid_ohlc_records", item.get("rejected_records", 0)) or 0) for item in updated.values()),
             "skipped_unchanged_non_ohlc_files": skipped_unchanged_non_ohlc,
             "files": updated,
         })

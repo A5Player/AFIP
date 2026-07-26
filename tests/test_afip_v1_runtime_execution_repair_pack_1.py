@@ -5,11 +5,13 @@ GATEWAY = ROOT / "afip" / "demo_execution_gateway" / "runtime.py"
 WORKER = ROOT / "tools" / "afip_profile_execution_once.py"
 
 
-def test_worker_prelaunches_exact_portable_terminal():
+def test_worker_requires_existing_terminal_without_launching_it():
     text = WORKER.read_text(encoding="utf-8")
-    assert "_ensure_target_terminal(profile)" in text
-    assert '[str(terminal), "/portable"]' in text
-    assert "time.sleep(2.0)" in text
+    assert "_require_target_terminal_running(profile)" in text
+    assert "running_terminal_paths()" in text
+    assert "mt5_terminal_not_running_manual_start_required" in text
+    assert "subprocess.Popen" not in text
+    assert '[str(terminal), "/portable"]' not in text
 
 
 def test_gateway_resets_bridge_before_initialize():
