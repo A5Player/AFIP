@@ -104,6 +104,8 @@ class AutomaticResearchSummary:
     historical_lake_duplicates: int = 0
     live_execution_enabled: bool = False
     order_send_called: bool = False
+    mt5_collection_reasons: tuple[str, ...] = ()
+    mt5_timeframes_requested: tuple[str, ...] = ()
     replay_timeframe_evidence: dict[str, dict[str, Any]] | None = None
     timeframe_data_quality: dict[str, dict[str, Any]] | None = None
     gap_ranges_detected: int = 0
@@ -257,6 +259,10 @@ class AutomaticResearchRuntime:
                     files += 1
                     scanned += int(prior.get("records_scanned", 0) or 0)
                     updated[relative] = {**prior, "classification": prior.get("classification", "NON_OHLC_SKIPPED"), "invalid_ohlc_records": int(prior.get("invalid_ohlc_records", 0) or 0), "rejected_records": int(prior.get("invalid_ohlc_records", 0) or 0)}
+                    # Legacy data/research inputs count an entirely non-OHLC
+                    # file once. Runtime status/telemetry files remain skipped.
+                    if (self.root / "data" / "research") in path.parents:
+                        rejected += 1
                     skipped_unchanged_non_ohlc += 1
                     continue
                 files += 1
@@ -264,6 +270,10 @@ class AutomaticResearchRuntime:
                 for record in self._iter_json_records(path):
                     scanned += 1; file_scanned += 1
                     if not _looks_like_ohlc_record(record):
+                        # Preserve the legacy rejected-record contract while the
+                        # discovery index separately classifies these records as
+                        # NON_OHLC_SKIPPED. This keeps telemetry backward compatible
+                        # without treating them as usable OHLC evidence.
                         file_non_ohlc += 1
                         continue
                     bar = _ohlc(record, source=relative)
@@ -274,6 +284,10 @@ class AutomaticResearchRuntime:
                     bars[(bar["timeframe"], bar["timestamp_utc"])] = bar
                 classification = "OHLC_ACCEPTED" if file_usable else ("INVALID_OHLC" if file_rejected else "NON_OHLC_SKIPPED")
                 if classification == "NON_OHLC_SKIPPED":
+                    # Preserve the legacy data/research summary contract while
+                    # keeping runtime status/telemetry records skipped, not rejected.
+                    if (self.root / "data" / "research") in path.parents:
+                        rejected += 1
                     skipped_unchanged_non_ohlc += 1
                 updated[relative] = {
                     "fingerprint": fingerprint,
@@ -298,6 +312,34 @@ class AutomaticResearchRuntime:
         })
         ordered = sorted(bars.values(), key=lambda item: (item["timeframe"], item["timestamp_utc"]))
         return ordered, files, scanned, rejected
+
+    @staticmethod
+    def _mt5_collection_requirements(
+        bars: Sequence[Mapping[str, Any]],
+        quality: Mapping[str, TimeframeDataQuality],
+    ) -> tuple[tuple[str, ...], tuple[str, ...]]:
+        """Return explicit reasons and timeframes that require MT5 history collection.
+
+        Dataset currency is evaluated per registered timeframe. A populated M1
+        window must never suppress collection for missing or stale higher
+        timeframes.
+        """
+        reasons: list[str] = []
+        requested: list[str] = []
+        if len(bars) < 100:
+            reasons.append("total_usable_bars_below_minimum")
+        for timeframe in get_supported_timeframes(capability="historical_collection"):
+            evidence = quality.get(timeframe)
+            if evidence is None or evidence.available_bars <= 0:
+                reasons.append(f"{timeframe.lower()}_data_missing")
+                requested.append(timeframe)
+                continue
+            if evidence.fresh is False:
+                reasons.append(f"{timeframe.lower()}_data_stale")
+                requested.append(timeframe)
+        if len(bars) < 100 and not requested:
+            requested.extend(get_supported_timeframes(capability="historical_collection"))
+        return tuple(dict.fromkeys(reasons)), tuple(dict.fromkeys(requested))
 
     def collect_mt5_bars(self, maximum_per_timeframe: int = 5000) -> list[dict[str, Any]]:
         if os.name != "nt":
@@ -475,13 +517,24 @@ class AutomaticResearchRuntime:
         bars, files, scanned, rejected = self.discover_bars()
         self.observatory.update(state="RUNNING", stage="HISTORICAL_LOADING", activity="Historical file scan completed", files_scanned=files, records_scanned=scanned, ohlc_accepted=len(bars), rejected_records=rejected)
         self._report(f"      Files: {files} | Records: {scanned} | Usable OHLC: {len(bars)} | Non-OHLC: {rejected}")
+        quality_engine = TimeframeDataQuality()
+        initial_quality = quality_engine.evaluate(bars)
+        collection_reasons, collection_timeframes = self._mt5_collection_requirements(bars, initial_quality)
         mt5_attempted = False
         mt5_bars: list[dict[str, Any]] = []
-        if collect_mt5_when_needed and len(bars) < 100:
+        if collect_mt5_when_needed and collection_reasons:
             mt5_attempted = True
-            self._write_stage("COLLECT_MT5_HISTORY", "local_ohlc_below_minimum_attempting_mt5_history")
-            self._report("[2/5] Local OHLC is insufficient; collecting closed bars from MT5...")
-            mt5_bars = self.collect_mt5_bars(maximum_per_timeframe=max(500, maximum_replay_bars))
+            self._write_stage(
+                "COLLECT_MT5_HISTORY",
+                "timeframe_coverage_or_freshness_requires_mt5_history",
+                mt5_collection_reasons=collection_reasons,
+                mt5_timeframes_requested=collection_timeframes,
+            )
+            self._report(
+                "[2/5] Dataset is incomplete or stale by timeframe; collecting closed bars from MT5..."
+            )
+            self._report(f"      Collection reasons: {', '.join(collection_reasons)}")
+            mt5_bars = self.collect_mt5_bars(maximum_per_timeframe=max(5000, maximum_replay_bars))
             self._report(f"      MT5 bars collected: {len(mt5_bars)}")
             merged = {(item["timeframe"], item["timestamp_utc"]): item for item in bars}
             for item in mt5_bars:
@@ -495,7 +548,6 @@ class AutomaticResearchRuntime:
             lake_appended, lake_duplicates = self.persist_historical_bars(mt5_bars)
             self._report(f"      Historical lake: appended {lake_appended} | duplicates {lake_duplicates}")
 
-        quality_engine = TimeframeDataQuality()
         quality_evidence_objects = quality_engine.evaluate(bars)
         initial_gaps = tuple(
             gap for timeframe in _TIMEFRAMES
@@ -686,6 +738,8 @@ class AutomaticResearchRuntime:
             dataset_root=str(self.output_root.relative_to(self.root)),
             historical_lake_root=str(self.historical_lake_root.relative_to(self.root)),
             historical_lake_appended=lake_appended, historical_lake_duplicates=lake_duplicates,
+            mt5_collection_reasons=collection_reasons,
+            mt5_timeframes_requested=collection_timeframes,
             replay_timeframe_evidence=replay_evidence,
             timeframe_data_quality=quality_evidence,
             gap_ranges_detected=gap_ranges_detected,

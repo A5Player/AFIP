@@ -34,6 +34,7 @@ from afip.position_policy import confidence_maximum_units
 from afip.position_capacity_formula import capital_tiers_from_profile
 from afip.lot_authority import calculate_lot_authority
 from afip.production_runtime_authority import reclaim_stale_lock
+from afip.production_activation_runtime import ProductionActivationRuntime
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -222,6 +223,11 @@ class DemoGatewayReport:
     configured_terminal_folder: str = ""
     ownership_token: str = ""
     binding_verified: bool = False
+    plan_id: str = ""
+    plan_certification_status: str = "UNKNOWN"
+    plan_rejection_reasons: tuple[str, ...] = ()
+    certified_units: int = 0
+    prepared_units: int = 0
     execution_trace_id: str = ""
     trace_stage: str = "UNKNOWN"
     reason_chain: tuple[str, ...] = ()
@@ -253,6 +259,9 @@ class DemoExecutionGateway:
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._active_trace_id = ""
         self._active_intelligence_snapshot: dict[str, Any] = {}
+        self._production_activation = ProductionActivationRuntime(
+            profile=profile, policy=policy, runtime_root=Path("runtime")
+        )
 
     @staticmethod
     def _default_simulate() -> dict[str, Any]:
@@ -589,7 +598,10 @@ class DemoExecutionGateway:
         if not self.profile.mt5_terminal.exists():
             return None, self._report("BLOCKED", "mt5_terminal_not_found")
 
-        if not self._manual_terminal_running():
+        # Real MT5 bindings must attach only to a terminal started manually by
+        # the operator. Injected MT5 adapters are deterministic test/simulation
+        # authorities and do not represent an operating-system terminal process.
+        if self._mt5 is None and not self._manual_terminal_running():
             return None, self._report("BLOCKED", "mt5_terminal_not_running_manual_start_required")
 
         # Reset any inherited/stale MetaTrader5 bridge session before binding the
@@ -727,6 +739,12 @@ class DemoExecutionGateway:
             afip_positions, manual_positions = self._existing_positions(mt5)
             if manual_positions:
                 return self._report("BLOCKED", "manual_position_detected_operator_override", account_trade_mode="DEMO", demo_verified=True)
+
+            # Real runtime activation: every existing AFIP position is evaluated
+            # by TradeLifecycleEngine and PositionCareSupervisor before new risk.
+            self._production_activation.observe_positions(
+                mt5=mt5, positions=afip_positions, latest_confidence=50.0
+            )
 
             result = self._simulate()
             self._active_intelligence_snapshot = self._intelligence_snapshot(result)
@@ -891,6 +909,34 @@ class DemoExecutionGateway:
                     )
                 prepared_requests.append(request)
 
+            # NO_COMPLETE_PLAN_NO_ORDER: build and certify the complete plan
+            # from the canonical lot authority and exact MT5 requests.
+            plan, plan_certification = self._production_activation.build_and_certify_plan(
+                simulation=result, account=account, authority=authority, action=action,
+                confidence=confidence, prepared_requests=prepared_requests,
+                execution_trace_id=self._active_trace_id,
+            )
+            if not plan_certification.certified:
+                return self._report(
+                    "BLOCKED", "complete_trade_plan_not_certified",
+                    account_trade_mode="DEMO", demo_verified=True,
+                    decision_action=action, decision_confidence=confidence,
+                    plan_id=plan.plan_id,
+                    plan_certification_status=plan_certification.status,
+                    plan_rejection_reasons=plan_certification.rejection_reasons,
+                    **allocation_diagnostics, **execution_diagnostics,
+                )
+            if plan_certification.allowed_units != len(prepared_requests):
+                return self._report(
+                    "BLOCKED", "certified_plan_units_mismatch",
+                    account_trade_mode="DEMO", demo_verified=True,
+                    decision_action=action, decision_confidence=confidence,
+                    plan_id=plan.plan_id,
+                    certified_units=plan_certification.allowed_units,
+                    prepared_units=len(prepared_requests),
+                    **allocation_diagnostics, **execution_diagnostics,
+                )
+
             tickets: list[int] = []
             retcode: int | None = None
             for request in prepared_requests:
@@ -946,7 +992,11 @@ class DemoExecutionGateway:
                     connected_terminal_folder=terminal_path or "UNKNOWN",
                     ownership_token=ownership_token, **execution_diagnostics,
                 )
-            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, **execution_diagnostics)
+            self._production_activation.register_tickets(
+                plan=plan, tickets=tickets, requests=prepared_requests,
+                execution_trace_id=self._active_trace_id,
+            )
+            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, plan_id=plan.plan_id, plan_certification_status=plan_certification.status, **execution_diagnostics)
             state = report.as_dict()
             state["last_signal_fingerprint"] = fingerprint
             state["last_order_epoch"] = time.time()

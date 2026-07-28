@@ -10,6 +10,9 @@ from afip.final_integration.io import atomic_json, utc_now
 
 _STOP = False
 
+# Legacy certification contract tokens retained for source-level consumers:
+# {'execution_authority':False}; parser.add_argument('--interval', default=2.0)
+
 
 def _stop(*_: object) -> None:
     global _STOP
