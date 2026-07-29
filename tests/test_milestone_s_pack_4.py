@@ -181,3 +181,33 @@ def test_unknown_trading_cost_status_is_blocked(tmp_path, monkeypatch):
     report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=lambda:payload).run_cycle()
     assert report.status=="BLOCKED" and report.reason=="trading_cost_status_unknown"
     assert mt5.sent==[]
+
+
+def test_waiting_state_preserves_verified_binding_and_account_capital(tmp_path, monkeypatch):
+    arm(monkeypatch)
+    mt5 = FakeMT5()
+    report = DemoExecutionGateway(
+        profile(tmp_path), policy(), mt5=mt5,
+        simulate=lambda: simulation(confidence=97),
+    ).run_cycle()
+
+    assert report.reason == "profile_confidence_below_threshold"
+    assert report.binding_verified is True
+    assert report.connected_account_login == "****0369"
+    assert report.balance == 3000.0
+    assert report.equity == 3000.0
+    assert report.account_balance == 3000.0
+    assert report.account_equity == 3000.0
+    assert report.available_capital == 3000.0
+    assert report.capital_basis == "MIN_BALANCE_EQUITY"
+
+    state = __import__("json").loads(
+        (profile(tmp_path).runtime_directory / "demo_execution_state.json").read_text(encoding="utf-8")
+    )
+    assert state["binding_verified"] is True
+    assert state["connected_account_login"] == "****0369"
+    assert state["balance"] == 3000.0
+    assert state["equity"] == 3000.0
+    assert state["account_balance"] == 3000.0
+    assert state["account_equity"] == 3000.0
+    assert state["available_capital"] == 3000.0

@@ -211,6 +211,8 @@ class DemoGatewayReport:
     order_send_called: bool = False
     mt5_result_code: int | None = None
     mt5_result_comment: str = ""
+    order_check_latency_ms: float = 0.0
+    order_request_evidence: dict[str, Any] = field(default_factory=dict)
     execution_batch_id: str = ""
     execution_attempts: int = 0
     execution_latency_ms: float = 0.0
@@ -238,6 +240,33 @@ class DemoGatewayReport:
     ownership_token: str = ""
     binding_verified: bool = False
     plan_id: str = ""
+    pattern_id: str = ""
+    pattern_name: str = ""
+    pattern_family: str = ""
+    market_regime: str = ""
+    research_ranking_id: str = ""
+    research_rank: int | None = None
+    research_eligible_rank: int | None = None
+    research_evidence_count: int | None = None
+    research_win_rate: float | None = None
+    research_profit_factor: float | None = None
+    research_maximum_drawdown_percent: float | None = None
+    research_selection_reason: str = ""
+    research_authority_status: str = "NOT_RECORDED"
+    sl_authority: str = "NOT_RECORDED"
+    tp_authority: str = "NOT_RECORDED"
+    stop_loss_price: float | None = None
+    take_profit_price: float | None = None
+    stop_loss_points: float = 0.0
+    take_profit_points: float = 0.0
+    stop_loss_price_distance: float = 0.0
+    take_profit_price_distance: float = 0.0
+    stop_loss_usd_per_order: tuple[float | None, ...] = ()
+    take_profit_usd_per_order: tuple[float | None, ...] = ()
+    total_stop_loss_usd: float | None = None
+    total_take_profit_usd: float | None = None
+    protection_order_details: tuple[dict[str, Any], ...] = ()
+    aggregate_risk_reward_ratio: float | None = None
     plan_certification_status: str = "UNKNOWN"
     plan_rejection_reasons: tuple[str, ...] = ()
     certified_units: int = 0
@@ -372,6 +401,30 @@ class DemoExecutionGateway:
             return "PREFLIGHT"
         return "RUNTIME"
 
+    @classmethod
+    def _execution_request_evidence(cls, request: Mapping[str, Any], result: Any = None, *, point_size: float = 0.0) -> dict[str, Any]:
+        """Return broker-facing request/fill evidence without changing execution."""
+        request_price = float(request.get("price", 0.0) or 0.0)
+        fill_price = float(cls._value(result, "price", 0.0) or 0.0)
+        slippage_price = (fill_price - request_price) if request_price and fill_price else None
+        slippage_points = (slippage_price / point_size) if slippage_price is not None and point_size > 0 else None
+        return {
+            "symbol": str(request.get("symbol", "")),
+            "volume": float(request.get("volume", 0.0) or 0.0),
+            "request_price": request_price or None,
+            "fill_price": fill_price or None,
+            "slippage_price": round(slippage_price, 10) if slippage_price is not None else None,
+            "slippage_points": round(slippage_points, 3) if slippage_points is not None else None,
+            "deviation_points_allowed": int(request.get("deviation", 0) or 0),
+            "fill_policy": request.get("type_filling"),
+            "order_type": request.get("type"),
+            "stop_loss_price": float(request.get("sl", 0.0) or 0.0) or None,
+            "take_profit_price": float(request.get("tp", 0.0) or 0.0) or None,
+            "broker_order": int(cls._value(result, "order", 0) or 0) or None,
+            "broker_deal": int(cls._value(result, "deal", 0) or 0) or None,
+            "broker_volume": float(cls._value(result, "volume", 0.0) or 0.0) or None,
+        }
+
     @staticmethod
     def _compact_mapping(value: Any, keys: tuple[str, ...]) -> dict[str, Any]:
         if not isinstance(value, Mapping):
@@ -409,7 +462,7 @@ class DemoExecutionGateway:
             ),
             "pattern": cls._compact_mapping(
                 modular.get("pattern", modular.get("pattern_intelligence", {})) if isinstance(modular, Mapping) else {},
-                ("status", "pattern", "pattern_name", "family", "direction", "confidence", "score", "reason"),
+                ("status", "pattern_id", "pattern", "pattern_name", "pattern_family", "family", "direction", "confidence", "score", "reason"),
             ),
             "confluence": cls._compact_mapping(
                 confluence,
@@ -441,6 +494,133 @@ class DemoExecutionGateway:
             ),
         }
         return {key: value for key, value in snapshot.items() if value}
+
+    @staticmethod
+    def _recursive_first(value: Any, names: tuple[str, ...]) -> Any:
+        if isinstance(value, Mapping):
+            for name in names:
+                candidate = value.get(name)
+                if candidate not in (None, "", (), [], {}) and not isinstance(candidate, (Mapping, list, tuple)):
+                    return candidate
+            for child in value.values():
+                found = DemoExecutionGateway._recursive_first(child, names)
+                if found not in (None, "", (), [], {}):
+                    return found
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                found = DemoExecutionGateway._recursive_first(child, names)
+                if found not in (None, "", (), [], {}):
+                    return found
+        return None
+
+    @classmethod
+    def _trade_provenance(cls, result: Mapping[str, Any], protection: Mapping[str, Any]) -> dict[str, Any]:
+        def text(*names: str) -> str:
+            value = cls._recursive_first(result, tuple(names))
+            return str(value).strip() if value not in (None, "") else ""
+        def number(*names: str) -> float | None:
+            value = cls._recursive_first(result, tuple(names))
+            try:
+                return float(value) if value not in (None, "") else None
+            except (TypeError, ValueError):
+                return None
+        def integer(*names: str) -> int | None:
+            value = number(*names)
+            return int(value) if value is not None else None
+
+        pattern_name = text("pattern_name", "pattern", "graph_pattern")
+        plan_id = text("selected_plan_id", "trade_plan_id", "plan_id")
+        ranking_id = text("ranking_id", "research_ranking_id")
+        evidence = integer("evidence_count", "historical_sample_size", "sample_size", "completed_cases", "trade_count")
+        status = "RECORDED" if any((pattern_name, plan_id, ranking_id, evidence is not None)) else "NOT_RECORDED"
+        return {
+            "pattern_id": text("pattern_id"),
+            "pattern_name": pattern_name,
+            "pattern_family": text("pattern_family", "family"),
+            "market_regime": text("market_regime", "regime"),
+            "research_ranking_id": ranking_id,
+            "research_rank": integer("rank", "research_rank", "pattern_rank"),
+            "research_eligible_rank": integer("eligible_rank", "overall_eligible_rank"),
+            "research_evidence_count": evidence,
+            "research_win_rate": number("win_rate", "historical_win_rate"),
+            "research_profit_factor": number("profit_factor"),
+            "research_maximum_drawdown_percent": number("maximum_drawdown_percent", "max_drawdown_percent", "maximum_drawdown"),
+            "research_selection_reason": text("selection_reason", "ranking_reason", "selected_plan_reason"),
+            "research_authority_status": status,
+            "sl_authority": str(protection.get("stop_loss_source") or protection.get("sl_authority") or "NOT_RECORDED"),
+            "tp_authority": str(protection.get("take_profit_source") or protection.get("tp_authority") or "NOT_RECORDED"),
+        }
+
+    @classmethod
+    def _protection_financials(
+        cls,
+        mt5: MT5Protocol,
+        requests: list[dict[str, Any]],
+        point_size: float,
+        unit_plans: tuple[Mapping[str, Any], ...] = (),
+        *,
+        sl_authority: str = "NOT_RECORDED",
+        tp_authority: str = "NOT_RECORDED",
+    ) -> dict[str, Any]:
+        if not requests:
+            return {}
+        info = mt5.symbol_info(requests[0].get("symbol"))
+        tick_size = float(cls._value(info, "trade_tick_size", 0.0) or point_size or 0.0)
+        tick_value = float(cls._value(info, "trade_tick_value_loss", 0.0) or cls._value(info, "trade_tick_value", 0.0) or 0.0)
+        sl_usd: list[float | None] = []
+        tp_usd: list[float | None] = []
+        details: list[dict[str, Any]] = []
+        for index, request in enumerate(requests):
+            plan = unit_plans[index] if index < len(unit_plans) else {}
+            entry = float(request.get("price", 0.0) or 0.0)
+            sl = float(request.get("sl", 0.0) or 0.0)
+            tp = float(request.get("tp", 0.0) or 0.0)
+            volume = float(request.get("volume", 0.0) or 0.0)
+            multiplier = (tick_value / tick_size) * volume if tick_size > 0 and tick_value > 0 else None
+            risk_usd = round(abs(entry - sl) * multiplier, 2) if multiplier is not None and sl > 0 else None
+            reward_usd = round(abs(tp - entry) * multiplier, 2) if multiplier is not None and tp > 0 else None
+            sl_usd.append(risk_usd)
+            tp_usd.append(reward_usd)
+            sl_points = round(abs(entry - sl) / point_size, 2) if point_size > 0 and sl > 0 else 0.0
+            tp_points = round(abs(tp - entry) / point_size, 2) if point_size > 0 and tp > 0 else 0.0
+            rr = round(tp_points / sl_points, 4) if sl_points > 0 else None
+            details.append({
+                "order_number": index + 1,
+                "role": str(plan.get("role") or "RR"),
+                "lot": volume,
+                "entry_price": entry,
+                "sl_authority": str(plan.get("research_basis") or sl_authority),
+                "sl_price": sl or None,
+                "sl_points": sl_points,
+                "sl_price_distance": round(abs(entry - sl), 8) if sl else 0.0,
+                "risk_usd": risk_usd,
+                "tp_authority": tp_authority,
+                "tp_price": tp or None,
+                "tp_points": tp_points,
+                "tp_price_distance": round(abs(tp - entry), 8) if tp else 0.0,
+                "reward_usd": reward_usd,
+                "risk_reward_ratio": rr,
+            })
+        first = requests[0]
+        entry = float(first.get("price", 0.0) or 0.0)
+        sl = float(first.get("sl", 0.0) or 0.0)
+        tp = float(first.get("tp", 0.0) or 0.0)
+        valid_sl = [value for value in sl_usd if value is not None]
+        valid_tp = [value for value in tp_usd if value is not None]
+        total_sl = round(sum(valid_sl), 2) if len(valid_sl) == len(requests) else None
+        total_tp = round(sum(valid_tp), 2) if len(valid_tp) == len(requests) else None
+        return {
+            "stop_loss_price": sl or None,
+            "take_profit_price": tp or None,
+            "stop_loss_price_distance": round(abs(entry - sl), 8) if sl else 0.0,
+            "take_profit_price_distance": round(abs(tp - entry), 8) if tp else 0.0,
+            "stop_loss_usd_per_order": tuple(sl_usd),
+            "take_profit_usd_per_order": tuple(tp_usd),
+            "total_stop_loss_usd": total_sl,
+            "total_take_profit_usd": total_tp,
+            "protection_order_details": tuple(details),
+            "aggregate_risk_reward_ratio": round(total_tp / total_sl, 4) if total_sl and total_tp is not None else None,
+        }
 
     @staticmethod
     def _decision_pipeline(snapshot: Mapping[str, Any]) -> tuple[str, ...]:
@@ -804,6 +984,7 @@ class DemoExecutionGateway:
             cost = result.get("trading_cost_intelligence", {})
             protection = order.get("protection", {})
             protection_portfolio = order.get("protection_portfolio", {})
+            trade_provenance = self._trade_provenance(result, protection)
 
             if "FALLBACK" in data_status or "FALLBACK" in data_source:
                 return self._report("WAITING", "simulation_fallback_data_blocked", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
@@ -946,7 +1127,9 @@ class DemoExecutionGateway:
                         configured_terminal_folder=str(self.profile.mt5_folder),
                         ownership_token=ownership_token, **execution_diagnostics,
                     )
+                check_started = time.perf_counter()
                 check = mt5.order_check(request)
+                order_check_latency_ms = round((time.perf_counter() - check_started) * 1000.0, 3)
                 if check is None or int(self._value(check, "retcode", -1)) != 0:
                     reason = self._value(check, "comment", mt5.last_error())
                     return self._report(
@@ -955,9 +1138,30 @@ class DemoExecutionGateway:
                         decision_action=action, decision_confidence=confidence,
                         **allocation_diagnostics, order_check_called=True,
                         mt5_result_code=int(self._value(check, "retcode", -1)),
-                        mt5_result_comment=str(reason), **execution_diagnostics,
+                        mt5_result_comment=str(reason), order_check_latency_ms=order_check_latency_ms,
+                        order_request_evidence=self._execution_request_evidence(request, check, point_size=point_size),
+                        **execution_diagnostics,
                     )
                 prepared_requests.append(request)
+
+            sl_authority = str(protection_portfolio.get("stop_basis") or trade_provenance.get("sl_authority") or "NOT_RECORDED")
+            tp_authority = (
+                "VALIDATED_RESEARCH_RR_TARGETS"
+                if bool(protection_portfolio.get("research_evidence_sufficient"))
+                else "REGIME_ADAPTIVE_RR_TARGETS"
+            )
+            trade_provenance["sl_authority"] = sl_authority
+            trade_provenance["tp_authority"] = tp_authority
+            protection_financials = self._protection_financials(
+                mt5, prepared_requests, point_size, rr_plans,
+                sl_authority=sl_authority, tp_authority=tp_authority,
+            )
+            provenance_diagnostics = {
+                **trade_provenance,
+                **protection_financials,
+                "stop_loss_points": sl_points,
+                "take_profit_points": tp_points,
+            }
 
             # NO_COMPLETE_PLAN_NO_ORDER: build and certify the complete plan
             # from the canonical lot authority and exact MT5 requests.
@@ -974,7 +1178,7 @@ class DemoExecutionGateway:
                     plan_id=plan.plan_id,
                     plan_certification_status=plan_certification.status,
                     plan_rejection_reasons=plan_certification.rejection_reasons,
-                    **allocation_diagnostics, **execution_diagnostics,
+                    **allocation_diagnostics, **execution_diagnostics, **provenance_diagnostics,
                 )
             if plan_certification.allowed_units != len(prepared_requests):
                 return self._report(
@@ -984,7 +1188,7 @@ class DemoExecutionGateway:
                     plan_id=plan.plan_id,
                     certified_units=plan_certification.allowed_units,
                     prepared_units=len(prepared_requests),
-                    **allocation_diagnostics, **execution_diagnostics,
+                    **allocation_diagnostics, **execution_diagnostics, **provenance_diagnostics,
                 )
 
             tickets: list[int] = []
@@ -1010,7 +1214,7 @@ class DemoExecutionGateway:
                 result_send = mt5.order_send(request)
                 unit_latency_ms = round((time.perf_counter() - unit_started) * 1000.0, 3)
                 if result_send is None:
-                    unit_results.append({"unit_index": unit_index, "status": "AMBIGUOUS", "retcode": None, "comment": str(mt5.last_error()), "latency_ms": unit_latency_ms})
+                    unit_results.append({"unit_index": unit_index, "status": "AMBIGUOUS", "retcode": None, "comment": str(mt5.last_error()), "latency_ms": unit_latency_ms, **self._execution_request_evidence(request, None, point_size=point_size)})
                     report = self._report(
                         "ERROR", f"order_send_returned_none:{mt5.last_error()}",
                         account_trade_mode="DEMO", demo_verified=True,
@@ -1032,7 +1236,7 @@ class DemoExecutionGateway:
                 }
                 if retcode not in success_codes:
                     comment = self._value(result_send, "comment", "unknown")
-                    unit_results.append({"unit_index": unit_index, "status": "REJECTED", "retcode": retcode, "comment": str(comment), "latency_ms": unit_latency_ms})
+                    unit_results.append({"unit_index": unit_index, "status": "REJECTED", "retcode": retcode, "comment": str(comment), "latency_ms": unit_latency_ms, **self._execution_request_evidence(request, result_send, point_size=point_size)})
                     report = self._report(
                         "ERROR", f"order_send_failed:{retcode}:{comment}",
                         account_trade_mode="DEMO", demo_verified=True,
@@ -1052,7 +1256,7 @@ class DemoExecutionGateway:
                     return report
                 ticket = int(self._value(result_send, "order", self._value(result_send, "deal", 0)) or 0)
                 tickets.append(ticket)
-                unit_results.append({"unit_index": unit_index, "status": "SENT", "retcode": retcode, "comment": str(self._value(result_send, "comment", "")), "ticket": ticket, "latency_ms": unit_latency_ms})
+                unit_results.append({"unit_index": unit_index, "status": "SENT", "retcode": retcode, "comment": str(self._value(result_send, "comment", "")), "ticket": ticket, "latency_ms": unit_latency_ms, **self._execution_request_evidence(request, result_send, point_size=point_size)})
 
             binding_ok, actual_login, _actual_server, terminal_path = self._binding_snapshot(mt5)
             if not binding_ok:
@@ -1069,7 +1273,7 @@ class DemoExecutionGateway:
                 plan=plan, tickets=tickets, requests=prepared_requests,
                 execution_trace_id=self._active_trace_id,
             )
-            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, plan_id=plan.plan_id, plan_certification_status=plan_certification.status, execution_batch_id=execution_batch_id, execution_attempts=len(unit_results), execution_latency_ms=round((time.perf_counter()-batch_started)*1000.0,3), execution_outcome="COMPLETE", reconciliation_required=False, partial_execution=False, remaining_units=0, unit_results=tuple(unit_results), **execution_diagnostics)
+            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, plan_id=plan.plan_id, plan_certification_status=plan_certification.status, execution_batch_id=execution_batch_id, execution_attempts=len(unit_results), execution_latency_ms=round((time.perf_counter()-batch_started)*1000.0,3), execution_outcome="COMPLETE", reconciliation_required=False, partial_execution=False, remaining_units=0, unit_results=tuple(unit_results), **execution_diagnostics, **provenance_diagnostics)
             state = report.as_dict()
             state["last_signal_fingerprint"] = fingerprint
             state["last_order_epoch"] = time.time()

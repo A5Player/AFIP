@@ -52,8 +52,19 @@ class ResearchDatasetAggregator:
         rows: list[dict[str, Any]] = []
         for pattern_id, items in grouped.items():
             exits = [item.get("exit_context", {}) for item in items]
-            completed_exits = [exit_ for exit_ in exits if isinstance(exit_, Mapping) and exit_.get("net_profit") not in (None, "")]
-            profits = [_number(exit_.get("net_profit")) for exit_ in completed_exits]
+            eligible_exits = [
+                exit_ for exit_ in exits
+                if isinstance(exit_, Mapping)
+                and exit_.get("research_feedback_status") == "ELIGIBLE"
+                and exit_.get("net_realized_profit_usd") not in (None, "")
+            ]
+            quarantined_exits = [
+                exit_ for exit_ in exits
+                if isinstance(exit_, Mapping)
+                and exit_.get("research_feedback_status") == "QUARANTINED"
+            ]
+            completed_exits = eligible_exits
+            profits = [_number(exit_.get("net_realized_profit_usd")) for exit_ in completed_exits]
             wins = sum(value > 0 for value in profits)
             gross_profit = sum(max(value, 0.0) for value in profits)
             gross_loss = abs(sum(min(value, 0.0) for value in profits))
@@ -88,7 +99,9 @@ class ResearchDatasetAggregator:
                 "average_mfe": round(mean([_number(x.get("mfe")) for x in completed_exits]) if completed_exits else 0.0, 2),
                 "average_mae": round(mean([_number(x.get("mae")) for x in completed_exits]) if completed_exits else 0.0, 2),
                 "average_exit_quality": round(mean([_number(x.get("exit_quality")) for x in completed_exits]) if completed_exits else 0.0, 2),
-                "statistics_status": "AVAILABLE" if completed else "INSUFFICIENT_COMPLETED_TRADES",
+                "eligible_feedback_count": len(eligible_exits),
+                "quarantined_feedback_count": len(quarantined_exits),
+                "statistics_status": "AVAILABLE" if completed else "INSUFFICIENT_ELIGIBLE_COMPLETED_TRADES",
                 "research_only": True,
                 "affects_trading": False,
             })
@@ -116,7 +129,29 @@ class ResearchDatasetAggregator:
         active = len(cases) - closed
         unknown = sum(1 for case in cases if _pattern_id(case) == "UNKNOWN")
         malformed = sum(1 for case in cases if not case.get("trade_case_id") or not case.get("data_lineage"))
-        dataset_health = "READY" if malformed == 0 else "CAUTION"
+        case_ids = [str(case.get("trade_case_id", "")) for case in cases if case.get("trade_case_id")]
+        duplicate_case_count = len(case_ids) - len(set(case_ids))
+        closed_cases = [case for case in cases if case.get("exit_context")]
+        eligible_closed = [case for case in closed_cases if case.get("exit_context", {}).get("research_feedback_status") == "ELIGIBLE"]
+        quarantined_closed = [case for case in closed_cases if case.get("exit_context", {}).get("research_feedback_status") == "QUARANTINED"]
+        regimes = {
+            str(case.get("market_context", {}).get("market_regime") or case.get("market_context", {}).get("regime") or "UNKNOWN")
+            for case in eligible_closed
+        }
+        regimes.discard("UNKNOWN")
+        eligible_patterns = [row for row in rows if row.get("eligible_feedback_count", 0) > 0]
+        sample_ready_patterns = [row for row in rows if row.get("eligible_feedback_count", 0) >= 30]
+        blockers = []
+        if malformed:
+            blockers.append("malformed_trade_cases")
+        if duplicate_case_count:
+            blockers.append("duplicate_trade_case_ids")
+        if unknown:
+            blockers.append("unknown_pattern_cases")
+        if not eligible_closed:
+            blockers.append("no_eligible_closed_trade_feedback")
+        dataset_health = "READY" if malformed == 0 and duplicate_case_count == 0 else "CAUTION"
+        ranking_status = "READY_FOR_RESEARCH_RANKING" if sample_ready_patterns and not blockers else "NOT_READY_FOR_AUTOMATIC_RANKING"
         return {
             "status": "READY",
             "research_only": True,
@@ -128,7 +163,25 @@ class ResearchDatasetAggregator:
                 "closed_case_count": closed,
                 "unknown_pattern_count": unknown,
                 "malformed_case_count": malformed,
+                "duplicate_trade_case_id_count": duplicate_case_count,
+                "eligible_closed_trade_count": len(eligible_closed),
+                "quarantined_closed_trade_count": len(quarantined_closed),
+                "eligible_pattern_count": len(eligible_patterns),
+                "sample_ready_pattern_count": len(sample_ready_patterns),
+                "eligible_market_regime_count": len(regimes),
+                "eligible_market_regimes": sorted(regimes),
                 "lineage_coverage_percent": round(((len(cases) - malformed) / len(cases) * 100.0) if cases else 100.0, 2),
+                "certification_blockers": blockers,
+            },
+            "ranking_readiness": {
+                "status": ranking_status,
+                "minimum_eligible_sample_per_pattern": 30,
+                "eligible_feedback_only": True,
+                "uses_net_realized_profit_after_costs": True,
+                "quarantined_feedback_excluded": True,
+                "automatic_ranking_mutation": False,
+                "research_only": True,
+                "affects_trading": False,
             },
             "lifecycle_states": dict(sorted(lifecycle.items())),
             "pending_checkpoints": {name: due_or_pending.get(name, 0) for name in ("M15", "M30", "H1", "H4", "D1")},

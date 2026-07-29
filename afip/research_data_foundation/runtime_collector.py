@@ -186,10 +186,47 @@ class ResearchRuntimeCollector:
         normalized = dict(exit_payload)
         normalized.setdefault("observed_at_utc", _utc_now())
         normalized.setdefault("exit_reason", "BROKER_CLOSED_POSITION")
+
+        # Preserve broker-reported money truth. MT5 commission/swap/fee values are
+        # normally signed (costs are negative), so they are added to gross profit.
+        commission = float(exit_payload.get("commission", 0.0) or 0.0)
+        swap = float(exit_payload.get("swap", 0.0) or 0.0)
+        fee = float(exit_payload.get("fee", 0.0) or 0.0)
+        explicit_net = exit_payload.get("net_profit")
+        net_profit = float(explicit_net) if explicit_net is not None else realized + commission + swap + fee
+        initial_risk = exit_payload.get("initial_risk_usd")
+        initial_risk_usd = float(initial_risk) if initial_risk not in (None, "") else None
+        realized_r = (net_profit / initial_risk_usd) if initial_risk_usd and initial_risk_usd > 0.0 else None
+        exit_efficiency = (net_profit / mfe) if mfe > 0.0 else None
+
+        required = {
+            "ticket": ticket > 0,
+            "observed_at_utc": bool(normalized.get("observed_at_utc")),
+            "exit_reason": bool(normalized.get("exit_reason")),
+            "money_result": any(key in exit_payload for key in ("realized_profit", "profit", "net_profit")),
+        }
+        missing = sorted(key for key, ok in required.items() if not ok)
+        quality = "COMPLETE" if not missing else "INCOMPLETE"
+        feedback_eligible = quality == "COMPLETE" and bool(case.get("market_context", {}).get("pattern_id"))
+
         normalized["mfe"] = mfe
         normalized["mae"] = mae
-        normalized["profit_retained"] = realized
-        normalized["profit_given_back"] = max(0.0, mfe - realized)
+        normalized["gross_realized_profit_usd"] = realized
+        normalized["commission_usd"] = commission
+        normalized["swap_usd"] = swap
+        normalized["fee_usd"] = fee
+        normalized["net_realized_profit_usd"] = round(net_profit, 8)
+        normalized["initial_risk_usd"] = initial_risk_usd
+        normalized["realized_r_multiple"] = round(realized_r, 8) if realized_r is not None else None
+        normalized["exit_efficiency_ratio"] = round(exit_efficiency, 8) if exit_efficiency is not None else None
+        normalized["profit_retained"] = net_profit
+        normalized["profit_given_back"] = max(0.0, mfe - net_profit)
+        normalized["outcome_class"] = "WIN" if net_profit > 0.0 else ("LOSS" if net_profit < 0.0 else "BREAKEVEN")
+        normalized["outcome_data_quality"] = quality
+        normalized["missing_outcome_fields"] = missing
+        normalized["research_feedback_status"] = "ELIGIBLE" if feedback_eligible else "QUARANTINED"
+        normalized["research_feedback_reason"] = "complete_closed_trade_evidence" if feedback_eligible else "incomplete_or_unclassified_closed_trade"
+        normalized["accounting_basis"] = "BROKER_REPORTED_REALIZED_PLUS_SIGNED_COMMISSION_SWAP_FEE"
         normalized["research_only"] = True
         normalized["affects_trading"] = False
         return self.lifecycle.record_exit(case["trade_case_id"], normalized)

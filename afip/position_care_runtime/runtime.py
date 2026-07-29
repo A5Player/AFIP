@@ -217,7 +217,28 @@ class PositionCareSupervisor:
 
 
 class PositionCareDashboardReadModelBuilder:
-    def build(self, *, snapshot: PositionCareSnapshot, decision: PositionCareDecision) -> dict[str, Any]:
+    """Build an explainable, execution-neutral lifecycle view.
+
+    Financial values are only calculated when broker tick metadata is supplied.
+    Missing metadata remains ``None`` so the dashboard never invents USD values.
+    """
+
+    def build(
+        self,
+        *,
+        snapshot: PositionCareSnapshot,
+        decision: PositionCareDecision,
+        point_size: float | None = None,
+        trade_tick_size: float | None = None,
+        trade_tick_value: float | None = None,
+    ) -> dict[str, Any]:
+        financials = self._financial_provenance(
+            snapshot=snapshot,
+            decision=decision,
+            point_size=point_size,
+            trade_tick_size=trade_tick_size,
+            trade_tick_value=trade_tick_value,
+        )
         record = {
             "profile_id": snapshot.profile_id,
             "symbol": snapshot.symbol,
@@ -242,10 +263,94 @@ class PositionCareDashboardReadModelBuilder:
             "reason_codes": decision.reason_codes,
             "proposed_close_fraction": decision.proposed_close_fraction,
             "execution_permission": False,
+            "lifecycle_financial_provenance": financials,
             "updated_at": decision.decided_at,
         }
+        record.update(financials)
         record["read_model_checksum"] = _checksum(record)
         return record
+
+    @classmethod
+    def _financial_provenance(
+        cls,
+        *,
+        snapshot: PositionCareSnapshot,
+        decision: PositionCareDecision,
+        point_size: float | None,
+        trade_tick_size: float | None,
+        trade_tick_value: float | None,
+    ) -> dict[str, Any]:
+        direction = snapshot.direction.upper()
+        sign = 1.0 if direction == "BUY" else -1.0
+        initial_risk_distance = max(0.0, sign * (snapshot.entry_price - snapshot.initial_stop_price))
+        current_stop_delta = sign * (snapshot.current_stop_price - snapshot.entry_price)
+        proposed_stop_delta = sign * (decision.proposed_stop_price - snapshot.entry_price)
+        current_target_distance = max(0.0, sign * (snapshot.current_take_profit_price - snapshot.current_price))
+        current_stop_distance = max(0.0, sign * (snapshot.current_price - snapshot.current_stop_price))
+        target_from_entry_distance = max(0.0, sign * (snapshot.current_take_profit_price - snapshot.entry_price))
+
+        current_remaining_risk_distance = max(0.0, -current_stop_delta)
+        current_locked_profit_distance = max(0.0, current_stop_delta)
+        proposed_remaining_risk_distance = max(0.0, -proposed_stop_delta)
+        proposed_locked_profit_distance = max(0.0, proposed_stop_delta)
+
+        def points(distance: float) -> float | None:
+            try:
+                size = float(point_size or 0.0)
+            except (TypeError, ValueError):
+                size = 0.0
+            return round(distance / size, 2) if size > 0 else None
+
+        def usd(distance: float) -> float | None:
+            try:
+                tick_size = float(trade_tick_size or 0.0)
+                tick_value = float(trade_tick_value or 0.0)
+                volume = float(snapshot.volume_lots or 0.0)
+            except (TypeError, ValueError):
+                return None
+            if tick_size <= 0 or tick_value <= 0 or volume <= 0:
+                return None
+            return round(distance / tick_size * tick_value * volume, 2)
+
+        initial_risk_usd = usd(initial_risk_distance)
+        target_from_entry_usd = usd(target_from_entry_distance)
+        planned_rr = (
+            round(target_from_entry_usd / initial_risk_usd, 4)
+            if initial_risk_usd not in (None, 0.0) and target_from_entry_usd is not None
+            else None
+        )
+        return {
+            "lifecycle_financial_status": (
+                "AVAILABLE"
+                if usd(1.0) is not None and points(1.0) is not None
+                else "BROKER_METADATA_UNAVAILABLE"
+            ),
+            "initial_risk_points": points(initial_risk_distance),
+            "initial_risk_usd": initial_risk_usd,
+            "planned_reward_points": points(target_from_entry_distance),
+            "planned_reward_usd": target_from_entry_usd,
+            "planned_risk_reward_ratio": planned_rr,
+            "current_distance_to_stop_points": points(current_stop_distance),
+            "current_distance_to_stop_usd": usd(current_stop_distance),
+            "current_distance_to_target_points": points(current_target_distance),
+            "current_distance_to_target_usd": usd(current_target_distance),
+            "remaining_risk_points": points(current_remaining_risk_distance),
+            "remaining_risk_usd": usd(current_remaining_risk_distance),
+            "locked_profit_points": points(current_locked_profit_distance),
+            "locked_profit_usd": usd(current_locked_profit_distance),
+            "proposed_remaining_risk_points": points(proposed_remaining_risk_distance),
+            "proposed_remaining_risk_usd": usd(proposed_remaining_risk_distance),
+            "proposed_locked_profit_points": points(proposed_locked_profit_distance),
+            "proposed_locked_profit_usd": usd(proposed_locked_profit_distance),
+            "maximum_favorable_excursion_points": float(snapshot.favorable_points),
+            "maximum_favorable_excursion_usd": usd(max(0.0, float(snapshot.favorable_points)) * float(point_size or 0.0)),
+            "maximum_adverse_excursion_points": float(snapshot.adverse_points),
+            "maximum_adverse_excursion_usd": usd(max(0.0, float(snapshot.adverse_points)) * float(point_size or 0.0)),
+            "unrealized_profit_usd": float(snapshot.unrealized_profit),
+            "recommended_action": decision.recommended_action,
+            "recommended_close_fraction": float(decision.proposed_close_fraction),
+            "exit_reason_codes": decision.reason_codes,
+        }
 
 
 class PositionCareDashboardContract:

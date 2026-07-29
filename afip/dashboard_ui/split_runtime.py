@@ -218,6 +218,11 @@ def _profile_rows(profile: Mapping[str, Any]) -> list[tuple[str,str,str]]:
     market_current, market_source = _effective_market_truth(profile, truth, fresh)
     source = _first(profile,"financial_data_source","account_data_source","mt5_data_source",default="MT5_PROFILE_RUNTIME" if _first(profile,"account_balance","balance",default=None) is not None else "DATA_UNAVAILABLE")
     position_view = _position_presentation(profile)
+    lifecycle_financials = profile.get("lifecycle_financial_provenance") if isinstance(profile.get("lifecycle_financial_provenance"), Mapping) else {}
+    if not lifecycle_financials:
+        live_positions = profile.get("live_positions") if isinstance(profile.get("live_positions"), list) else []
+        first_position = live_positions[0] if live_positions and isinstance(live_positions[0], Mapping) else {}
+        lifecycle_financials = first_position.get("lifecycle_financial_provenance") if isinstance(first_position.get("lifecycle_financial_provenance"), Mapping) else {}
     verification = profile.get("snapshot_verification") if isinstance(profile.get("snapshot_verification"), Mapping) else {}
     lifecycle = profile.get("order_lifecycle") if isinstance(profile.get("order_lifecycle"), Mapping) else {}
     lineage = profile.get("ticket_plan_lineage") if isinstance(profile.get("ticket_plan_lineage"), Mapping) else {}
@@ -272,10 +277,28 @@ def _profile_rows(profile: Mapping[str, Any]) -> list[tuple[str,str,str]]:
         (ICONS["decision"],"Decision", (f"{_value(_first(profile,'decision_action','action'))} · {_value(_first(profile,'decision_confidence','confidence'))}%" if _first(profile,'decision_action','action',default=None) is not None else _value(operations.get("decision_evidence_status"),"NOT_EVALUATED"))),
         ("🌦️","Regime",_value(_first(profile,"market_regime","regime",default=operations.get("decision_evidence_status", "NOT_EVALUATED")))),
         ("🧾","Trade plan",position_view["plan"]),
+        ("🧩","Pattern",_value(_first(profile,"pattern_name","pattern_id",default="NOT_RECORDED"))),
+        ("🏆","Research ranking",f"eligible #{_value(_first(profile,'research_eligible_rank',default='N/A'))} · rank #{_value(_first(profile,'research_rank',default='N/A'))} · {_value(_first(profile,'research_ranking_id',default='NOT_RECORDED'))}"),
+        ("📚","Research evidence",f"{_value(_first(profile,'research_evidence_count',default='N/A'))} cases · win {_value(_first(profile,'research_win_rate',default='N/A'))}% · PF {_value(_first(profile,'research_profit_factor',default='N/A'))} · DD {_value(_first(profile,'research_maximum_drawdown_percent',default='N/A'))}%"),
+        ("💡","Plan selection reason",_value(_first(profile,"research_selection_reason",default="NOT_RECORDED"))),
         ("🎯","Entry / Current",position_view["entry_current"]),
         (ICONS["risk"],"SL / TP",position_view["sl_tp"]),
+        ("🛡️","SL authority",f"{_value(_first(profile,'sl_authority',default='NOT_RECORDED'))} · price {_value(_first(profile,'stop_loss_price',default='N/A'))} · {_value(_first(profile,'stop_loss_points',default='N/A'))} points · total ${_value(_first(profile,'total_stop_loss_usd',default='N/A'))}"),
+        ("💰","TP authority",f"{_value(_first(profile,'tp_authority',default='NOT_RECORDED'))} · price {_value(_first(profile,'take_profit_price',default='N/A'))} · {_value(_first(profile,'take_profit_points',default='N/A'))} points · total ${_value(_first(profile,'total_take_profit_usd',default='N/A'))}"),
+        ("🧮","USD per order",f"SL {_value(_first(profile,'stop_loss_usd_per_order',default='N/A'))} · TP {_value(_first(profile,'take_profit_usd_per_order',default='N/A'))}"),
+        ("⚖️","Aggregate RR",_value(_first(profile,"aggregate_risk_reward_ratio",default="N/A"))),
+        ("📋","Protection by order",_value(_first(profile,"protection_order_details",default="NOT_RECORDED"))),
         (ICONS["position"],"Position care",position_view["care"]),
         ("✋","Holding reason",position_view["holding"]),
+        ("💵","Initial risk USD",_financial(lifecycle_financials,"initial_risk_usd")),
+        ("🛡️","Remaining risk USD",_financial(lifecycle_financials,"remaining_risk_usd")),
+        ("🔐","Locked profit USD",_financial(lifecycle_financials,"locked_profit_usd")),
+        ("📈","Unrealized P/L USD",_financial(lifecycle_financials,"unrealized_profit_usd")),
+        ("⬆️","MFE points / USD",f"{_value(lifecycle_financials.get('maximum_favorable_excursion_points'),'DATA_UNAVAILABLE')} / {_financial(lifecycle_financials,'maximum_favorable_excursion_usd')}"),
+        ("⬇️","MAE points / USD",f"{_value(lifecycle_financials.get('maximum_adverse_excursion_points'),'DATA_UNAVAILABLE')} / {_financial(lifecycle_financials,'maximum_adverse_excursion_usd')}"),
+        ("🎯","Distance to TP points / USD",f"{_value(lifecycle_financials.get('current_distance_to_target_points'),'DATA_UNAVAILABLE')} / {_financial(lifecycle_financials,'current_distance_to_target_usd')}"),
+        ("🚪","Exit recommendation",_value(lifecycle_financials.get("recommended_action"),"NOT_EVALUATED")),
+        ("🧾","Exit reason",_value(lifecycle_financials.get("exit_reason_codes"),"NOT_EVALUATED")),
         ("🧾","Order / Units",f"{order_status} / {_value(lifecycle.get('sent_units', _first(profile,'demo_sent_units','sent_units','current_units',default=0)))}"),
         ("🔄","Order lifecycle",_value(lifecycle.get("state"),"NOT_EVALUATED")),
         ("🧩","Lifecycle reason",_value(lifecycle.get("reason"),"NOT_EVALUATED")),

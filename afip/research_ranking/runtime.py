@@ -11,6 +11,8 @@ class RankingPolicy:
     minimum_expectancy: float = 0.0
     minimum_profit_factor: float = 1.0
     minimum_out_of_sample_windows: int = 1
+    require_eligible_feedback: bool = True
+    require_dataset_ranking_ready: bool = True
     drawdown_weight: float = 0.30
     expectancy_weight: float = 0.20
     profit_factor_weight: float = 0.20
@@ -25,6 +27,12 @@ class ResearchRankingEngine:
         self.policy = policy or RankingPolicy()
 
     def classify(self, row: Mapping[str, Any]) -> str:
+        if self.policy.require_eligible_feedback and row.get("research_feedback_status") not in (None, "ELIGIBLE"):
+            return "QUARANTINED"
+        if self.policy.require_dataset_ranking_ready and row.get("ranking_readiness_status") not in (None, "READY_FOR_RESEARCH_RANKING"):
+            return "INSUFFICIENT_EVIDENCE"
+        if row.get("dataset_integrity_status") not in (None, "READY"):
+            return "QUARANTINED"
         if _number(row, "trade_count") < self.policy.minimum_trade_count:
             return "INSUFFICIENT_EVIDENCE"
         if _number(row, "out_of_sample_windows") < self.policy.minimum_out_of_sample_windows:
@@ -36,6 +44,14 @@ class ResearchRankingEngine:
         if _number(row, "profit_factor") < self.policy.minimum_profit_factor:
             return "REJECTED"
         return "CERTIFIED_CANDIDATE"
+
+    def promotion_status(self, row: Mapping[str, Any]) -> str:
+        status = self.classify(row)
+        if status == "CERTIFIED_CANDIDATE":
+            return "RESEARCH_CANDIDATE"
+        if status == "QUARANTINED":
+            return "QUARANTINED"
+        return "NOT_ELIGIBLE"
 
     def score(self, row: Mapping[str, Any]) -> float:
         status = self.classify(row)
@@ -62,6 +78,9 @@ class ResearchRankingEngine:
             item = dict(row)
             item["evidence_status"] = self.classify(item)
             item["ranking_score"] = self.score(item)
+            item["promotion_status"] = self.promotion_status(item)
+            item["automatic_production_promotion_allowed"] = False
+            item["affects_trading"] = False
             evaluated.append(item)
         certified = sorted(
             (item for item in evaluated if item["evidence_status"] == "CERTIFIED_CANDIDATE"),
@@ -78,4 +97,14 @@ class ResearchRankingEngine:
             "top_capital_preservation": sorted(certified, key=lambda item: (-_number(item, "recovery_factor"), _number(item, "maximum_drawdown_percentage")))[:limit],
             "bottom_and_quarantined": rejected[:limit],
             "evaluated_count": len(evaluated),
+            "ranking_authority": {
+                "status": "RESEARCH_ONLY",
+                "maximum_promotion_state": "RESEARCH_CANDIDATE",
+                "automatic_production_promotion_allowed": False,
+                "manual_certification_required": True,
+                "execution_permission": False,
+                "affects_trading": False,
+                "certified_candidate_count": len(certified),
+                "quarantined_or_rejected_count": len(rejected),
+            },
         }
