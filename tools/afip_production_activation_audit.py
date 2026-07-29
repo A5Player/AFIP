@@ -153,10 +153,12 @@ def audit(root: Path) -> dict:
             status = "ORPHAN"
         elif not called:
             status = "DEAD_CODE"
-        elif not runtime["present"]:
+        elif affects_runtime:
+            status = "ACTIVE"
+        elif runtime["present"]:
             status = "PARTIAL"
         else:
-            status = "ACTIVE"
+            status = "NO_EFFECT"
 
         rows.append({
             "module": target.name,
