@@ -94,11 +94,58 @@ class ProviderBackfillSummary:
     earliest_available_utc: str | None
     latest_closed_bar_utc: str | None
     reason: str
+    bars_rejected: int = 0
+    missing_interval_count: int = 0
+    quality_status: str = "UNKNOWN"
+    bytes_written: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         payload = asdict(self)
         payload["summary_checksum"] = _checksum(payload)
         return payload
+
+
+@dataclass(frozen=True)
+class HistoricalDataQuality:
+    accepted: int
+    rejected: int
+    duplicate_count: int
+    missing_interval_count: int
+    impossible_ohlc_count: int
+    invalid_timestamp_count: int
+    status: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def _valid_ohlc(row: Mapping[str, Any]) -> bool:
+    try:
+        o, h, l, c = (float(row[name]) for name in ("open", "high", "low", "close"))
+    except (KeyError, TypeError, ValueError):
+        return False
+    return h >= max(o, c, l) and l <= min(o, c, h)
+
+
+def _parse_utc(value: str) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _timeframe_seconds(timeframe: str) -> int | None:
+    value = str(timeframe).upper().strip()
+    units = {"M": 60, "H": 3600, "D": 86400}
+    if len(value) < 2 or value[0] not in units:
+        return None
+    try:
+        return int(value[1:]) * units[value[0]]
+    except ValueError:
+        return None
 
 
 class ResumableMT5HistoricalProvider:
@@ -148,26 +195,46 @@ class ResumableMT5HistoricalProvider:
             for env in self.dataset.records("historical_market_bars")
         }
         received = persisted = duplicates = batches = 0
+        rejected = impossible_ohlc = invalid_timestamp = missing_intervals = bytes_written = 0
+        prior_timestamp: datetime | None = None
+        expected_seconds = _timeframe_seconds(request.timeframe)
         final_status = "COMPLETED"
+        empty_fetch = False
         while cursor <= latest:
             if maximum_batches is not None and batches >= maximum_batches:
                 final_status = "PAUSED"
                 break
             rows = list(gateway.fetch(symbol, request.timeframe, cursor, latest, request.maximum_bars_per_batch))
             if not rows:
+                empty_fetch = True
+                final_status = "NO_DATA"
                 break
             rows.sort(key=lambda row: str(row["timestamp_utc"]))
             newest = cursor
             for row in rows:
                 received += 1
-                timestamp = str(row["timestamp_utc"])
+                timestamp = str(row.get("timestamp_utc", ""))
+                parsed_timestamp = _parse_utc(timestamp)
+                if parsed_timestamp is None:
+                    rejected += 1
+                    invalid_timestamp += 1
+                    continue
+                if not _valid_ohlc(row):
+                    rejected += 1
+                    impossible_ohlc += 1
+                    continue
                 newest = max(newest, timestamp)
+                if prior_timestamp is not None and expected_seconds:
+                    delta = int((parsed_timestamp - prior_timestamp).total_seconds())
+                    if delta > expected_seconds:
+                        missing_intervals += max(0, delta // expected_seconds - 1)
+                prior_timestamp = parsed_timestamp
                 key = f"{request.instrument}|{request.timeframe}|{timestamp}"
                 if key in known:
                     duplicates += 1
                     continue
                 known.add(key)
-                self.dataset.append("historical_market_bars", {
+                envelope = self.dataset.append("historical_market_bars", {
                     "request_id": request.request_id, "instrument": request.instrument,
                     "resolved_symbol": symbol, "timeframe": request.timeframe,
                     "timestamp_utc": timestamp, "open": float(row["open"]),
@@ -175,6 +242,7 @@ class ResumableMT5HistoricalProvider:
                     "close": float(row["close"]), "volume": float(row.get("volume", 0.0)),
                     "provenance": {"provider": "MT5", "resolved_symbol": symbol},
                 })
+                bytes_written += len(json.dumps(envelope, sort_keys=True, ensure_ascii=False).encode("utf-8")) + 1
                 persisted += 1
             batches += 1
             next_cursor = str(rows[-1].get("next_start_utc") or newest)
@@ -197,11 +265,75 @@ class ResumableMT5HistoricalProvider:
             "COMPLETED": "earliest_available_to_latest_closed_bar_collection_completed",
             "PAUSED": "maximum_batches_reached_resume_available",
             "BLOCKED": "provider_cursor_did_not_advance",
+            "NO_DATA": "provider_returned_no_rows_for_discovered_range",
         }[final_status]
+        quality_status = "UNKNOWN" if empty_fetch else "PASS"
+        if rejected:
+            quality_status = "FAIL"
+        elif missing_intervals:
+            quality_status = "PASS_WITH_GAPS"
+        quality = HistoricalDataQuality(
+            accepted=persisted, rejected=rejected, duplicate_count=duplicates,
+            missing_interval_count=missing_intervals, impossible_ohlc_count=impossible_ohlc,
+            invalid_timestamp_count=invalid_timestamp, status=quality_status,
+        )
+        self.dataset.append("historical_data_quality", {
+            "request_id": request.request_id, "instrument": request.instrument,
+            "timeframe": request.timeframe, "generated_at": _utc_now(), **quality.as_dict(),
+        })
         summary = ProviderBackfillSummary(request.request_id, request.instrument, symbol, request.timeframe,
-            final_status, batches, received, persisted, duplicates, resumed, earliest, latest, reason)
+            final_status, batches, received, persisted, duplicates, resumed, earliest, latest, reason,
+            rejected, missing_intervals, quality_status, bytes_written)
         self.dataset.append("mt5_historical_provider_runs", summary.as_dict())
         return summary
+
+
+class HistoricalDataDashboard:
+    """Build a truthful dashboard read model from persisted loader evidence."""
+
+    def __init__(self, dataset_root: str | Path) -> None:
+        self.dataset = AppendOnlyResearchDataset(dataset_root)
+        self.root = Path(dataset_root)
+
+    def snapshot(self, request_id: str | None = None) -> dict[str, Any]:
+        runs = [item.get("record", {}) for item in self.dataset.records("mt5_historical_provider_runs")]
+        checkpoints = [item.get("record", {}) for item in self.dataset.records("historical_backfill_checkpoints")]
+        quality = [item.get("record", {}) for item in self.dataset.records("historical_data_quality")]
+        if request_id is not None:
+            runs = [item for item in runs if item.get("request_id") == request_id]
+            checkpoints = [item for item in checkpoints if item.get("request_id") == request_id]
+            quality = [item for item in quality if item.get("request_id") == request_id]
+        latest_run = runs[-1] if runs else {}
+        latest_checkpoint = checkpoints[-1] if checkpoints else {}
+        latest_quality = quality[-1] if quality else {}
+        total_bytes = sum(path.stat().st_size for path in self.root.glob("*.jsonl") if path.is_file())
+        status = str(latest_run.get("status") or latest_checkpoint.get("status") or "NOT_STARTED")
+        payload = {
+            "schema_version": "historical-data-dashboard.v1",
+            "generated_at": _utc_now(),
+            "request_id": request_id or latest_run.get("request_id"),
+            "status": status,
+            "reason": latest_run.get("reason", "loader_has_not_been_started"),
+            "instrument": latest_run.get("requested_symbol"),
+            "resolved_symbol": latest_run.get("resolved_symbol"),
+            "timeframe": latest_run.get("timeframe"),
+            "coverage_start_utc": latest_run.get("earliest_available_utc"),
+            "coverage_end_utc": latest_run.get("latest_closed_bar_utc"),
+            "batches_completed": latest_checkpoint.get("batches_completed", latest_run.get("batches_completed", 0)),
+            "bars_received": latest_run.get("bars_received", 0),
+            "bars_accepted": latest_run.get("bars_persisted", 0),
+            "bars_rejected": latest_run.get("bars_rejected", 0),
+            "exact_duplicates": latest_run.get("duplicates_skipped", 0),
+            "missing_intervals": latest_run.get("missing_interval_count", 0),
+            "quality_status": latest_run.get("quality_status", latest_quality.get("status", "UNKNOWN")),
+            "bytes_added_this_run": latest_run.get("bytes_written", 0),
+            "total_dataset_bytes": total_bytes,
+            "resumed_from_checkpoint": bool(latest_run.get("resumed_from_checkpoint", False)),
+            "next_start_utc": latest_checkpoint.get("next_start_utc"),
+            "updated_at": latest_checkpoint.get("updated_at"),
+        }
+        payload["dashboard_checksum"] = _checksum(payload)
+        return payload
 
 
 @dataclass(frozen=True)

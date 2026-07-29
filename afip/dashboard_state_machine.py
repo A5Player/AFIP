@@ -50,9 +50,10 @@ def normalize_profile_state(profile: Mapping[str, Any]) -> dict[str, Any]:
     mt5_meta = metadata.get("mt5_health") if isinstance(metadata.get("mt5_health"), Mapping) else {}
     status_meta = metadata.get("profile_status") if isinstance(metadata.get("profile_status"), Mapping) else {}
     execution_meta = metadata.get("execution_state") if isinstance(metadata.get("execution_state"), Mapping) else {}
+    authority_meta = metadata.get("runtime_authority") if isinstance(metadata.get("runtime_authority"), Mapping) else {}
 
     runtime_raw = _upper(profile.get("runtime_state", profile.get("status")), "STOPPED")
-    runtime_fresh = bool(status_meta.get("fresh"))
+    runtime_fresh = bool(status_meta.get("fresh")) or bool(authority_meta.get("fresh"))
     # A stale RUNNING record is unsafe to present as current. A stale STOPPED
     # record remains STOPPED because no live evidence claims the process runs.
     if runtime_fresh:
@@ -107,6 +108,16 @@ def normalize_profile_state(profile: Mapping[str, Any]) -> dict[str, Any]:
         reason = "execution_state_unavailable"
 
     market_current, market_source = _market_state(profile)
+    try:
+        bid = float(profile.get("bid"))
+        ask = float(profile.get("ask"))
+        live_tick = (bool(profile.get("data_fresh")) or (bool(profile.get("tick_available")) and _upper(profile.get("evidence_kind"), "") == "LIVE")) and bid > 0 and ask >= bid
+    except (TypeError, ValueError):
+        live_tick = False
+    if live_tick:
+        market_current, market_source = "OPEN_TICKING", "LIVE_TICK_EVIDENCE"
+    if reason == "waiting_for_runtime_evidence" and runtime_fresh and bool(mt5_meta.get("fresh")) and bool(execution_meta.get("fresh")):
+        reason = "waiting_for_next_runtime_cycle"
     if mt5_current == "STALE":
         health = "STALE"
     elif mt5_current == "DATA_UNAVAILABLE":
@@ -120,6 +131,18 @@ def normalize_profile_state(profile: Mapping[str, Any]) -> dict[str, Any]:
     else:
         health = "REVIEW"
 
+    # A completed ORDER_SENT event is historical after the current cycle. It
+    # does not mean the gateway is actively sending forever.
+    has_open_position = bool(profile.get("has_open_position") or profile.get("positions_total"))
+    normalized_order_status = _upper(profile.get("normalized_order_status", profile.get("order_status")), "ORDER_NOT_SENT")
+    if event == "ORDER_SENT" and event_fresh:
+        if has_open_position:
+            gateway_current = "WAITING"
+            reason = "open_position_observed_after_order_sent"
+        else:
+            gateway_current = "WAITING"
+            reason = "order_event_completed_waiting_for_next_cycle"
+
     return {
         "market_current": market_current,
         "market_current_source": market_source,
@@ -127,7 +150,7 @@ def normalize_profile_state(profile: Mapping[str, Any]) -> dict[str, Any]:
         "runtime_evidence_fresh": runtime_fresh,
         "mt5_current": mt5_current,
         "mt5_evidence_fresh": bool(mt5_meta.get("fresh")),
-        "execution_authority_current": _upper(profile.get("execution", profile.get("execution_mode")), "DATA_UNAVAILABLE"),
+        "execution_authority_current": _upper(profile.get("execution_authority_current", profile.get("execution", profile.get("execution_mode"))), "DATA_UNAVAILABLE"),
         "gateway_current": gateway_current,
         "gateway_evidence_fresh": event_fresh,
         "current_reason": reason,
@@ -136,6 +159,9 @@ def normalize_profile_state(profile: Mapping[str, Any]) -> dict[str, Any]:
         "last_gateway_event_age_seconds": event_age,
         "last_gateway_event_fresh": event_fresh,
         "dashboard_health": health,
+        "has_open_position": has_open_position,
+        "position_reconciliation_state": _upper(profile.get("position_reconciliation_state"), "NO_OPEN_POSITION"),
+        "normalized_order_status": normalized_order_status,
     }
 
 

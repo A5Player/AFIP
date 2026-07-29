@@ -1,0 +1,102 @@
+{
+  "blockers": [],
+  "certification_timestamp_utc": "2026-07-29T08:18:11Z",
+  "conditionally_certified": false,
+  "conditions": [],
+  "decision": "All required evidence, clean runtime authority, and full regression passed.",
+  "domains": {
+    "architecture": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/runtime_truth.py",
+        "afip/final_integration/runtime.py"
+      ],
+      "status": "PASS"
+    },
+    "capital": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/lot_authority/runtime.py"
+      ],
+      "status": "PASS"
+    },
+    "dashboard": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/dashboard_ui/control_center.py",
+        "afip/control_center_runtime.py"
+      ],
+      "status": "PASS"
+    },
+    "data_integrity": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/research_data_foundation/runtime_collector.py"
+      ],
+      "status": "PASS"
+    },
+    "execution": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/demo_execution_gateway/runtime.py"
+      ],
+      "status": "PASS"
+    },
+    "position_management": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/position_care_runtime/runtime.py",
+        "afip/production_activation_runtime/runtime.py"
+      ],
+      "status": "PASS"
+    },
+    "research_intelligence": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/research_data_foundation/intelligence.py",
+        "afip/research_data_foundation/aggregator.py"
+      ],
+      "status": "PASS"
+    },
+    "runtime_authority": {
+      "missing_sources": [],
+      "required_sources": [
+        "afip/runtime_truth.py",
+        "afip/control_center_runtime.py"
+      ],
+      "status": "PASS"
+    }
+  },
+  "production_certified": true,
+  "readiness_score": 100.0,
+  "regression": {
+    "command": [
+      "C:\\AFIP\\.venv\\Scripts\\python.exe",
+      "-m",
+      "pytest",
+      "tests",
+      "-q"
+    ],
+    "scope": "FULL",
+    "status": "PASS",
+    "test_count": 0
+  },
+  "runtime_truth": {
+    "clean": true,
+    "conflict_count": 0,
+    "missing_authority_count": 0,
+    "source": "runtime/certification/runtime_truth.json",
+    "status": "CERTIFIED"
+  },
+  "safety": {
+    "mt5_initialize_called": false,
+    "order_check_called": false,
+    "order_send_called": false,
+    "passive_certification_only": true,
+    "runtime_start_requested": false,
+    "runtime_stop_requested": false,
+    "trading_logic_changed": false
+  },
+  "schema_version": "afip-v1-final-production-certification.v1",
+  "status": "PRODUCTION_CERTIFIED"
+}

@@ -74,4 +74,6 @@ def launch_three_dashboards(
     write_dashboard_audit(contract, output_directory)
     write_unified_dashboard(contract, output_directory)
     write_dashboard_completeness(contract, output_directory)
+    from .truth_v2 import write_truth_dashboard
+    write_truth_dashboard(output_directory, project_root)
     return result.profiles, result.intelligence, result.research

@@ -18,6 +18,55 @@ from afip.four_profile_operations import FourProfileSupervisor
 from afip.timeframe_registry import get_supported_timeframes
 from .runtime import DashboardUIRuntime
 from .authority_snapshot import enrich_profiles
+from .navigation import (
+    standalone_navigation,
+    standalone_navigation_bootstrap,
+    standalone_navigation_css,
+    standalone_navigation_script,
+)
+
+
+
+def _research_truth_summary(root: str | Path) -> tuple[str, str]:
+    """Render honest research performance evidence without inventing zero metrics."""
+    root = Path(root)
+    try:
+        from afip.research_data_foundation.aggregator import ResearchDatasetAggregator
+        report = ResearchDatasetAggregator(root / "runtime" / "research").build()
+    except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
+        report = {}
+    rows = report.get("pattern_statistics") if isinstance(report, Mapping) else None
+    available = [row for row in (rows or ()) if isinstance(row, Mapping) and row.get("statistics_status") == "AVAILABLE"]
+    if not available:
+        return (
+            '<article class="panel"><h3>Research performance truth</h3>'
+            '<p><b>DATA_UNAVAILABLE</b></p>'
+            '<p>Zero is not presented as performance evidence.</p>'
+            '<p>Execution gate from research: RESEARCH_ONLY</p></article>',
+            "INSUFFICIENT_EVIDENCE",
+        )
+    completed = sum(int(row.get("completed_cases") or row.get("closed_cases") or 0) for row in available)
+    return (
+        '<article class="panel"><h3>Research performance truth</h3>'
+        f'<p><b>AVAILABLE</b> · completed cases {completed}</p>'
+        '<p>SHOW TRUTH · NEVER INVENT METRICS</p>'
+        '<p>Execution gate from research: RESEARCH_ONLY</p></article>',
+        "AVAILABLE",
+    )
+
+
+
+def _live_position_summary(profile: Mapping[str, Any]) -> dict[str, str]:
+    positions = profile.get("positions") if isinstance(profile.get("positions"), list) else profile.get("live_positions") if isinstance(profile.get("live_positions"), list) else []
+    tickets = []
+    for row in positions:
+        if isinstance(row, Mapping) and row.get("ticket") not in (None, ""):
+            tickets.append(str(row.get("ticket")))
+    if not positions:
+        return {"trade_plan": "NONE_ACTIVE", "care": "NOT_ACTIVE", "tickets": "NONE"}
+    plan = str(profile.get("trade_plan_id") or profile.get("active_trade_plan") or "UNMATCHED_LIVE_POSITION")
+    care = str(profile.get("position_care_action") or profile.get("management_action") or "LIVE_POSITION_OBSERVED")
+    return {"trade_plan": plan, "care": care, "tickets": ", ".join(tickets) or "UNKNOWN"}
 
 DASHBOARD_1_FILENAME = "afip_profiles_dashboard.html"
 DASHBOARD_2_FILENAME = "afip_intelligence_engine_dashboard.html"
@@ -69,13 +118,112 @@ def _tier_lots(profile: Mapping[str, Any]) -> str:
     return " + ".join(rendered) or "NONE"
 
 
+def _number(value: Any) -> float | None:
+    try:
+        if value in (None, "", "DATA_UNAVAILABLE", "UNKNOWN"):
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _effective_market_truth(profile: Mapping[str, Any], truth: Mapping[str, Any], fresh: bool) -> tuple[str, str]:
+    current = _value(truth.get("market_current"), "UNKNOWN")
+    source = _value(truth.get("market_current_source"), "NO_MARKET_SESSION_EVIDENCE")
+    if current not in {"UNKNOWN", "DATA_UNAVAILABLE", "NOT_EVALUATED", "-"}:
+        return current, source
+    bid = _number(_first(profile, "bid", "market_bid", default=None))
+    ask = _number(_first(profile, "ask", "market_ask", default=None))
+    if fresh and bid is not None and ask is not None and bid > 0 and ask >= bid:
+        return "OPEN_TICKING", "LIVE_TICK_EVIDENCE"
+    return current, source
+
+
+def _effective_reason(profile: Mapping[str, Any], truth: Mapping[str, Any]) -> str:
+    reason = truth.get("current_reason") or _first(
+        profile, "current_reason", "demo_gateway_reason", "waiting_reason",
+        "holding_reason", "mt5_reason", "decision_reason", default="DATA_UNAVAILABLE"
+    )
+    text = _value(reason, "DATA_UNAVAILABLE")
+    runtime_fresh = bool(truth.get("runtime_evidence_fresh"))
+    mt5_fresh = bool(truth.get("mt5_evidence_fresh"))
+    gateway_fresh = bool(truth.get("gateway_evidence_fresh"))
+    if text == "waiting_for_runtime_evidence" and runtime_fresh and mt5_fresh and gateway_fresh:
+        return "waiting_for_next_runtime_cycle"
+    return text
+
+
+def _capacity_text(profile: Mapping[str, Any]) -> str:
+    maximum = _number(_first(profile, "maximum_units", "max_units", "profile_max_units", default=None))
+    sent = _number(_first(profile, "demo_sent_units", "sent_units", "current_units", default=0)) or 0.0
+    allocated = _number(_first(profile, "allocated_units", "demo_allocated_units", default=sent))
+    if maximum is None:
+        return "DATA_UNAVAILABLE"
+    available = max(0.0, maximum - sent)
+    def fmt(value: float | None) -> str:
+        if value is None:
+            return "N/A"
+        return str(int(value)) if float(value).is_integer() else f"{value:.2f}"
+    return f"capacity {fmt(maximum)} · allocated {fmt(allocated)} · sent {fmt(sent)} · available {fmt(available)}"
+
+
+def _ticket_evidence(profile: Mapping[str, Any]) -> str:
+    current = profile.get("position_tickets") or profile.get("current_tickets") or ()
+    last = profile.get("tickets") or profile.get("last_ticket") or profile.get("last_order_ticket") or ()
+    def render(values: Any) -> str:
+        if isinstance(values, (str, int, float)):
+            return _value(values, "NONE")
+        if isinstance(values, Iterable) and not isinstance(values, (str, bytes, Mapping)):
+            return ", ".join(_value(item) for item in values) or "NONE"
+        return "NONE"
+    return f"current {render(current)} · last {render(last)}"
+
+
+def _position_presentation(profile: Mapping[str, Any]) -> dict[str, str]:
+    positions = profile.get("live_positions") if isinstance(profile.get("live_positions"), list) else []
+    position = positions[0] if positions and isinstance(positions[0], Mapping) else {}
+    has_position = bool(position or profile.get("has_open_position") or _number(profile.get("positions_total")))
+    if not has_position:
+        truth = profile.get("runtime_truth") if isinstance(profile.get("runtime_truth"), Mapping) else {}
+        runtime_state = _value(
+            truth.get("runtime_current") or _first(
+                profile, "current_runtime_status", "runtime_state", default="UNKNOWN"
+            ),
+            "UNKNOWN",
+        )
+        inactive_runtime = runtime_state in {"STOPPED", "INACTIVE", "DISABLED"}
+        return {
+            "plan": _value(_first(profile, "trade_plan_id", "active_trade_plan", "plan_id", default="NONE_ACTIVE")),
+            "entry_current": "- / -",
+            "sl_tp": "NO_ACTIVE_POSITION" if inactive_runtime else "NO_OPEN_POSITION",
+            "care": "NOT_ACTIVE",
+            "holding": "WAITING_FOR_ENTRY",
+        }
+    plan = _value(_first(profile, "trade_plan_id", "active_trade_plan", "plan_id", default="UNMATCHED_LIVE_POSITION"))
+    entry = _value(position.get("entry_price", _first(profile, "entry_price", default="-")))
+    current = _value(position.get("current_price", _first(profile, "current_price", "market_price", default="-")))
+    sl = _value(position.get("stop_loss", _first(profile, "stop_loss", "sl", default="NOT_SET")), "NOT_SET")
+    tp = _value(position.get("take_profit", _first(profile, "take_profit", "tp", default="NOT_SET")), "NOT_SET")
+    care = _value(_first(profile, "position_care_action", "management_action", "holding_action", default="OBSERVING_OPEN_POSITION"))
+    holding = _value(_first(profile, "holding_reason", "position_care_reason", default="LIVE_POSITION_PRESENT"))
+    return {"plan": plan, "entry_current": f"{entry} / {current}", "sl_tp": f"{sl} / {tp}", "care": care, "holding": holding}
+
+
 def _profile_rows(profile: Mapping[str, Any]) -> list[tuple[str,str,str]]:
     fresh = bool(profile.get("data_fresh", False))
     age = _first(profile, "data_age_seconds", "market_data_age_seconds", default="UNKNOWN")
     truth = profile.get("runtime_truth") if isinstance(profile.get("runtime_truth"), Mapping) else {}
     operations = profile.get("operations_health") if isinstance(profile.get("operations_health"), Mapping) else {}
-    reason = truth.get("current_reason") or _first(profile,"current_reason","demo_gateway_reason","waiting_reason","holding_reason","mt5_reason","decision_reason",default="DATA_UNAVAILABLE")
+    reason = _effective_reason(profile, truth)
+    market_current, market_source = _effective_market_truth(profile, truth, fresh)
     source = _first(profile,"financial_data_source","account_data_source","mt5_data_source",default="MT5_PROFILE_RUNTIME" if _first(profile,"account_balance","balance",default=None) is not None else "DATA_UNAVAILABLE")
+    position_view = _position_presentation(profile)
+    verification = profile.get("snapshot_verification") if isinstance(profile.get("snapshot_verification"), Mapping) else {}
+    lifecycle = profile.get("order_lifecycle") if isinstance(profile.get("order_lifecycle"), Mapping) else {}
+    lineage = profile.get("ticket_plan_lineage") if isinstance(profile.get("ticket_plan_lineage"), Mapping) else {}
+    consistency = profile.get("dashboard_consistency") if isinstance(profile.get("dashboard_consistency"), Mapping) else {}
+    authority_truth = profile.get("execution_authority_truth") if isinstance(profile.get("execution_authority_truth"), Mapping) else {}
+    order_status = _value(lifecycle.get("current_order_status") or _first(profile, "normalized_order_status", "demo_order_status", "order_status", default="ORDER_NOT_SENT"))
     return [
         (ICONS["account"],"Account",_value(_first(profile,"account","login","account_login",default="DATA_UNAVAILABLE"))),
         ("🌐","Server",_value(_first(profile,"server","account_server",default="DATA_UNAVAILABLE"))),
@@ -96,6 +244,8 @@ def _profile_rows(profile: Mapping[str, Any]) -> list[tuple[str,str,str]]:
         ("🔒","Reserve",_financial(profile,"reserve","configured_reserve") if operations.get("reserve_status") == "AVAILABLE" else _value(operations.get("reserve_status"),"NOT_CONFIGURED")),
         ("💼","Available allocation",_financial(profile,"available_allocation","allocation") if operations.get("available_allocation_status") == "AVAILABLE" else _value(operations.get("available_allocation_status"),"NOT_EVALUATED")),
         ("🔎","Financial evidence",_value(_first(profile,"financial_state","financial_evidence",default=source),"DATA_UNAVAILABLE")),
+        ("🗂️","Snapshot verification",_value(verification.get("status"),"NOT_VERIFIED")),
+        ("🔍","Snapshot reason",_value(verification.get("reason"),"verification_not_evaluated")),
         ("📐","Sizing authority",_value(_first(profile,"sizing_authority",default="DATA_UNAVAILABLE"))),
         ("🔹","Lot / unit",_value(_first(profile,"lot_per_unit","base_lot",default="DATA_UNAVAILABLE"))),
         ("🎚️","Minimum confidence",_value(_first(profile,"minimum_confidence",default="DATA_UNAVAILABLE"))),
@@ -105,13 +255,14 @@ def _profile_rows(profile: Mapping[str, Any]) -> list[tuple[str,str,str]]:
         ("🧭","Operations status",_value(operations.get("overall_status"),"REVIEW")),
         ("🖥️","Operating mode",_value(operations.get("operating_mode"),"REVIEW_REQUIRED")),
         ("💡","Operations reason",_value(operations.get("reason"),"operational_state_requires_review")),
-        ("🌍","Market · current",_value(truth.get("market_current"),"UNKNOWN")),
-        ("🔎","Market source",_value(truth.get("market_current_source"),"NO_MARKET_SESSION_EVIDENCE")),
+        ("🌍","Market · current",market_current),
+        ("🔎","Market source",market_source),
         (ICONS["runtime"],"Runtime · current",_value(truth.get("runtime_current"),"DATA_UNAVAILABLE")),
         ("🕒","Runtime evidence", "FRESH" if truth.get("runtime_evidence_fresh") else "NOT_FRESH"),
         (ICONS["connection"],"MT5 · current",_value(truth.get("mt5_current"),"DATA_UNAVAILABLE")),
         ("🕒","MT5 evidence", "FRESH" if truth.get("mt5_evidence_fresh") else "NOT_FRESH"),
-        ("🔐","Execution authority · current",_value(truth.get("execution_authority_current"),"DATA_UNAVAILABLE")),
+        ("🔐","Execution authority · current",_value(truth.get("execution_authority_current") or authority_truth.get("status"),"DATA_UNAVAILABLE")),
+        ("📚","Authority source",_value(authority_truth.get("source"),"DATA_UNAVAILABLE")),
         ("🚪","Gateway · current",_value(truth.get("gateway_current"),"DATA_UNAVAILABLE")),
         ("🕒","Gateway evidence", "FRESH" if truth.get("gateway_evidence_fresh") else "NOT_FRESH"),
         (ICONS["status"],"Current reason",_value(reason,"DATA_UNAVAILABLE")),
@@ -119,14 +270,20 @@ def _profile_rows(profile: Mapping[str, Any]) -> list[tuple[str,str,str]]:
         ("🕘","Last event time",_value(truth.get("last_gateway_event_at_utc"),"NOT_RECORDED")),
         ("⏱️","Last event age",_value((profile.get("runtime_truth") or {}).get("last_gateway_event_age_seconds"),"NOT_RECORDED") + (" sec" if (profile.get("runtime_truth") or {}).get("last_gateway_event_age_seconds") is not None else "")),
         (ICONS["decision"],"Decision", (f"{_value(_first(profile,'decision_action','action'))} · {_value(_first(profile,'decision_confidence','confidence'))}%" if _first(profile,'decision_action','action',default=None) is not None else _value(operations.get("decision_evidence_status"),"NOT_EVALUATED"))),
-        ("🌦️","Regime",_value(_first(profile,"market_regime","regime",default="NOT_EVALUATED"))),
-        ("🧾","Trade plan",_value(_first(profile,"trade_plan_id","active_trade_plan","plan_id",default="NONE_ACTIVE"))),
-        ("🎯","Entry / Current",f"{_value(_first(profile,'entry_price',default='-'))} / {_value(_first(profile,'current_price','market_price',default='-'))}"),
-        (ICONS["risk"],"SL / TP", (f"{_value(_first(profile,'stop_loss','sl'))} / {_value(_first(profile,'take_profit','tp'))}" if _first(profile,'stop_loss','sl',default=None) is not None or _first(profile,'take_profit','tp',default=None) is not None else "NO_ACTIVE_POSITION")),
-        (ICONS["position"],"Position care",_value(_first(profile,"position_care_action","management_action","holding_action",default="NOT_ACTIVE"))),
-        ("✋","Holding reason",_value(_first(profile,"holding_reason","position_care_reason",default="NO_ACTIVE_POSITION"))),
-        ("🧾","Order / Units",f"{_value(_first(profile,'demo_order_status','order_status',default='ORDER_NOT_SENT'))} / {_value(_first(profile,'demo_sent_units','sent_units','current_units',default=0))}"),
-        ("🎫","Tickets",_tickets(profile)),
+        ("🌦️","Regime",_value(_first(profile,"market_regime","regime",default=operations.get("decision_evidence_status", "NOT_EVALUATED")))),
+        ("🧾","Trade plan",position_view["plan"]),
+        ("🎯","Entry / Current",position_view["entry_current"]),
+        (ICONS["risk"],"SL / TP",position_view["sl_tp"]),
+        (ICONS["position"],"Position care",position_view["care"]),
+        ("✋","Holding reason",position_view["holding"]),
+        ("🧾","Order / Units",f"{order_status} / {_value(lifecycle.get('sent_units', _first(profile,'demo_sent_units','sent_units','current_units',default=0)))}"),
+        ("🔄","Order lifecycle",_value(lifecycle.get("state"),"NOT_EVALUATED")),
+        ("🧩","Lifecycle reason",_value(lifecycle.get("reason"),"NOT_EVALUATED")),
+        ("🔗","Ticket / Plan lineage",_value(lineage.get("status"),"DATA_UNAVAILABLE")),
+        ("🧬","Lineage reason",_value(lineage.get("reason"),"DATA_UNAVAILABLE")),
+        ("✅","Consistency",f"{_value(consistency.get('status'),'NOT_EVALUATED')} · {consistency.get('issue_count', 0)} issue(s)"),
+        ("📦","Unit capacity",_capacity_text(profile)),
+        ("🎫","Ticket evidence",_ticket_evidence(profile)),
         ("📡","Latency / Reconnect",f"{_value(_first(profile,'latency_ms',default='WAITING'))} ms / {_value(_first(profile,'reconnect_attempts',default=0))}"),
         (ICONS["data"],"Data freshness",f"{'FRESH' if fresh else 'STALE / UNKNOWN'} · {age} sec"),
         (ICONS["time"],"Last update",_value(_first(profile,"checked_at_utc","updated_at_utc","last_update_utc",default="NOT_RECORDED"))),
@@ -186,14 +343,14 @@ class ThreeDashboardRuntime:
             legacy_contract_text = ""
         e=f'<p class="blocked"><b>{escape(err)}</b></p>' if err else ''
         financial=sum(bool(p.get("financial_live",False)) for p in profiles)
-        snapshots=sum(bool(p.get("financial_snapshot_available",False)) for p in profiles)
+        snapshots=sum(bool(p.get("financial_snapshot_verified",False)) for p in profiles)
         observed=sum(bool((p.get("authoritative_runtime_truth") or {}).get("observation_current",False)) for p in profiles)
         policy=sum(_first(p,"sizing_authority",default=None) not in (None,"","DATA_UNAVAILABLE") for p in profiles)
         def card(icon,label,value,total=4):
             pct=max(0,min(100,round((value/total)*100))) if total else 0
             return f'<div class="card"><div class="card-label" title="{escape(label, quote=True)}"><b><span class="card-icon">{icon}</span> {escape(label)}</b></div><div class="big">{value}/{total}</div><div class="card-progress" style="background:#e8edf1;border-radius:999px;overflow:hidden"><div style="height:100%;width:{pct}%;background:#2e8b57"></div></div></div>'
         cards='<div class="cards">'+card("⚙️","Runtime",running)+card("🖥️","MT5 process",connected)+card("💰","Live financial",financial)+card("🗂️","Verified snapshot",snapshots)+card("🕒","Observation current",observed)+card("📐","Lot policy",policy)+'</div>'
-        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="5"><title>AFIP P1-P4</title><style>{_base_style()}</style></head><body><div class="page"><header class="operations-header"><div class="toolbar"><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><span class="status-pill">🔄 5 SEC</span></div><h1>📊 AFIP Dashboard 1 · P1–P4</h1><p class="operations-summary"><b>Runtime {running}/4 · MT5 processes {connected}/4</b> · Passive monitoring observes terminal processes without opening or reconnecting MT5. Financial values are labelled LIVE, RECENT_SNAPSHOT, STALE_SNAPSHOT, or DATA_UNAVAILABLE.</p>{legacy_contract_text}<p class="operations-generated">{generated}</p>{e}{cards}</header><section class="section"><table class="profile-table"><thead><tr><th class="icon">◉</th><th class="metric">Metric</th>{heads}</tr></thead><tbody>{''.join(body)}</tbody></table></section><div hidden>P1 — Profile 1 | P2 — Profile 2 | P3 — Profile 3 | P4 — Profile 4 | AFIP Dashboard 1 — P1–P4 Operational Detail | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></body></html>'''
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="5"><title>AFIP P1-P4</title>{standalone_navigation_bootstrap()}<style>{_base_style()}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('operations')}<main class="afip-standalone-content"><div class="page"><header class="operations-header"><div class="toolbar"><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><span class="status-pill">🔄 5 SEC</span></div><h1>📊 AFIP Dashboard 1 · P1–P4</h1><p class="operations-summary"><b>Runtime {running}/4 · MT5 processes {connected}/4</b> · Passive monitoring observes terminal processes without opening or reconnecting MT5. Financial values are labelled LIVE, RECENT_SNAPSHOT, STALE_SNAPSHOT, or DATA_UNAVAILABLE.</p>{legacy_contract_text}<p class="operations-generated">{generated}</p>{e}{cards}</header><section class="section"><table class="profile-table"><thead><tr><th class="icon">◉</th><th class="metric">Metric</th>{heads}</tr></thead><tbody>{''.join(body)}</tbody></table></section><div hidden>P1 — Profile 1 | P2 — Profile 2 | P3 — Profile 3 | P4 — Profile 4 | AFIP Dashboard 1 — P1–P4 Operational Detail | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
 
     @staticmethod
     def _panel_html(panel:Any, compact:bool=False)->str:
@@ -215,7 +372,7 @@ class ThreeDashboardRuntime:
     def render_intelligence_html(self, record:Mapping[str,Any])->str:
         report=DashboardUIRuntime().evaluate_one(record); panels=[p for p in report.panels if not self._is_research(p)]
         cards=''.join(self._panel_html(p, compact=True) for p in panels); generated=datetime.now(timezone.utc).isoformat()
-        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Intelligence & Engines</title><style>{_base_style()}</style></head><body><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🧠 AFIP Dashboard 2 · Intelligence & Engines</h1><p>Intelligence, decision, risk, entry, exit, position-care and execution-engine evidence only.</p><p class="small">{generated}</p></header><div class="intelligence-grid">{cards}</div><div hidden>AFIP Dashboard 2 — Intelligence, Engines, Research & Data | Intelligence | Engines | Research &amp; Data | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></body></html>'''
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Intelligence & Engines</title>{standalone_navigation_bootstrap()}<style>{_base_style()}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('intelligence')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🧠 AFIP Dashboard 2 · Intelligence & Engines</h1><p>Intelligence, decision, risk, entry, exit, position-care and execution-engine evidence only.</p><p class="small">{generated}</p></header><div class="intelligence-grid">{cards}</div><div hidden>AFIP Dashboard 2 — Intelligence, Engines, Research & Data | Intelligence | Engines | Research &amp; Data | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
 
     @staticmethod
     def _load_research_records(root:Path)->tuple[list[dict[str,Any]],dict[str,int]]:
@@ -338,7 +495,7 @@ class ThreeDashboardRuntime:
 
     def render_research_html(self, record:Mapping[str,Any], project_root:str|Path='.') -> str:
         root=Path(project_root); report=DashboardUIRuntime().evaluate_one(record); research_panels=[p for p in report.panels if self._is_research(p)]
-        records,counts=self._load_research_records(root); rankings=self._rankings(records); generated=datetime.now(timezone.utc).isoformat()
+        records,counts=self._load_research_records(root); rankings=self._rankings(records); generated=datetime.now(timezone.utc).isoformat(); research_truth_html,_research_truth_status=_research_truth_summary(root)
         summary=f'''<div class="cards"><div class="card"><div>📁 Files</div><div class="big">{counts.get('files',0)}</div></div><div class="card"><div>🧾 Records</div><div class="big">{counts.get('records',0)}</div></div><div class="card"><div>✅ Readable</div><div class="big">{counts.get('readable_files',0)}</div></div><div class="card"><div>⚠️ Unreadable</div><div class="big">{counts.get('unreadable_files',0)}</div></div><div class="card"><div>🧩 Categories</div><div class="big">{sum(bool(v) for v in rankings.values())}</div></div></div>'''
         ranking_html=''.join(self._ranking_card(k,v) for k,v in rankings.items()); evidence=''.join(self._panel_html(p) for p in research_panels)
         auto_path=root/'runtime'/'research'/'automatic_research_status.json'
@@ -348,7 +505,7 @@ class ThreeDashboardRuntime:
             except (OSError,json.JSONDecodeError): auto={}
         auto_html=self._automatic_research_summary_html(auto)
         timeframe_html=self._automatic_research_timeframe_html(auto)
-        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Research & Data</title><style>{_base_style()} /* legacy layout contract: grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr) */ .research-status-layout{{display:grid;grid-template-columns:minmax(320px,.82fr) minmax(0,2.18fr);gap:14px;align-items:start}} .research-status-layout>.panel{{height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column}} .research-status-layout .table-wrap{{overflow:visible;flex:none;min-height:0}} .research-status-layout>.panel:first-child table{{table-layout:fixed;font-size:9.5px}} .research-status-layout>.panel:first-child td{{padding:2px 5px;line-height:1.08;overflow-wrap:anywhere}} .research-status-layout>.panel:first-child td:first-child{{width:44%}} .research-status-layout>.panel:first-child .small{{font-size:9.5px;line-height:1.15;margin:1px 0 4px}} .research-status-layout>.panel:first-child h3{{font-size:13px;margin-bottom:3px}} .timeframe-status-panel{{height:auto;min-height:0;grid-column:auto}} .timeframe-status-table{{table-layout:auto;font-size:12px}} .timeframe-status-table th,.timeframe-status-table td{{white-space:nowrap;padding:9px}} .research-grid,.research-evidence-grid{{gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}} .research-card,.panel{{font-size:15px}}</style></head><body><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="afip_research_operations_dashboard.html">📥 Data Loading</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🔬 AFIP Dashboard 3 · Research & Data</h1><p>Real research files and records only. Automatic research runs at dashboard startup. Missing evidence is recorded and excluded from scoring.</p><p class="small">{generated}</p></header><section class="section"><h2>⚙️ Automatic Research Status</h2><div class="research-status-layout">{auto_html}{timeframe_html}</div></section><section class="section"><h2>🗄️ Research inventory</h2>{summary}</section><section><h2>🏆 Top 10 / Top 100</h2><div class="research-grid">{ranking_html}</div></section><section><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{evidence}</div></section><div hidden>AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></body></html>'''
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Research & Data</title>{standalone_navigation_bootstrap()}<style>{_base_style()} /* legacy layout contract: grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr) */ .research-status-layout{{display:grid;grid-template-columns:minmax(320px,.82fr) minmax(0,2.18fr);gap:14px;align-items:start}} .research-status-layout>.panel{{height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column}} .research-status-layout .table-wrap{{overflow:visible;flex:none;min-height:0}} .research-status-layout>.panel:first-child table{{table-layout:fixed;font-size:9.5px}} .research-status-layout>.panel:first-child td{{padding:2px 5px;line-height:1.08;overflow-wrap:anywhere}} .research-status-layout>.panel:first-child td:first-child{{width:44%}} .research-status-layout>.panel:first-child .small{{font-size:9.5px;line-height:1.15;margin:1px 0 4px}} .research-status-layout>.panel:first-child h3{{font-size:13px;margin-bottom:3px}} .timeframe-status-panel{{height:auto;min-height:0;grid-column:auto}} .timeframe-status-table{{table-layout:auto;font-size:12px}} .timeframe-status-table th,.timeframe-status-table td{{white-space:nowrap;padding:9px}} .research-grid,.research-evidence-grid{{gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}} .research-card,.panel{{font-size:15px}}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('research')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="afip_research_operations_dashboard.html">📥 Data Loading</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🔬 AFIP Dashboard 3 · Research & Data</h1><p>Real research files and records only. Automatic research runs at dashboard startup. Missing evidence is recorded and excluded from scoring.</p><p class="small">{generated}</p></header><section class="section"><h2>⚙️ Automatic Research Status</h2><div class="research-status-layout">{auto_html}{timeframe_html}</div></section><section class="section"><h2>Research performance truth</h2>{research_truth_html}</section><section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section><section class="section"><h2>🗄️ Research inventory</h2>{summary}</section><section><h2>🏆 Top 10 / Top 100</h2><div class="research-grid">{ranking_html}</div></section><section><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{evidence}</div></section><div hidden>AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
 
 
     def write_three_dashboards(self, record:Mapping[str,Any], output_directory:str|Path='runtime/dashboard', project_root:str|Path='.') -> tuple[Path,Path,Path]:

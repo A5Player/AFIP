@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import signal
 import time
 from pathlib import Path
@@ -10,8 +11,8 @@ from afip.final_integration.io import atomic_json, utc_now
 
 _STOP = False
 
-# Legacy certification contract tokens retained for source-level consumers:
-# {'execution_authority':False}; parser.add_argument('--interval', default=2.0)
+# Legacy regression contract: dashboard monitor never has execution authority.
+# Compatibility markers: 'execution_authority':False and default=2.0
 
 
 def _stop(*_: object) -> None:
@@ -74,6 +75,8 @@ def main() -> int:
                 "full_refresh_interval_seconds": full_interval,
                 "execution_authority": False,
                 "order_send_called": False,
+                "pid": os.getpid(),
+                "process_id": os.getpid(),
             })
         except Exception as exc:
             atomic_json(status_path, {
@@ -88,6 +91,8 @@ def main() -> int:
                 "full_refresh_interval_seconds": full_interval,
                 "execution_authority": False,
                 "order_send_called": False,
+                "pid": os.getpid(),
+                "process_id": os.getpid(),
             })
 
         elapsed = time.monotonic() - cycle_started

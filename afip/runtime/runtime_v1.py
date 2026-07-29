@@ -38,9 +38,9 @@ def _snapshot_to_candles(snapshot: dict) -> list:
 
 
 class RuntimeV1:
-    def simulate(self):
+    def simulate(self, *, market_data_provider=None, balance: float = 1000.0, allow_fallback: bool = True):
         symbol = "GOLD#"
-        real_wiring = RealMarketDataIntelligenceWiring().run(symbol=symbol, count=100)
+        real_wiring = RealMarketDataIntelligenceWiring(market_data_provider=market_data_provider).run(symbol=symbol, count=100)
         market_data = real_wiring.get("market_data", {})
         snapshots = market_data.get("timeframes", {})
         primary_snapshot = real_wiring.get("primary_snapshot", {})
@@ -51,6 +51,19 @@ class RuntimeV1:
             if snapshot.get("closes")
         }
         if not timeframe_candles:
+            if not allow_fallback:
+                return {
+                    "status": "BLOCKED",
+                    "mode": "REAL_MARKET_DATA_REQUIRED",
+                    "symbol": real_wiring.get("symbol", symbol),
+                    "data_status": real_wiring.get("status"),
+                    "data_source": "UNAVAILABLE",
+                    "decision": {"action": "WAIT", "confidence": 0.0, "reason": "real_market_data_required"},
+                    "order": {"status": "NO_ORDER", "reason": "real_market_data_required"},
+                    "risk": {"allowed": False, "reasons": ["real_market_data_required"]},
+                    "modular_intelligence": real_wiring.get("modular_intelligence", {}),
+                    "real_market_data_wiring": real_wiring,
+                }
             timeframe_candles = {
                 "M5": _candles(2300.0),
                 "M15": _candles(2301.0),
@@ -61,7 +74,7 @@ class RuntimeV1:
             symbol=real_wiring.get("symbol", symbol),
             timeframe_candles=timeframe_candles,
             spread=primary_snapshot.get("spread", 18),
-            balance=1000.0,
+            balance=float(balance),
         )
 
         modular = real_wiring.get("modular_intelligence")
@@ -69,7 +82,7 @@ class RuntimeV1:
             first_snapshot = next(iter(protected["base"]["signal"]["snapshots"].values()))
             modular = ModularIntelligencePipeline().run(first_snapshot)
 
-        protected = ConfidenceCalibrator().calibrate(protected, modular, balance=1000.0)
+        protected = ConfidenceCalibrator().calibrate(protected, modular, balance=float(balance))
         trading_cost_intelligence = real_wiring.get("trading_cost_intelligence", {})
         if not trading_cost_intelligence.get("allowed", True):
             protected = self._apply_trading_cost_block(protected, trading_cost_intelligence)

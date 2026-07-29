@@ -50,6 +50,8 @@ class MT5Adapter:
         return self.enabled and self.mt5_client is not None
 
     def initialize(self) -> dict:
+        if self.initialized and self.enabled and self.mt5_client is not None:
+            return {"available": True, "initialized": True, "reason": "already_initialized"}
         if not self.enabled:
             return {"available": False, "initialized": False, "reason": "mt5_adapter_disabled_by_policy"}
         if self.mt5_client is None:

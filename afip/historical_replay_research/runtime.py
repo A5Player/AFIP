@@ -197,7 +197,7 @@ class AppendOnlyResearchDataset:
         "robustness_scenarios", "robustness_results", "promotion_evidence_records",
         "research_standard_versions", "research_standard_selections", "historical_coverage_plans",
         "runtime_standard_guidance", "historical_market_bars", "historical_backfill_results",
-        "historical_backfill_checkpoints", "mt5_historical_provider_runs",
+        "historical_backfill_checkpoints", "mt5_historical_provider_runs", "historical_data_quality",
         "runtime_decision_traces", "dashboard_research_rankings", "adaptive_plan_rankings",
         "complete_trade_plans", "trade_plan_certifications", "trade_plan_lifecycle_events",
         "capital_capacity_snapshots", "recovery_reconciliations",

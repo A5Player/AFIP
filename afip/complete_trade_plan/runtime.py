@@ -242,8 +242,10 @@ class CompleteTradePlanCertifier:
         capital = plan.capital
         if capital.profile_id.upper() not in {"P1", "P2", "P3", "P4"}:
             reasons.append("profile_id_invalid")
-        if not _positive(capital.base_lot) or not _positive(capital.capital_per_unit):
+        if not _positive(capital.base_lot):
             reasons.append("capital_unit_policy_invalid")
+        # capital_per_unit is retained only as compatibility metadata.
+        # AFIP V1 lot sizing authority is Capital Tier + LotAuthority, never this field.
         if capital.account_equity <= 0 or capital.free_margin < 0:
             reasons.append("account_capital_state_invalid")
         if capital.current_floating_drawdown_percent > capital.maximum_account_drawdown_percent:

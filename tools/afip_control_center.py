@@ -1,5 +1,7 @@
-"""Read-only AFIP V1 Control Center command line utility."""
+"""Read-only AFIP Pro Control Center command line utility."""
 from __future__ import annotations
+
+from afip.branding import CONTROL_CENTER_NAME
 
 import argparse
 import json
@@ -10,7 +12,7 @@ from afip.dashboard_ui.control_center import write_control_center
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Inspect or build the passive AFIP V1 Control Center.")
+    parser = argparse.ArgumentParser(description=f"Inspect or build the passive {CONTROL_CENTER_NAME}.")
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--snapshot", action="store_true", help="Print the current read-only runtime projection as JSON.")
     parser.add_argument("--build", action="store_true", help="Build runtime/dashboard/afip_control_center.html.")

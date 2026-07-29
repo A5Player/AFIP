@@ -26,3 +26,5 @@ __all__ += [
     "RegistryValidationError",
     "ResearchEligibility",
 ]
+
+from .intelligence import ResearchIntelligence, research_cluster_id, research_dimensions

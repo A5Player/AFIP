@@ -1,5 +1,6 @@
 from afip.registry.intelligence_catalog import IntelligenceCatalog
 from afip.decision.decision_intelligence import DecisionIntelligence
+from afip.decision.intelligence_activation import build_activation_matrix
 
 
 class ModularIntelligencePipeline:
@@ -20,5 +21,6 @@ class ModularIntelligencePipeline:
             "mode": "SIMULATION",
             "module_count": len(modules),
             "intelligence": intelligence_results,
+            "activation_matrix": build_activation_matrix([str(item.get("name", "UNKNOWN")) for item in intelligence_results]),
             "decision": decision,
         }

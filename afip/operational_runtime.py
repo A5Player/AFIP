@@ -173,7 +173,13 @@ class OperationalRuntime:
         ledgers = [p.logs_directory / "demo_execution_ledger.jsonl" for p in profiles if p.enabled and p.research_enabled]
         # Profile paths in configuration are relative to the project root.
         ledgers = [path if path.is_absolute() else self.root / path for path in ledgers]
-        return ResearchRuntimeCollector(self.root / "runtime" / "research").ingest_ledgers(ledgers).as_dict()
+        activation_ledgers = [
+            self.root / "runtime" / "profiles" / p.profile_id.lower() / "production_activation" / "activation_ledger.jsonl"
+            for p in profiles if p.enabled and p.research_enabled
+        ]
+        return ResearchRuntimeCollector(self.root / "runtime" / "research").ingest_ledgers(
+            ledgers, activation_ledger_paths=activation_ledgers
+        ).as_dict()
 
     def _build_dashboards(self) -> dict[str, Any]:
         from afip.dashboard_ui.dashboard_authority import DashboardAuthority
@@ -207,6 +213,8 @@ class OperationalRuntime:
         overall = "RUNNING" if router_running else "DEGRADED_EXECUTION_BLOCKED"
         if research.get("heartbeat_stale"):
             overall = "DEGRADED" if router_running else "DEGRADED_EXECUTION_AND_RESEARCH"
+        from afip.runtime_truth import build_runtime_truth
+        runtime_truth = build_runtime_truth(self.root)
         payload = {
             "schema_version": SCHEMA_VERSION,
             "status": overall,
@@ -226,6 +234,7 @@ class OperationalRuntime:
             "expected_profiles": len(profiles),
             "research": research,
             "dashboard": dict(dashboard or {}),
+            "runtime_truth": runtime_truth,
         }
         atomic_json(self.authority_path, payload)
         return payload

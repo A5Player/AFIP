@@ -199,10 +199,18 @@ class PositionCareSupervisor:
 
     @staticmethod
     def _profit_protective_stop(snapshot: PositionCareSnapshot) -> float:
+        """Return a price-domain protective stop.
+
+        ``favorable_points`` is diagnostic metadata measured in broker points;
+        it must never be added directly to a market price.  The safe price
+        distance is derived from entry/current prices so the calculation stays
+        in one unit domain even when symbol digits differ.
+        """
+        favorable_price_distance = max(0.0, abs(snapshot.current_price - snapshot.entry_price))
         if snapshot.direction.upper() == "BUY":
-            candidate = snapshot.entry_price + max(0.0, snapshot.favorable_points * 0.5)
+            candidate = snapshot.entry_price + favorable_price_distance * 0.5
             return max(snapshot.current_stop_price, candidate)
-        candidate = snapshot.entry_price - max(0.0, snapshot.favorable_points * 0.5)
+        candidate = snapshot.entry_price - favorable_price_distance * 0.5
         if snapshot.current_stop_price <= 0:
             return candidate
         return min(snapshot.current_stop_price, candidate)

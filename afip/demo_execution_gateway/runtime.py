@@ -34,6 +34,7 @@ from afip.position_policy import confidence_maximum_units
 from afip.position_capacity_formula import capital_tiers_from_profile
 from afip.lot_authority import calculate_lot_authority
 from afip.production_runtime_authority import reclaim_stale_lock
+from afip.live_mt5_snapshot_authority import publish_live_mt5_snapshot
 from afip.production_activation_runtime import ProductionActivationRuntime
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
@@ -210,8 +211,21 @@ class DemoGatewayReport:
     order_send_called: bool = False
     mt5_result_code: int | None = None
     mt5_result_comment: str = ""
+    execution_batch_id: str = ""
+    execution_attempts: int = 0
+    execution_latency_ms: float = 0.0
+    execution_outcome: str = "NOT_ATTEMPTED"
+    retry_policy: str = "NO_AUTOMATIC_RETRY_AFTER_AMBIGUOUS_OR_PARTIAL_SEND"
+    reconciliation_required: bool = False
+    partial_execution: bool = False
+    remaining_units: int = 0
+    unit_results: tuple[dict[str, Any], ...] = ()
     allocation_mode: str = "UNKNOWN"
     account_balance: float = 0.0
+    account_equity: float = 0.0
+    available_capital: float = 0.0
+    capital_basis: str = "UNKNOWN"
+    capital_authority_policy: str = ""
     current_tier_minimum_balance: float | None = None
     target_tier_lots: tuple[float, ...] = ()
     next_tier_balance: float | None = None
@@ -255,7 +269,7 @@ class DemoExecutionGateway:
         self.profile = profile
         self.policy = policy
         self._mt5 = mt5
-        self._simulate = simulate or self._default_simulate
+        self._simulate = simulate
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._active_trace_id = ""
         self._active_intelligence_snapshot: dict[str, Any] = {}
@@ -264,9 +278,22 @@ class DemoExecutionGateway:
         )
 
     @staticmethod
-    def _default_simulate() -> dict[str, Any]:
+    def _production_simulate(mt5: MT5Protocol, account: Any) -> dict[str, Any]:
+        from afip.broker.mt5_adapter import MT5Adapter
+        from afip.market.mt5_market_data_provider import MT5MarketDataProvider
         from afip.runtime.runtime_v1 import RuntimeV1
-        return RuntimeV1().simulate()
+
+        adapter = MT5Adapter(mt5_client=mt5, enabled=True)
+        # Preflight already initialized and certified the exact profile binding.
+        # Reuse that session; never perform a generic package-level MT5 initialize.
+        adapter.initialized = True
+        provider = MT5MarketDataProvider(adapter=adapter)
+        balance = float(DemoExecutionGateway._value(account, "balance", 0.0) or 0.0)
+        return RuntimeV1().simulate(
+            market_data_provider=provider,
+            balance=balance,
+            allow_fallback=False,
+        )
 
     @property
     def armed(self) -> bool:
@@ -361,6 +388,12 @@ class DemoExecutionGateway:
         confluence = result.get("multi_timeframe_confluence", {})
         calibration = result.get("confidence_calibration", {})
         cost = result.get("trading_cost_intelligence", {})
+        intelligence_items = modular.get("intelligence", []) if isinstance(modular, Mapping) else []
+        votes = []
+        if isinstance(intelligence_items, (list, tuple)):
+            for item in intelligence_items:
+                if isinstance(item, Mapping):
+                    votes.append(cls._compact_mapping(item, ("name", "status", "direction", "confidence", "reason")))
         snapshot = {
             "data": {
                 "status": result.get("data_status"),
@@ -368,6 +401,8 @@ class DemoExecutionGateway:
                 "symbol": result.get("symbol"),
                 "primary_timeframe": result.get("primary_timeframe"),
             },
+            "intelligence_votes": tuple(vote for vote in votes if vote),
+            "activation_matrix": tuple(modular.get("activation_matrix", ())) if isinstance(modular, Mapping) else (),
             "market_regime": cls._compact_mapping(
                 modular.get("market_regime", {}) if isinstance(modular, Mapping) else {},
                 ("status", "regime", "market_regime", "confidence", "reason"),
@@ -382,7 +417,7 @@ class DemoExecutionGateway:
             ),
             "decision": cls._compact_mapping(
                 decision,
-                ("action", "confidence", "score", "reason", "requested_units", "market_regime"),
+                ("action", "confidence", "buy_score", "sell_score", "edge", "reason", "conflict_resolution_reason", "selected_scenario", "rejected_scenarios", "requested_units", "market_regime"),
             ),
             "confidence_calibration": cls._compact_mapping(
                 calibration,
@@ -411,6 +446,8 @@ class DemoExecutionGateway:
     def _decision_pipeline(snapshot: Mapping[str, Any]) -> tuple[str, ...]:
         stages = (
             ("data", "MARKET_DATA"),
+            ("intelligence_votes", "MODULAR_INTELLIGENCE"),
+            ("activation_matrix", "INTELLIGENCE_ACTIVATION_MATRIX"),
             ("market_regime", "MARKET_REGIME"),
             ("pattern", "PATTERN_INTELLIGENCE"),
             ("confluence", "MULTI_TIMEFRAME_CONFLUENCE"),
@@ -736,17 +773,26 @@ class DemoExecutionGateway:
                 return blocked
             assert account is not None
 
+            publish_live_mt5_snapshot(
+                profile=self.profile, mt5=mt5, account=account, value_getter=self._value
+            )
+
             afip_positions, manual_positions = self._existing_positions(mt5)
             if manual_positions:
                 return self._report("BLOCKED", "manual_position_detected_operator_override", account_trade_mode="DEMO", demo_verified=True)
 
-            # Real runtime activation: every existing AFIP position is evaluated
-            # by TradeLifecycleEngine and PositionCareSupervisor before new risk.
+            # Evaluate current real-market intelligence once, then reuse the same
+            # decision for open-position care and any new-risk decision.  This
+            # prevents position care from running on hard-coded validity flags.
+            result = self._simulate() if self._simulate is not None else self._production_simulate(mt5, account)
             self._production_activation.observe_positions(
-                mt5=mt5, positions=afip_positions, latest_confidence=50.0
+                mt5=mt5,
+                positions=afip_positions,
+                latest_confidence=float(result.get("decision", {}).get("confidence", 0.0) or 0.0),
+                current_intelligence=result,
+                execution_trace_id=self._active_trace_id,
             )
 
-            result = self._simulate()
             self._active_intelligence_snapshot = self._intelligence_snapshot(result)
             decision = result.get("decision", {})
             order = result.get("order", {})
@@ -839,6 +885,10 @@ class DemoExecutionGateway:
                 "remaining_order_capacity": remaining_order_capacity,
                 "allocation_mode": self.policy.allocation_mode,
                 "account_balance": authority.balance,
+                "account_equity": authority.equity,
+                "available_capital": authority.available_capital,
+                "capital_basis": authority.capital_basis,
+                "capital_authority_policy": authority.policy_version,
                 "current_tier_minimum_balance": growth.current_tier_minimum_balance,
                 "target_tier_lots": growth.target_lots,
                 "next_tier_balance": growth.next_tier_balance,
@@ -939,7 +989,10 @@ class DemoExecutionGateway:
 
             tickets: list[int] = []
             retcode: int | None = None
-            for request in prepared_requests:
+            unit_results: list[dict[str, Any]] = []
+            execution_batch_id = f"{self.profile.profile_id}-{fingerprint[:12]}-{int(time.time())}"
+            batch_started = time.perf_counter()
+            for unit_index, request in enumerate(prepared_requests, start=1):
                 binding_ok, actual_login, _actual_server, terminal_path = self._repair_exact_binding(mt5)
                 if not binding_ok:
                     return self._report(
@@ -953,33 +1006,53 @@ class DemoExecutionGateway:
                         configured_terminal_folder=str(self.profile.mt5_folder),
                         ownership_token=ownership_token, **execution_diagnostics,
                     )
+                unit_started = time.perf_counter()
                 result_send = mt5.order_send(request)
+                unit_latency_ms = round((time.perf_counter() - unit_started) * 1000.0, 3)
                 if result_send is None:
-                    return self._report(
+                    unit_results.append({"unit_index": unit_index, "status": "AMBIGUOUS", "retcode": None, "comment": str(mt5.last_error()), "latency_ms": unit_latency_ms})
+                    report = self._report(
                         "ERROR", f"order_send_returned_none:{mt5.last_error()}",
                         account_trade_mode="DEMO", demo_verified=True,
                         decision_action=action, decision_confidence=confidence,
                         sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets),
                         order_check_called=True, order_send_called=True,
-                        mt5_result_comment=str(mt5.last_error()), **execution_diagnostics,
+                        mt5_result_comment=str(mt5.last_error()),
+                        execution_batch_id=execution_batch_id, execution_attempts=len(unit_results),
+                        execution_latency_ms=round((time.perf_counter()-batch_started)*1000.0,3),
+                        execution_outcome="AMBIGUOUS_BROKER_RESULT", reconciliation_required=True,
+                        partial_execution=bool(tickets), remaining_units=max(0, len(prepared_requests)-len(tickets)),
+                        unit_results=tuple(unit_results), **execution_diagnostics,
                     )
+                    state = report.as_dict(); state["last_signal_fingerprint"] = fingerprint; state["last_order_epoch"] = time.time(); self._write_json(self.state_path, state)
+                    return report
                 retcode = int(self._value(result_send, "retcode", -1))
                 success_codes = {
                     int(getattr(mt5, name)) for name in SUCCESS_RETCODE_NAMES if hasattr(mt5, name)
                 }
                 if retcode not in success_codes:
                     comment = self._value(result_send, "comment", "unknown")
-                    return self._report(
+                    unit_results.append({"unit_index": unit_index, "status": "REJECTED", "retcode": retcode, "comment": str(comment), "latency_ms": unit_latency_ms})
+                    report = self._report(
                         "ERROR", f"order_send_failed:{retcode}:{comment}",
                         account_trade_mode="DEMO", demo_verified=True,
                         decision_action=action, decision_confidence=confidence,
                         sent_units=len(tickets), **allocation_diagnostics, tickets=tuple(tickets),
                         order_check_called=True, order_send_called=True,
                         mt5_result_code=retcode, mt5_result_comment=str(comment),
+                        execution_batch_id=execution_batch_id, execution_attempts=len(unit_results),
+                        execution_latency_ms=round((time.perf_counter()-batch_started)*1000.0,3),
+                        execution_outcome="PARTIAL_REJECTED" if tickets else "BROKER_REJECTED",
+                        reconciliation_required=bool(tickets), partial_execution=bool(tickets),
+                        remaining_units=max(0, len(prepared_requests)-len(tickets)), unit_results=tuple(unit_results),
                         **execution_diagnostics,
                     )
+                    if tickets:
+                        state = report.as_dict(); state["last_signal_fingerprint"] = fingerprint; state["last_order_epoch"] = time.time(); self._write_json(self.state_path, state)
+                    return report
                 ticket = int(self._value(result_send, "order", self._value(result_send, "deal", 0)) or 0)
                 tickets.append(ticket)
+                unit_results.append({"unit_index": unit_index, "status": "SENT", "retcode": retcode, "comment": str(self._value(result_send, "comment", "")), "ticket": ticket, "latency_ms": unit_latency_ms})
 
             binding_ok, actual_login, _actual_server, terminal_path = self._binding_snapshot(mt5)
             if not binding_ok:
@@ -996,7 +1069,7 @@ class DemoExecutionGateway:
                 plan=plan, tickets=tickets, requests=prepared_requests,
                 execution_trace_id=self._active_trace_id,
             )
-            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, plan_id=plan.plan_id, plan_certification_status=plan_certification.status, **execution_diagnostics)
+            report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, plan_id=plan.plan_id, plan_certification_status=plan_certification.status, execution_batch_id=execution_batch_id, execution_attempts=len(unit_results), execution_latency_ms=round((time.perf_counter()-batch_started)*1000.0,3), execution_outcome="COMPLETE", reconciliation_required=False, partial_execution=False, remaining_units=0, unit_results=tuple(unit_results), **execution_diagnostics)
             state = report.as_dict()
             state["last_signal_fingerprint"] = fingerprint
             state["last_order_epoch"] = time.time()

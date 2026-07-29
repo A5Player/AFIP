@@ -6,6 +6,8 @@ from pathlib import Path
 from statistics import mean
 from typing import Any, Iterable, Mapping
 
+from .intelligence import ResearchIntelligence
+
 
 def _read_json(path: Path) -> dict[str, Any]:
     try:
@@ -38,7 +40,7 @@ class ResearchDatasetAggregator:
     def cases(self) -> list[dict[str, Any]]:
         return [
             case
-            for path in sorted((self.root / "trade_cases").glob("CASE-*.json"))
+            for path in sorted((self.root / "trade_cases").glob("*.json"))
             if (case := _read_json(path))
         ]
 
@@ -50,25 +52,47 @@ class ResearchDatasetAggregator:
         rows: list[dict[str, Any]] = []
         for pattern_id, items in grouped.items():
             exits = [item.get("exit_context", {}) for item in items]
-            profits = [_number(exit_.get("net_profit")) for exit_ in exits if isinstance(exit_, Mapping)]
+            completed_exits = [exit_ for exit_ in exits if isinstance(exit_, Mapping) and exit_.get("net_profit") not in (None, "")]
+            profits = [_number(exit_.get("net_profit")) for exit_ in completed_exits]
             wins = sum(value > 0 for value in profits)
             gross_profit = sum(max(value, 0.0) for value in profits)
             gross_loss = abs(sum(min(value, 0.0) for value in profits))
             completed = len(profits)
+            losses = completed - wins
+            net_profit = sum(profits)
+            average_profit = mean(profits) if profits else 0.0
+            expectancy = average_profit if completed else None
+            profit_factor = (gross_profit / gross_loss) if gross_loss else (None if completed == 0 else gross_profit)
+            equity = 0.0
+            peak = 0.0
+            maximum_drawdown = 0.0
+            for value in profits:
+                equity += value
+                peak = max(peak, equity)
+                maximum_drawdown = max(maximum_drawdown, peak - equity)
             rows.append({
                 "pattern_id": pattern_id,
                 "occurrences": len(items),
                 "completed_trades": completed,
-                "win_rate": round((wins / completed * 100.0) if completed else 0.0, 2),
-                "profit_factor": round((gross_profit / gross_loss) if gross_loss else gross_profit, 2),
-                "average_holding": round(mean([_number(x.get("holding_seconds")) for x in exits]) if exits else 0.0, 2),
-                "average_mfe": round(mean([_number(x.get("mfe")) for x in exits]) if exits else 0.0, 2),
-                "average_mae": round(mean([_number(x.get("mae")) for x in exits]) if exits else 0.0, 2),
-                "average_exit_quality": round(mean([_number(x.get("exit_quality")) for x in exits]) if exits else 0.0, 2),
+                "wins": wins,
+                "losses": losses,
+                "win_rate": round((wins / completed * 100.0), 2) if completed else None,
+                "gross_profit": round(gross_profit, 2),
+                "gross_loss": round(gross_loss, 2),
+                "net_profit": round(net_profit, 2),
+                "average_profit": round(average_profit, 2) if completed else None,
+                "expectancy": round(expectancy, 2) if expectancy is not None else None,
+                "profit_factor": round(profit_factor, 2) if profit_factor is not None else None,
+                "maximum_drawdown": round(maximum_drawdown, 2) if completed else None,
+                "average_holding": round(mean([_number(x.get("holding_seconds")) for x in completed_exits]) if completed_exits else 0.0, 2),
+                "average_mfe": round(mean([_number(x.get("mfe")) for x in completed_exits]) if completed_exits else 0.0, 2),
+                "average_mae": round(mean([_number(x.get("mae")) for x in completed_exits]) if completed_exits else 0.0, 2),
+                "average_exit_quality": round(mean([_number(x.get("exit_quality")) for x in completed_exits]) if completed_exits else 0.0, 2),
+                "statistics_status": "AVAILABLE" if completed else "INSUFFICIENT_COMPLETED_TRADES",
                 "research_only": True,
                 "affects_trading": False,
             })
-        rows.sort(key=lambda row: (row["profit_factor"], row["win_rate"], row["occurrences"], row["pattern_id"]), reverse=True)
+        rows.sort(key=lambda row: (row["profit_factor"] if row["profit_factor"] is not None else -1.0, row["win_rate"] if row["win_rate"] is not None else -1.0, row["occurrences"], row["pattern_id"]), reverse=True)
         return rows
 
     def build(self) -> dict[str, Any]:
@@ -86,6 +110,8 @@ class ResearchDatasetAggregator:
                 if status != "COMPLETED":
                     due_or_pending[str(name)] += 1
         rows = self._pattern_rows(cases)
+        intelligence = ResearchIntelligence(self.root)
+        cluster_rows = intelligence.cluster_rows(cases)
         closed = sum(1 for case in cases if str(case.get("lifecycle_state", "")).startswith(("CLOSED", "COMPLETE")))
         active = len(cases) - closed
         unknown = sum(1 for case in cases if _pattern_id(case) == "UNKNOWN")
@@ -109,4 +135,7 @@ class ResearchDatasetAggregator:
             "checkpoint_status_counts": dict(sorted(checkpoint_counts.items())),
             "pattern_statistics": rows,
             "top_100_patterns": rows[:100],
+            "research_clusters": cluster_rows,
+            "top_100_research_clusters": cluster_rows[:100],
+            "research_cluster_policy": "PROFILE_INDEPENDENT_PATTERN_REGIME_SESSION_TIMEFRAME_CONTEXT",
         }

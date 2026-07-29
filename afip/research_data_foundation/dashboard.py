@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .aggregator import ResearchDatasetAggregator
+from .intelligence import ResearchIntelligence
 
 
 def _json(path: Path, default: Any) -> Any:
@@ -27,6 +28,8 @@ class ResearchDashboardSnapshot:
         queue = _json(self.root / "replay" / "replay_queue.json", {"jobs": []}).get("jobs", [])
         aggregate = ResearchDatasetAggregator(self.root).build()
         rows = list(aggregate["top_100_patterns"])
+        cluster_rows = list(aggregate.get("top_100_research_clusters", ()))
+        similarity = ResearchIntelligence(self.root).nearest(record.get("current_market_case", {})) if record.get("current_market_case") else {"status": "NO_CURRENT_MARKET_CASE", "research_only": True, "affects_trading": False}
         active = next((item for item in queue if item.get("status") == "RUNNING"), None)
         return {"historical_data": {"coverage": record.get("historical_coverage", "UNKNOWN"), "start_date": record.get("historical_start_date", "UNKNOWN"),
                     "end_date": record.get("historical_end_date", "UNKNOWN"), "candle_count": int(record.get("historical_candle_count", 0) or 0),
@@ -38,7 +41,6 @@ class ResearchDashboardSnapshot:
                     "recorded_exits": int(replay.get("exits_recorded", 0) or 0)}, "top_100_patterns": rows,
                 "dataset_health": aggregate["dataset_health"], "lifecycle_states": aggregate["lifecycle_states"],
                 "pending_checkpoints": aggregate["pending_checkpoints"],
-                "similar_pattern_monitor": {"research_only": True, "similarity_percent": record.get("similarity_percent", 0),
-                    "similar_pattern_id": record.get("similar_pattern_id", "NONE"), "historical_occurrences": record.get("similar_pattern_occurrences", 0),
-                    "historical_win_rate": record.get("similar_pattern_win_rate", 0), "historical_profit_factor": record.get("similar_pattern_profit_factor", 0),
-                    "affects_trading": False}}
+                "research_clusters": cluster_rows,
+                "research_cluster_policy": aggregate.get("research_cluster_policy"),
+                "similar_pattern_monitor": similarity}

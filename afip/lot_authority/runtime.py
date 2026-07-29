@@ -24,6 +24,8 @@ class LotAuthorityResult:
     profile_id: str
     balance: float
     equity: float
+    available_capital: float
+    capital_basis: str
     base_lot: float
     requested_units: int
     confidence_units: int
@@ -79,8 +81,13 @@ def calculate_lot_authority(
     mapping = decision if isinstance(decision, Mapping) else {}
     profile_id = str(profile.get("profile_id", mapping.get("profile_id", "UNKNOWN"))).upper()
     safe_balance = _number(balance)
-    safe_equity = _number(equity if equity is not None else balance)
-    available_capital = min(safe_balance, safe_equity) if safe_equity > 0 else safe_balance
+    equity_was_provided = equity is not None
+    safe_equity = _number(equity if equity_was_provided else balance)
+    # Capital authority is fail-closed: when broker equity is explicitly
+    # available, capacity is based on the lower of balance and equity.  An
+    # explicit zero equity must never fall back to balance.
+    available_capital = min(safe_balance, safe_equity) if equity_was_provided else safe_balance
+    capital_basis = "MIN_BALANCE_EQUITY" if equity_was_provided else "BALANCE_ONLY_EQUITY_UNAVAILABLE"
 
     requested = requested_units_within_confidence_ceiling(mapping, confidence)
     profile_max = min(MAX_SIGNAL_UNITS, _integer(profile.get("maximum_units", MAX_SIGNAL_UNITS), MAX_SIGNAL_UNITS))
@@ -109,7 +116,7 @@ def calculate_lot_authority(
         legacy_maximum_units=0,
         lot_per_unit=BASE_LOT,
     )
-    capital_units = min(MAX_SIGNAL_UNITS, len(growth.available_lots))
+    capital_units = 0 if available_capital <= 0.0 else min(MAX_SIGNAL_UNITS, len(growth.available_lots))
     # Capital Tier Table is the sole Maximum Lot Size authority for P1-P3.
     # P4 is explicitly capped by configuration at one 0.01-lot unit.
     approved_lot = float(growth.available_lots[0]) if growth.available_lots else BASE_LOT
@@ -141,6 +148,8 @@ def calculate_lot_authority(
         profile_id=profile_id,
         balance=round(safe_balance, 2),
         equity=round(safe_equity, 2),
+        available_capital=round(available_capital, 2),
+        capital_basis=capital_basis,
         base_lot=BASE_LOT,
         requested_units=requested.requested_units,
         confidence_units=requested.confidence_maximum_units,

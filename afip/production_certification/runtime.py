@@ -212,3 +212,162 @@ class ProductionCertificationRuntime:
         path = self.runtime_dir / "production_certification.txt"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+FINAL_CERTIFICATION_DOMAINS: dict[str, tuple[str, ...]] = {
+    "architecture": ("afip/runtime_truth.py", "afip/final_integration/runtime.py"),
+    "runtime_authority": ("afip/runtime_truth.py", "afip/control_center_runtime.py"),
+    "execution": ("afip/demo_execution_gateway/runtime.py",),
+    "capital": ("afip/lot_authority/runtime.py",),
+    "position_management": ("afip/position_care_runtime/runtime.py", "afip/production_activation_runtime/runtime.py"),
+    "research_intelligence": ("afip/research_data_foundation/intelligence.py", "afip/research_data_foundation/aggregator.py"),
+    "dashboard": ("afip/dashboard_ui/control_center.py", "afip/control_center_runtime.py"),
+    "data_integrity": ("afip/research_data_foundation/runtime_collector.py",),
+}
+
+
+class FinalV1ProductionCertification:
+    """Passive, evidence-based AFIP V1 final certification.
+
+    This class never initializes MT5, starts runtime services, or sends broker
+    requests. It evaluates repository evidence and supplied regression results.
+    """
+
+    SCHEMA = "afip-v1-final-production-certification.v1"
+
+    def __init__(self, root: Path | str = Path(".")):
+        self.root = Path(root).resolve()
+        self.output_dir = self.root / "runtime" / "certification"
+
+    def certify(
+        self,
+        *,
+        regression_status: str,
+        regression_scope: str,
+        regression_command: list[str] | None = None,
+        regression_count: int = 0,
+        runtime_truth: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        evidence = self._domain_evidence()
+        truth = dict(runtime_truth or self._load_runtime_truth())
+        conflicts = self._int(truth.get("conflict_count", truth.get("conflicts", 0)))
+        missing = self._int(truth.get("missing_authority_count", truth.get("missing_authority", 0)))
+        truth_status = str(truth.get("status", "NOT_RECORDED")).upper()
+        truth_ok = conflicts == 0 and missing == 0 and truth_status not in {"FAILED", "ERROR", "CONFLICT", "BLOCKED"}
+        evidence_ok = all(item["status"] == "PASS" for item in evidence.values())
+        regression_ok = str(regression_status).upper() == "PASS"
+        full = str(regression_scope).upper() == "FULL"
+
+        blockers: list[str] = []
+        if not evidence_ok:
+            blockers.append("required_source_evidence_missing")
+        if not truth_ok:
+            blockers.append("runtime_truth_not_clean")
+        if not regression_ok:
+            blockers.append("regression_failed")
+
+        if blockers:
+            final_status = "NOT_CERTIFIED"
+        elif full:
+            final_status = "PRODUCTION_CERTIFIED"
+        else:
+            final_status = "CONDITIONALLY_CERTIFIED"
+
+        passed_domains = sum(item["status"] == "PASS" for item in evidence.values())
+        score_parts = [passed_domains / max(len(evidence), 1), 1.0 if truth_ok else 0.0, 1.0 if regression_ok else 0.0]
+        readiness_score = round(sum(score_parts) / len(score_parts) * 100.0, 2)
+        report = {
+            "schema_version": self.SCHEMA,
+            "certification_timestamp_utc": utc_now(),
+            "status": final_status,
+            "production_certified": final_status == "PRODUCTION_CERTIFIED",
+            "conditionally_certified": final_status == "CONDITIONALLY_CERTIFIED",
+            "readiness_score": readiness_score,
+            "regression": {
+                "status": str(regression_status).upper(),
+                "scope": str(regression_scope).upper(),
+                "test_count": self._int(regression_count),
+                "command": list(regression_command or []),
+            },
+            "runtime_truth": {
+                "status": truth_status,
+                "conflict_count": conflicts,
+                "missing_authority_count": missing,
+                "clean": truth_ok,
+                "source": "runtime/certification/runtime_truth.json" if truth else "NOT_RECORDED",
+            },
+            "domains": evidence,
+            "blockers": blockers,
+            "conditions": ([] if full else ["full_repository_regression_not_yet_recorded"]) if not blockers else [],
+            "safety": {
+                "passive_certification_only": True,
+                "mt5_initialize_called": False,
+                "order_check_called": False,
+                "order_send_called": False,
+                "runtime_start_requested": False,
+                "runtime_stop_requested": False,
+                "trading_logic_changed": False,
+            },
+            "decision": (
+                "All required evidence, clean runtime authority, and full regression passed."
+                if final_status == "PRODUCTION_CERTIFIED"
+                else "Focused evidence passed; run full certification to grant production certification."
+                if final_status == "CONDITIONALLY_CERTIFIED"
+                else "Production certification is blocked by recorded evidence."
+            ),
+        }
+        self.write_reports(report)
+        return report
+
+    def _domain_evidence(self) -> dict[str, dict[str, Any]]:
+        rows: dict[str, dict[str, Any]] = {}
+        for domain, relative_paths in FINAL_CERTIFICATION_DOMAINS.items():
+            missing = [path for path in relative_paths if not (self.root / path).is_file()]
+            rows[domain] = {
+                "status": "PASS" if not missing else "FAIL",
+                "required_sources": list(relative_paths),
+                "missing_sources": missing,
+            }
+        return rows
+
+    def _load_runtime_truth(self) -> dict[str, Any]:
+        candidates = (
+            self.root / "runtime" / "certification" / "runtime_truth.json",
+            self.root / "runtime" / "control" / "final_integration" / "runtime_truth.json",
+        )
+        for path in candidates:
+            if path.is_file():
+                try:
+                    value = json.loads(path.read_text(encoding="utf-8"))
+                    return value if isinstance(value, dict) else {}
+                except (OSError, json.JSONDecodeError):
+                    return {"status": "ERROR", "conflict_count": 1, "missing_authority_count": 1}
+        return {"status": "NOT_RECORDED", "conflict_count": 0, "missing_authority_count": 0}
+
+    def write_reports(self, report: dict[str, Any]) -> tuple[Path, Path]:
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        json_path = self.output_dir / "AFIP_V1_PRODUCTION_CERTIFICATION_REPORT.json"
+        html_path = self.output_dir / "AFIP_V1_PRODUCTION_READINESS_REPORT.html"
+        atomic_write_json(json_path, report)
+        rows = "".join(
+            f"<tr><td>{name}</td><td>{item['status']}</td><td>{', '.join(item['missing_sources']) or '-'}</td></tr>"
+            for name, item in report["domains"].items()
+        )
+        blockers = ", ".join(report["blockers"]) or "None"
+        conditions = ", ".join(report["conditions"]) or "None"
+        html = f"""<!doctype html><html><head><meta charset='utf-8'><title>AFIP V1 Production Readiness</title>
+<style>body{{font-family:Arial,sans-serif;margin:32px;line-height:1.45}}table{{border-collapse:collapse;width:100%}}th,td{{border:1px solid #ccc;padding:8px;text-align:left}}.status{{font-size:24px;font-weight:700}}</style></head><body>
+<h1>AFIP V1 Production Readiness Report</h1><p class='status'>{report['status']}</p>
+<p>Readiness score: {report['readiness_score']}%</p><p>Regression: {report['regression']['status']} ({report['regression']['scope']}, {report['regression']['test_count']} tests)</p>
+<p>Runtime truth clean: {report['runtime_truth']['clean']}; conflicts: {report['runtime_truth']['conflict_count']}; missing authority: {report['runtime_truth']['missing_authority_count']}</p>
+<p>Blockers: {blockers}</p><p>Conditions: {conditions}</p><table><thead><tr><th>Domain</th><th>Status</th><th>Missing evidence</th></tr></thead><tbody>{rows}</tbody></table>
+<p>{report['decision']}</p></body></html>"""
+        html_path.write_text(html, encoding="utf-8")
+        return json_path, html_path
+
+    @staticmethod
+    def _int(value: Any) -> int:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return 0

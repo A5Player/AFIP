@@ -1,37 +1,43 @@
 param(
   [ValidateSet("Start", "Stop", "Restart", "Status", "Test")]
   [string]$Action = "Start",
-  [int]$IntervalSeconds = 60
+  [int]$IntervalSeconds = 60,
+  [string]$ProjectRoot = $PSScriptRoot
 )
 
 $ErrorActionPreference = "Stop"
-Set-Location $PSScriptRoot
-$Python = ".\.venv\Scripts\python.exe"
-if (-not (Test-Path $Python)) { throw "Missing .venv Python: $Python" }
+Set-Location $ProjectRoot
+$Python = Join-Path $ProjectRoot '.venv\Scripts\python.exe'
+if (-not (Test-Path $Python)) { $Python = 'python' }
 
-Write-Host "AFIP V1 Runtime Core Control" -ForegroundColor Cyan
-Write-Host "Lifecycle Authority: OPERATIONAL_SUPERVISOR" -ForegroundColor Yellow
+Write-Host "AFIP V1 Runtime Core Control (compatibility wrapper)" -ForegroundColor Cyan
+Write-Host "Lifecycle Authority: FINAL_INTEGRATION_RUNTIME" -ForegroundColor Yellow
 Write-Host "MT5 Policy: MANUAL START ONLY / AFIP AUTO-LAUNCH DISABLED" -ForegroundColor Yellow
 
 switch ($Action) {
   "Test" {
-    & $Python -m pytest tests\test_afip_v1_operational_runtime_repair.py tests\test_afip_v1_runtime_core_stabilization.py -q
+    & $Python -m pytest tests\test_afip_single_runtime_authority_repair_pack_2.py tests\test_afip_v1_final_integration.py tests\test_final_integration_regression_fix.py -q
   }
   "Start" {
-    & $Python -m tools.afip_operational_runtime start --interval-seconds $IntervalSeconds
-    Start-Sleep -Seconds 3
-    & $Python -m tools.afip_operational_runtime status
+    & (Join-Path $ProjectRoot 'START_AFIP.ps1') -ProjectRoot $ProjectRoot
+    if ($LASTEXITCODE -eq 0) { & (Join-Path $ProjectRoot 'STATUS_AFIP.ps1') -ProjectRoot $ProjectRoot }
   }
   "Stop" {
-    & $Python -m tools.afip_operational_runtime stop --interval-seconds $IntervalSeconds
+    & (Join-Path $ProjectRoot 'STOP_AFIP.ps1') -ProjectRoot $ProjectRoot
   }
   "Restart" {
-    & $Python -m tools.afip_operational_runtime restart --interval-seconds $IntervalSeconds
-    Start-Sleep -Seconds 3
-    & $Python -m tools.afip_operational_runtime status
+    & (Join-Path $ProjectRoot 'STOP_AFIP.ps1') -ProjectRoot $ProjectRoot
+    if ($LASTEXITCODE -eq 0) {
+      Start-Sleep -Seconds 2
+      & (Join-Path $ProjectRoot 'START_AFIP.ps1') -ProjectRoot $ProjectRoot
+    }
+    if ($LASTEXITCODE -eq 0) {
+      Start-Sleep -Seconds 2
+      & (Join-Path $ProjectRoot 'STATUS_AFIP.ps1') -ProjectRoot $ProjectRoot
+    }
   }
   "Status" {
-    & $Python -m tools.afip_operational_runtime status --interval-seconds $IntervalSeconds
+    & (Join-Path $ProjectRoot 'STATUS_AFIP.ps1') -ProjectRoot $ProjectRoot
   }
 }
 

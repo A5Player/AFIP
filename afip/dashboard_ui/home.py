@@ -6,6 +6,8 @@ permission.
 """
 from __future__ import annotations
 
+from afip.branding import PRODUCT_NAME, CONTROL_CENTER_NAME
+
 from datetime import datetime, timezone
 from html import escape
 from pathlib import Path
@@ -122,7 +124,7 @@ def render_dashboard_home() -> str:
 .loading{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#eef2f7;color:#53647a;font-weight:700;z-index:2}} .loading.hidden{{display:none}}
 @media(max-width:820px){{.shell{{grid-template-columns:1fr}} .sidebar{{position:fixed;inset:0 auto 0 0;width:270px;z-index:20;transform:translateX(-100%);transition:.18s transform}} .sidebar.open{{transform:translateX(0)}} .mobile-menu{{display:inline-block}}}}
 </style></head><body>
-<div class="shell"><aside class="sidebar" id="sidebar"><div class="brand"><span class="brand-badge">AFIP · COMMAND CENTER</span><h1>AFIP Gold</h1><p>Operations · Intelligence · Research · Data Loading<br>ศูนย์บัญชาการ Dashboard แบบหน้าเดียว</p></div>
+<div class="shell"><aside class="sidebar" id="sidebar"><div class="brand"><span class="brand-badge">{CONTROL_CENTER_NAME}</span><h1>{PRODUCT_NAME}</h1><p>Operations · Intelligence · Research · Data Loading<br>ศูนย์บัญชาการ Dashboard แบบหน้าเดียว</p></div>
 <nav class="navigation" aria-label="AFIP dashboards">{navigation}</nav>
 <div class="side-footer">Presentation-only shell<br>No MT5 or execution-authority mutation<br>Generated {escape(generated)}</div></aside>
 <main class="workspace"><header class="toolbar"><button class="mobile-menu" id="mobileMenu" type="button" aria-label="Open menu">☰</button><h2 id="pageTitle">P1–P4 Operations</h2><div class="toolbar-actions"><button id="refresh" type="button">↻ Refresh</button><a id="openStandalone" href="afip_profiles_dashboard.html" target="_blank" rel="noopener">Open standalone</a></div></header>
@@ -133,7 +135,8 @@ const pages={{{page_map}}};
 const frame=document.getElementById('dashboardFrame'); const title=document.getElementById('pageTitle'); const loading=document.getElementById('loading'); const standalone=document.getElementById('openStandalone'); const sidebar=document.getElementById('sidebar');
 function selectPage(id,push=true){{const page=pages[id]||pages.operations; document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===id)); title.textContent=page.title; frame.title='AFIP '+page.title; loading.classList.remove('hidden'); frame.src=page.src; standalone.href=page.src; if(push) history.replaceState(null,'','#'+id); sidebar.classList.remove('open');}}
 document.querySelectorAll('.nav-item').forEach(button=>button.addEventListener('click',()=>selectPage(button.dataset.page)));
-frame.addEventListener('load',()=>{{loading.classList.add('hidden');}});
+function applyEmbeddedMode(){{try{{const doc=frame.contentDocument||frame.contentWindow.document;if(doc&&doc.body){{doc.body.classList.add('afip-embedded');doc.documentElement.classList.add('afip-embedded-root');}}}}catch(_error){{/* Local same-origin dashboard expected; standalone remains safe fallback. */}}}}
+frame.addEventListener('load',()=>{{applyEmbeddedMode();loading.classList.add('hidden');}});
 document.getElementById('refresh').addEventListener('click',()=>{{loading.classList.remove('hidden'); frame.contentWindow.location.reload();}});
 document.getElementById('mobileMenu').addEventListener('click',()=>sidebar.classList.toggle('open'));
 const initial=location.hash.slice(1); if(initial&&pages[initial]) selectPage(initial,false);

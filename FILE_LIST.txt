@@ -1,8 +1,5 @@
-afip/demo_execution_gateway/runtime.py
-tools/afip_profile_execution_once.py
-tests/test_afip_v1_runtime_execution_repair_pack_1.py
-INSTALL_AFIP_V1_RUNTIME_EXECUTION_REPAIR_PACK_1.ps1
-RUN_AFIP_V1_RUNTIME_EXECUTION_REPAIR_PACK_1.ps1
-RUN_AFIP_V1_RUNTIME_EXECUTION_REPAIR_PACK_1.bat
-README_TH.md
-FILE_LIST.txt
+INSTALL_AFIP_V1_MT5_RESEARCH_COLLECTION_REPAIR.ps1
+RUN_AFIP_V1_MT5_RESEARCH_COLLECTION_REPAIR.ps1
+README_AFIP_V1_MT5_RESEARCH_COLLECTION_REPAIR_TH.md
+payload/afip/automatic_research_runtime/runtime.py
+payload/tests/test_afip_v1_mt5_research_collection_repair.py
