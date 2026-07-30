@@ -123,7 +123,9 @@ def path_expression_value(node: ast.AST) -> str | None:
         left = path_expression_value(node.left)
         right = path_expression_value(node.right)
         if left is not None and right is not None:
-            return f"{left.rstrip('/\\')}/{right.lstrip('/\\')}"
+                        left_clean = left.rstrip("/\\")
+                        right_clean = right.lstrip("/\\")
+                        return f"{left_clean}/{right_clean}"
 
     return None
 
