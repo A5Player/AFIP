@@ -1,0 +1,18 @@
+{
+  "contract_version": "AFIP-W4-TRADING-PLAN-1.0",
+  "purpose": "Select and rank evidence-backed trading plan candidates for OQS review.",
+  "input_authority": "MILESTONE_W_PACK_W3_STRATEGY_CANDIDATES",
+  "maximum_output_status": "ELIGIBLE_FOR_OQS_REVIEW",
+  "authority": "ADVISORY_ONLY",
+  "final_decision_authority": false,
+  "execution_authority": false,
+  "order_send_allowed": false,
+  "lot_authority": false,
+  "final_sl_tp_authority": false,
+  "bypass_gate_allowed": false,
+  "profile_coupling_allowed": false,
+  "fail_closed": true,
+  "required_upstream_status": "ELIGIBLE_FOR_PLAN_REVIEW",
+  "required_upstream_authority": "ADVISORY_ONLY",
+  "next_authority": "MILESTONE_W_PACK_W5_OQS_REVIEW"
+}

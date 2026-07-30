@@ -1,0 +1,11 @@
+{
+  "contract_version": "AFIP-W2-CONTEXT-1.0",
+  "authority": "RESEARCH_EVIDENCE_ONLY",
+  "profile_independent": true,
+  "supported_rank_limits": [100, 500, 1000],
+  "similarity_range": [0, 100],
+  "execution_authority": false,
+  "order_send_allowed": false,
+  "decision_authority": false,
+  "fail_closed": true
+}

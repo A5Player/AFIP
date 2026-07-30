@@ -1,0 +1,32 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W15_DASHBOARD_RUNTIME_INTEGRATION",
+  "version": "1.0.0",
+  "authority": "READ_ONLY_DASHBOARD_RUNTIME",
+  "source_path": "runtime/advisory_snapshot/advisory_runtime_snapshot.json",
+  "context_key": "advisory_intelligence",
+  "pipeline": [
+    "SNAPSHOT",
+    "READ_MODEL",
+    "PRESENTATION",
+    "PANEL_ADAPTER",
+    "DASHBOARD_CONTEXT"
+  ],
+  "statuses": [
+    "RUNTIME_READY",
+    "RUNTIME_WAIT",
+    "RUNTIME_BLOCKED"
+  ],
+  "default_max_age_seconds": 300,
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "EXECUTION_STATE_WRITE",
+    "SNAPSHOT_WRITE",
+    "ORDER_SEND",
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "MT5_SESSION"
+  ]
+}

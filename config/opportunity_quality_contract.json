@@ -1,0 +1,33 @@
+{
+  "contract_version": "AFIP-W1-OQS-1.0",
+  "decision_support_only": true,
+  "execution_authority": false,
+  "thresholds": [
+    {
+      "minimum": 0,
+      "maximum_exclusive": 97,
+      "classification": "WAIT_OR_SKIP",
+      "entry_eligible": false
+    },
+    {
+      "minimum": 97,
+      "maximum_exclusive": 98,
+      "classification": "GATE_ELIGIBLE",
+      "entry_eligible": true
+    },
+    {
+      "minimum": 98,
+      "maximum_exclusive": 99,
+      "classification": "HIGH_QUALITY",
+      "entry_eligible": true
+    },
+    {
+      "minimum": 99,
+      "maximum_inclusive": 100,
+      "classification": "ELITE",
+      "entry_eligible": true,
+      "extended_sl_review_eligible": true
+    }
+  ],
+  "policy": "AFIP must not lower OQS thresholds to increase trade frequency."
+}

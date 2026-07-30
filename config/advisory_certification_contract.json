@@ -1,0 +1,30 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W10_ADVISORY_CERTIFICATION",
+  "version": "1.0.0",
+  "authority": "READ_ONLY_CERTIFICATION",
+  "scope": "MILESTONE_W_W2_TO_W9",
+  "required_outputs": [
+    "COMPONENT_PRESENCE",
+    "CONTRACT_PARSEABILITY",
+    "AUTHORITY_BOUNDARY",
+    "TRACE_CONTRACT_PRESENCE",
+    "DETERMINISTIC_SNAPSHOT_DIGEST"
+  ],
+  "statuses": [
+    "CERTIFIED",
+    "REVIEW_REQUIRED",
+    "BLOCKED"
+  ],
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "BUY_SELL_FINAL_DECISION",
+    "ORDER_SEND",
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "MT5_SESSION",
+    "EXECUTION_OVERRIDE"
+  ]
+}

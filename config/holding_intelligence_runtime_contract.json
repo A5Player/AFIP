@@ -1,0 +1,39 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W7_HOLDING_INTELLIGENCE_RUNTIME",
+  "version": "1.0.0",
+  "authority": "ADVISORY_ONLY",
+  "accepted_adaptive_sl_statuses": [
+    "NORMAL_SL_APPROVED",
+    "EXTENDED_SL_APPROVED"
+  ],
+  "actions": [
+    "WAIT_DATA",
+    "HOLD",
+    "PROTECT_PROFIT",
+    "REDUCE_EXPOSURE",
+    "EXIT_REVIEW"
+  ],
+  "inputs": [
+    "TREND_CONTINUITY",
+    "STRUCTURE_INTEGRITY",
+    "REGIME_STABILITY",
+    "MOMENTUM",
+    "EXIT_EVIDENCE",
+    "MFE",
+    "MAE",
+    "UNREALIZED_POINTS",
+    "PROTECTED_POINTS",
+    "HOLDING_TIME",
+    "NEWS_RISK",
+    "SPREAD_ABNORMALITY"
+  ],
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "TRAILING_STOP_WRITE",
+    "MT5_SESSION",
+    "EXECUTION_OVERRIDE"
+  ]
+}

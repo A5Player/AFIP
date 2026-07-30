@@ -1,0 +1,25 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W12_DASHBOARD_READ_MODEL",
+  "version": "1.0.0",
+  "authority": "READ_ONLY_CONSUMER",
+  "input_path": "runtime/advisory_snapshot/advisory_runtime_snapshot.json",
+  "expected_schema": "AFIP_ADVISORY_SNAPSHOT_V1",
+  "default_max_age_seconds": 300,
+  "statuses": [
+    "READ_MODEL_READY",
+    "READ_MODEL_STALE",
+    "READ_MODEL_BLOCKED",
+    "READ_MODEL_WAIT"
+  ],
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "SNAPSHOT_WRITE",
+    "ORDER_SEND",
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "MT5_SESSION"
+  ]
+}

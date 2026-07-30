@@ -1,0 +1,24 @@
+{
+  "contract_version": "AFIP-W1-ADAPTIVE-SL-1.0",
+  "symbol_scope": [
+    "GOLD#"
+  ],
+  "units": "broker_points",
+  "minimum_sl_points": 500,
+  "normal_max_sl_points": 1000,
+  "extended_max_sl_points": 1500,
+  "extended_requirements": {
+    "oqs_minimum": 99,
+    "final_confidence_minimum": 99,
+    "final_confidence_maximum": 100,
+    "evidence_quality": "HIGH",
+    "all_authority_gates_passed": true,
+    "reward_risk_approved": true
+  },
+  "fail_closed": {
+    "below_500": "BLOCK",
+    "above_1500": "WAIT_OR_SKIP",
+    "do_not_compress_structural_sl": true
+  },
+  "research_execution_authority": false
+}

@@ -1,0 +1,37 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W14_DASHBOARD_PANEL_ADAPTER",
+  "version": "1.0.0",
+  "authority": "READ_ONLY_ADAPTER",
+  "input": "ADVISORY_DASHBOARD_PRESENTATION",
+  "panel_id": "afip_advisory_intelligence",
+  "outputs": [
+    "ADAPTER_READY",
+    "ADAPTER_WAIT",
+    "ADAPTER_BLOCKED"
+  ],
+  "panel_fields": [
+    "TITLE",
+    "OVERALL_STATUS",
+    "SEVERITY",
+    "ICON",
+    "REASON",
+    "FRESHNESS",
+    "SNAPSHOT_ID",
+    "CASE_ID",
+    "STAGE_ROWS"
+  ],
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "HTML_MUTATION",
+    "DOM_MUTATION",
+    "SNAPSHOT_WRITE",
+    "READ_MODEL_WRITE",
+    "ORDER_SEND",
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "MT5_SESSION"
+  ]
+}

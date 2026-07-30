@@ -1,0 +1,55 @@
+{
+  "schema_version": "afip-milestone-w-authority-contract.v1",
+  "milestone": "W",
+  "pack": "W0",
+  "status": "LOCKED",
+  "authorities": {
+    "operational_runtime": {
+      "owner": "afip.final_integration.runtime.FinalIntegrationRuntime",
+      "state": "runtime/final_integration_status.json"
+    },
+    "research": {
+      "owner": "afip.final_integration.research_engine.UnifiedResearchEngine",
+      "execution_authority": false,
+      "order_send_allowed": false
+    },
+    "intelligence_decision": {
+      "owner": "existing_intelligence_and_decision_runtime",
+      "milestone_w_role": "consumer_of_research_evidence",
+      "research_may_override": false
+    },
+    "capital": {
+      "owner": "existing_capital_and_lot_authority_chain",
+      "research_may_calculate_or_override_lot": false
+    },
+    "risk": {
+      "owner": "existing_risk_authority_chain",
+      "research_may_override": false
+    },
+    "execution": {
+      "owner": "afip.demo_execution_gateway.runtime.DemoExecutionGateway",
+      "mt5_order_send_source": "afip/demo_execution_gateway/runtime.py",
+      "research_may_submit_orders": false
+    },
+    "dashboard": {
+      "owner": "afip.dashboard_ui",
+      "policy": "READ_ONLY_RUNTIME_TRUTH_CONSUMER"
+    },
+    "governance": {
+      "owner": "afip.research_governance.runtime",
+      "automatic_production_promotion": false
+    }
+  },
+  "integration_contract": {
+    "research_output": "versioned_read_only_evidence_envelope",
+    "intelligence_input": "optional_fail_closed_or_explicit_degraded_evidence",
+    "new_execution_path_forbidden": true,
+    "new_runtime_authority_forbidden": true,
+    "profile_owned_research_repository_forbidden": true,
+    "automatic_policy_change_forbidden": true
+  },
+  "w1_gate": {
+    "required_validation": "tests/test_milestone_w_pack_w0.py",
+    "must_pass_before_w1": true
+  }
+}

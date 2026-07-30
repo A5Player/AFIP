@@ -1,0 +1,92 @@
+{
+  "status": "MILESTONE_W_COMPLETE",
+  "reason": "milestone_w_closed_successfully",
+  "closure_id": "AFIP-W17-B26ABE807DD37CBA",
+  "closed_at_utc": "2026-07-30T11:38:59Z",
+  "certification_id": "AFIP-W16-D00250CE57AADE0A",
+  "certification_digest": "d00250ce57aade0a8be32438c012e3211612acb2124a3dbeadd7c397ef7fed9b",
+  "completed_packs": [
+    "W2",
+    "W3",
+    "W4",
+    "W5",
+    "W6",
+    "W7",
+    "W8",
+    "W9",
+    "W10",
+    "W11",
+    "W12",
+    "W13",
+    "W14",
+    "W15",
+    "W16",
+    "W17"
+  ],
+  "checks": [
+    {
+      "name": "afip/advisory_orchestration/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "afip/advisory_certification/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "afip/advisory_snapshot/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "afip/advisory_dashboard_read_model/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "afip/advisory_dashboard_presentation/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "afip/advisory_dashboard_adapter/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "afip/advisory_dashboard_runtime/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "afip/advisory_integration_certification/engine.py",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "config/advisory_integration_certification_contract.json",
+      "status": "PASS",
+      "reason": "required_file_present"
+    },
+    {
+      "name": "integration_certification",
+      "status": "PASS",
+      "reason": "certification_status_certified"
+    },
+    {
+      "name": "certification_digest",
+      "status": "PASS",
+      "reason": "certification_digest_valid"
+    },
+    {
+      "name": "certification_id",
+      "status": "PASS",
+      "reason": "certification_id_valid"
+    }
+  ],
+  "execution_authority": false,
+  "order_send_called": false,
+  "order_modify_called": false,
+  "order_close_called": false
+}

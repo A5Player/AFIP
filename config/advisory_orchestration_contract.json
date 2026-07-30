@@ -1,0 +1,38 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W9_ADVISORY_ORCHESTRATION",
+  "version": "1.0.0",
+  "authority": "TRACE_AND_VALIDATION_ONLY",
+  "stage_order": [
+    "CONTEXT",
+    "STRATEGY",
+    "PLAN",
+    "OQS",
+    "ADAPTIVE_SL",
+    "HOLDING",
+    "EXIT"
+  ],
+  "statuses": [
+    "TRACE_COMPLETE",
+    "TRACE_WAIT",
+    "TRACE_BLOCKED"
+  ],
+  "trace_requirements": [
+    "DETERMINISTIC_INPUT_DIGEST",
+    "STABLE_TRACE_ID",
+    "STAGE_ORDER_VALIDATION",
+    "AUTHORITY_VALIDATION",
+    "DATA_INTEGRITY_VALIDATION",
+    "REASON_PER_STAGE"
+  ],
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "BUY_SELL_FINAL_DECISION",
+    "ORDER_SEND",
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "MT5_SESSION"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W5_OQS_RUNTIME",
+  "version": "1.0.0",
+  "authority": "ADVISORY_ONLY",
+  "input_authority": {
+    "required_plan_status": "ELIGIBLE_FOR_OQS_REVIEW",
+    "required_strategy_status": "ELIGIBLE_FOR_PLAN_REVIEW"
+  },
+  "thresholds": [
+    {
+      "minimum": 0.0,
+      "maximum_exclusive": 97.0,
+      "status": "WAIT"
+    },
+    {
+      "minimum": 97.0,
+      "maximum_exclusive": 98.0,
+      "status": "ENTRY_ELIGIBLE"
+    },
+    {
+      "minimum": 98.0,
+      "maximum_exclusive": 99.0,
+      "status": "HIGH_QUALITY"
+    },
+    {
+      "minimum": 99.0,
+      "maximum_inclusive": 100.0,
+      "status": "ELITE"
+    }
+  ],
+  "minimum_evidence_count": 5,
+  "minimum_sample_size": 30,
+  "elite_output": "ELIGIBLE_FOR_ADAPTIVE_SL_REVIEW",
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "BUY_SELL_FINAL_DECISION",
+    "CAPITAL_OVERRIDE",
+    "RISK_OVERRIDE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "ORDER_SEND",
+    "MT5_SESSION"
+  ]
+}

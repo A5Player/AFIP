@@ -1,0 +1,23 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W11_ADVISORY_SNAPSHOT",
+  "version": "1.0.0",
+  "authority": "READ_ONLY_EXPORT",
+  "output_path": "runtime/advisory_snapshot/advisory_runtime_snapshot.json",
+  "write_policy": "ATOMIC_REPLACE",
+  "schema_version": "AFIP_ADVISORY_SNAPSHOT_V1",
+  "statuses": [
+    "SNAPSHOT_READY",
+    "SNAPSHOT_WAIT",
+    "SNAPSHOT_BLOCKED"
+  ],
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "ORDER_SEND",
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "MT5_SESSION"
+  ]
+}

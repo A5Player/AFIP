@@ -1,0 +1,25 @@
+{
+  "contract_id": "AFIP_MILESTONE_W_PACK_W17_FINAL_CLOSURE",
+  "version": "1.0.0",
+  "authority": "READ_ONLY_CLOSURE_AND_DOCUMENTATION",
+  "milestone": "W",
+  "completed_pack_range": "W2-W17",
+  "required_integration_certification": "CERTIFIED",
+  "closure_output": "runtime/control/milestone_w/milestone_w_closure.json",
+  "statuses": [
+    "MILESTONE_W_COMPLETE",
+    "MILESTONE_W_REVIEW_REQUIRED",
+    "MILESTONE_W_BLOCKED"
+  ],
+  "fail_closed": true,
+  "forbidden_authorities": [
+    "ORDER_SEND",
+    "ORDER_MODIFY",
+    "ORDER_CLOSE",
+    "PARTIAL_CLOSE",
+    "LOT_SIZING",
+    "FINAL_SL_TP",
+    "MT5_SESSION",
+    "EXECUTION_STATE_WRITE"
+  ]
+}

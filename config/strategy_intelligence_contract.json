@@ -1,0 +1,22 @@
+{
+  "contract_version": "AFIP-W3-STRATEGY-1.0",
+  "authority": "ADVISORY_ONLY",
+  "input_authority": "W2_CONTEXT_EVIDENCE",
+  "output": "STRATEGY_CANDIDATE_RANKING",
+  "final_decision_authority": false,
+  "execution_authority": false,
+  "order_send_allowed": false,
+  "lot_authority": false,
+  "sl_tp_authority": false,
+  "profile_independent": true,
+  "minimum_advisory_score_for_plan_review": 80.0,
+  "fail_closed": true,
+  "forbidden_outputs": [
+    "BUY_ORDER",
+    "SELL_ORDER",
+    "LOT_SIZE",
+    "FINAL_SL",
+    "FINAL_TP",
+    "MT5_REQUEST"
+  ]
+}
