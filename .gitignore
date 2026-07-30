@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -67,3 +67,12 @@ payload/tools/afip_v1_pack_4_demo_execution_certification.py
 /runtime/profiles/*/mt5_live_snapshot.json
 /AFIP_MAXIMUM_LOT_AUTHORITY_FINAL_PATCH/
 /AFIP_CAPITAL_AUTHORITY_AUDIT.txt
+
+# BEGIN AFIP REPOSITORY RUNTIME HYGIENE
+patch_backups/
+runtime/**/*.pid
+runtime/pytest_temp/
+runtime/pytest_tmp/
+status_after_start.txt
+# END AFIP REPOSITORY RUNTIME HYGIENE
+
