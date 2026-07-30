@@ -38,13 +38,29 @@ def test_combined_observability_contains_research_and_audit():
 
 
 def test_all_primary_pages_have_bottom_safety_space():
-    root = Path('runtime/dashboard')
+    # Build generated dashboard artifacts before validating their layout contract.
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "-m", "afip.dashboard_ui"],
+        check=True,
+    )
+
+    root = Path("runtime/dashboard")
     for name in (
-        'afip_profiles_dashboard.html',
-        'afip_intelligence_engine_dashboard.html',
-        'afip_order_evidence_dashboard.html',
-        'afip_live_mt5_dashboard.html',
-        'afip_research_data_dashboard.html',
+        "afip_profiles_dashboard.html",
+        "afip_intelligence_engine_dashboard.html",
+        "afip_order_evidence_dashboard.html",
+        "afip_live_mt5_dashboard.html",
+        "afip_research_data_dashboard.html",
     ):
-        text = (root / name).read_text(encoding='utf-8')
-        assert '100px' in text or '110px' in text or 'padding-bottom:96px' in text
+        output = root / name
+        assert output.is_file(), f"Dashboard build did not generate {output}"
+        text = output.read_text(encoding="utf-8")
+        assert (
+            "100px" in text
+            or "110px" in text
+            or "padding-bottom:96px" in text
+        ), f"Bottom safety spacing is missing from {output}"
+
