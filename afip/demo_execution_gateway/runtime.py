@@ -953,13 +953,34 @@ class DemoExecutionGateway:
                 return blocked
             assert account is not None
 
+            # Preserve verified MT5 ownership and account-capital truth in every
+            # downstream WAITING/BLOCKED report after preflight has passed.
+            binding_ok, actual_login, _actual_server, terminal_path = self._binding_snapshot(mt5)
+            account_balance = float(self._value(account, "balance", 0.0) or 0.0)
+            account_equity = float(self._value(account, "equity", account_balance) or account_balance)
+            verified_context = {
+                "connected_account_login": (
+                    f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"
+                ),
+                "connected_terminal_folder": terminal_path or "UNKNOWN",
+                "configured_terminal_folder": str(self.profile.mt5_folder),
+                "ownership_token": ownership_token,
+                "binding_verified": bool(binding_ok),
+                "balance": account_balance,
+                "equity": account_equity,
+                "account_balance": account_balance,
+                "account_equity": account_equity,
+                "available_capital": min(account_balance, account_equity),
+                "capital_basis": "MIN_BALANCE_EQUITY",
+            }
+
             publish_live_mt5_snapshot(
                 profile=self.profile, mt5=mt5, account=account, value_getter=self._value
             )
 
             afip_positions, manual_positions = self._existing_positions(mt5)
             if manual_positions:
-                return self._report("BLOCKED", "manual_position_detected_operator_override", account_trade_mode="DEMO", demo_verified=True)
+                return self._report("BLOCKED", "manual_position_detected_operator_override", account_trade_mode="DEMO", demo_verified=True, **verified_context)
 
             # Evaluate current real-market intelligence once, then reuse the same
             # decision for open-position care and any new-risk decision.  This
@@ -987,13 +1008,13 @@ class DemoExecutionGateway:
             trade_provenance = self._trade_provenance(result, protection)
 
             if "FALLBACK" in data_status or "FALLBACK" in data_source:
-                return self._report("WAITING", "simulation_fallback_data_blocked", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+                return self._report("WAITING", "simulation_fallback_data_blocked", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
             if action not in {"BUY", "SELL"}:
-                return self._report("WAITING", "decision_not_actionable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+                return self._report("WAITING", "decision_not_actionable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
             if confidence < self.policy.minimum_confidence:
-                return self._report("WAITING", "profile_confidence_below_threshold", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+                return self._report("WAITING", "profile_confidence_below_threshold", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
             if not bool(risk.get("allowed", False)):
-                return self._report("WAITING", "risk_not_approved", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+                return self._report("WAITING", "risk_not_approved", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
 
             cost_status = str(cost.get("status", "")).strip().upper()
             cost_allowed = cost.get("allowed") is True
@@ -1005,18 +1026,18 @@ class DemoExecutionGateway:
                 "max_spread_points": float(cost.get("max_spread_points", 0.0) or 0.0),
             }
             if cost_status not in {"PASS", "CAUTION", "BLOCK"}:
-                return self._report("BLOCKED", "trading_cost_status_unknown", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)
+                return self._report("BLOCKED", "trading_cost_status_unknown", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context, **cost_diagnostics)
             if not cost_allowed:
-                return self._report("WAITING", "trading_cost_not_approved", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)
+                return self._report("WAITING", "trading_cost_not_approved", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context, **cost_diagnostics)
             if cost_status == "BLOCK":
-                return self._report("BLOCKED", "trading_cost_contract_inconsistent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **cost_diagnostics)
+                return self._report("BLOCKED", "trading_cost_contract_inconsistent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context, **cost_diagnostics)
             if str(order.get("status", "")).upper() != "SIMULATION_ORDER_READY":
-                return self._report("WAITING", "protected_order_not_ready", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+                return self._report("WAITING", "protected_order_not_ready", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
 
             sl_points = float(protection.get("stop_loss_points", 0.0) or 0.0)
             tp_points = float(protection.get("take_profit_points", 0.0) or 0.0)
             if sl_points <= 0 or tp_points <= 0:
-                return self._report("BLOCKED", "protective_sl_tp_missing", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence)
+                return self._report("BLOCKED", "protective_sl_tp_missing", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
 
             current_orders = len(afip_positions)
             account_balance = float(self._value(account, "balance", 0.0) or 0.0)

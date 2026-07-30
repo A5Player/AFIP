@@ -76,3 +76,29 @@ runtime/pytest_tmp/
 status_after_start.txt
 # END AFIP REPOSITORY RUNTIME HYGIENE
 
+# BEGIN AFIP RSA-4 MANAGED RUNTIME POLICY
+# Generated runtime state and dashboards
+/runtime/dashboard/
+/runtime/account_isolation_status.json
+/runtime/final_integration_status.json
+/runtime/execution/runtime_cleanup_status.json
+/runtime/execution/sequential_router_status.json
+/runtime/profiles/*/mt5_health.json
+/runtime/control/final_integration/architecture_registry.json
+/runtime/control/final_integration/desired_runtime_state.json
+/runtime/control/final_integration/runtime_watchdog_status.json
+/runtime/control/final_integration/stop_research_runtime.flag
+/runtime/control/repository_hygiene/runtime_hygiene_audit.json
+
+# Durable runtime data retained outside source control
+/runtime/research/
+/runtime/profiles/*/production_activation/
+
+# Generated certification evidence; release snapshots require explicit review
+/capital_binding_verification.json
+/runtime/certification/
+/runtime/control/execution_chain_certification.json
+
+# RSA-generated reports
+/runtime/control/runtime_state_architecture/
+# END AFIP RSA-4 MANAGED RUNTIME POLICY

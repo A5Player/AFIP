@@ -12,7 +12,7 @@ def test_empty_completed_samples_are_not_reported_as_zero_performance(tmp_path: 
         encoding="utf-8",
     )
     row = ResearchDatasetAggregator(tmp_path / "runtime" / "research").build()["pattern_statistics"][0]
-    assert row["statistics_status"] == "INSUFFICIENT_COMPLETED_TRADES"
+    assert row["statistics_status"] == "INSUFFICIENT_ELIGIBLE_COMPLETED_TRADES"
     assert row["win_rate"] is None
     assert row["profit_factor"] is None
     assert row["maximum_drawdown"] is None
@@ -22,7 +22,7 @@ def test_completed_research_case_exposes_real_metrics(tmp_path: Path) -> None:
     case_dir = tmp_path / "runtime" / "research" / "trade_cases"
     case_dir.mkdir(parents=True)
     (case_dir / "CASE-1.json").write_text(
-        '{"trade_case_id":"CASE-1","data_lineage":{"source":"test"},"market_context":{"pattern_id":"P-A"},"lifecycle_state":"CLOSED","exit_context":{"net_profit":5,"holding_seconds":60,"mfe":7,"mae":2,"exit_quality":80}}',
+        '{"trade_case_id":"CASE-1","data_lineage":{"source":"test"},"market_context":{"pattern_id":"P-A"},"lifecycle_state":"CLOSED","exit_context":{"research_feedback_status":"ELIGIBLE","net_realized_profit_usd":5,"holding_seconds":60,"mfe":7,"mae":2,"exit_quality":80}}',
         encoding="utf-8",
     )
     row = ResearchDatasetAggregator(tmp_path / "runtime" / "research").build()["pattern_statistics"][0]
