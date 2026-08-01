@@ -14,6 +14,16 @@ class ProtectedSimulationOrderBuilder:
     def _confidence_units(confidence: float) -> int:
         return confidence_maximum_units(confidence).maximum_units
 
+    @staticmethod
+    def _approved_risk_usd(decision: dict, snapshot: dict) -> float | None:
+        """Read an already-approved risk value; never create a fallback value."""
+        value = decision.get("approved_risk_usd", snapshot.get("approved_risk_usd"))
+        try:
+            approved = float(value)
+        except (TypeError, ValueError):
+            return None
+        return approved if approved > 0 else None
+
     def build(self, decision: dict, snapshot: dict, balance: float = 1000.0) -> dict:
         action = str(decision.get("action", "WAIT")).upper()
         if action not in ("BUY", "SELL"):
@@ -25,9 +35,6 @@ class ProtectedSimulationOrderBuilder:
         unit_selection = requested_units_within_confidence_ceiling(decision, confidence)
         unit_count = unit_selection.approved_units
 
-        # Backward-compatible simulation allocation is intentionally narrow.
-        # It is available only when ConfidenceCalibrator explicitly marks a
-        # legacy SIMULATION decision that has already passed RiskAssessor.
         compatibility_policy = str(decision.get("execution_policy", "")).upper()
         compatibility_units = int(decision.get("simulation_compatibility_units", 0) or 0)
         if (
@@ -41,7 +48,6 @@ class ProtectedSimulationOrderBuilder:
         if unit_count <= 0:
             return {"status": "NO_ORDER", "reason": "confidence_below_rr_unit_threshold"}
 
-        sizing = self.sizer.calculate(balance=balance)
         profile_id = str(snapshot.get("profile_id", decision.get("profile_id", "P2"))).upper()
         regime = str(snapshot.get("market_regime", decision.get("market_regime", "UNKNOWN")))
         research = snapshot.get("protection_research") or decision.get("protection_research") or {}
@@ -60,7 +66,16 @@ class ProtectedSimulationOrderBuilder:
         if portfolio.get("status") != "PLANNED":
             return {"status": "NO_ORDER", "reason": portfolio.get("reason", "rr_protection_not_ready")}
 
+        approved_risk_usd = self._approved_risk_usd(decision, snapshot)
+        if approved_risk_usd is None:
+            return {"status": "NO_ORDER", "reason": "approved_risk_authority_unavailable"}
+
         first = portfolio["unit_plans"][0]
+        sizing = self.sizer.calculate(
+            balance=balance,
+            risk_usd=approved_risk_usd,
+            stop_loss_points=float(first["stop_loss_points"]),
+        )
         return {
             "status": "SIMULATION_ORDER_READY",
             "symbol": snapshot.get("symbol", "GOLD#"),
@@ -68,7 +83,6 @@ class ProtectedSimulationOrderBuilder:
             "entry_price": entry_price,
             "lot": sizing["lot"],
             "sizing": sizing,
-            # Compatibility view only. Gateway consumes protection_portfolio.
             "protection": {
                 "status": "PLANNED",
                 "stop_loss_points": first["stop_loss_points"],
@@ -81,21 +95,10 @@ class ProtectedSimulationOrderBuilder:
             "decision": decision,
             "unit_allocation": {
                 "approved_units": unit_count,
-                "requested_units": (
-                    1 if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY"
-                    else unit_selection.requested_units
-                ),
+                "requested_units": 1 if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY" else unit_selection.requested_units,
                 "confidence_maximum_units": self._confidence_units(confidence),
-                "source": (
-                    "LEGACY_SIMULATION_COMPATIBILITY"
-                    if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY"
-                    else unit_selection.source
-                ),
-                "reason": (
-                    "legacy_simulation_compatibility"
-                    if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY"
-                    else unit_selection.reason
-                ),
+                "source": "LEGACY_SIMULATION_COMPATIBILITY" if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY" else unit_selection.source,
+                "reason": "legacy_simulation_compatibility" if compatibility_policy == "LEGACY_SIMULATION_COMPATIBILITY" else unit_selection.reason,
                 "confidence": confidence,
             },
         }

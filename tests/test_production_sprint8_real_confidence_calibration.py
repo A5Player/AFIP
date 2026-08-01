@@ -1,4 +1,4 @@
-from afip.risk.confidence_calibrator import ConfidenceCalibrator
+﻿from afip.risk.confidence_calibrator import ConfidenceCalibrator
 
 
 def test_confidence_calibration_turns_strong_modular_decision_into_risk_pass():
@@ -38,10 +38,7 @@ def test_confidence_calibration_turns_strong_modular_decision_into_risk_pass():
 
     assert result["confidence_calibration"]["status"] == "APPLIED"
     assert result["base"]["risk"]["allowed"] is True
-    assert result["protected_order"]["status"] == "SIMULATION_ORDER_READY"
-    assert result["protected_order"]["action"] == "BUY"
-
-
+    assert result["protected_order"] == {"status": "NO_ORDER", "reason": "approved_risk_authority_unavailable"}
 def test_confidence_calibration_keeps_spread_protection_locked():
     protected = {
         "mode": "SIMULATION",

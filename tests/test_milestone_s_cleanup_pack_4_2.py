@@ -7,19 +7,8 @@ def _protected(spread: float = 18.0) -> dict:
         "mode": "SIMULATION",
         "base": {
             "signal": {
-                "snapshots": {
-                    "H1": {
-                        "symbol": "GOLD#",
-                        "spread": spread,
-                        "closes": [2300.0, 2301.0, 2302.0],
-                    }
-                },
-                "score": {
-                    "buy_score": 0,
-                    "sell_score": 0,
-                    "overall_confidence": 0,
-                    "risk_penalty": 0,
-                },
+                "snapshots": {"H1": {"symbol": "GOLD#", "spread": spread, "closes": [2300.0, 2301.0, 2302.0]}},
+                "score": {"buy_score": 0, "sell_score": 0, "overall_confidence": 0, "risk_penalty": 0},
             }
         },
         "protected_order": {"status": "NO_ORDER"},
@@ -27,32 +16,20 @@ def _protected(spread: float = 18.0) -> dict:
 
 
 def _modular(confidence: float = 85.0) -> dict:
-    return {
-        "decision": {
-            "action": "BUY",
-            "confidence": confidence,
-            "buy_score": confidence,
-            "sell_score": 0,
-            "penalties": 0,
-            "reason": "decision_intelligence_buy_edge",
-        }
-    }
+    return {"decision": {"action": "BUY", "confidence": confidence, "buy_score": confidence, "sell_score": 0, "penalties": 0, "reason": "decision_intelligence_buy_edge"}}
 
 
-def test_legacy_simulation_risk_pass_receives_one_compatibility_unit():
+def test_legacy_simulation_risk_pass_without_approved_risk_fails_closed():
     result = ConfidenceCalibrator().calibrate(_protected(), _modular(85), balance=1000)
     order = result["protected_order"]
     assert result["base"]["risk"]["allowed"] is True
-    assert order["status"] == "SIMULATION_ORDER_READY"
-    assert order["unit_allocation"]["approved_units"] == 1
-    assert order["unit_allocation"]["source"] == "LEGACY_SIMULATION_COMPATIBILITY"
+    assert order == {"status": "NO_ORDER", "reason": "approved_risk_authority_unavailable"}
 
 
 def test_direct_builder_does_not_weaken_98_percent_execution_threshold():
     order = ProtectedSimulationOrderBuilder().build(
         {"action": "BUY", "confidence": 85, "risk": {"allowed": True}},
-        {"symbol": "GOLD#", "closes": [2300, 2301], "spread": 18},
-        balance=1000,
+        {"symbol": "GOLD#", "closes": [2300, 2301], "spread": 18}, balance=1000,
     )
     assert order["status"] == "NO_ORDER"
     assert order["reason"] == "confidence_below_rr_unit_threshold"
@@ -60,15 +37,8 @@ def test_direct_builder_does_not_weaken_98_percent_execution_threshold():
 
 def test_compatibility_marker_cannot_bypass_failed_risk():
     order = ProtectedSimulationOrderBuilder().build(
-        {
-            "action": "BUY",
-            "confidence": 85,
-            "risk": {"allowed": False},
-            "execution_policy": "LEGACY_SIMULATION_COMPATIBILITY",
-            "simulation_compatibility_units": 1,
-        },
-        {"symbol": "GOLD#", "closes": [2300, 2301], "spread": 18},
-        balance=1000,
+        {"action": "BUY", "confidence": 85, "risk": {"allowed": False}, "execution_policy": "LEGACY_SIMULATION_COMPATIBILITY", "simulation_compatibility_units": 1},
+        {"symbol": "GOLD#", "closes": [2300, 2301], "spread": 18}, balance=1000,
     )
     assert order["status"] == "NO_ORDER"
 
@@ -79,10 +49,8 @@ def test_spread_protection_stays_fail_closed():
     assert result["protected_order"]["status"] == "NO_ORDER"
 
 
-def test_confidence_ceiling_does_not_force_full_allocation():
+def test_confidence_does_not_bypass_missing_approved_risk():
     result = ConfidenceCalibrator().calibrate(_protected(), _modular(98.6), balance=1000)
     order = result["protected_order"]
-    assert order["status"] == "SIMULATION_ORDER_READY"
-    assert order["unit_allocation"]["approved_units"] == 1
-    assert order["unit_allocation"]["confidence_maximum_units"] == 2
-    assert order["unit_allocation"]["source"] == "CONSERVATIVE_DEFAULT_ONE_UNIT"
+    assert result["base"]["risk"]["allowed"] is True
+    assert order == {"status": "NO_ORDER", "reason": "approved_risk_authority_unavailable"}
