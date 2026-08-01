@@ -36,13 +36,13 @@ OBSOLETE_TARGETS = [
 ]
 
 
-def _existing_price objectives() -> list[MigrationPriceObjective]:
-    return [price objective for price objective in OBSOLETE_TARGETS if price objective.path.exists()]
+def _existing_targets() -> list[MigrationPriceObjective]:
+    return [target for target in OBSOLETE_TARGETS if target.path.exists()]
 
 
-def _backup_price objectives(price objectives: Iterable[MigrationPriceObjective]) -> Path | None:
-    price objectives = list(price objectives)
-    if not price objectives:
+def _backup_targets(targets: Iterable[MigrationPriceObjective]) -> Path | None:
+    targets = list(targets)
+    if not targets:
         return None
 
     backup_dir = ROOT / "backup"
@@ -51,17 +51,17 @@ def _backup_price objectives(price objectives: Iterable[MigrationPriceObjective]
     backup_path = backup_dir / f"afip_naming_migration_backup_{stamp}.zip"
 
     with zipfile.ZipFile(backup_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for price objective in price objectives:
-            if price objective.path.is_file():
-                archive.write(price objective.path, price objective.path.relative_to(ROOT))
-            elif price objective.path.is_dir():
-                for child in price objective.path.rglob("*"):
+        for target in targets:
+            if target.path.is_file():
+                archive.write(target.path, target.path.relative_to(ROOT))
+            elif target.path.is_dir():
+                for child in target.path.rglob("*"):
                     if child.is_file():
                         archive.write(child, child.relative_to(ROOT))
     return backup_path
 
 
-def _remove_price objective(path: Path) -> None:
+def _remove_target(path: Path) -> None:
     if path.is_dir():
         shutil.rmtree(path)
     elif path.exists():
@@ -69,21 +69,21 @@ def _remove_price objective(path: Path) -> None:
 
 
 def run(apply: bool) -> int:
-    price objectives = _existing_price objectives()
+    targets = _existing_targets()
 
     print("AFIP Naming Migration")
     print(f"Project root: {ROOT}")
     print(f"Mode: {'APPLY' if apply else 'DRY-RUN'}")
     print("")
 
-    if not price objectives:
-        print("No obsolete naming price objectives found. AFIP naming is already clean.")
+    if not targets:
+        print("No obsolete naming targets found. AFIP naming is already clean.")
         return 0
 
-    print("PriceObjectives:")
-    for price objective in price objectives:
-        kind = "DIR " if price objective.path.is_dir() else "FILE"
-        print(f"  - {kind}: {price objective.path.relative_to(ROOT)} | {price objective.reason}")
+    print("Targets:")
+    for target in targets:
+        kind = "DIR " if target.path.is_dir() else "FILE"
+        print(f"  - {kind}: {target.path.relative_to(ROOT)} | {target.reason}")
 
     if not apply:
         print("")
@@ -91,13 +91,13 @@ def run(apply: bool) -> int:
         print("  python tools/afip_naming_migration.py --apply")
         return 0
 
-    backup_path = _backup_price objectives(price objectives)
+    backup_path = _backup_targets(targets)
     if backup_path is not None:
         print("")
         print(f"Backup created: {backup_path.relative_to(ROOT)}")
 
-    for price objective in price objectives:
-        _remove_price objective(price objective.path)
+    for target in targets:
+        _remove_target(target.path)
 
     print("Cleanup complete. Official launcher remains: afip.py")
     print("Recommended validation:")
@@ -108,7 +108,7 @@ def run(apply: bool) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="AFIP V1 naming migration utility")
-    parser.add_argument("--apply", action="store_true", help="remove obsolete naming price objectives after backup")
+    parser.add_argument("--apply", action="store_true", help="remove obsolete naming targets after backup")
     args = parser.parse_args()
     return run(apply=args.apply)
 

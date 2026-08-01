@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 from afip.dashboard_ui.split_runtime import ThreeDashboardRuntime, _profile_rows
 

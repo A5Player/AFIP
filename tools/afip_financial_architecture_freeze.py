@@ -110,7 +110,7 @@ def planned_removals(project_root: Path) -> list[Change]:
     return changes
 
 
-def create_price objectiveed_backup(project_root: Path, changes: list[Change]) -> Path:
+def create_protected_backup(project_root: Path, changes: list[Change]) -> Path:
     backup_dir = project_root / "backup"
     backup_dir.mkdir(exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -194,7 +194,7 @@ def main() -> int:
         print("  python tools/afip_financial_architecture_freeze.py --apply")
         return 0
 
-    backup_path = create_price objectiveed_backup(project_root, planned)
+    backup_path = create_protected_backup(project_root, planned)
     apply_text_changes(text_changes)
     apply_removals(removal_changes)
 
