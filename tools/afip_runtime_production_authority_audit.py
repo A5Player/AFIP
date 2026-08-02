@@ -229,7 +229,7 @@ def find_historical_truth(root: Path) -> dict[str, Any]:
     candidates=[]
     for p in runtime.rglob('*.json'):
         rel=[x.lower() for x in p.relative_to(root).parts]
-        if any(x.startswith(('pytest_temp','pytest-','tmp_','test_')) or x in {'architecture_intelligence_certification','.pytest_cache'} for x in rel): continue
+        if any(x.startswith(('pytest_temp','pytest_tmp','pytest-','tmp_','test_')) or x in {'architecture_intelligence_certification','.pytest_cache'} for x in rel): continue
         try:
             if p.stat().st_size > 20_000_000: continue
             data=json.loads(p.read_text(encoding='utf-8'))
