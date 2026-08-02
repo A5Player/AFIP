@@ -239,7 +239,50 @@ def find_historical_truth(root: Path) -> dict[str, Any]:
         keys={*data.keys(),*disc.keys()}
         score=sum(k in keys for k in ('coverage_start_utc','coverage_end_utc','next_start_utc','earliest_available_utc','bars_observed','timeframe'))
         if score>=3: candidates.append((score,p.stat().st_mtime,p,data,disc))
-    if not candidates: return {'source':None,'status':'NOT_FOUND','boundaries_are_separated':False}
+    if not candidates:
+        lake = runtime / 'research' / 'historical_data_lake'
+        observations: list[tuple[str, str]] = []
+        if lake.is_dir():
+            for records_path in lake.rglob('records.jsonl'):
+                try:
+                    with records_path.open(encoding='utf-8') as stream:
+                        for line in stream:
+                            record = json.loads(line)
+                            if not isinstance(record, dict):
+                                continue
+                            payload = record.get('payload')
+                            if (
+                                record.get('schema_version') != 'financial-data-lake.v1'
+                                or record.get('layer') != 'normalized'
+                                or record.get('domain') != 'market_ohlc'
+                                or not isinstance(payload, dict)
+                            ):
+                                continue
+                            observed = record.get('observed_at_utc')
+                            timeframe = payload.get('timeframe')
+                            if isinstance(observed, str) and isinstance(timeframe, str):
+                                observations.append((observed, timeframe.upper()))
+                except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+                    continue
+        if observations:
+            observed_at = sorted(item[0] for item in observations)
+            return {
+                'source': lake.relative_to(root).as_posix(),
+                'status': 'AVAILABLE',
+                'quality_status': 'OBSERVED_NORMALIZED_MARKET_OHLC',
+                'broker_history_start_utc': None,
+                'dataset_start_utc': observed_at[0],
+                'dataset_end_utc': observed_at[-1],
+                'checkpoint_next_start_utc': None,
+                'boundaries_are_separated': False,
+                'missing_intervals': None,
+                'batches_completed': None,
+                'total_dataset_bytes': sum(path.stat().st_size for path in lake.rglob('records.jsonl')),
+                'bars_observed': len(observations),
+                'timeframes': sorted({item[1] for item in observations}),
+                'selection_score': 0,
+            }
+        return {'source':None,'status':'NOT_FOUND','boundaries_are_separated':False}
     _,_,p,data,disc=max(candidates,key=lambda x:(x[0],x[1]))
     broker=disc.get('earliest_available_utc') or data.get('earliest_available_utc')
     dataset=data.get('coverage_start_utc'); checkpoint=data.get('next_start_utc')

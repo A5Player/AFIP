@@ -1,5 +1,6 @@
 from pathlib import Path
 import importlib.util
+import json
 
 MODULE_PATH = Path(__file__).parents[1] / 'tools' / 'afip_runtime_production_authority_audit.py'
 spec = importlib.util.spec_from_file_location('audit31', MODULE_PATH)
@@ -39,3 +40,29 @@ def test_read_only_output_contract(tmp_path: Path):
     assert report['schema_version'].endswith('v3.1')
     assert 'entrypoint_classification' in report
     assert 'invocation_edges' in report
+
+
+def test_historical_truth_reads_partitioned_financial_lake_records(tmp_path: Path):
+    records = (
+        tmp_path / 'runtime' / 'research' / 'historical_data_lake'
+        / 'layer=normalized' / 'domain=market_ohlc' / 'instrument=GOLD_'
+        / 'year=2026' / 'month=08' / 'day=02' / 'records.jsonl'
+    )
+    records.parent.mkdir(parents=True)
+    records.write_text(json.dumps({
+        'schema_version': 'financial-data-lake.v1',
+        'layer': 'normalized',
+        'domain': 'market_ohlc',
+        'observed_at_utc': '2026-08-02T00:00:00+00:00',
+        'payload': {'timeframe': 'D1'},
+    }) + '\n', encoding='utf-8')
+
+    truth = mod.find_historical_truth(tmp_path)
+
+    assert truth['source'] == 'runtime/research/historical_data_lake'
+    assert truth['status'] == 'AVAILABLE'
+    assert truth['dataset_start_utc'] == '2026-08-02T00:00:00+00:00'
+    assert truth['dataset_end_utc'] == '2026-08-02T00:00:00+00:00'
+    assert truth['bars_observed'] == 1
+    assert truth['timeframes'] == ['D1']
+    assert truth['boundaries_are_separated'] is False
