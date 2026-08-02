@@ -301,10 +301,13 @@ def role_categories(path: str, definitions: list[dict[str,Any]]) -> list[str]:
 
 
 
-PRIMARY_RUNTIME_ROOTS = {
-    "START_AFIP.ps1", "START_AFIP_SAFE.ps1", "START_AFIP_LONG_RUN.ps1",
-    "RUN_AFIP_V1_FINAL_OPERATIONAL_RUNTIME.ps1", "RUN.ps1", "RUN.bat", "afip.py",
+PRIMARY_RUNTIME_ROOTS = {"START_AFIP.ps1"}
+RUNTIME_COMPATIBILITY_WRAPPERS = {
+    "START_AFIP_SAFE.ps1", "RUN_AFIP_V1_FINAL_OPERATIONAL_RUNTIME.ps1",
 }
+CERTIFICATION_RUNNERS = {"RUN.ps1", "RUN.bat"}
+RESEARCH_RUNTIME_COMMANDS = {"START_AFIP_LONG_RUN.ps1"}
+CLI_COMMAND_ENTRYPOINTS = {"afip.py"}
 CONTROL_COMMAND_NAMES = {
     "STOP_AFIP.ps1", "STOP_AFIP_EMERGENCY.ps1", "STATUS_AFIP.ps1",
     "STOP_AFIP_LONG_RUN.ps1", "STATUS_AFIP_LONG_RUN.ps1",
@@ -327,6 +330,14 @@ def operational_role(path: str, process_launcher: bool, main_entrypoint: bool) -
     name = Path(path).name.upper(); low = path.lower(); domain = domain_for_path(path)
     if path in PRIMARY_RUNTIME_ROOTS or name in {x.upper() for x in PRIMARY_RUNTIME_ROOTS}:
         return 'PRIMARY_RUNTIME_ROOT'
+    if name in {x.upper() for x in RUNTIME_COMPATIBILITY_WRAPPERS}:
+        return 'COMPATIBILITY_WRAPPER'
+    if name in {x.upper() for x in CERTIFICATION_RUNNERS}:
+        return 'CERTIFICATION_ONLY'
+    if name in {x.upper() for x in RESEARCH_RUNTIME_COMMANDS}:
+        return 'RESEARCH_COMMAND'
+    if name in {x.upper() for x in CLI_COMMAND_ENTRYPOINTS}:
+        return 'CLI_COMMAND'
     if name in {x.upper() for x in CONTROL_COMMAND_NAMES} or name.startswith(('STOP_', 'STATUS_')):
         return 'CONTROL_COMMAND'
     if domain in {'INSTALLER_MIGRATION','CERTIFICATION','DEVELOPMENT_TOOL','TEST'}:

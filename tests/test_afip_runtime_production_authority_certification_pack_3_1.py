@@ -14,6 +14,11 @@ def test_operational_role_contract():
     assert mod.operational_role('STATUS_AFIP.ps1', False, True) == 'CONTROL_COMMAND'
     assert mod.operational_role('BUILD_AFIP_DASHBOARD_4_ONCE.ps1', True, True) == 'DASHBOARD_BUILDER'
     assert mod.operational_role('INSTALL_X.ps1', False, True) == 'NON_RUNTIME_TOOL'
+    assert mod.operational_role('START_AFIP_SAFE.ps1', True, True) == 'COMPATIBILITY_WRAPPER'
+    assert mod.operational_role('RUN_AFIP_V1_FINAL_OPERATIONAL_RUNTIME.ps1', True, True) == 'COMPATIBILITY_WRAPPER'
+    assert mod.operational_role('RUN.ps1', True, True) == 'CERTIFICATION_ONLY'
+    assert mod.operational_role('START_AFIP_LONG_RUN.ps1', True, True) == 'RESEARCH_COMMAND'
+    assert mod.operational_role('afip.py', True, True) == 'CLI_COMMAND'
 
 
 def test_script_python_module_invocation(tmp_path: Path):
