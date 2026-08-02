@@ -6,6 +6,7 @@ from types import SimpleNamespace
 
 from afip.research_data_foundation.runtime_collector import ResearchRuntimeCollector
 from afip.production_activation_runtime.runtime import ProductionActivationRuntime
+from tools.afip_research_runtime_collector import activation_ledger_paths
 
 
 def _write_jsonl(path: Path, payload: dict) -> None:
@@ -72,3 +73,41 @@ def test_closed_position_reconciliation_is_research_only_and_once(tmp_path: Path
     assert first[0]["research_only"] is True
     assert first[0]["affects_trading"] is False
     assert abs(first[0]["realized_profit"] - 4.7) < 1e-9
+
+
+def test_activation_position_opened_creates_ticket_bound_research_case(tmp_path: Path) -> None:
+    activation = tmp_path / "activation.jsonl"
+    _write_jsonl(activation, {
+        "event": "POSITION_OPENED", "status": "POSITION_OPENED", "tickets": [701, 702],
+        "execution_trace_id": "TRACE-OPEN", "updated_at_utc": "2026-08-02T14:20:00+00:00",
+        "requests": [{"symbol": "GOLD#", "price": 2400.2, "sl": 2370.2, "tp": 2405.2, "volume": 0.01}],
+        "certification": {"status": "CERTIFIED", "plan_id": "PLAN-OPEN"},
+        "plan": {
+            "plan_id": "PLAN-OPEN", "plan_checksum": "abc", "symbol": "GOLD#",
+            "capital": {"profile_id": "P1"},
+            "entry": {"direction": "BUY", "maximum_spread_points": 35.0},
+            "exit": {"initial_stop_price": 2370.2, "target_prices": [2405.2]},
+            "care": {"trailing_policy": "certified_position_care"},
+            "market": {"pattern_name": "AFIP_SIGNAL", "pattern_family": "AFIP", "regime": "UNCLASSIFIED", "session": "AUTO", "situation_confidence": 100.0},
+        },
+    })
+    root = tmp_path / "research"
+    first = ResearchRuntimeCollector(root).ingest_ledgers([], [activation])
+    second = ResearchRuntimeCollector(root).ingest_ledgers([], [activation])
+    assert first.accepted_events == 1 and first.trade_cases_written == 1
+    assert second.duplicate_events >= 1
+    case = json.loads(next((root / "trade_cases").glob("CASE-*.json")).read_text(encoding="utf-8"))
+    assert case["tickets"] == [701, 702]
+    assert case["profile_id"] == "P1"
+    assert case["decision_action"] == "BUY"
+    assert case["market_context"]["pattern_id"] == "AFIP_SIGNAL"
+    assert case["market_context"]["trading_cost_status"] == "NOT_RECORDED_AT_POSITION_OPEN"
+    assert case["data_lineage"]["source_type"] == "PRODUCTION_ACTIVATION_LEDGER"
+
+
+def test_activation_ledger_paths_use_each_profile_runtime_directory(tmp_path: Path) -> None:
+    profiles = [SimpleNamespace(runtime_directory=tmp_path / "p1"), SimpleNamespace(runtime_directory=tmp_path / "p2")]
+    assert activation_ledger_paths(profiles) == [
+        tmp_path / "p1" / "production_activation" / "activation_ledger.jsonl",
+        tmp_path / "p2" / "production_activation" / "activation_ledger.jsonl",
+    ]

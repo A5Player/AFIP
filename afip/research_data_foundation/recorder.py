@@ -94,12 +94,15 @@ class ResearchRecorder:
         raw_line: str,
     ) -> ResearchEvent:
         source_sha = self._sha(raw_line.rstrip("\r\n"))
-        observed = self._safe_utc(payload.get("checked_at_utc"))
-        profile = str(payload.get("profile_id", "UNKNOWN")).upper()
-        symbol = str(payload.get("symbol", "GOLD#"))
+        plan = payload.get("plan", {}) if isinstance(payload.get("plan"), Mapping) else {}
+        capital = plan.get("capital", {}) if isinstance(plan.get("capital"), Mapping) else {}
+        lot_authority = payload.get("lot_authority", {}) if isinstance(payload.get("lot_authority"), Mapping) else {}
+        observed = self._safe_utc(payload.get("checked_at_utc") or payload.get("updated_at_utc") or plan.get("created_at"))
+        profile = str(payload.get("profile_id") or capital.get("profile_id") or lot_authority.get("profile_id") or "UNKNOWN").upper()
+        symbol = str(payload.get("symbol") or plan.get("symbol") or "GOLD#")
         status = str(payload.get("status", "UNKNOWN")).upper()
         reason = str(payload.get("reason", "unknown"))
-        event_type = "ORDER_EXECUTION" if status == "ORDER_SENT" else "DECISION_GATE"
+        event_type = "ORDER_EXECUTION" if status in {"ORDER_SENT", "POSITION_OPENED"} else "DECISION_GATE"
         event_id = "EVT-" + self._sha(f"{source_path}|{line_number}|{source_sha}")[:24].upper()
         normalized_payload = dict(payload)
         normalized_payload["checked_at_utc"] = observed
@@ -115,6 +118,7 @@ class ResearchRecorder:
             source_path=str(source_path),
             source_line_number=line_number,
             source_sha256=source_sha,
+            source_type="PRODUCTION_ACTIVATION_LEDGER" if status == "POSITION_OPENED" else "DEMO_EXECUTION_LEDGER",
             payload=normalized_payload,
         )
 
@@ -141,6 +145,13 @@ class ResearchRecorder:
 
     def _case_from_event(self, event: ResearchEvent) -> TradeCase | None:
         payload = dict(event.payload)
+        plan = payload.get("plan", {}) if isinstance(payload.get("plan"), Mapping) else {}
+        entry = plan.get("entry", {}) if isinstance(plan.get("entry"), Mapping) else {}
+        exit_plan = plan.get("exit", {}) if isinstance(plan.get("exit"), Mapping) else {}
+        market_plan = plan.get("market", {}) if isinstance(plan.get("market"), Mapping) else {}
+        care_plan = plan.get("care", {}) if isinstance(plan.get("care"), Mapping) else {}
+        certification = payload.get("certification", {}) if isinstance(payload.get("certification"), Mapping) else {}
+        requests = tuple(item for item in payload.get("requests", ()) if isinstance(item, Mapping))
         tickets = tuple(int(v) for v in payload.get("tickets", ()) if int(v) > 0)
         if event.event_type != "ORDER_EXECUTION" or not tickets:
             return None
@@ -148,7 +159,7 @@ class ResearchRecorder:
         case_id = "CASE-" + self._sha(case_key)[:24].upper()
         execution = {
             "status": payload.get("status"),
-            "reason": payload.get("reason"),
+            "reason": payload.get("reason", "certified_activation_position_opened"),
             "allocated_lots": payload.get("allocated_lots", ()),
             "total_allocated_lot": payload.get("total_allocated_lot", 0.0),
             "order_check_called": payload.get("order_check_called", False),
@@ -163,28 +174,35 @@ class ResearchRecorder:
             "broker": payload.get("broker", "XM"),
             "server": payload.get("server", ""),
             "symbol": payload.get("symbol", event.symbol),
+            "requests": requests,
+            "certification": certification,
+            "plan_id": plan.get("plan_id"),
+            "plan_checksum": plan.get("plan_checksum"),
         }
         market = {
             "snapshot": payload.get("market_snapshot", {}),
-            "pattern": payload.get("pattern", "UNKNOWN"),
-            "pattern_id": payload.get("pattern_id", "UNKNOWN"),
-            "pattern_family": payload.get("pattern_family", "UNKNOWN"),
-            "market_regime": payload.get("market_regime", "UNKNOWN"),
-            "session": payload.get("session", payload.get("trading_session", "UNKNOWN")),
+            "pattern": payload.get("pattern", market_plan.get("pattern_name", "UNKNOWN")),
+            "pattern_id": payload.get("pattern_id", market_plan.get("pattern_name", "UNKNOWN")),
+            "pattern_family": payload.get("pattern_family", market_plan.get("pattern_family", "UNKNOWN")),
+            "market_regime": payload.get("market_regime", market_plan.get("regime", "UNKNOWN")),
+            "session": payload.get("session", payload.get("trading_session", market_plan.get("session", "UNKNOWN"))),
             "multi_timeframe_context": payload.get("multi_timeframe_context", {}),
             "intelligence_outputs": payload.get("intelligence_outputs", {}),
             "supporting_evidence": payload.get("supporting_evidence", ()),
             "opposing_evidence": payload.get("opposing_evidence", ()),
-            "spread_points": payload.get("spread_points", 0.0),
-            "caution_spread_points": payload.get("caution_spread_points", 0.0),
-            "max_spread_points": payload.get("max_spread_points", 0.0),
-            "trading_cost_status": payload.get("trading_cost_status", "UNKNOWN"),
-            "point_size": payload.get("point_size", 0.0),
-            "digits": payload.get("digits", 0),
+            "spread_points": payload.get("spread_points"),
+            "caution_spread_points": payload.get("caution_spread_points"),
+            "max_spread_points": payload.get("max_spread_points", entry.get("maximum_spread_points")),
+            "trading_cost_status": payload.get("trading_cost_status", "NOT_RECORDED_AT_POSITION_OPEN"),
+            "point_size": payload.get("point_size"),
+            "digits": payload.get("digits"),
+            "entry_plan": entry,
+            "exit_plan": exit_plan,
+            "care_plan": care_plan,
         }
         decision_trace = {
-            "action": payload.get("decision_action", "WAIT"),
-            "confidence": payload.get("decision_confidence", 0.0),
+            "action": payload.get("decision_action", entry.get("direction", "WAIT")),
+            "confidence": payload.get("decision_confidence", market_plan.get("situation_confidence", 0.0)),
             "risk_approved": payload.get("reason") != "risk_not_approved",
             "trading_cost_allowed": payload.get("trading_cost_allowed", False),
             "allocation_mode": payload.get("allocation_mode", "UNKNOWN"),
@@ -193,6 +211,8 @@ class ResearchRecorder:
             "decision_reason": payload.get("decision_reason", payload.get("reason", "")),
             "gates": payload.get("gates", ()),
         }
+        decision_action = str(payload.get("decision_action", entry.get("direction", "WAIT")))
+        decision_confidence = float(payload.get("decision_confidence", market_plan.get("situation_confidence", 0.0)) or 0.0)
         return TradeCase(
             trade_case_id=case_id,
             profile_id=event.profile_id,
@@ -200,9 +220,9 @@ class ResearchRecorder:
             created_at_utc=event.observed_at_utc,
             updated_at_utc=event.observed_at_utc,
             lifecycle_state="OPEN_OR_SUBMITTED",
-            decision_action=str(payload.get("decision_action", "WAIT")),
-            decision_confidence=float(payload.get("decision_confidence", 0.0) or 0.0),
-            order_status=str(payload.get("order_status", "DEMO_ORDER_SENT")),
+            decision_action=decision_action,
+            decision_confidence=decision_confidence,
+            order_status=str(payload.get("order_status", payload.get("status", "DEMO_ORDER_SENT"))),
             tickets=tickets,
             event_ids=(event.event_id,),
             market_context=market,
@@ -267,3 +287,21 @@ class ResearchRecorder:
             },
         })
         return summary
+
+    def record_activation_opened(
+        self, payload: Mapping[str, Any], *, source_path: Path, line_number: int, raw_line: str,
+    ) -> tuple[int, int, int]:
+        """Record one certified POSITION_OPENED event without any trading side effect."""
+        event = self._event_from_ledger(payload, source_path=source_path, line_number=line_number, raw_line=raw_line)
+        existing = self._existing_event_ids()
+        if event.event_id in existing:
+            return 0, 1, 0
+        self._append_jsonl(self.events_path, event.as_dict())
+        trade_case = self._case_from_event(event)
+        if trade_case is None:
+            raise ValueError("position_opened_requires_positive_tickets")
+        path = self.cases_directory / f"{trade_case.trade_case_id}.json"
+        if not path.exists():
+            self._write_json(path, trade_case.as_dict())
+            return 1, 0, 1
+        return 1, 0, 0

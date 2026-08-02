@@ -75,6 +75,7 @@ class ResearchRuntimeCollector:
             duplicates += result["duplicates"]
             holding += result["holding"]
             exits += result["exits"]
+            cases += result["cases"]
         summary = RuntimeCollectionSummary(scanned, accepted, duplicates, cases, holding, exits, 0)
         self._write_json(self.summary_path, {**summary.as_dict(), "updated_at_utc": _utc_now()})
         return summary
@@ -104,7 +105,7 @@ class ResearchRuntimeCollector:
             seen = {str(value) for value in raw_state.get("event_ids", ())}
         except (OSError, ValueError, TypeError):
             seen = set()
-        accepted = duplicates = holding = exits = 0
+        accepted = duplicates = cases = holding = exits = 0
         for line_number, raw in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), start=1):
             if not raw.strip():
                 continue
@@ -131,6 +132,12 @@ class ResearchRuntimeCollector:
                     }
                     self.record_position_observation(observation)
                     holding += 1
+                elif event == "POSITION_OPENED":
+                    _, opened_duplicates, opened_cases = self.recorder.record_activation_opened(
+                        payload, source_path=path, line_number=line_number, raw_line=raw,
+                    )
+                    duplicates += opened_duplicates
+                    cases += opened_cases
                 elif event == "POSITION_CLOSED":
                     self.record_closed_trade(payload)
                     exits += 1
@@ -143,7 +150,7 @@ class ResearchRuntimeCollector:
             seen.add(event_id)
             accepted += 1
         self._write_json(state_path, {"event_ids": sorted(seen), "updated_at_utc": _utc_now()})
-        return {"accepted": accepted, "duplicates": duplicates, "holding": holding, "exits": exits}
+        return {"accepted": accepted, "duplicates": duplicates, "cases": cases, "holding": holding, "exits": exits}
 
     def _case_for_ticket(self, ticket: int) -> dict[str, Any] | None:
         for path in sorted((self.root / "trade_cases").glob("CASE-*.json")):
