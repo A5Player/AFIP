@@ -83,8 +83,8 @@ def literal_string(node: ast.AST) -> str | None:
         left, right = literal_string(node.left), literal_string(node.right)
         if left is not None and right is not None:
             left_clean = left.rstrip("/\\")
-    right_clean = right.lstrip("/\\")
-    return f"{left_clean}/{right_clean}"
+            right_clean = right.lstrip("/\\")
+            return f"{left_clean}/{right_clean}"
     return None
 
 
