@@ -1293,6 +1293,13 @@ class DemoExecutionGateway:
             self._production_activation.register_tickets(
                 plan=plan, tickets=tickets, requests=prepared_requests,
                 execution_trace_id=self._active_trace_id,
+                broker_execution_proof={
+                    "status": "BROKER_ORDER_SEND_SUCCESS",
+                    "binding_verified": True,
+                    "execution_batch_id": execution_batch_id,
+                    "tickets": list(tickets),
+                    "unit_results": list(unit_results),
+                },
             )
             report = self._report("ORDER_SENT", "protected_demo_orders_sent", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, sent_units=len(tickets), **allocation_diagnostics, order_status="DEMO_ORDER_SENT", tickets=tuple(tickets), order_check_called=True, order_send_called=True, mt5_result_code=retcode, mt5_result_comment=str(self._value(result_send, "comment", "")), connected_account_login=(f"****{actual_login[-4:]}" if actual_login else "UNKNOWN"), connected_terminal_folder=terminal_path or "UNKNOWN", configured_terminal_folder=str(self.profile.mt5_folder), ownership_token=ownership_token, binding_verified=True, plan_id=plan.plan_id, plan_certification_status=plan_certification.status, execution_batch_id=execution_batch_id, execution_attempts=len(unit_results), execution_latency_ms=round((time.perf_counter()-batch_started)*1000.0,3), execution_outcome="COMPLETE", reconciliation_required=False, partial_execution=False, remaining_units=0, unit_results=tuple(unit_results), **execution_diagnostics, **provenance_diagnostics)
             state = report.as_dict()

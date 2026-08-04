@@ -178,6 +178,7 @@ class ResearchRecorder:
             "certification": certification,
             "plan_id": plan.get("plan_id"),
             "plan_checksum": plan.get("plan_checksum"),
+            "broker_execution_proof": payload.get("broker_execution_proof", {}),
         }
         market = {
             "snapshot": payload.get("market_snapshot", {}),

@@ -98,6 +98,19 @@ class ResearchRuntimeCollector:
         canonical = json.dumps(dict(payload), sort_keys=True, separators=(",", ":"), default=str)
         return hashlib.sha256(f"{path}|{line_number}|{canonical}".encode("utf-8")).hexdigest()
 
+    @staticmethod
+    def _has_broker_execution_proof(payload: Mapping[str, Any]) -> bool:
+        proof = payload.get("broker_execution_proof")
+        if not isinstance(proof, Mapping):
+            return False
+        if proof.get("status") != "BROKER_ORDER_SEND_SUCCESS" or proof.get("binding_verified") is not True:
+            return False
+        tickets = tuple(int(value) for value in proof.get("tickets", ()) if int(value) > 0)
+        results = tuple(item for item in proof.get("unit_results", ()) if isinstance(item, Mapping))
+        return bool(tickets) and tickets == tuple(int(value) for value in payload.get("tickets", ()) if int(value) > 0) and all(
+            item.get("status") == "SENT" and int(item.get("ticket", 0) or 0) in tickets for item in results
+        ) and len(results) == len(tickets)
+
     def _ingest_activation_ledger(self, path: Path) -> dict[str, int]:
         state_path = self.root / "runtime_bridge_event_ids.json"
         try:
@@ -133,6 +146,14 @@ class ResearchRuntimeCollector:
                     self.record_position_observation(observation)
                     holding += 1
                 elif event == "POSITION_OPENED":
+                    if not self._has_broker_execution_proof(payload):
+                        self.recorder._append_jsonl(self.root / "quarantined_activation_openings.jsonl", {
+                            "event_id": event_id, "source_path": str(path), "source_line_number": line_number,
+                            "reason": "broker_execution_proof_missing_or_invalid", "research_only": True,
+                            "affects_trading": False, "quarantined_at_utc": _utc_now(),
+                        })
+                        seen.add(event_id)
+                        continue
                     _, opened_duplicates, opened_cases = self.recorder.record_activation_opened(
                         payload, source_path=path, line_number=line_number, raw_line=raw,
                     )

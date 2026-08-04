@@ -81,6 +81,7 @@ def test_activation_position_opened_creates_ticket_bound_research_case(tmp_path:
         "event": "POSITION_OPENED", "status": "POSITION_OPENED", "tickets": [701, 702],
         "execution_trace_id": "TRACE-OPEN", "updated_at_utc": "2026-08-02T14:20:00+00:00",
         "requests": [{"symbol": "GOLD#", "price": 2400.2, "sl": 2370.2, "tp": 2405.2, "volume": 0.01}],
+        "broker_execution_proof": {"status": "BROKER_ORDER_SEND_SUCCESS", "binding_verified": True, "tickets": [701, 702], "unit_results": [{"status": "SENT", "ticket": 701}, {"status": "SENT", "ticket": 702}]},
         "certification": {"status": "CERTIFIED", "plan_id": "PLAN-OPEN"},
         "plan": {
             "plan_id": "PLAN-OPEN", "plan_checksum": "abc", "symbol": "GOLD#",
@@ -103,6 +104,17 @@ def test_activation_position_opened_creates_ticket_bound_research_case(tmp_path:
     assert case["market_context"]["pattern_id"] == "AFIP_SIGNAL"
     assert case["market_context"]["trading_cost_status"] == "NOT_RECORDED_AT_POSITION_OPEN"
     assert case["data_lineage"]["source_type"] == "PRODUCTION_ACTIVATION_LEDGER"
+
+
+def test_activation_position_opened_without_broker_proof_is_quarantined(tmp_path: Path) -> None:
+    activation = tmp_path / "activation.jsonl"
+    _write_jsonl(activation, {"event": "POSITION_OPENED", "status": "POSITION_OPENED", "tickets": [703]})
+    root = tmp_path / "research"
+    summary = ResearchRuntimeCollector(root).ingest_ledgers([], [activation])
+    assert summary.trade_cases_written == 0
+    assert not list((root / "trade_cases").glob("CASE-*.json"))
+    quarantine = (root / "quarantined_activation_openings.jsonl").read_text(encoding="utf-8")
+    assert "broker_execution_proof_missing_or_invalid" in quarantine
 
 
 def test_activation_ledger_paths_use_each_profile_runtime_directory(tmp_path: Path) -> None:

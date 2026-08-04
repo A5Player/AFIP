@@ -173,12 +173,14 @@ class ProductionActivationRuntime:
         _append_jsonl(self.ledger_path, {"event": "PLAN_CERTIFICATION", **payload})
         return plan, certification
 
-    def register_tickets(self, *, plan: CompleteTradePlan, tickets: list[int], requests: list[dict[str, Any]], execution_trace_id: str) -> None:
+    def register_tickets(self, *, plan: CompleteTradePlan, tickets: list[int], requests: list[dict[str, Any]], execution_trace_id: str,
+                         broker_execution_proof: Mapping[str, Any] | None = None) -> None:
         path = self.plan_root / f"{plan.plan_id}.json"
         payload = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"plan": plan.as_dict()}
         payload.update({
             "tickets": [int(x) for x in tickets], "requests": requests,
             "execution_trace_id": execution_trace_id, "status": "POSITION_OPENED",
+            "broker_execution_proof": dict(broker_execution_proof or {}),
             "updated_at_utc": _utc(),
         })
         _atomic_json(path, payload)
