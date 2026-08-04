@@ -31,6 +31,19 @@ def _pattern_id(case: Mapping[str, Any]) -> str:
     return str(market.get("pattern_id") or market.get("pattern") or "UNKNOWN")
 
 
+def _has_verified_activation_proof(case: Mapping[str, Any]) -> bool:
+    lineage = case.get("data_lineage", {})
+    if not isinstance(lineage, Mapping) or lineage.get("source_type") != "PRODUCTION_ACTIVATION_LEDGER":
+        return True
+    execution = case.get("execution_result", {})
+    proof = execution.get("broker_execution_proof") if isinstance(execution, Mapping) else None
+    tickets = tuple(int(value) for value in case.get("tickets", ()) if int(value) > 0)
+    results = tuple(item for item in proof.get("unit_results", ()) if isinstance(item, Mapping)) if isinstance(proof, Mapping) else ()
+    return bool(isinstance(proof, Mapping) and proof.get("status") == "BROKER_ORDER_SEND_SUCCESS" and proof.get("binding_verified") is True
+                and tuple(int(value) for value in proof.get("tickets", ()) if int(value) > 0) == tickets
+                and len(results) == len(tickets) and all(item.get("status") == "SENT" for item in results))
+
+
 class ResearchDatasetAggregator:
     """Deterministic, read-only aggregation for the AFIP research dashboard."""
 
@@ -109,7 +122,9 @@ class ResearchDatasetAggregator:
         return rows
 
     def build(self) -> dict[str, Any]:
-        cases = self.cases()
+        all_cases = self.cases()
+        unverified_activation_cases = [case for case in all_cases if not _has_verified_activation_proof(case)]
+        cases = [case for case in all_cases if _has_verified_activation_proof(case)]
         lifecycle = Counter(str(case.get("lifecycle_state", "UNKNOWN")) for case in cases)
         checkpoint_counts = Counter()
         due_or_pending = Counter()
@@ -148,6 +163,8 @@ class ResearchDatasetAggregator:
             blockers.append("duplicate_trade_case_ids")
         if unknown:
             blockers.append("unknown_pattern_cases")
+        if unverified_activation_cases:
+            blockers.append("unverified_activation_cases_excluded")
         if not eligible_closed:
             blockers.append("no_eligible_closed_trade_feedback")
         dataset_health = "READY" if malformed == 0 and duplicate_case_count == 0 else "CAUTION"
@@ -158,7 +175,10 @@ class ResearchDatasetAggregator:
             "affects_trading": False,
             "dataset_health": {
                 "status": dataset_health,
-                "trade_case_count": len(cases),
+                "trade_case_count": len(all_cases),
+                "eligible_trade_case_count": len(cases),
+                "unverified_activation_case_count": len(unverified_activation_cases),
+                "unverified_activation_case_ids": sorted(str(case.get("trade_case_id", "")) for case in unverified_activation_cases),
                 "active_lifecycle_count": active,
                 "closed_case_count": closed,
                 "unknown_pattern_count": unknown,

@@ -68,3 +68,18 @@ def test_dashboard_exposes_ranking_readiness(tmp_path: Path) -> None:
     assert snapshot["ranking_readiness"]["eligible_feedback_only"] is True
     assert snapshot["ranking_readiness"]["uses_net_realized_profit_after_costs"] is True
     assert snapshot["ranking_readiness"]["automatic_ranking_mutation"] is False
+
+
+def test_unverified_activation_case_is_preserved_but_excluded_from_analytics(tmp_path: Path) -> None:
+    path = tmp_path / "trade_cases" / "CASE-UNVERIFIED.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({
+        "trade_case_id": "CASE-UNVERIFIED", "tickets": [7], "lifecycle_state": "OPEN_OR_SUBMITTED",
+        "market_context": {"pattern_id": "AFIP_SIGNAL"}, "execution_result": {},
+        "data_lineage": {"source_type": "PRODUCTION_ACTIVATION_LEDGER"},
+    }), encoding="utf-8")
+    result = ResearchDatasetAggregator(tmp_path).build()
+    assert result["dataset_health"]["trade_case_count"] == 1
+    assert result["dataset_health"]["eligible_trade_case_count"] == 0
+    assert result["dataset_health"]["unverified_activation_case_ids"] == ["CASE-UNVERIFIED"]
+    assert "unverified_activation_cases_excluded" in result["dataset_health"]["certification_blockers"]
