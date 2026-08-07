@@ -1,7 +1,11 @@
+from math import floor
+
+
 class PositionSizer:
-    def __init__(self, min_lot: float = 0.01, max_lot: float = 0.03):
+    def __init__(self, min_lot: float = 0.01, max_lot: float = 0.03, lot_step: float = 0.01):
         self.min_lot = min_lot
         self.max_lot = max_lot
+        self.lot_step = lot_step
 
     def calculate(
         self,
@@ -26,9 +30,19 @@ class PositionSizer:
             raise ValueError("stop_loss_points must be positive")
 
         raw_lot = risk / stop
-        lot = max(self.min_lot, min(self.max_lot, round(raw_lot, 2)))
+        if self.lot_step <= 0 or self.min_lot <= 0 or self.max_lot < self.min_lot:
+            raise ValueError("invalid lot bounds")
+        bounded = min(self.max_lot, raw_lot)
+        lot = floor((bounded + 1e-12) / self.lot_step) * self.lot_step
+        lot = round(lot, 8)
+        eligible = lot + 1e-12 >= self.min_lot
+        if not eligible:
+            lot = 0.0
         return {
             "lot": lot,
+            "eligible": eligible,
+            "reason": "approved_risk_stop_sizing" if eligible else "minimum_lot_exceeds_approved_risk_budget",
+            "raw_risk_lot": round(raw_lot, 8),
             "risk_usd": risk,
             "stop_loss_points": stop,
             "balance": balance,

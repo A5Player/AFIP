@@ -19,6 +19,10 @@ from typing import Any, Iterable, Mapping
 LOCKED_EXECUTION = "LOCKED_SIMULATION_ONLY"
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 NO_ORDER_SENT = "NO_ORDER_SENT"
+SUPPORTED_TRADING_MODES = {
+    "ALL_MODE", "TREND_MODE", "UP_TREND_MODE", "DOWN_TREND_MODE",
+    "RANGE_MODE", "UP_TREND_AND_SIDEWAY_MODE", "RESEARCH_TOP_RANKED_MODE", "OBSERVE_ONLY",
+}
 
 
 @dataclass(frozen=True)
@@ -41,6 +45,7 @@ class ProfileOperationalConfig:
     learning_directory: Path
     knowledge_directory: Path
     statistics_directory: Path
+    trading_mode: str = "ALL_MODE"
     execution_enabled: bool = True
     research_enabled: bool = True
     execution: str = LOCKED_EXECUTION
@@ -52,6 +57,7 @@ class ProfileOperationalConfig:
         return cls(
             profile_id=str(raw["profile_id"]).strip().upper(),
             profile_name=str(raw["profile_name"]).strip(),
+            trading_mode=str(raw.get("trading_mode", "ALL_MODE")).strip().upper(),
             enabled=bool(raw.get("enabled", False)),
             execution_enabled=bool(raw.get("execution_enabled", raw.get("enabled", False))),
             research_enabled=bool(raw.get("research_enabled", raw.get("enabled", False))),
@@ -95,6 +101,7 @@ class ProfileOperationalConfig:
         if self.execution not in {LOCKED_EXECUTION, DEMO_EXECUTION}: errors.append("execution_mode_must_be_locked_or_demo_only")
         if self.direct_execution: errors.append("direct_execution_must_be_false")
         if self.live_execution: errors.append("live_execution_must_be_false")
+        if self.trading_mode not in SUPPORTED_TRADING_MODES: errors.append("trading_mode_not_supported")
         return tuple(errors)
 
     def status_record(self) -> dict[str, Any]:
@@ -102,6 +109,7 @@ class ProfileOperationalConfig:
         return {
             "profile_id": self.profile_id,
             "profile_name": self.profile_name,
+            "trading_mode": self.trading_mode,
             "enabled": self.enabled,
             "execution_enabled": self.execution_enabled,
             "research_enabled": self.research_enabled,
@@ -141,6 +149,50 @@ class FourProfileReport:
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class TradingModeDecision:
+    allowed: bool
+    mode: str
+    reason: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+class ProfileTradingModeAuthority:
+    """Apply one configurable market-selection mode per profile."""
+
+    @staticmethod
+    def evaluate(*, mode: str, action: str, regime: str, trend_state: str,
+                 research_eligible: bool = False, research_top_ranked: bool = False) -> TradingModeDecision:
+        selected = str(mode).strip().upper()
+        side = str(action).strip().upper()
+        regime_key = str(regime).strip().upper()
+        trend_key = str(trend_state).strip().upper()
+        if selected not in SUPPORTED_TRADING_MODES:
+            return TradingModeDecision(False, selected, "trading_mode_not_supported")
+        if selected == "OBSERVE_ONLY":
+            return TradingModeDecision(False, selected, "profile_is_observe_only")
+        if side not in {"BUY", "SELL"}:
+            return TradingModeDecision(False, selected, "decision_not_actionable")
+        if not research_eligible:
+            return TradingModeDecision(False, selected, "current_pattern_not_research_eligible")
+        is_range = "RANGE" in regime_key or "SIDEWAY" in regime_key
+        is_trend = "TREND" in regime_key and not is_range
+        is_up = side == "BUY" and ("UP" in trend_key or "UP" in regime_key or trend_key == "BULLISH")
+        is_down = side == "SELL" and ("DOWN" in trend_key or "DOWN" in regime_key or trend_key == "BEARISH")
+        allowed = {
+            "ALL_MODE": True,
+            "TREND_MODE": is_trend,
+            "UP_TREND_MODE": is_trend and is_up,
+            "DOWN_TREND_MODE": is_trend and is_down,
+            "RANGE_MODE": is_range,
+            "UP_TREND_AND_SIDEWAY_MODE": is_range or (is_trend and is_up),
+            "RESEARCH_TOP_RANKED_MODE": bool(research_top_ranked),
+        }.get(selected, False)
+        return TradingModeDecision(bool(allowed), selected, "trading_mode_accepts_current_market" if allowed else "current_market_rejected_by_profile_trading_mode")
 
 
 class FourProfileOperationalRuntime:

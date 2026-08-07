@@ -35,7 +35,7 @@ class AdaptiveSLAssessment:
     reason: str
     sl_mode: str
     recommended_sl_points: int | None
-    hard_ceiling_points: int
+    hard_ceiling_points: int | None
     execution_authority: bool = False
     order_send_called: bool = False
 
@@ -43,11 +43,7 @@ class AdaptiveSLAssessment:
 class AdaptiveSLRuntime:
     """Advisory-only Adaptive SL policy evaluator."""
 
-    NORMAL_MIN = 500
-    NORMAL_MAX = 1000
-    EXTENDED_MIN = 1000
-    EXTENDED_MAX = 1500
-    HARD_CEILING = 1500
+    HARD_CEILING = None
 
     def _base_distance(self, item: AdaptiveSLInput) -> float:
         derived = max(
@@ -82,42 +78,21 @@ class AdaptiveSLRuntime:
 
         if not self._all_common_gates_pass(item):
             return blocked("required_gate_not_approved")
+        if str(item.adaptive_sl_review_status).strip().upper() != "ELIGIBLE_FOR_ADAPTIVE_SL_REVIEW":
+            return blocked("research_standard_review_not_approved")
 
         base = self._base_distance(item)
         if base <= 0:
             return blocked("invalid_sl_distance")
 
-        # Extended mode is available only to Elite opportunities explicitly
-        # forwarded by W5 for Adaptive SL review.
-        extended_eligible = all((
-            float(item.oqs) >= 99.0,
-            str(item.oqs_status).upper() == "ELITE",
-            str(item.adaptive_sl_review_status).upper() == "ELIGIBLE_FOR_ADAPTIVE_SL_REVIEW",
-            float(item.final_confidence) >= 99.0,
-            str(item.evidence_quality).upper() == "HIGH",
-        ))
-
-        if base > self.NORMAL_MAX:
-            if not extended_eligible:
-                return blocked("extended_sl_eligibility_not_met")
-            if base > self.HARD_CEILING:
-                return blocked("hard_ceiling_exceeded")
-            recommended = max(self.EXTENDED_MIN, min(self.EXTENDED_MAX, round(base)))
-            return AdaptiveSLAssessment(
-                plan_id=item.plan_id,
-                status=EXTENDED_SL_APPROVED,
-                reason="extended_sl_policy_passed",
-                sl_mode="EXTENDED",
-                recommended_sl_points=int(recommended),
-                hard_ceiling_points=self.HARD_CEILING,
-            )
-
-        recommended = max(self.NORMAL_MIN, min(self.NORMAL_MAX, round(base)))
+        if str(item.oqs_status).strip().upper() in {"", "WAIT_OR_SKIP"}:
+            return blocked("opportunity_not_eligible_for_plan_review")
+        recommended = round(base)
         return AdaptiveSLAssessment(
             plan_id=item.plan_id,
             status=NORMAL_SL_APPROVED,
-            reason="normal_sl_policy_passed",
-            sl_mode="NORMAL",
+            reason="structure_atr_research_buffer_policy_passed",
+            sl_mode="STRUCTURE_ATR_RESEARCH_BUFFER",
             recommended_sl_points=int(recommended),
             hard_ceiling_points=self.HARD_CEILING,
         )

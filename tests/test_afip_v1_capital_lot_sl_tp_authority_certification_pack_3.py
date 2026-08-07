@@ -24,7 +24,8 @@ def test_gateway_passes_maximum_lot_to_single_authority():
 def test_gateway_keeps_adaptive_per_unit_rr_path():
     text = GATEWAY.read_text(encoding="utf-8")
     assert 'rr_plans = tuple(protection_portfolio.get("unit_plans", ()))' in text
-    assert 'unit_plan = rr_plans[order_index] if rr_plans else protection' in text
+    assert 'staggered_leg_index = current_orders + order_index' in text
+    assert 'unit_plan = rr_plans[staggered_leg_index] if rr_plans else protection' in text
     assert 'request = self._request(mt5, action, unit_sl_points, unit_tp_points, volume)' in text
 
 def test_legacy_fixed_pair_is_detected_by_safety_guard_but_not_yet_gateway_enforced():

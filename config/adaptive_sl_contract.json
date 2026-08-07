@@ -1,24 +1,27 @@
 {
-  "contract_version": "AFIP-W1-ADAPTIVE-SL-1.0",
+  "contract_version": "AFIP-PACK-A-STRUCTURAL-SL-2.0",
   "symbol_scope": [
     "GOLD#"
   ],
   "units": "broker_points",
-  "minimum_sl_points": 500,
-  "normal_max_sl_points": 1000,
-  "extended_max_sl_points": 1500,
-  "extended_requirements": {
-    "oqs_minimum": 99,
-    "final_confidence_minimum": 99,
-    "final_confidence_maximum": 100,
-    "evidence_quality": "HIGH",
+  "distance_authority": "MAX_OF_STRUCTURE_PLUS_RESEARCH_BUFFER_ATR_PLUS_RESEARCH_BUFFER_AND_APPROVED_REQUEST",
+  "fixed_stop_distance_bands_allowed": false,
+  "minimum_sl_points": null,
+  "normal_max_sl_points": null,
+  "extended_max_sl_points": null,
+  "hard_ceiling_points": null,
+  "requirements": {
+    "oqs_entry_review_eligible": true,
     "all_authority_gates_passed": true,
-    "reward_risk_approved": true
+    "reward_risk_approved": true,
+    "research_standard_available": true,
+    "data_integrity_approved": true
   },
   "fail_closed": {
-    "below_500": "BLOCK",
-    "above_1500": "WAIT_OR_SKIP",
+    "non_positive_distance": "BLOCK",
+    "minimum_lot_exceeds_approved_risk_budget": "WAIT_OR_SKIP",
     "do_not_compress_structural_sl": true
   },
+  "legacy_500_1000_1500_values": "DIAGNOSTIC_HISTORY_ONLY_NOT_AUTHORITY",
   "research_execution_authority": false
 }

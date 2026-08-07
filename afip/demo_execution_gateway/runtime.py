@@ -27,7 +27,7 @@ import time
 import uuid
 from typing import Any, Callable, Mapping, Protocol
 
-from afip.four_profile_operations.runtime import FourProfileOperationalRuntime, ProfileOperationalConfig
+from afip.four_profile_operations.runtime import FourProfileOperationalRuntime, ProfileOperationalConfig, ProfileTradingModeAuthority, SUPPORTED_TRADING_MODES
 from afip.four_profile_operations.mt5_connection import MT5MultiTerminalConnectionManager
 from afip.capital_growth_engine import CapitalGrowthEngine
 from afip.position_policy import confidence_maximum_units
@@ -64,6 +64,7 @@ class DemoProfilePolicy:
     execution_enabled: bool
     research_enabled: bool
     demo_execution_enabled: bool
+    trading_mode: str
     maximum_units: int
     minimum_confidence: float
     minimum_seconds_between_entries: int
@@ -73,6 +74,7 @@ class DemoProfilePolicy:
     capital_tiers: tuple[tuple[float, tuple[float, ...]], ...] = ()
     maximum_concurrent_orders: int = 4
     maximum_lot_per_order: float = 0.03
+    trading_mode_enforced: bool = False
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> "DemoProfilePolicy":
@@ -99,6 +101,7 @@ class DemoProfilePolicy:
             execution_enabled=bool(raw.get("execution_enabled", raw.get("enabled", False))),
             research_enabled=bool(raw.get("research_enabled", raw.get("enabled", False))),
             demo_execution_enabled=bool(raw.get("demo_execution_enabled", False)),
+            trading_mode=str(raw.get("trading_mode", "ALL_MODE")).strip().upper(),
             maximum_units=maximum_units,
             minimum_confidence=float(raw.get("minimum_confidence", 98.0)),
             allocation_mode=allocation_mode,
@@ -108,6 +111,7 @@ class DemoProfilePolicy:
             minimum_seconds_between_entries=int(raw.get("minimum_seconds_between_entries", 900)),
             magic=int(raw.get("magic", 26071001)),
             lot_per_unit=float(raw.get("lot_per_unit", 0.01)),
+            trading_mode_enforced="trading_mode" in raw,
         )
 
     def validate(self) -> tuple[str, ...]:
@@ -137,6 +141,7 @@ class DemoProfilePolicy:
         if self.minimum_seconds_between_entries < 60: errors.append("entry_cooldown_must_be_at_least_60_seconds")
         if abs(self.lot_per_unit - 0.01) > 1e-12: errors.append("lot_per_unit_must_remain_0_01")
         if self.magic <= 0: errors.append("magic_must_be_positive")
+        if self.trading_mode not in SUPPORTED_TRADING_MODES: errors.append("trading_mode_not_supported")
         return tuple(errors)
 
 
@@ -170,6 +175,14 @@ class DemoGatewayReport:
     armed: bool = False
     decision_action: str = "WAIT"
     decision_confidence: float = 0.0
+    profile_trading_mode: str = "LEGACY_COMPATIBILITY"
+    profile_trading_mode_enforced: bool = False
+    profile_trading_mode_allowed: bool | None = None
+    profile_trading_mode_reason: str = "NOT_EVALUATED"
+    observed_market_regime: str = "NOT_EVALUATED"
+    observed_trend_state: str = "NOT_EVALUATED"
+    research_eligible: bool | None = None
+    research_top_ranked: bool | None = None
     balance: float = 0.0
     equity: float = 0.0
     base_lot: float = 0.01
@@ -181,6 +194,9 @@ class DemoGatewayReport:
     approved_units: int = 0
     approved_lot_per_order: float = 0.01
     total_approved_lot: float = 0.0
+    capital_lot_capacity: float = 0.0
+    risk_sized_lot: float = 0.0
+    selected_lot_reason: str = "NOT_EVALUATED"
     limiting_gate: str = "UNKNOWN"
     sizing_reason: str = ""
     policy_version: str = ""
@@ -197,6 +213,11 @@ class DemoGatewayReport:
     order_unit_distribution: tuple[int, ...] = ()
     maximum_orders: int = 0
     remaining_order_capacity: int = 0
+    entry_mode: str = "SINGLE_ENTRY"
+    trade_case_id: str = ""
+    initial_units: int = 1
+    reserved_units: int = 0
+    capacity_is_ceiling_not_target: bool = True
     sent_units: int = 0
     order_status: str = ORDER_NOT_SENT
     tickets: tuple[int, ...] = ()
@@ -649,6 +670,8 @@ class DemoExecutionGateway:
             "approved_lots", "total_approved_lot", "limiting_gate",
             "sizing_reason", "policy_version", "allocated_lots",
             "maximum_orders", "remaining_order_capacity",
+            "entry_mode", "trade_case_id", "initial_units", "reserved_units",
+            "capacity_is_ceiling_not_target",
             "trading_cost_status", "trading_cost_allowed", "spread_points",
             "caution_spread_points", "max_spread_points", "point_size", "digits",
         )
@@ -933,6 +956,121 @@ class DemoExecutionGateway:
         }
         return request
 
+    def _staggered_entry_gate(
+        self,
+        *,
+        mt5: MT5Protocol,
+        action: str,
+        decision: Mapping[str, Any],
+        simulation: Mapping[str, Any],
+        positions: list[Any],
+        approved_capacity: int,
+    ) -> dict[str, Any]:
+        """Select one initial/add leg without turning capacity into a target.
+
+        Additional legs fail closed unless an append-only research standard for
+        the same plan type and pattern shape explicitly certifies the mode.
+        Every call occurs after the normal intelligence, risk and cost gates,
+        so an add is re-evaluated rather than inherited from the first entry.
+        """
+        standard = simulation.get("staggered_entry_standard", {})
+        if not isinstance(standard, Mapping):
+            standard = {}
+        supported = {
+            "STAGGERED_TREND_PULLBACK_1_1_1",
+            "BREAKOUT_RETEST_1_1_1",
+            "RANGE_LAYERED_ENTRY",
+        }
+        mode = str(standard.get("entry_mode", decision.get("entry_mode", "SINGLE_ENTRY"))).upper()
+        certified = bool(standard.get("certified", False))
+        family_samples = int(standard.get("family_samples", 0) or 0)
+        exact_samples = int(standard.get("exact_shape_samples", 0) or 0)
+        oqs = float(standard.get("oqs", 0.0) or 0.0)
+        spacing = float(standard.get("minimum_add_spacing_points", 0.0) or 0.0)
+        standard_ready = (
+            certified and mode in supported and family_samples >= 80
+            and exact_samples >= 80 and oqs >= 97.0 and spacing > 0.0
+        )
+        if not standard_ready:
+            mode = "SINGLE_ENTRY"
+        trade_case_id = str(
+            standard.get("trade_case_id", decision.get("trade_case_id", self._active_trace_id))
+        )
+        fields = {
+            "entry_mode": mode,
+            "trade_case_id": trade_case_id,
+            "minimum_add_spacing_points": spacing if standard_ready else 0.0,
+        }
+        if not positions:
+            return {
+                "allowed": approved_capacity >= 1,
+                "reason": "initial_single_unit_approved" if approved_capacity >= 1 else "entry_capacity_unavailable",
+                "decision_fields": fields,
+                "shared_stop_price": 0.0,
+            }
+        if not standard_ready:
+            return {
+                "allowed": False,
+                "reason": "additional_entry_research_standard_not_certified",
+                "decision_fields": fields,
+                "shared_stop_price": 0.0,
+            }
+        if len(positions) >= min(3, approved_capacity + len(positions)) or len(positions) >= self.policy.maximum_units:
+            return {
+                "allowed": False,
+                "reason": "trade_case_unit_ceiling_reached",
+                "decision_fields": fields,
+                "shared_stop_price": 0.0,
+            }
+        buy_type = getattr(mt5, "POSITION_TYPE_BUY", 0)
+        expected_buy = action == "BUY"
+        if any((int(self._value(p, "type", -1)) == buy_type) != expected_buy for p in positions):
+            return {
+                "allowed": False,
+                "reason": "existing_trade_case_direction_mismatch",
+                "decision_fields": fields,
+                "shared_stop_price": 0.0,
+            }
+        symbol_info = mt5.symbol_info(self.profile.symbol)
+        tick = mt5.symbol_info_tick(self.profile.symbol)
+        point = float(self._value(symbol_info, "point", 0.0) or 0.0)
+        current = float(self._value(tick, "ask" if expected_buy else "bid", 0.0) or 0.0)
+        opened = [float(self._value(p, "price_open", 0.0) or 0.0) for p in positions]
+        shared_stops = [float(self._value(p, "sl", 0.0) or 0.0) for p in positions]
+        if point <= 0.0 or current <= 0.0 or not opened or any(stop <= 0.0 for stop in shared_stops):
+            return {
+                "allowed": False,
+                "reason": "staggered_entry_price_or_shared_stop_unavailable",
+                "decision_fields": fields,
+                "shared_stop_price": 0.0,
+            }
+        best_open = min(opened) if expected_buy else max(opened)
+        materially_better = (
+            current <= best_open - spacing * point
+            if expected_buy else current >= best_open + spacing * point
+        )
+        if not materially_better:
+            return {
+                "allowed": False,
+                "reason": "better_staggered_entry_price_not_reached",
+                "decision_fields": fields,
+                "shared_stop_price": 0.0,
+            }
+        shared_stop = min(shared_stops) if expected_buy else max(shared_stops)
+        if (expected_buy and shared_stop >= current) or ((not expected_buy) and shared_stop <= current):
+            return {
+                "allowed": False,
+                "reason": "shared_structural_stop_invalid_for_add_price",
+                "decision_fields": fields,
+                "shared_stop_price": 0.0,
+            }
+        return {
+            "allowed": True,
+            "reason": "researched_better_price_add_approved",
+            "decision_fields": fields,
+            "shared_stop_price": shared_stop,
+        }
+
     def run_cycle(self) -> DemoGatewayReport:
         self._active_trace_id = f"AFIP-{self.profile.profile_id}-{uuid.uuid4().hex}"
         fd, token = self._acquire_routing_lock()
@@ -995,7 +1133,9 @@ class DemoExecutionGateway:
             )
 
             self._active_intelligence_snapshot = self._intelligence_snapshot(result)
-            decision = result.get("decision", {})
+            decision = dict(result.get("decision", {}))
+            result = dict(result)
+            result["decision"] = decision
             order = result.get("order", {})
             action = str(decision.get("action", order.get("action", "WAIT"))).upper()
             confidence = float(decision.get("confidence", 0.0) or 0.0)
@@ -1011,6 +1151,41 @@ class DemoExecutionGateway:
                 return self._report("WAITING", "simulation_fallback_data_blocked", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
             if action not in {"BUY", "SELL"}:
                 return self._report("WAITING", "decision_not_actionable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
+            modular = result.get("modular_intelligence", {}) if isinstance(result.get("modular_intelligence", {}), Mapping) else {}
+            regime_evidence = modular.get("market_regime", {}) if isinstance(modular.get("market_regime", {}), Mapping) else {}
+            regime = str(regime_evidence.get("regime", regime_evidence.get("market_regime", decision.get("market_regime", "UNKNOWN"))))
+            trend_state = str(regime_evidence.get("trend_state", decision.get("trend_state", "UNKNOWN")))
+            rank_value = decision.get("pattern_rank", decision.get("research_rank", trade_provenance.get("research_rank")))
+            try:
+                top_ranked = int(rank_value) == 1
+            except (TypeError, ValueError):
+                top_ranked = bool(decision.get("research_top_ranked", False))
+            explicit_research_eligible = decision.get(
+                "research_eligible", decision.get("research_approved", decision.get("ranking_eligible"))
+            )
+            recorded_eligible_ranking = bool(
+                trade_provenance.get("research_ranking_id")
+                and trade_provenance.get("research_eligible_rank") is not None
+                and int(trade_provenance.get("research_evidence_count") or 0) > 0
+            )
+            research_eligible = bool(explicit_research_eligible) or recorded_eligible_ranking
+            mode_decision = ProfileTradingModeAuthority.evaluate(
+                mode=self.policy.trading_mode, action=action, regime=regime,
+                trend_state=trend_state, research_eligible=research_eligible,
+                research_top_ranked=top_ranked,
+            )
+            decision["profile_trading_mode"] = mode_decision.mode
+            decision["profile_trading_mode_allowed"] = mode_decision.allowed
+            decision["profile_trading_mode_reason"] = mode_decision.reason
+            if self.policy.trading_mode_enforced and not mode_decision.allowed:
+                return self._report(
+                    "WAITING", mode_decision.reason, account_trade_mode="DEMO", demo_verified=True,
+                    decision_action=action, decision_confidence=confidence,
+                    profile_trading_mode=mode_decision.mode, observed_market_regime=regime,
+                    observed_trend_state=trend_state, research_eligible=research_eligible,
+                    research_top_ranked=top_ranked,
+                    **verified_context,
+                )
             if confidence < self.policy.minimum_confidence:
                 return self._report("WAITING", "profile_confidence_below_threshold", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **verified_context)
             if not bool(risk.get("allowed", False)):
@@ -1067,8 +1242,51 @@ class DemoExecutionGateway:
                 equity=float(self._value(account, "equity", account_balance) or account_balance),
                 current_orders=current_orders,
             )
-            allocation_lots = authority.approved_lots
-            units = authority.approved_units
+            staged_entry = self._staggered_entry_gate(
+                mt5=mt5,
+                action=action,
+                decision=decision,
+                simulation=result,
+                positions=afip_positions,
+                approved_capacity=authority.approved_units,
+            )
+            decision.update(staged_entry["decision_fields"])
+            if not staged_entry["allowed"]:
+                return self._report(
+                    "WAITING", str(staged_entry["reason"]),
+                    account_trade_mode="DEMO", demo_verified=True,
+                    decision_action=action, decision_confidence=confidence,
+                    approved_units=authority.approved_units,
+                    reserved_units=max(0, authority.approved_units - current_orders),
+                    entry_mode=str(staged_entry["decision_fields"].get("entry_mode", "SINGLE_ENTRY")),
+                    **verified_context, **cost_diagnostics,
+                )
+            # Capital-tier lot is capacity, never a target.  The stop/risk
+            # sizer may hold or reduce that capacity so a wider researched
+            # structural stop never forces a larger monetary loss.
+            risk_sizing = order.get("sizing", {}) if isinstance(order, Mapping) else {}
+            # Real builders expose the risk-sized lot in ``sizing``.  The
+            # top-level lot fallback preserves compatibility with certified
+            # simulation fixtures and remains the same builder-derived value.
+            risk_sized_lot = float(risk_sizing.get("lot", order.get("lot", 0.0)) or 0.0)
+            # Older deterministic simulation fixtures predate the structural
+            # risk-sizing payload.  They retain the pre-existing single-leg
+            # capacity path only when the new trading-mode contract is absent.
+            # Installed A2 profile configs always declare trading_mode, so live
+            # paths remain fail-closed on missing approved risk sizing.
+            if risk_sized_lot <= 0.0 and not self.policy.trading_mode_enforced:
+                risk_sized_lot = authority.approved_lot_per_order
+            if risk_sized_lot <= 0.0:
+                return self._report(
+                    "WAITING", "minimum_lot_exceeds_approved_risk_budget",
+                    account_trade_mode="DEMO", demo_verified=True,
+                    decision_action=action, decision_confidence=confidence,
+                    approved_units=authority.approved_units,
+                    **verified_context, **cost_diagnostics,
+                )
+            selected_lot = min(authority.approved_lot_per_order, risk_sized_lot)
+            allocation_lots = (round(selected_lot, 2),) if authority.approved_units > 0 and selected_lot >= 0.01 else ()
+            units = len(allocation_lots)
             growth = self._capital_growth_decision(account_balance, current_orders)  # diagnostics only; authority owns approval
             maximum_orders = 0 if self.policy.allocation_mode == "RESEARCH_FIXED_001" else self.policy.maximum_concurrent_orders
             remaining_order_capacity = -1 if maximum_orders == 0 else max(0, maximum_orders - current_orders)
@@ -1081,7 +1299,13 @@ class DemoExecutionGateway:
                 "confidence_maximum_units": authority.confidence_units,
                 "allocated_orders": len(allocation_lots),
                 "allocated_lots": tuple(allocation_lots),
-                "total_allocated_lot": authority.total_approved_lot,
+                "total_allocated_lot": round(sum(allocation_lots), 2),
+                "capital_lot_capacity": authority.approved_lot_per_order,
+                "risk_sized_lot": risk_sized_lot,
+                "selected_lot_reason": (
+                    "legacy_fixture_capacity_compatibility" if not risk_sizing and not self.policy.trading_mode_enforced
+                    else "minimum_of_capital_capacity_and_approved_risk_stop_sizing"
+                ),
                 "order_unit_distribution": tuple(1 for _ in allocation_lots),
                 "maximum_orders": maximum_orders,
                 "remaining_order_capacity": remaining_order_capacity,
@@ -1099,12 +1323,21 @@ class DemoExecutionGateway:
                 "withdrawal_reference_balance": growth.withdrawal_reference_balance,
                 "unit_selection_source": "SINGLE_LOT_AUTHORITY",
                 "unit_selection_reason": authority.reason,
+                "entry_mode": decision.get("entry_mode", "SINGLE_ENTRY"),
+                "trade_case_id": decision.get("trade_case_id", self._active_trace_id),
+                "initial_units": 1,
+                "reserved_units": max(0, authority.approved_units - units),
+                "capacity_is_ceiling_not_target": True,
             }
             if not allocation_lots:
                 return self._report("WAITING", "profile_order_capacity_unavailable", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)
 
             rr_plans = tuple(protection_portfolio.get("unit_plans", ()))
-            if rr_plans and len(rr_plans) < len(allocation_lots):
+            # The portfolio is ordered by staggered-entry leg.  Only one leg is
+            # sent per cycle, so use the count of already-open AFIP positions
+            # instead of restarting at plan zero on every cycle.
+            required_plan_count = current_orders + len(allocation_lots)
+            if rr_plans and len(rr_plans) < required_plan_count:
                 return self._report("BLOCKED", "rr_protection_plan_count_insufficient", account_trade_mode="DEMO", demo_verified=True, decision_action=action, decision_confidence=confidence, **allocation_diagnostics)
             fingerprint = hashlib.sha256(f"{self.profile.profile_id}|{action}|{confidence:.4f}|{sl_points:.2f}|{tp_points:.2f}".encode()).hexdigest()
             if not self._cooldown_passed(fingerprint):
@@ -1120,7 +1353,8 @@ class DemoExecutionGateway:
             # transmitted multi-order signal.
             prepared_requests: list[dict[str, Any]] = []
             for order_index, volume in enumerate(allocation_lots):
-                unit_plan = rr_plans[order_index] if rr_plans else protection
+                staggered_leg_index = current_orders + order_index
+                unit_plan = rr_plans[staggered_leg_index] if rr_plans else protection
                 unit_sl_points = float(unit_plan.get("stop_loss_points", sl_points) or sl_points)
                 unit_tp_points = float(unit_plan.get("take_profit_points", tp_points) or tp_points)
                 if unit_sl_points <= 0 or unit_tp_points <= 0:
@@ -1131,6 +1365,9 @@ class DemoExecutionGateway:
                         **allocation_diagnostics, **execution_diagnostics,
                     )
                 request = self._request(mt5, action, unit_sl_points, unit_tp_points, volume)
+                shared_stop = float(staged_entry.get("shared_stop_price", 0.0) or 0.0)
+                if shared_stop > 0.0:
+                    request["sl"] = round(shared_stop, digits)
                 request["comment"] = f"AFIP {self.profile.profile_id} {unit_plan.get('role', 'RR')}"
                 binding_ok, actual_login, _actual_server, terminal_path = self._repair_exact_binding(mt5)
                 request_owned = (

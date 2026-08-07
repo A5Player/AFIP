@@ -7,7 +7,7 @@ provider-supplied backfill records without mutating existing records.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from afip.timeframe_registry import get_seconds, get_supported_timeframes, is_supported
@@ -36,6 +36,11 @@ class GapRange:
     missing_bar_count: int
     expected_interval_seconds: int
     observed_interval_seconds: int
+    classification: str = "UNEXPECTED_DATA_GAP"
+    expected_closure_bar_count: int = 0
+    unexpected_missing_bar_count: int = 0
+    backfill_eligible: bool = True
+    reason_codes: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -58,6 +63,10 @@ class TimeframeQualityEvidence:
     fresh: bool | None
     integrity_status: str
     research_eligible: bool
+    expected_closure_gap_count: int = 0
+    expected_closure_bars: int = 0
+    unexpected_gap_count: int = 0
+    unexpected_missing_bars: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -83,14 +92,97 @@ class BackfillResult:
 class TimeframeDataQuality:
     """Evaluate registered timeframe bars and safely merge backfill output."""
 
-    def __init__(self, *, freshness_multiplier: int = 3) -> None:
+    def __init__(
+        self,
+        *,
+        freshness_multiplier: int = 3,
+        expected_closure_dates: Iterable[str | date] = (),
+    ) -> None:
         self.freshness_multiplier = max(1, int(freshness_multiplier))
+        closure_dates: set[date] = set()
+        for value in expected_closure_dates:
+            if isinstance(value, date):
+                closure_dates.add(value)
+                continue
+            try:
+                closure_dates.add(date.fromisoformat(str(value)))
+            except ValueError as exc:
+                raise ValueError(f"invalid expected closure date: {value!r}") from exc
+        self.expected_closure_dates = frozenset(closure_dates)
+
+    def _expected_market_closure(
+        self,
+        timestamp: datetime,
+        *,
+        weekend_closure_allowed: bool,
+    ) -> tuple[bool, str | None]:
+        if weekend_closure_allowed and timestamp.weekday() in {5, 6}:
+            return True, "WEEKEND_MARKET_CLOSURE"
+        if timestamp.date() in self.expected_closure_dates:
+            return True, "CONFIGURED_MARKET_CLOSURE"
+        return False, None
+
+    def _classify_gap(
+        self,
+        timeframe: str,
+        left: datetime,
+        right: datetime,
+        expected: int,
+        observed: int,
+    ) -> GapRange:
+        expected_closures = 0
+        unexpected = 0
+        reasons: set[str] = set()
+        # Weekend classification requires a real boundary from a weekday close
+        # into a later reopening day. Synthetic/intraday data already present
+        # inside a weekend remains subject to ordinary continuity checks.
+        weekend_closure_allowed = (
+            left.date() < right.date()
+            and left.weekday() not in {5, 6}
+            and right.weekday() != 5
+        )
+        candidate = left + timedelta(seconds=expected)
+        while candidate < right:
+            is_expected, reason = self._expected_market_closure(
+                candidate,
+                weekend_closure_allowed=weekend_closure_allowed,
+            )
+            if is_expected:
+                expected_closures += 1
+                if reason:
+                    reasons.add(reason)
+            else:
+                unexpected += 1
+            candidate += timedelta(seconds=expected)
+        if unexpected == 0:
+            classification = "EXPECTED_MARKET_CLOSURE"
+        elif expected_closures == 0:
+            classification = "UNEXPECTED_DATA_GAP"
+            reasons.add("UNSCHEDULED_INTERVAL_MISSING")
+        else:
+            classification = "MIXED_MARKET_CLOSURE_AND_DATA_GAP"
+            reasons.add("UNSCHEDULED_INTERVAL_MISSING")
+        return GapRange(
+            timeframe=timeframe,
+            after_timestamp_utc=left.isoformat().replace("+00:00", "Z"),
+            before_timestamp_utc=right.isoformat().replace("+00:00", "Z"),
+            missing_bar_count=expected_closures + unexpected,
+            expected_interval_seconds=expected,
+            observed_interval_seconds=observed,
+            classification=classification,
+            expected_closure_bar_count=expected_closures,
+            unexpected_missing_bar_count=unexpected,
+            backfill_eligible=unexpected > 0,
+            reason_codes=tuple(sorted(reasons)),
+        )
 
     @staticmethod
     def _valid_bar(record: Mapping[str, Any], timeframe: str) -> tuple[datetime, dict[str, Any]] | None:
         if str(record.get("timeframe", "")).strip().upper() != timeframe:
             return None
         timestamp = _parse_utc(record.get("timestamp_utc"))
+        if timestamp is None:
+            return None
         try:
             open_value = float(record.get("open"))
             high_value = float(record.get("high"))
@@ -146,23 +238,20 @@ class TimeframeDataQuality:
                 observed = int((right - left).total_seconds())
                 missing = max(0, (observed // expected) - 1) if observed > expected else 0
                 if missing:
-                    gaps.append(GapRange(
-                        timeframe=timeframe,
-                        after_timestamp_utc=left.isoformat().replace("+00:00", "Z"),
-                        before_timestamp_utc=right.isoformat().replace("+00:00", "Z"),
-                        missing_bar_count=missing,
-                        expected_interval_seconds=expected,
-                        observed_interval_seconds=observed,
-                    ))
+                    gaps.append(self._classify_gap(timeframe, left, right, expected, observed))
             first = unique[0][0] if unique else None
             last = unique[-1][0] if unique else None
             age = max(0, int((now - last).total_seconds())) if last else None
             freshness_limit = expected * self.freshness_multiplier
             fresh = age <= freshness_limit if age is not None else None
             missing_total = sum(item.missing_bar_count for item in gaps)
+            expected_closure_bars = sum(item.expected_closure_bar_count for item in gaps)
+            unexpected_missing_bars = sum(item.unexpected_missing_bar_count for item in gaps)
+            expected_closure_gap_count = sum(item.classification == "EXPECTED_MARKET_CLOSURE" for item in gaps)
+            unexpected_gap_count = sum(item.unexpected_missing_bar_count > 0 for item in gaps)
             if not unique:
                 status = "NO_DATA"
-            elif invalid or duplicates or gaps:
+            elif invalid or duplicates or unexpected_gap_count:
                 status = "REVIEW"
             else:
                 status = "PASS"
@@ -182,8 +271,54 @@ class TimeframeDataQuality:
                 fresh=fresh,
                 integrity_status=status,
                 research_eligible=bool(unique) and invalid == 0,
+                expected_closure_gap_count=expected_closure_gap_count,
+                expected_closure_bars=expected_closure_bars,
+                unexpected_gap_count=unexpected_gap_count,
+                unexpected_missing_bars=unexpected_missing_bars,
             )
         return result
+
+    def research_segments(
+        self,
+        bars: Sequence[Mapping[str, Any]],
+        evidence: TimeframeQualityEvidence,
+    ) -> tuple[tuple[dict[str, Any], ...], ...]:
+        """Partition valid bars only at unresolved unexpected-gap boundaries.
+
+        Expected market closures remain within one chronological research
+        segment.  An unresolved gap starts a new segment so rolling features
+        cannot silently bridge missing market evidence.
+        """
+        normalized: list[tuple[datetime, dict[str, Any]]] = []
+        seen: set[str] = set()
+        for record in bars:
+            item = self._valid_bar(record, evidence.timeframe)
+            if item is None:
+                continue
+            timestamp, value = item
+            if value["timestamp_utc"] in seen:
+                continue
+            seen.add(value["timestamp_utc"])
+            normalized.append((timestamp, value))
+        normalized.sort(key=lambda item: item[0])
+        boundaries = {
+            (gap.after_timestamp_utc, gap.before_timestamp_utc)
+            for gap in evidence.gaps
+            if gap.unexpected_missing_bar_count > 0
+        }
+        segments: list[list[dict[str, Any]]] = []
+        current: list[dict[str, Any]] = []
+        previous_timestamp = ""
+        for _, value in normalized:
+            timestamp = str(value["timestamp_utc"])
+            if current and (previous_timestamp, timestamp) in boundaries:
+                segments.append(current)
+                current = []
+            current.append(value)
+            previous_timestamp = timestamp
+        if current:
+            segments.append(current)
+        return tuple(tuple(segment) for segment in segments)
 
     def backfill(
         self,
@@ -208,6 +343,8 @@ class TimeframeDataQuality:
             if item is None:
                 continue
             for gap in item.gaps:
+                if not gap.backfill_eligible:
+                    continue
                 requested += 1
                 for record in provider(gap):
                     returned += 1

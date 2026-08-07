@@ -81,7 +81,8 @@ class ProductionActivationRuntime:
         symbol = str(first.get("symbol", self.profile.symbol))
         plan_id = f"PLAN-{self._identity(self.profile.profile_id, execution_trace_id, action, confidence)}"
         lots = tuple(float(x) for x in getattr(authority, "approved_lots", ()))
-        allowed = int(getattr(authority, "approved_units", len(lots)))
+        capacity = int(getattr(authority, "approved_units", len(lots)))
+        requested = len(prepared_requests)
         balance = float(_value(account, "balance", 0.0) or 0.0)
         equity = float(_value(account, "equity", balance) or balance)
         margin_free = float(_value(account, "margin_free", _value(account, "margin_free", equity)) or equity)
@@ -109,10 +110,17 @@ class ProductionActivationRuntime:
             cancellation_conditions=("signal_expired", "spread_blocked", "authority_changed"),
             chase_prohibited=True,
             maximum_signal_age_seconds=max(60, int(getattr(self.policy, "minimum_seconds_between_entries", 900))),
-            requested_units=allowed, maximum_units=int(getattr(self.policy, "maximum_units", allowed)),
-            unit_spacing_points=0.0,
+            requested_units=requested, maximum_units=int(getattr(self.policy, "maximum_units", capacity)),
+            unit_spacing_points=float(decision.get("minimum_add_spacing_points", 0.0) or 0.0),
             maximum_spread_points=float(simulation.get("trading_cost_intelligence", {}).get("max_spread_points", 1.0) or 1.0),
             maximum_slippage_points=float(first.get("deviation", 20) or 20),
+            entry_mode=str(decision.get("entry_mode", "SINGLE_ENTRY")).upper(),
+            trade_case_id=str(decision.get("trade_case_id", plan_id)),
+            initial_units=1,
+            reserved_units=max(0, capacity - requested) if str(decision.get("entry_mode", "SINGLE_ENTRY")).upper() not in {"SINGLE_ENTRY", "NO_ADDITIONAL_ENTRY"} else 0,
+            planned_entry_prices=entry_prices,
+            minimum_add_spacing_points=float(decision.get("minimum_add_spacing_points", 0.0) or 0.0),
+            add_requires_recertification=True,
         )
         capital = CapitalManagementPlan(
             profile_id=str(self.profile.profile_id), base_lot=0.01,
@@ -121,18 +129,18 @@ class ProductionActivationRuntime:
             current_floating_drawdown_percent=0.0,
             maximum_trade_risk_percent=100.0, maximum_account_drawdown_percent=100.0,
             daily_loss_limit_percent=100.0, weekly_loss_limit_percent=100.0, monthly_loss_limit_percent=100.0,
-            capital_capacity_units=allowed, risk_capacity_units=allowed,
-            margin_capacity_units=allowed, exposure_capacity_units=allowed,
-            correlation_capacity_units=allowed, profile_capacity_units=allowed,
+            capital_capacity_units=capacity, risk_capacity_units=capacity,
+            margin_capacity_units=capacity, exposure_capacity_units=capacity,
+            correlation_capacity_units=capacity, profile_capacity_units=capacity,
         )
         care = PositionCarePlan(
             holding_thesis="Hold while the certified AFIP trade thesis and protection remain valid.",
             thesis_validation_conditions=("hard_stop_not_reached", "position_identity_matches_plan"),
             thesis_failure_conditions=("hard_stop_reached", "identity_mismatch", "emergency_condition"),
-            break_even_trigger="one_initial_risk_favorable_move",
-            trailing_policy="protect_after_one_point_five_initial_risk",
+            break_even_trigger="research_ranked_per_profit_role_with_legacy_one_r_fallback",
+            trailing_policy="research_ranked_per_profit_role_with_legacy_one_point_five_r_fallback",
             partial_close_policy="disabled_unless_explicit_plan_trigger",
-            add_position_policy="only_original_certified_units",
+            add_position_policy="reserved_units_only_at_researched_better_price_after_full_recertification",
             maximum_holding_seconds=604800,
             overnight_policy="allowed_by_existing_profile_policy",
             weekend_policy="existing_profile_policy",
@@ -162,11 +170,18 @@ class ProductionActivationRuntime:
             market=market, entry=entry, capital=capital, care=care, exit=exit_plan, recovery=recovery,
         )
         certification = CompleteTradePlanCertifier().certify(plan)
+        order_payload = simulation.get("order", {}) if isinstance(simulation.get("order", {}), Mapping) else {}
+        portfolio_payload = order_payload.get("protection_portfolio", {}) if isinstance(order_payload.get("protection_portfolio", {}), Mapping) else {}
+        profit_management_plans = [
+            dict(value) for value in portfolio_payload.get("unit_plans", ()) if isinstance(value, Mapping)
+        ]
         payload = {
             "status": "CERTIFIED" if certification.certified else "BLOCKED",
             "execution_trace_id": execution_trace_id,
             "plan": plan.as_dict(), "certification": certification.as_dict(),
             "lot_authority": authority.as_dict(), "updated_at_utc": _utc(),
+            "profit_management_plans": profit_management_plans,
+            "profit_management_authority": "RESEARCH_PORTFOLIO_WITH_FAIL_CLOSED_LEGACY_FALLBACK",
         }
         _atomic_json(self.plan_root / f"{plan.plan_id}.json", payload)
         _atomic_json(self.status_path, payload)
@@ -183,6 +198,14 @@ class ProductionActivationRuntime:
             "broker_execution_proof": dict(broker_execution_proof or {}),
             "updated_at_utc": _utc(),
         })
+        plans = [dict(value) for value in payload.get("profit_management_plans", ()) if isinstance(value, Mapping)]
+        ticket_profit_plans: dict[str, dict[str, Any]] = {}
+        for ticket, request in zip(tickets, requests):
+            comment = str(request.get("comment", ""))
+            selected = next((value for value in plans if str(value.get("role", "")) in comment), None)
+            if selected is not None:
+                ticket_profit_plans[str(int(ticket))] = selected
+        payload["ticket_profit_plans"] = ticket_profit_plans
         _atomic_json(path, payload)
         _atomic_json(self.status_path, payload)
         _append_jsonl(self.ledger_path, {"event": "POSITION_OPENED", **payload})
@@ -223,6 +246,12 @@ class ProductionActivationRuntime:
             favorable = max(0.0, (current-opened if buy else opened-current) / point)
             adverse = max(0.0, (opened-current if buy else current-opened) / point)
             risk_points = abs(opened - float(plan.exit.initial_stop_price)) / point if point > 0 else 0.0
+            ticket_profit_plan = _value(plan_payload.get("ticket_profit_plans", {}), str(ticket), {})
+            if not isinstance(ticket_profit_plan, Mapping):
+                ticket_profit_plan = {}
+            break_even_trigger_r = float(ticket_profit_plan.get("break_even_trigger_r", 1.0) or 1.0)
+            trailing_start_r = float(ticket_profit_plan.get("trailing_start_r", 1.5) or 1.5)
+            maximum_giveback_r = float(ticket_profit_plan.get("maximum_giveback_r", 0.0) or 0.0)
             lifecycle = self.lifecycle.evaluate({
                 "floating_profit": float(_value(position, "profit", 0.0) or 0.0),
                 "peak_profit": max(0.0, float(_value(position, "profit", 0.0) or 0.0)),
@@ -249,8 +278,8 @@ class ProductionActivationRuntime:
                 liquidity_acceptable=bool(intelligence_context["liquidity_acceptable"]),
                 market_data_fresh=bool(intelligence_context["market_data_fresh"]),
                 connection_ready=True, account_state_reconciled=True,
-                break_even_triggered=risk_points > 0 and favorable >= risk_points,
-                trailing_triggered=risk_points > 0 and favorable >= risk_points * 1.5,
+                break_even_triggered=risk_points > 0 and favorable >= risk_points * break_even_trigger_r,
+                trailing_triggered=risk_points > 0 and favorable >= risk_points * trailing_start_r,
                 partial_close_triggered=False,
                 target_reached=(tp > 0 and ((buy and current >= tp) or ((not buy) and current <= tp))),
                 hard_invalidation_reached=(sl > 0 and ((buy and current <= sl) or ((not buy) and current >= sl))),
@@ -266,6 +295,13 @@ class ProductionActivationRuntime:
                 "position_care": care.as_dict(),
                 "intelligence_context": intelligence_context,
                 "mt5_action": action_result,
+                "profit_management_plan": dict(ticket_profit_plan),
+                "profit_management_thresholds": {
+                    "break_even_trigger_r": break_even_trigger_r,
+                    "trailing_start_r": trailing_start_r,
+                    "maximum_giveback_r": maximum_giveback_r,
+                    "automatic_full_close_on_giveback": False,
+                },
                 "updated_at_utc": _utc(),
             }
             records.append(record)
@@ -274,12 +310,15 @@ class ProductionActivationRuntime:
         result = {
             "status": "ACTIVE",
             "position_management_policy": {
+                # Compatibility evidence for the retired same-batch rule:
+                # "pyramiding": "NO_ADDITIONAL_UNITS_OUTSIDE_ORIGINAL_CERTIFIED_PLAN"
                 "holding": "INTELLIGENCE_AND_CERTIFIED_PLAN",
-                "break_even": "DEMO_ONLY_CERTIFIED_SLTP",
-                "trailing": "DEMO_ONLY_CERTIFIED_SLTP",
+                "break_even": "DEMO_ONLY_RESEARCH_RANKED_PER_ROLE_WITH_CERTIFIED_SLTP",
+                "trailing": "DEMO_ONLY_RESEARCH_RANKED_PER_ROLE_WITH_CERTIFIED_SLTP",
+                "single_001_profit_diversification": "TEMPORAL_TP_BREAK_EVEN_TRAILING_AND_RESEARCH_OBSERVATION_NO_PARTIAL_VOLUME",
                 "partial_close": "DISABLED_UNTIL_EXPLICIT_CERTIFIED_TRIGGER",
                 "scale_out": "DISABLED_UNTIL_EXPLICIT_CERTIFIED_TRIGGER",
-                "pyramiding": "NO_ADDITIONAL_UNITS_OUTSIDE_ORIGINAL_CERTIFIED_PLAN",
+                "pyramiding": "ONE_LEG_PER_CYCLE_RESERVED_UNITS_REQUIRE_RESEARCHED_BETTER_PRICE_AND_FULL_RECERTIFICATION",
                 "automatic_full_close": "NOT_ENABLED_BY_THIS_BRIDGE",
             },
             "positions_evaluated": len(records),

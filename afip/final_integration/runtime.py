@@ -77,12 +77,22 @@ class FinalIntegrationRuntime:
     def _desired_state(self) -> str:
         return str(read_json(self.desired_state_path).get("state", "STOPPED")).upper()
 
-    def _write_desired_state(self, state: str, reason: str) -> None:
+    def _desired_research_state(self) -> str:
+        desired = read_json(self.desired_state_path)
+        default = "RUNNING" if str(desired.get("state", "STOPPED")).upper() == "RUNNING" else "STOPPED"
+        return str(desired.get("research_state", default)).upper()
+
+    def _write_desired_state(self, state: str, reason: str, *, research_state: str | None = None) -> None:
+        previous = read_json(self.desired_state_path)
         atomic_json(
             self.desired_state_path,
             {
+                **previous,
                 "schema_version": "afip-runtime-desired-state.v1",
                 "state": state.upper(),
+                "research_state": (research_state or previous.get("research_state") or (
+                    "RUNNING" if state.upper() == "RUNNING" else "STOPPED"
+                )).upper(),
                 "reason": reason,
                 "updated_at_utc": utc_now(),
             },
@@ -227,10 +237,12 @@ class FinalIntegrationRuntime:
             }
 
         actions: list[str] = []
-        self.research_stop_flag.unlink(missing_ok=True)
+        research_requested = self._desired_research_state() == "RUNNING"
+        if research_requested:
+            self.research_stop_flag.unlink(missing_ok=True)
         self.watchdog_stop_flag.unlink(missing_ok=True)
 
-        if self._spawn(
+        if research_requested and self._spawn(
             "research",
             self.research_pid_path,
             [
@@ -296,7 +308,7 @@ class FinalIntegrationRuntime:
     def start(self) -> FinalIntegrationStatus:
         self.control.mkdir(parents=True, exist_ok=True)
         self.logs.mkdir(parents=True, exist_ok=True)
-        self._write_desired_state("RUNNING", "start_requested")
+        self._write_desired_state("RUNNING", "start_requested", research_state="RUNNING")
         result = self.ensure_services(include_watchdog=True)
         if result.get("status") == "BLOCKED":
             return self.status()
@@ -344,7 +356,7 @@ class FinalIntegrationRuntime:
             {
                 **previous,
                 **values,
-                "status": "STOPPED",
+                "status": str(values.get("status", "STOPPED")).upper(),
                 "updated_at_utc": now,
                 "heartbeat_utc": now,
                 "pid": None,
@@ -357,7 +369,7 @@ class FinalIntegrationRuntime:
     def stop(self) -> FinalIntegrationStatus:
         # Set desired STOPPED before terminating anything so the watchdog cannot
         # recreate a process during an intentional shutdown.
-        self._write_desired_state("STOPPED", "stop_requested")
+        self._write_desired_state("STOPPED", "stop_requested", research_state="STOPPED")
         self.watchdog_stop_flag.parent.mkdir(parents=True, exist_ok=True)
         self.watchdog_stop_flag.write_text(utc_now(), encoding="utf-8")
         self.research_stop_flag.write_text(utc_now(), encoding="utf-8")
@@ -399,6 +411,65 @@ class FinalIntegrationRuntime:
         )
         return self.status()
 
+    def pause_research(self) -> FinalIntegrationStatus:
+        """Pause only loading/research; trading and dashboard desired state is preserved."""
+        desired = read_json(self.desired_state_path)
+        atomic_json(
+            self.desired_state_path,
+            {
+                **desired,
+                "schema_version": "afip-runtime-desired-state.v1",
+                "state": str(desired.get("state", "STOPPED")).upper(),
+                "research_state": "PAUSED",
+                "reason": "research_pause_requested",
+                "updated_at_utc": utc_now(),
+            },
+        )
+        self.research_stop_flag.parent.mkdir(parents=True, exist_ok=True)
+        self.research_stop_flag.write_text(utc_now(), encoding="utf-8")
+        self._terminate_service("research", self.research_pid_path)
+        self._write_stopped_snapshot(
+            self.root / "runtime/research/research_engine_status.json",
+            status="PAUSED",
+            service_state="PAUSED",
+            reason="operator_paused_loading_and_research",
+            current_activity="Historical loading and research paused by operator",
+            live_execution_enabled=False,
+        )
+        return self.status()
+
+    def resume_research(self) -> FinalIntegrationStatus:
+        """Resume the canonical research service without changing trading state."""
+        desired = read_json(self.desired_state_path)
+        global_state = str(desired.get("state", "STOPPED")).upper()
+        atomic_json(
+            self.desired_state_path,
+            {
+                **desired,
+                "schema_version": "afip-runtime-desired-state.v1",
+                "state": global_state,
+                "research_state": "RUNNING",
+                "reason": "research_resume_requested",
+                "updated_at_utc": utc_now(),
+            },
+        )
+        if global_state == "RUNNING":
+            self.research_stop_flag.unlink(missing_ok=True)
+            self._spawn(
+                "research",
+                self.research_pid_path,
+                [
+                    sys.executable,
+                    "-m",
+                    "tools.afip_final_integration",
+                    "research-forever",
+                    "--root",
+                    str(self.root),
+                ],
+                "afip_research_runtime.log",
+            )
+        return self.status()
+
     def status(self) -> FinalIntegrationStatus:
         trading = self._trading("status")
         rpid = self._pid(self.research_pid_path)
@@ -410,10 +481,12 @@ class FinalIntegrationRuntime:
         observatory = read_json(
             self.root / "runtime/research/runtime_observatory_status.json"
         )
+        research_desired_state = self._desired_research_state()
         if not research_running:
             engine = {
                 **engine,
-                "status": "STOPPED",
+                "status": "PAUSED" if research_desired_state == "PAUSED" else "STOPPED",
+                "service_state": "PAUSED" if research_desired_state == "PAUSED" else "STOPPED",
                 "pid": None,
                 "process_id": None,
                 "live_execution_enabled": False,
@@ -430,7 +503,8 @@ class FinalIntegrationRuntime:
                 "order_send_called": False,
             }
         research = {
-            "process_state": "RUNNING" if research_running else "STOPPED",
+            "process_state": "RUNNING" if research_running else ("PAUSED" if research_desired_state == "PAUSED" else "STOPPED"),
+            "desired_state": research_desired_state,
             "pid": rpid if research_running else None,
             "engine": engine,
             "file_index": read_json(

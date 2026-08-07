@@ -10,6 +10,26 @@
   "sl_tp_authority": false,
   "profile_independent": true,
   "minimum_advisory_score_for_plan_review": 80.0,
+  "minimum_hierarchical_research_score": 80.0,
+  "hierarchical_research": {
+    "required_scopes": ["PATTERN_FAMILY", "EXACT_NAMED_SHAPE"],
+    "shape_dimensions": [
+      "candle_count",
+      "duration_seconds",
+      "average_body_ratio",
+      "upper_wick_ratio",
+      "lower_wick_ratio",
+      "pullback_depth_atr",
+      "total_range_atr",
+      "slope_strength"
+    ],
+    "advisory_weights": {
+      "family_research": 0.30,
+      "exact_shape_research": 0.40,
+      "shape_similarity": 0.30
+    },
+    "fail_closed_when_missing_or_low": true
+  },
   "fail_closed": true,
   "forbidden_outputs": [
     "BUY_ORDER",

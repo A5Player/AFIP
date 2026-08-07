@@ -1,0 +1,24 @@
+{
+  "policy_version": "AFIP_SINGLE_UNIT_PROFIT_RESEARCH_V1",
+  "scope": "EXACT_NAMED_PATTERN_SHAPE_REGIME_PLAN_AND_CROSS_MARKET_CONTEXT",
+  "lot": 0.01,
+  "recalibration_interval_new_patterns": 1000,
+  "history_policy": "CUMULATIVE_ALL_HISTORY_PLUS_NEW_COMPLETE_1000_ONLY",
+  "rerun_old_patterns": false,
+  "candidate_exit_policies": [
+    "FIXED_RESEARCH_TP",
+    "BREAK_EVEN_THEN_RESEARCH_TP",
+    "STRUCTURE_TRAILING",
+    "ATR_TRAILING",
+    "MAXIMUM_GIVEBACK_EXIT",
+    "TIME_AND_REGIME_INVALIDATION_EXIT"
+  ],
+  "ranking_metrics": [
+    "win_rate_confidence_95_low",
+    "expectancy_points",
+    "profit_capture_ratio",
+    "average_peak_giveback_points",
+    "transaction_cost_points"
+  ],
+  "automatic_production_promotion_allowed": false
+}

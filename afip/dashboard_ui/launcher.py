@@ -63,17 +63,9 @@ def launch_three_dashboards(
     from afip.order_evidence_dashboard import write_order_evidence_dashboard
     from afip.live_mt5_dashboard import write as write_live_mt5_dashboard
     from afip.research_observability_dashboard import write as write_research_observability_dashboard
-    from afip.dashboard_audit import write as write_dashboard_audit
-    from afip.unified_dashboard import write as write_unified_dashboard
-    from afip.dashboard_completeness import write_dashboard_completeness
     contract = build_dashboard_contract(project_root)
     write_execution_pipeline_dashboard(contract, output_directory)
     write_order_evidence_dashboard(contract, output_directory)
     write_live_mt5_dashboard(contract, output_directory)
     write_research_observability_dashboard(contract, output_directory)
-    write_dashboard_audit(contract, output_directory)
-    write_unified_dashboard(contract, output_directory)
-    write_dashboard_completeness(contract, output_directory)
-    from .truth_v2 import write_truth_dashboard
-    write_truth_dashboard(output_directory, project_root)
     return result.profiles, result.intelligence, result.research

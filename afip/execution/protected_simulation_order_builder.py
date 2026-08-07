@@ -76,6 +76,8 @@ class ProtectedSimulationOrderBuilder:
             risk_usd=approved_risk_usd,
             stop_loss_points=float(first["stop_loss_points"]),
         )
+        if sizing.get("eligible") is False or float(sizing.get("lot", 0.0) or 0.0) <= 0.0:
+            return {"status": "NO_ORDER", "reason": sizing.get("reason", "risk_sizing_not_eligible"), "sizing": sizing}
         return {
             "status": "SIMULATION_ORDER_READY",
             "symbol": snapshot.get("symbol", "GOLD#"),

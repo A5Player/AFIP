@@ -17,11 +17,12 @@ def test_oqs_thresholds_are_fail_closed():
     assert classify_oqs(100).extended_sl_review_eligible is True
 
 
-def test_adaptive_sl_extended_requires_elite_and_every_gate():
+def test_adaptive_sl_uses_structural_distance_and_every_gate():
     approved=assess_adaptive_sl(1280,oqs=99.4,final_confidence=99.7,evidence_quality="HIGH",all_gates_passed=True,reward_risk_approved=True)
     assert approved.allowed is True
-    assert assess_adaptive_sl(1280,oqs=98.9,final_confidence=100,evidence_quality="HIGH",all_gates_passed=True,reward_risk_approved=True).allowed is False
-    assert assess_adaptive_sl(1501,oqs=100,final_confidence=100,evidence_quality="HIGH",all_gates_passed=True,reward_risk_approved=True).allowed is False
+    assert assess_adaptive_sl(1280,oqs=98.9,final_confidence=100,evidence_quality="HIGH",all_gates_passed=True,reward_risk_approved=True).allowed is True
+    assert assess_adaptive_sl(2500,oqs=100,final_confidence=100,evidence_quality="HIGH",all_gates_passed=True,reward_risk_approved=True).allowed is True
+    assert assess_adaptive_sl(2500,oqs=100,final_confidence=100,evidence_quality="HIGH",all_gates_passed=False,reward_risk_approved=True).allowed is False
 
 
 def test_repository_is_append_only_and_deduplicated(tmp_path):
@@ -49,7 +50,7 @@ def test_contract_files_match_locked_policy():
     sl=json.loads((project/"config/adaptive_sl_contract.json").read_text(encoding="utf-8"))
     assert oqs["thresholds"][1]["minimum"] == 97
     assert oqs["thresholds"][3]["minimum"] == 99
-    assert sl["minimum_sl_points"] == 500
-    assert sl["normal_max_sl_points"] == 1000
-    assert sl["extended_max_sl_points"] == 1500
-    assert sl["extended_requirements"]["oqs_minimum"] == 99
+    assert sl["minimum_sl_points"] is None
+    assert sl["normal_max_sl_points"] is None
+    assert sl["extended_max_sl_points"] is None
+    assert sl["fixed_stop_distance_bands_allowed"] is False

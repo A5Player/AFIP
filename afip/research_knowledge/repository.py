@@ -12,9 +12,6 @@ OQS_MINIMUM_ENTRY = 97.0
 OQS_HIGH_QUALITY = 98.0
 OQS_ELITE = 99.0
 OQS_MAXIMUM = 100.0
-NORMAL_SL_MIN_POINTS = 500
-NORMAL_SL_MAX_POINTS = 1000
-EXTENDED_SL_MAX_POINTS = 1500
 
 
 class RepositoryValidationError(ValueError):
@@ -81,26 +78,12 @@ def assess_adaptive_sl(
 ) -> AdaptiveSLAssessment:
     points = int(requested_sl_points)
     opportunity = classify_oqs(oqs)
-    quality = str(evidence_quality).strip().upper()
-    if points < NORMAL_SL_MIN_POINTS:
-        return AdaptiveSLAssessment(points, False, "BELOW_MINIMUM", "sl_below_500_points")
-    if points <= NORMAL_SL_MAX_POINTS:
-        allowed = opportunity.entry_review_eligible and all_gates_passed and reward_risk_approved
-        return AdaptiveSLAssessment(points, allowed, "NORMAL", "normal_sl_approved" if allowed else "normal_sl_gate_blocked")
-    if points > EXTENDED_SL_MAX_POINTS:
-        return AdaptiveSLAssessment(points, False, "ABOVE_MAXIMUM", "required_sl_exceeds_1500_points")
-    allowed = (
-        opportunity.extended_sl_review_eligible
-        and 99.0 <= float(final_confidence) <= 100.0
-        and quality == "HIGH"
-        and all_gates_passed
-        and reward_risk_approved
-    )
+    allowed = points > 0 and opportunity.entry_review_eligible and all_gates_passed and reward_risk_approved
     return AdaptiveSLAssessment(
         points,
         allowed,
-        "EXTENDED",
-        "extended_sl_approved" if allowed else "extended_sl_requirements_not_met",
+        "STRUCTURE_ATR_RESEARCH_BUFFER",
+        "structural_sl_review_approved" if allowed else "structural_sl_gate_blocked",
     )
 
 

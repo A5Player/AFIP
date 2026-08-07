@@ -343,6 +343,15 @@ class ControlCenterRuntime:
             for row in integration_trading.get("profiles", [])
             if isinstance(row, Mapping)
         }
+        from afip.four_profile_operations import FourProfileOperationalRuntime
+        profile_config_path = self.root / "config" / "four_profile_demo.json"
+        try:
+            configured_profiles = FourProfileOperationalRuntime(profile_config_path).load()
+            configured_modes = {item.profile_id: item.trading_mode for item in configured_profiles}
+            mode_configuration_status = "READY"
+        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            configured_modes = {}
+            mode_configuration_status = f"BLOCKED:{type(exc).__name__}"
         profiles: list[dict[str, Any]] = []
         for profile_id in ("p1", "p2", "p3", "p4"):
             pid = profile_id.upper()
@@ -360,6 +369,9 @@ class ControlCenterRuntime:
             elif login:
                 data["login"] = login
             data["profile_id"] = pid
+            data["trading_mode"] = _first(data.get("profile_trading_mode"), configured_modes.get(pid), default="NOT_CONFIGURED")
+            data["trading_mode_allowed"] = _first(data.get("profile_trading_mode_allowed"), default="NOT_EVALUATED")
+            data["trading_mode_reason"] = _first(data.get("profile_trading_mode_reason"), default="NOT_EVALUATED")
             data["execution_mode"] = _first(data.get("execution_mode"), data.get("execution"), integration_trading.get("execution"), default="NOT_RECORDED")
             data["connection_status"] = _first(data.get("connection_status"), data.get("mt5_connection"), default="NOT_RECORDED")
             data["mt5_connection"] = _first(data.get("mt5_connection"), data.get("connection_status"), default="NOT_RECORDED")
@@ -387,6 +399,11 @@ class ControlCenterRuntime:
             data["lot_authority_policy"] = _first(data.get("capital_authority_policy"), data.get("policy_version"), default="NOT_EVALUATED")
             data["approved_lot_per_order"] = _first(data.get("approved_lot_per_order"), default="NOT_EVALUATED")
             data["total_approved_lot"] = _first(data.get("total_approved_lot"), data.get("total_allocated_lot"), default="NOT_EVALUATED")
+            data["entry_mode"] = _first(data.get("entry_mode"), default="NOT_EVALUATED")
+            data["trade_case_id"] = _first(data.get("trade_case_id"), default="NOT_EVALUATED")
+            data["initial_units"] = _first(data.get("initial_units"), default="NOT_EVALUATED")
+            data["reserved_units"] = _first(data.get("reserved_units"), default="NOT_EVALUATED")
+            data["capacity_is_ceiling_not_target"] = bool(data.get("capacity_is_ceiling_not_target", True))
             intelligence_snapshot = _mapping(data.get("intelligence_snapshot"))
             activation_matrix = intelligence_snapshot.get("activation_matrix", ())
             if not isinstance(activation_matrix, (list, tuple)):
@@ -425,6 +442,9 @@ class ControlCenterRuntime:
             "holding_observations": collection.get("holding_observations", "NOT_RECORDED"),
             "exits_recorded": collection.get("exits_recorded", "NOT_RECORDED"),
             "research_bridge_status": collection.get("status", "NOT_RECORDED"),
+            "single_unit_profit_pattern_observations": automatic.get("single_unit_profit_pattern_observations", 0),
+            "initial_capital_pattern_observations": automatic.get("initial_capital_pattern_observations", 0),
+            "research_standards_updated": automatic.get("research_standards_updated", 0),
         }
         observatory = self._runtime_observatory(authority, runtime_truth, research_projection, dashboard, profiles)
         return {
@@ -435,6 +455,12 @@ class ControlCenterRuntime:
             "runtime_authority": authority,
             "runtime_truth": runtime_truth,
             "research": research_projection,
+            "profile_trading_modes": {
+                "status": mode_configuration_status,
+                "profiles": configured_modes,
+                "account_activation_policy": "OPERATOR_STARTS_ONLY_THE_MT5_TERMINALS_TO_USE",
+                "execution_authority_changed": False,
+            },
             "explainability": {
                 "policy": "RUNTIME_ARTIFACTS_ONLY_NO_INVENTED_EXPLANATION",
                 "profiles": {str(row.get("profile_id", "UNKNOWN")): row.get("decision_explainability", {}) for row in profiles},

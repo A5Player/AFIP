@@ -57,6 +57,11 @@ class StrategyEvidence:
     historical_win_rate: float = 0.0
     pattern_family: str = ""
     market_regime: str = ""
+    hierarchical_research_required: bool = False
+    hierarchical_research_ready: bool = True
+    family_research_score: float = 100.0
+    exact_shape_research_score: float = 100.0
+    shape_similarity_score: float = 100.0
 
     @classmethod
     def from_match(cls, match: Any) -> "StrategyEvidence":
@@ -75,6 +80,14 @@ class StrategyEvidence:
             historical_win_rate=float(metadata.get("historical_win_rate", get("historical_win_rate", 0.0))),
             pattern_family=_text(metadata.get("pattern_family", get("pattern_family", ""))),
             market_regime=_text(metadata.get("market_regime", get("market_regime", ""))),
+            hierarchical_research_required=bool(
+                metadata.get("hierarchical_research_required", get("hierarchical_research_required", False))
+                or metadata.get("research_scope", get("research_scope", "")) == "HIERARCHICAL_FAMILY_AND_EXACT_SHAPE"
+            ),
+            hierarchical_research_ready=bool(metadata.get("hierarchical_research_ready", get("hierarchical_research_ready", True))),
+            family_research_score=float(metadata.get("family_research_score", get("family_research_score", 100.0))),
+            exact_shape_research_score=float(metadata.get("exact_shape_research_score", get("exact_shape_research_score", 100.0))),
+            shape_similarity_score=float(metadata.get("shape_similarity_score", get("shape_similarity_score", 100.0))),
         )
 
     def validate(self) -> None:
@@ -84,6 +97,9 @@ class StrategyEvidence:
             raise StrategyIntelligenceError("sample_size_negative")
         if not 0 <= self.historical_win_rate <= 100:
             raise StrategyIntelligenceError("historical_win_rate_out_of_range")
+        for value in (self.family_research_score, self.exact_shape_research_score, self.shape_similarity_score):
+            if not 0 <= value <= 100:
+                raise StrategyIntelligenceError("hierarchical_research_score_out_of_range")
 
 
 @dataclass(frozen=True)
@@ -99,6 +115,10 @@ class StrategyCandidate:
     weighted_expectancy: float
     evidence_quality_score: float
     reasons: tuple[str, ...]
+    weighted_family_research_score: float = 0.0
+    weighted_exact_shape_research_score: float = 0.0
+    weighted_shape_similarity_score: float = 0.0
+    hierarchical_research_applied: bool = False
     authority: str = "ADVISORY_ONLY"
     execution_authority: bool = False
     order_send_allowed: bool = False
@@ -113,11 +133,14 @@ class StrategyCandidate:
 class StrategyIntelligenceEngine:
     """Ranks evidence-backed strategy templates. It never creates orders or final trade decisions."""
 
-    def __init__(self, minimum_evidence_count: int = 3, minimum_total_sample_size: int = 100) -> None:
+    def __init__(self, minimum_evidence_count: int = 3, minimum_total_sample_size: int = 100, minimum_hierarchical_research_score: float = 80.0) -> None:
         if minimum_evidence_count < 1 or minimum_total_sample_size < 1:
             raise StrategyIntelligenceError("minimum_evidence_requirements_must_be_positive")
         self.minimum_evidence_count = minimum_evidence_count
         self.minimum_total_sample_size = minimum_total_sample_size
+        if not 0 <= minimum_hierarchical_research_score <= 100:
+            raise StrategyIntelligenceError("minimum_hierarchical_research_score_out_of_range")
+        self.minimum_hierarchical_research_score = float(minimum_hierarchical_research_score)
 
     def evaluate(self, template: StrategyTemplate, matches: Iterable[Any]) -> StrategyCandidate:
         template.validate()
@@ -136,6 +159,15 @@ class StrategyIntelligenceEngine:
             and item.sample_size >= template.minimum_sample_size
             and (not item.pattern_family or item.pattern_family in supported_patterns)
             and (not item.market_regime or item.market_regime in supported_regimes)
+            and (
+                not item.hierarchical_research_required
+                or (
+                    item.hierarchical_research_ready
+                    and item.family_research_score >= self.minimum_hierarchical_research_score
+                    and item.exact_shape_research_score >= self.minimum_hierarchical_research_score
+                    and item.shape_similarity_score >= template.minimum_similarity
+                )
+            )
         ]
         if len(eligible) < self.minimum_evidence_count:
             return self._blocked(template, "insufficient_evidence_count", len(eligible), sum(i.sample_size for i in eligible))
@@ -150,12 +182,26 @@ class StrategyIntelligenceEngine:
         weighted_expectancy = sum(item.historical_expectancy * max(1, item.sample_size) for item in eligible) / weight_total
         quality_score = sum(EVIDENCE_QUALITY_SCORE.get(item.evidence_quality, 0.0) * max(1, item.sample_size) for item in eligible) / weight_total
         expectancy_score = _score(50.0 + weighted_expectancy * 10.0)
-        advisory_score = _score(
-            weighted_similarity * 0.40
-            + weighted_win_rate * 0.25
-            + quality_score * 0.20
-            + expectancy_score * 0.15
-        )
+        hierarchical = any(item.hierarchical_research_required for item in eligible)
+        weighted_family = sum(item.family_research_score * max(1, item.sample_size) for item in eligible) / weight_total
+        weighted_exact = sum(item.exact_shape_research_score * max(1, item.sample_size) for item in eligible) / weight_total
+        weighted_shape = sum(item.shape_similarity_score * max(1, item.sample_size) for item in eligible) / weight_total
+        if hierarchical:
+            hierarchical_score = weighted_family * 0.30 + weighted_exact * 0.40 + weighted_shape * 0.30
+            advisory_score = _score(
+                weighted_similarity * 0.20
+                + weighted_win_rate * 0.20
+                + quality_score * 0.15
+                + expectancy_score * 0.15
+                + hierarchical_score * 0.30
+            )
+        else:
+            advisory_score = _score(
+                weighted_similarity * 0.40
+                + weighted_win_rate * 0.25
+                + quality_score * 0.20
+                + expectancy_score * 0.15
+            )
         status = "ELIGIBLE_FOR_PLAN_REVIEW" if advisory_score >= 80.0 else "WAIT"
         reasons = ("evidence_requirements_pass", "advisory_only") if status != "WAIT" else ("advisory_score_below_80", "advisory_only")
         return StrategyCandidate(
@@ -170,6 +216,10 @@ class StrategyIntelligenceEngine:
             weighted_expectancy=round(weighted_expectancy, 6),
             evidence_quality_score=_score(quality_score),
             reasons=reasons,
+            weighted_family_research_score=_score(weighted_family) if hierarchical else 0.0,
+            weighted_exact_shape_research_score=_score(weighted_exact) if hierarchical else 0.0,
+            weighted_shape_similarity_score=_score(weighted_shape) if hierarchical else 0.0,
+            hierarchical_research_applied=hierarchical,
         )
 
     def rank(self, templates: Sequence[StrategyTemplate], matches: Iterable[Any]) -> tuple[StrategyCandidate, ...]:

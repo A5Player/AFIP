@@ -95,7 +95,7 @@ def _arm(monkeypatch) -> None:
     monkeypatch.setenv("AFIP_P1_DEMO_ARMED", "YES")
 
 
-def test_all_orders_are_checked_before_first_order_is_sent(tmp_path, monkeypatch):
+def test_capacity_three_still_checks_and_sends_only_initial_leg(tmp_path, monkeypatch):
     _arm(monkeypatch)
     mt5 = BatchCheckMT5()
     report = DemoExecutionGateway(
@@ -103,20 +103,19 @@ def test_all_orders_are_checked_before_first_order_is_sent(tmp_path, monkeypatch
     ).run_cycle()
 
     assert report.status == "ORDER_SENT"
-    assert len(mt5.checks) == 3
-    assert len(mt5.sent) == 3
+    assert len(mt5.checks) == 1
+    assert len(mt5.sent) == 1
 
 
-def test_later_order_check_failure_sends_no_partial_batch(tmp_path, monkeypatch):
+def test_unused_reserved_legs_are_not_prechecked_or_sent(tmp_path, monkeypatch):
     _arm(monkeypatch)
     mt5 = BatchCheckMT5(failing_check_number=2)
     report = DemoExecutionGateway(
         _profile(tmp_path), _policy(), mt5=mt5, simulate=_simulation,
     ).run_cycle()
 
-    assert report.status == "BLOCKED"
-    assert report.reason == "order_check_failed:Invalid request"
+    assert report.status == "ORDER_SENT"
     assert report.order_check_called is True
-    assert report.order_send_called is False
-    assert len(mt5.checks) == 2
-    assert mt5.sent == []
+    assert report.order_send_called is True
+    assert len(mt5.checks) == 1
+    assert len(mt5.sent) == 1

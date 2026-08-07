@@ -23,7 +23,7 @@ def _install_signal_handlers() -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("start","stop","status","dashboard","dashboard-forever","research-once","research-forever","architecture"))
+    parser.add_argument("command", choices=("start","stop","status","dashboard","dashboard-forever","research-once","research-forever","research-pause","research-resume","architecture"))
     parser.add_argument("--root", default=".")
     parser.add_argument("--interval", type=int, default=300)
     args = parser.parse_args()
@@ -36,6 +36,8 @@ def main() -> int:
     elif args.command == "dashboard": value = {"dashboard": str(UnifiedDashboardAuthority(root).build())}
     elif args.command == "architecture": value = ArchitectureRegistry(root).inspect().as_dict()
     elif args.command == "research-once": value = UnifiedResearchEngine(root).run_once()
+    elif args.command == "research-pause": value = runtime.pause_research().as_dict()
+    elif args.command == "research-resume": value = runtime.resume_research().as_dict()
     elif args.command == "dashboard-forever":
         from afip.dashboard_ui.dashboard_authority import DashboardAuthority
         authority = DashboardAuthority(); stop = root / "runtime/control/final_integration/stop_dashboard_runtime.flag"

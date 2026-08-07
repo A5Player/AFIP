@@ -1,0 +1,11 @@
+{
+  "policy_version": "AFIP_INITIAL_CAPITAL_RESEARCH_V1",
+  "scope": "EXACT_NAMED_PATTERN_SHAPE_REGIME_PLAN_AND_CROSS_MARKET_CONTEXT",
+  "starting_position": {"lot": 0.01, "orders": 1},
+  "recalibration_interval_new_patterns": 1000,
+  "history_policy": "CUMULATIVE_ALL_HISTORY_PLUS_NEW_COMPLETE_1000_ONLY",
+  "rerun_old_patterns": false,
+  "candidate_capital_source": "REPLAYED_MARGIN_RISK_DRAWDOWN_AND_TRANSACTION_COST",
+  "outputs": ["technical_minimum_usd", "operational_capital_usd", "robust_capital_usd"],
+  "automatic_production_promotion_allowed": false
+}

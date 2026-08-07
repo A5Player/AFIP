@@ -18,11 +18,17 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
-from afip.historical_replay_research import AppendOnlyResearchDataset, HistoricalReplayRunner, ReplayResumeRegistry
+from afip.historical_replay_research import (
+    AppendOnlyResearchDataset,
+    HistoricalReplayRunner,
+    HistoricalSnapshotBuilder,
+    ReplayResumeRegistry,
+)
 from afip.financial_data_lake import FinancialDataLake
 from afip.timeframe_registry import get_mt5_timeframe_code, get_supported_timeframes
 from afip.historical_data_manager.timeframe_quality import GapRange, TimeframeDataQuality
 from afip.runtime_observatory import RuntimeProgressAuthority
+from afip.research_standardization import ResearchStandardizationCoordinator
 
 _TIMEFRAMES = get_supported_timeframes(capability="chronological_replay")
 _SCHEMA_VERSION = "AFIP-RESEARCH-SCHEMA-V2"
@@ -110,10 +116,21 @@ class AutomaticResearchSummary:
     timeframe_data_quality: dict[str, dict[str, Any]] | None = None
     gap_ranges_detected: int = 0
     missing_bars_detected: int = 0
+    expected_closure_ranges_detected: int = 0
+    expected_closure_bars_detected: int = 0
+    unexpected_gap_ranges_detected: int = 0
+    unexpected_missing_bars_detected: int = 0
     freshness_review_timeframes: tuple[str, ...] = ()
     backfill_ranges_requested: int = 0
     backfill_bars_returned: int = 0
     backfill_bars_accepted: int = 0
+    standardization_status: str = "WAITING"
+    standardization_reason: str = "standardization_not_evaluated"
+    atr_pattern_observations: int = 0
+    staggered_pattern_observations: int = 0
+    single_unit_profit_pattern_observations: int = 0
+    initial_capital_pattern_observations: int = 0
+    research_standards_updated: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -552,6 +569,7 @@ class AutomaticResearchRuntime:
         initial_gaps = tuple(
             gap for timeframe in _TIMEFRAMES
             for gap in quality_evidence_objects[timeframe].gaps
+            if gap.backfill_eligible
         )
         backfill_returned = backfill_accepted = 0
         if collect_mt5_when_needed and initial_gaps:
@@ -578,11 +596,25 @@ class AutomaticResearchRuntime:
         quality_evidence = {name: item.as_dict() for name, item in quality_evidence_objects.items()}
         gap_ranges_detected = sum(item.gap_count for item in quality_evidence_objects.values())
         missing_bars_detected = sum(item.missing_bars for item in quality_evidence_objects.values())
+        expected_closure_ranges_detected = sum(
+            item.expected_closure_gap_count for item in quality_evidence_objects.values()
+        )
+        expected_closure_bars_detected = sum(
+            item.expected_closure_bars for item in quality_evidence_objects.values()
+        )
+        unexpected_gap_ranges_detected = sum(
+            item.unexpected_gap_count for item in quality_evidence_objects.values()
+        )
+        unexpected_missing_bars_detected = sum(
+            item.unexpected_missing_bars for item in quality_evidence_objects.values()
+        )
         freshness_review = tuple(
             name for name, item in quality_evidence_objects.items() if item.fresh is False
         )
         self._report(
-            f"      Data quality: gaps {gap_ranges_detected} | missing bars {missing_bars_detected} "
+            f"      Data quality: raw gaps {gap_ranges_detected} | expected closures "
+            f"{expected_closure_ranges_detected} | unexpected gaps {unexpected_gap_ranges_detected} "
+            f"| unexpected missing bars {unexpected_missing_bars_detected} "
             f"| freshness review {len(freshness_review)}"
         )
 
@@ -604,6 +636,29 @@ class AutomaticResearchRuntime:
                 candles = bars_by_timeframe.get(timeframe, [])
                 if not candles:
                     continue
+                quality_item = quality_evidence_objects[timeframe]
+                quality_segments = quality_engine.research_segments(candles, quality_item)
+                segment_starts = {
+                    str(segment[0]["timestamp_utc"])
+                    for segment in quality_segments
+                    if segment
+                }
+
+                def closure_safe_snapshot(visible: tuple[Any, ...], clock: Any) -> dict[str, Any]:
+                    start_index = 0
+                    for index in range(len(visible) - 1, -1, -1):
+                        if str(visible[index].timestamp_utc) in segment_starts:
+                            start_index = index
+                            break
+                    segment_visible = visible[start_index:]
+                    snapshot = HistoricalSnapshotBuilder.build_default(segment_visible, clock)
+                    snapshot.update({
+                        "replay_bar_count": len(segment_visible),
+                        "quality_segment_start_utc": str(segment_visible[0].timestamp_utc),
+                        "quality_segment_bar_count": len(segment_visible),
+                        "unexpected_gap_boundary_respected": True,
+                    })
+                    return snapshot
                 base_replay_id = f"AUTO-{_SCHEMA_VERSION}-{timeframe}"
                 first_timestamp = str(candles[0].get("timestamp_utc", ""))
                 last_timestamp = str(candles[-1].get("timestamp_utc", ""))
@@ -646,7 +701,11 @@ class AutomaticResearchRuntime:
                     replay_candidates_generated=candidates,
                     replay_timeframe_evidence=replay_evidence,
                 )
-                runner = HistoricalReplayRunner(dataset=dataset, candidate_provider=self._candidate_provider)
+                runner = HistoricalReplayRunner(
+                    dataset=dataset,
+                    snapshot_provider=closure_safe_snapshot,
+                    candidate_provider=self._candidate_provider,
+                )
                 adaptive_progress_interval = (
                     progress_interval_bars
                     if progress_interval_bars is not None
@@ -705,6 +764,8 @@ class AutomaticResearchRuntime:
                     "coverage_complete": summary.completed,
                     "selection_reason": selection_reason,
                     "candidates_generated_this_run": summary.candidates_generated,
+                    "quality_segment_count": len(quality_segments),
+                    "unexpected_gap_boundaries": max(0, len(quality_segments) - 1),
                 }
                 self._write_stage(
                     "REPLAY_RESEARCH",
@@ -725,8 +786,20 @@ class AutomaticResearchRuntime:
             status = "READY" if processed else "REVIEW"
             reason = "automatic_research_replay_updated" if processed else "research_dataset_already_current"
 
+        self._write_stage("RECALIBRATE_RESEARCH_STANDARDS", "evaluating_cumulative_1000_pattern_milestones")
+        self._report("[4/6] Evaluating cumulative research-standard milestones...")
+        try:
+            standardization = ResearchStandardizationCoordinator(str(self.output_root)).run()
+        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            standardization = {
+                "status": "REVIEW", "reason": f"standardization_evidence_invalid:{type(exc).__name__}",
+                "atr_observation_count": 0, "staggered_observation_count": 0,
+                "single_unit_profit_observation_count": 0, "initial_capital_observation_count": 0,
+                "standards_updated": 0,
+            }
+
         self._write_stage("WRITE_RESEARCH_STATUS", "writing_research_summary_for_dashboard")
-        self._report("[4/5] Writing research status and dataset evidence...")
+        self._report("[5/6] Writing research status and dataset evidence...")
         result = AutomaticResearchSummary(
             status=status, reason=reason, started_at_utc=started, completed_at_utc=_utc_now(),
             schema_version=_SCHEMA_VERSION, source_files_scanned=files, source_records_scanned=scanned,
@@ -744,10 +817,21 @@ class AutomaticResearchRuntime:
             timeframe_data_quality=quality_evidence,
             gap_ranges_detected=gap_ranges_detected,
             missing_bars_detected=missing_bars_detected,
+            expected_closure_ranges_detected=expected_closure_ranges_detected,
+            expected_closure_bars_detected=expected_closure_bars_detected,
+            unexpected_gap_ranges_detected=unexpected_gap_ranges_detected,
+            unexpected_missing_bars_detected=unexpected_missing_bars_detected,
             freshness_review_timeframes=freshness_review,
             backfill_ranges_requested=min(25, len(initial_gaps)),
             backfill_bars_returned=backfill_returned,
             backfill_bars_accepted=backfill_accepted,
+            standardization_status=str(standardization.get("status", "REVIEW")),
+            standardization_reason=str(standardization.get("reason", "standardization_status_missing")),
+            atr_pattern_observations=int(standardization.get("atr_observation_count", 0)),
+            staggered_pattern_observations=int(standardization.get("staggered_observation_count", 0)),
+            single_unit_profit_pattern_observations=int(standardization.get("single_unit_profit_observation_count", 0)),
+            initial_capital_pattern_observations=int(standardization.get("initial_capital_observation_count", 0)),
+            research_standards_updated=int(standardization.get("standards_updated", 0)),
         )
         self._write_status(result)
         performance_elapsed = max(0.0, perf_counter() - performance_started)
@@ -779,5 +863,5 @@ class AutomaticResearchRuntime:
             replay_candidates=result.replay_candidates_generated, completed_research=result.replay_candidates_generated,
             live_execution_armed=False, live_execution_enabled=False,
         )
-        self._report(f"[5/5] Complete: {result.status} | {result.reason} | usable bars {result.usable_bars} | replay {result.replay_bars_processed}")
+        self._report(f"[6/6] Complete: {result.status} | {result.reason} | usable bars {result.usable_bars} | replay {result.replay_bars_processed}")
         return result

@@ -5,6 +5,8 @@
     {
       "profile_id": "P1",
       "profile_name": "Conservative",
+      "trading_mode": "ALL_MODE",
+      "trading_mode_policy": "SCOPE_FILTER_ONLY_RESEARCH_AND_RANKING_REMAIN_REQUIRED",
       "enabled": true,
       "launch_mt5": false,
       "mt5_folder": "C:\\XM Global MT5 P1",
@@ -70,6 +72,8 @@
     {
       "profile_id": "P2",
       "profile_name": "Balanced",
+      "trading_mode": "ALL_MODE",
+      "trading_mode_policy": "SCOPE_FILTER_ONLY_RESEARCH_AND_RANKING_REMAIN_REQUIRED",
       "enabled": true,
       "launch_mt5": false,
       "mt5_folder": "C:\\XM Global MT5 P2",
@@ -135,6 +139,8 @@
     {
       "profile_id": "P3",
       "profile_name": "Aggressive",
+      "trading_mode": "UP_TREND_AND_SIDEWAY_MODE",
+      "trading_mode_policy": "SCOPE_FILTER_ONLY_RESEARCH_AND_RANKING_REMAIN_REQUIRED",
       "enabled": true,
       "launch_mt5": false,
       "mt5_folder": "C:\\XM Global MT5 P3",
@@ -200,6 +206,8 @@
     {
       "profile_id": "P4",
       "profile_name": "Experimental",
+      "trading_mode": "UP_TREND_MODE",
+      "trading_mode_policy": "SCOPE_FILTER_ONLY_RESEARCH_AND_RANKING_REMAIN_REQUIRED",
       "enabled": true,
       "launch_mt5": false,
       "mt5_folder": "C:\\XM Global MT5 P4",

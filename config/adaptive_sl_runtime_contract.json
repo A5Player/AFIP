@@ -1,22 +1,11 @@
 {
-  "contract_id": "AFIP_MILESTONE_W_PACK_W6_ADAPTIVE_SL_RUNTIME",
-  "version": "1.0.0",
+  "contract_id": "AFIP_PACK_A_STRUCTURAL_ATR_RESEARCH_SL_RUNTIME",
+  "version": "2.0.0",
   "authority": "ADVISORY_ONLY",
-  "normal_sl_points": {
-    "minimum": 500,
-    "maximum": 1000
-  },
-  "extended_sl_points": {
-    "minimum": 1000,
-    "maximum": 1500
-  },
-  "hard_ceiling_points": 1500,
-  "extended_requirements": {
-    "minimum_oqs": 99,
-    "oqs_status": "ELITE",
-    "adaptive_sl_review_status": "ELIGIBLE_FOR_ADAPTIVE_SL_REVIEW",
-    "minimum_final_confidence": 99,
-    "evidence_quality": "HIGH",
+  "fixed_stop_distance_bands_allowed": false,
+  "hard_ceiling_points": null,
+  "requirements": {
+    "oqs_status_not": "WAIT_OR_SKIP",
     "capital_pass": true,
     "risk_pass": true,
     "execution_pass": true,
@@ -24,10 +13,13 @@
     "data_integrity_pass": true
   },
   "distance_sources": [
-    "ATR_PLUS_BUFFER",
-    "STRUCTURE_PLUS_BUFFER",
-    "REQUESTED_DISTANCE"
+    "ATR_PLUS_RESEARCH_CERTIFIED_BUFFER",
+    "STRUCTURE_PLUS_RESEARCH_CERTIFIED_BUFFER",
+    "APPROVED_REQUESTED_DISTANCE"
   ],
+  "distance_selection": "MAXIMUM_VALID_SOURCE",
+  "lot_policy": "MINIMUM_OF_CAPITAL_CAPACITY_AND_APPROVED_RISK_STOP_SIZING",
+  "minimum_lot_failure_action": "WAIT_OR_SKIP",
   "fail_closed": true,
   "forbidden_authorities": [
     "ORDER_SEND",

@@ -60,6 +60,13 @@ class EntryPlan:
     unit_spacing_points: float
     maximum_spread_points: float
     maximum_slippage_points: float
+    entry_mode: str = "SINGLE_ENTRY"
+    trade_case_id: str = ""
+    initial_units: int = 1
+    reserved_units: int = 0
+    planned_entry_prices: tuple[float, ...] = ()
+    minimum_add_spacing_points: float = 0.0
+    add_requires_recertification: bool = True
 
 
 @dataclass(frozen=True)
@@ -238,6 +245,25 @@ class CompleteTradePlanCertifier:
             reasons.append("signal_expiry_missing")
         if not _positive(entry.maximum_spread_points) or not _positive(entry.maximum_slippage_points):
             reasons.append("execution_cost_limits_missing")
+        supported_entry_modes = {
+            "SINGLE_ENTRY", "STAGGERED_TREND_PULLBACK_1_1_1",
+            "BREAKOUT_RETEST_1_1_1", "RANGE_LAYERED_ENTRY",
+            "NO_ADDITIONAL_ENTRY",
+        }
+        if entry.entry_mode.upper() not in supported_entry_modes:
+            reasons.append("entry_mode_invalid")
+        if entry.initial_units != 1:
+            reasons.append("initial_entry_must_be_one_unit")
+        if entry.reserved_units < 0 or entry.initial_units + entry.reserved_units > entry.maximum_units:
+            reasons.append("reserved_entry_units_invalid")
+        if entry.reserved_units and not entry.trade_case_id.strip():
+            reasons.append("staggered_trade_case_identity_missing")
+        if entry.entry_mode.upper() in {"SINGLE_ENTRY", "NO_ADDITIONAL_ENTRY"} and entry.reserved_units:
+            reasons.append("single_entry_mode_cannot_reserve_units")
+        if entry.reserved_units and not entry.add_requires_recertification:
+            reasons.append("staggered_add_recertification_required")
+        if entry.reserved_units and not _positive(entry.minimum_add_spacing_points):
+            reasons.append("staggered_add_spacing_missing")
 
         capital = plan.capital
         if capital.profile_id.upper() not in {"P1", "P2", "P3", "P4"}:
@@ -340,6 +366,8 @@ class TradePlanDashboardContract:
         "plan_id", "plan_version", "certification_status", "profile_id", "symbol",
         "regime", "pattern_name", "market_situation", "entry_reason", "waiting_reason",
         "blocked_reason", "requested_units", "allowed_units", "base_lot",
+        "entry_mode", "trade_case_id", "initial_units", "reserved_units",
+        "planned_entry_prices", "minimum_add_spacing_points",
         "capital_per_unit", "account_balance", "account_equity", "free_margin",
         "floating_drawdown_percent", "holding_thesis", "holding_reason",
         "initial_stop_price", "current_stop_price", "target_prices", "break_even_policy",

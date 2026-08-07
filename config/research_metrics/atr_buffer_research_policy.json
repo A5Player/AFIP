@@ -1,0 +1,83 @@
+{
+  "schema_version": "atr-buffer-research-policy.v1",
+  "research_only": true,
+  "execution_authority": "NONE",
+  "automatic_production_promotion_allowed": false,
+  "fixed_stop_distance_authority": false,
+  "stop_distance_hard_ceiling_points": null,
+  "pattern_batch_size": 1000,
+  "minimum_candidate_samples": 1000,
+  "recalibration_mode": "FULL_CUMULATIVE_HISTORY_AT_EVERY_1000_PATTERN_MILESTONE",
+  "cumulative_history_recalibration": true,
+  "incremental_cumulative_merge": true,
+  "rolling_latest_1000_allowed": false,
+  "non_overlapping_1000_batches_allowed": false,
+  "reprocess_prior_pattern_outcomes_allowed": false,
+  "update_method": "MERGE_NEW_1000_SUFFICIENT_STATISTICS_INTO_EXISTING_CUMULATIVE_STANDARD",
+  "aggregation_policy": "EXACT_GRAPH_PATTERN_AND_CONTEXT_ONLY",
+  "require_exact_pattern_research_identity": true,
+  "require_pattern_shape_signature": true,
+  "require_cross_market_context": true,
+  "pattern_partition_fields": [
+    "symbol",
+    "timeframe",
+    "pattern_family",
+    "pattern_name",
+    "pattern_variant",
+    "direction",
+    "market_regime",
+    "trend_state",
+    "momentum_state",
+    "volatility_state",
+    "trading_session",
+    "liquidity_state",
+    "multi_timeframe_context",
+    "entry_plan",
+    "management_plan",
+    "exit_plan"
+  ],
+  "cross_market_ranking_policy": {
+    "source": "existing_cross_market_gold_intelligence",
+    "required_for_live_research_ranking": true,
+    "kept_as_separate_ranking_dimension": true,
+    "must_not_merge_unlike_graph_patterns": true
+  },
+  "hierarchical_pattern_research": {
+    "family_scope_required": true,
+    "exact_named_shape_scope_required": true,
+    "shape_feature_schema": "PATTERN_SHAPE_V1",
+    "shape_dimensions": [
+      "candle_count",
+      "duration_seconds",
+      "average_body_ratio",
+      "upper_wick_ratio",
+      "lower_wick_ratio",
+      "pullback_depth_atr",
+      "total_range_atr",
+      "slope_strength"
+    ],
+    "low_rank_action": "WAIT_OR_SKIP",
+    "direct_order_authority": false
+  },
+  "candidate_grid": {
+    "purpose": "CONFIGURABLE_RESEARCH_SEARCH_ENVELOPE_NOT_STOP_DISTANCE_AUTHORITY",
+    "minimum_buffer_points": 0,
+    "maximum_buffer_points": 1500,
+    "unit_step_points": 1,
+    "sl_atr_multipliers": [1.0],
+    "tp_atr_multipliers": [1.0],
+    "sl_operators": ["PLUS"],
+    "tp_operators": ["PLUS", "MINUS"],
+    "streaming_chunk_size": 5000
+  },
+  "selection_order": [
+    "win_rate_confidence_95_low_desc",
+    "expectancy_points_desc",
+    "net_points_desc",
+    "candidate_id_asc"
+  ],
+  "same_bar_resolution": "SL_FIRST",
+  "data_quality_required": "PASS",
+  "future_data_allowed": false,
+  "standard_scope": "RESEARCH_ACTIVE_VERSIONED_APPEND_ONLY"
+}

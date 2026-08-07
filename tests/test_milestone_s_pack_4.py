@@ -118,17 +118,18 @@ def test_profile_confidence_gate_is_enforced(tmp_path, monkeypatch):
     assert report.reason=="profile_confidence_below_threshold" and mt5.sent==[]
 
 
-def test_protected_demo_orders_are_split_into_fixed_units(tmp_path, monkeypatch):
+def test_capacity_is_ceiling_and_initial_entry_is_one_fixed_unit(tmp_path, monkeypatch):
     arm(monkeypatch); mt5=FakeMT5()
     report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=simulation).run_cycle()
-    assert report.status=="ORDER_SENT" and report.sent_units==3 and len(mt5.sent)==3
+    assert report.status=="ORDER_SENT" and report.sent_units==1 and len(mt5.sent)==1
     assert all(x["volume"]==0.01 and x["sl"]>0 and x["tp"]>0 for x in mt5.sent)
 
 
 def test_existing_afip_units_reduce_capacity(tmp_path, monkeypatch):
     arm(monkeypatch); mt5=FakeMT5(positions=(SimpleNamespace(magic=26071001),SimpleNamespace(magic=26071001)))
     report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=simulation).run_cycle()
-    assert report.sent_units==1 and len(mt5.sent)==1
+    assert report.status=="WAITING" and report.reason=="additional_entry_research_standard_not_certified"
+    assert len(mt5.sent)==0
 
 
 def test_duplicate_signal_cooldown_blocks_repeat(tmp_path, monkeypatch):
@@ -137,7 +138,7 @@ def test_duplicate_signal_cooldown_blocks_repeat(tmp_path, monkeypatch):
     assert gateway.run_cycle().status=="ORDER_SENT"
     mt5.positions=()
     second=gateway.run_cycle()
-    assert second.reason=="duplicate_signal_cooldown_active" and len(mt5.sent)==3
+    assert second.reason=="duplicate_signal_cooldown_active" and len(mt5.sent)==1
 
 
 def test_password_is_not_written_to_state_or_ledger(tmp_path, monkeypatch):
@@ -155,7 +156,7 @@ def test_trading_cost_caution_is_allowed_by_contract(tmp_path, monkeypatch):
         "caution_spread_points": 25.0, "max_spread_points": 35.0,
     }
     report=DemoExecutionGateway(profile(tmp_path),policy(),mt5=mt5,simulate=lambda:payload).run_cycle()
-    assert report.status=="ORDER_SENT" and report.sent_units==3
+    assert report.status=="ORDER_SENT" and report.sent_units==1
     assert report.trading_cost_status=="CAUTION" and report.trading_cost_allowed is True
     assert report.spread_points==29.0 and report.max_spread_points==35.0
     assert report.point_size==0.01 and report.digits==2

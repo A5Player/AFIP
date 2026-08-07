@@ -87,6 +87,10 @@ def render_dashboard_home() -> str:
             "AFIP Production Control Center",
             "afip_control_center.html",
         ),
+        ("p1", "1️⃣", "P1 Detail", "P1 Full Decision Detail", "afip_p1_detail.html"),
+        ("p2", "2️⃣", "P2 Detail", "P2 Full Decision Detail", "afip_p2_detail.html"),
+        ("p3", "3️⃣", "P3 Detail", "P3 Full Decision Detail", "afip_p3_detail.html"),
+        ("p4", "4️⃣", "P4 Detail", "P4 Full Decision Detail", "afip_p4_detail.html"),
     )
     navigation = "".join(
         f'<button class="nav-item{" active" if index == 0 else ""}" '

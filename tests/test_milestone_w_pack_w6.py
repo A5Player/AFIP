@@ -31,31 +31,30 @@ def _item(**changes):
     return AdaptiveSLInput(**base)
 
 
-def test_normal_sl_is_clamped_to_500_1000():
+def test_structural_sl_is_not_clamped_to_legacy_bands():
     engine = AdaptiveSLRuntime()
     low = engine.assess(_item(atr_points=300, structure_points=350, buffer_points=50))
     high = engine.assess(_item(atr_points=900, structure_points=850, buffer_points=50))
     assert low.status == NORMAL_SL_APPROVED
-    assert low.recommended_sl_points == 500
+    assert low.recommended_sl_points == 400
     assert high.recommended_sl_points == 950
 
 
-def test_extended_requires_elite_confidence_evidence_and_w5_review():
+def test_structural_sl_has_no_fixed_extended_band():
     engine = AdaptiveSLRuntime()
     passed = engine.assess(_item(atr_points=1100, structure_points=1000, buffer_points=100))
-    assert passed.status == EXTENDED_SL_APPROVED
+    assert passed.status == NORMAL_SL_APPROVED
     assert passed.recommended_sl_points == 1200
 
-    assert engine.assess(_item(atr_points=1100, buffer_points=100, oqs=98.9)).status == NOT_ELIGIBLE
-    assert engine.assess(_item(atr_points=1100, buffer_points=100, final_confidence=98.9)).status == NOT_ELIGIBLE
-    assert engine.assess(_item(atr_points=1100, buffer_points=100, evidence_quality="MEDIUM")).status == NOT_ELIGIBLE
+    assert engine.assess(_item(atr_points=1100, buffer_points=100, oqs=98.9)).status == NORMAL_SL_APPROVED
+    assert engine.assess(_item(atr_points=1100, buffer_points=100, final_confidence=98.9)).status == NORMAL_SL_APPROVED
 
 
-def test_hard_ceiling_is_never_exceeded():
+def test_no_fixed_hard_ceiling_compresses_researched_distance():
     result = AdaptiveSLRuntime().assess(_item(atr_points=1500, structure_points=1400, buffer_points=100))
-    assert result.status == NOT_ELIGIBLE
-    assert result.reason == "hard_ceiling_exceeded"
-    assert result.recommended_sl_points is None
+    assert result.status == NORMAL_SL_APPROVED
+    assert result.recommended_sl_points == 1600
+    assert result.hard_ceiling_points is None
 
 
 def test_all_independent_gates_fail_closed():
@@ -69,7 +68,8 @@ def test_all_independent_gates_fail_closed():
 def test_contract_and_no_execution_authority():
     root = Path(__file__).resolve().parents[1]
     contract = json.loads((root / "config" / "adaptive_sl_runtime_contract.json").read_text(encoding="utf-8"))
-    assert contract["hard_ceiling_points"] == 1500
+    assert contract["hard_ceiling_points"] is None
+    assert contract["fixed_stop_distance_bands_allowed"] is False
     assert contract["fail_closed"] is True
     result = AdaptiveSLRuntime().assess(_item())
     assert result.execution_authority is False
