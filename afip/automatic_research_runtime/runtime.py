@@ -29,6 +29,7 @@ from afip.timeframe_registry import get_mt5_timeframe_code, get_supported_timefr
 from afip.historical_data_manager.timeframe_quality import GapRange, TimeframeDataQuality
 from afip.runtime_observatory import RuntimeProgressAuthority
 from afip.research_standardization import ResearchStandardizationCoordinator
+from afip.research_standardization.adversarial_market_behaviour import AdversarialMarketBehaviourResearch
 from afip.market_regime_v2 import AdversarialMarketBehaviourAnalyzer, MarketStructureContextAnalyzer
 
 _TIMEFRAMES = get_supported_timeframes(capability="chronological_replay")
@@ -134,6 +135,7 @@ class AutomaticResearchSummary:
     research_standards_updated: int = 0
     market_structure_contexts: dict[str, dict[str, Any]] | None = None
     adversarial_market_behaviours: dict[str, dict[str, Any]] | None = None
+    adversarial_market_behaviour_research: dict[str, Any] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -643,6 +645,20 @@ class AutomaticResearchRuntime:
             market_structure_contexts=market_structure_contexts,
             adversarial_market_behaviours=adversarial_market_behaviours,
         )
+        self._write_stage("RESEARCH_ADVERSARIAL_MARKET_BEHAVIOUR", "recording_cumulative_closed_bar_outcomes")
+        try:
+            adversarial_market_behaviour_research = AdversarialMarketBehaviourResearch(self.output_root).run(bars_by_timeframe)
+        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            adversarial_market_behaviour_research = {
+                "status": "REVIEW", "reason": f"adversarial_market_behaviour_research_invalid:{type(exc).__name__}",
+                "new_observations_accepted": 0, "cumulative_observations": 0,
+                "rankings": [], "research_only": True, "execution_authority": "NONE",
+            }
+        self._write_stage(
+            "RESEARCH_ADVERSARIAL_MARKET_BEHAVIOUR",
+            str(adversarial_market_behaviour_research.get("reason", "adversarial_market_behaviour_research_recorded")),
+            adversarial_market_behaviour_research=adversarial_market_behaviour_research,
+        )
 
         processed = candidates = 0
         completed = False
@@ -856,6 +872,7 @@ class AutomaticResearchRuntime:
             research_standards_updated=int(standardization.get("standards_updated", 0)),
             market_structure_contexts=market_structure_contexts,
             adversarial_market_behaviours=adversarial_market_behaviours,
+            adversarial_market_behaviour_research=adversarial_market_behaviour_research,
         )
         self._write_status(result)
         performance_elapsed = max(0.0, perf_counter() - performance_started)

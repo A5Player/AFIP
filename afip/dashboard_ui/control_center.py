@@ -50,6 +50,7 @@ def render_control_center(project_root: str | Path = ".") -> str:
     research = snapshot.get("research") if isinstance(snapshot.get("research"), Mapping) else {}
     market_contexts = research.get("market_structure_contexts") if isinstance(research.get("market_structure_contexts"), Mapping) else {}
     adverse_contexts = research.get("adversarial_market_behaviours") if isinstance(research.get("adversarial_market_behaviours"), Mapping) else {}
+    adverse_research = research.get("adversarial_market_behaviour_research") if isinstance(research.get("adversarial_market_behaviour_research"), Mapping) else {}
     trading_modes = snapshot.get("profile_trading_modes") if isinstance(snapshot.get("profile_trading_modes"), Mapping) else {}
     truth = snapshot.get("runtime_truth") if isinstance(snapshot.get("runtime_truth"), Mapping) else {}
     dashboard = snapshot.get("dashboard") if isinstance(snapshot.get("dashboard"), Mapping) else {}
@@ -92,17 +93,31 @@ def render_control_center(project_root: str | Path = ".") -> str:
             _text(context.get("sweep_side")), _text(context.get("waiting_for")), _text(context.get("reason")),
         ) for timeframe, context in adverse_contexts.items() if isinstance(context, Mapping)
     ) or '<tr><td colspan="6">NOT_RECORDED</td></tr>'
-    explain_cards = (
+    adverse_ranking_rows = "".join(
+        '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(
+            _text(row.get("timeframe")), _text(row.get("threat_state")), _text(row.get("pattern_name")),
+            _text(row.get("sample_size")), _text(row.get("whipsaw_rate_percent")), _text(row.get("research_status")),
+        ) for row in adverse_research.get("rankings", []) if isinstance(row, Mapping)
+    ) or '<tr><td colspan="6">NOT_RECORDED</td></tr>'
+    adverse_protection_card = (
         '<article class="wide"><h3>Adversarial Market Behaviour — No-Trade Protection</h3>'
         '<p class="muted">Observable closed-bar behaviour only; no claim is made about participant intent. Threat states block new entries until the specified confirmation and exact research evidence exist.</p>'
         '<table><thead><tr><th>Timeframe</th><th>Threat State</th><th>Named Pattern</th><th>Sweep Side</th><th>Waiting For</th><th>Reason</th></tr></thead>'
         f'<tbody>{adverse_context_rows}</tbody></table></article>'
+    )
+    adverse_research_card = (
+        '<article class="wide"><h3>Adversarial Pattern Research Ranking</h3>'
+        f'<p class="muted">Cumulative closed-bar outcome study. New observations: {_text(adverse_research.get("new_observations_accepted"))} · Total: {_text(adverse_research.get("cumulative_observations"))} · Next recalibration applies only at each cumulative 1,000-pattern milestone. All rows remain research-only.</p>'
+        '<table><thead><tr><th>Timeframe</th><th>Threat State</th><th>Named Pattern</th><th>Sample</th><th>Whipsaw %</th><th>Research Status</th></tr></thead>'
+        f'<tbody>{adverse_ranking_rows}</tbody></table></article>'
+    )
+    market_context_card = (
         '<article class="wide"><h3>Current Closed-Bar Market Context</h3>'
         '<p class="muted">Research-only context; it does not itself authorize entry.</p>'
         '<table><thead><tr><th>Timeframe</th><th>Regime</th><th>Structure</th><th>Zone</th><th>Named Pattern</th><th>Reason</th></tr></thead>'
         f'<tbody>{market_context_rows}</tbody></table></article>'
-        + explain_cards
     )
+    explain_cards = adverse_protection_card + adverse_research_card + market_context_card + explain_cards
     return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="5"><title>{CONTROL_CENTER_NAME}</title><style>{style}</style></head><body><div class="page"><header><div class="nav"><a href="afip_dashboard.html">Home</a><a href="afip_profiles_dashboard.html">Profiles</a><a href="afip_p1_detail.html">P1</a><a href="afip_p2_detail.html">P2</a><a href="afip_p3_detail.html">P3</a><a href="afip_p4_detail.html">P4</a><a href="afip_intelligence_engine_dashboard.html">Intelligence</a><a href="afip_research_data_dashboard.html">Research Data</a><a href="afip_research_operations_dashboard.html">Research Operations</a></div><h1>🎛️ {CONTROL_CENTER_NAME}</h1><p>Passive production observability only · ไม่มีสิทธิ์ส่งคำสั่งซื้อขายหรือเปลี่ยน execution authority</p><div class="bar"><span style="width:{progress_num:.2f}%"></span></div><p><b>{progress_num:.2f}%</b> · {_text(startup.get('status'))} · {_text(startup.get('current_stage'))}</p></header><section class="grid"><article><h2>Profile Trading Modes</h2><table>{_rows(trading_modes, ('status','profiles','account_activation_policy','execution_authority_changed'))}</table></article><article><h2>Startup</h2><table>{_rows(startup, ('status','current_stage','progress_percent','current_message','updated_at','warnings','errors'))}</table></article><article><h2>Runtime Authority</h2><table>{_rows(authority, ('status','canonical_lifecycle_authority','desired_state','desired_state_reason','router_state','router_pid','watchdog_state','watchdog_pid','duplicate_process_risk'))}<tr><th>MT5 Auto Launch Allowed</th><td>{_text(authority.get('mt5_auto_launch_allowed'))}</td></tr><tr><th>Execution authority changed</th><td class="safe">{_text(authority.get('execution_authority_changed'))}</td></tr></table></article><article><h2>Runtime Truth</h2><table>{_rows(truth, ('status','policy','domains_certified','domains_total','conflict_count','missing_authority_count'))}<tr><th>Execution authority changed</th><td class="safe">{_text(truth.get('execution_authority_changed'))}</td></tr></table></article><article><h2>Research Runtime</h2><table>{_rows(research, ('status','research_bridge_status','trade_cases_written','holding_observations','exits_recorded','single_unit_profit_pattern_observations','initial_capital_pattern_observations','research_standards_updated','current_operation','current_timeframe','symbol','available_bars','processed_bars','covered_bars','missing_bars','gap_count','progress_percent','queue_depth','last_error','updated_at'))}</table></article><article><h2>Dashboard Runtime</h2><table>{_rows(dashboard, ('status','last_generated_at','updated_at','process_state','pid'))}</table></article><article><h2>Runtime Observatory</h2><p><b>{_text(observatory.get('status'))}</b> · critical {_text(observatory.get('critical_count'))} · degraded {_text(observatory.get('degraded_count'))}</p><table><thead><tr><th>Component</th><th>Status</th><th>Reason</th></tr></thead><tbody>{_observatory_rows(observatory.get('components'))}</tbody></table></article></section><h2>Explainable Decision Timeline</h2><p class="muted">Policy: {_text(explainability.get('policy'))}. Explanations are projected only from recorded runtime artifacts.</p><section class="explain-grid">{explain_cards}</section><h2>Profile Operations</h2><section class="grid">{profile_cards}</section><p class="muted">Generated {_text(snapshot.get('generated_at'))}. Missing producer data is shown as DATA_UNAVAILABLE; no values are invented.</p></div></body></html>'''
 
 

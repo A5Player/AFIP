@@ -447,6 +447,7 @@ class ControlCenterRuntime:
             "research_standards_updated": automatic.get("research_standards_updated", 0),
             "market_structure_contexts": automatic.get("market_structure_contexts", {}),
             "adversarial_market_behaviours": automatic.get("adversarial_market_behaviours", {}),
+            "adversarial_market_behaviour_research": automatic.get("adversarial_market_behaviour_research", {}),
         }
         observatory = self._runtime_observatory(authority, runtime_truth, research_projection, dashboard, profiles)
         return {
