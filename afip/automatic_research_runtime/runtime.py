@@ -67,7 +67,19 @@ def _timestamp(record: Mapping[str, Any]) -> str | None:
             return datetime.fromtimestamp(float(value), timezone.utc).isoformat().replace("+00:00", "Z")
         text = str(value).strip()
         if text:
-            return text
+            # A single instant can be represented in several equivalent ways
+            # (for example ``Z`` and ``+00:00``).  The discovery dedupe key and
+            # chronological replay must use one canonical value; otherwise the
+            # same closed bar can reach replay twice and correctly be rejected
+            # as a non-increasing timestamp sequence.
+            parseable = text[:-1] + "+00:00" if text.endswith("Z") else text
+            try:
+                parsed = datetime.fromisoformat(parseable)
+            except ValueError:
+                return None
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            return parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
     return None
 
 
