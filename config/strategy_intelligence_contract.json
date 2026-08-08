@@ -11,6 +11,13 @@
   "profile_independent": true,
   "minimum_advisory_score_for_plan_review": 80.0,
   "minimum_hierarchical_research_score": 80.0,
+  "research_plan_gate": {
+    "enabled_for_configured_profiles": true,
+    "required_current_context": ["regime", "trend_state", "structure_state", "zone_position", "pattern_family", "pattern_name"],
+    "required_matching_evidence": ["pattern_name", "pattern_family", "market_regime", "structure_state", "zone_position", "rank", "sample_size"],
+    "fail_closed_when_context_or_exact_evidence_is_missing": true,
+    "execution_authority": "NONE"
+  },
   "hierarchical_research": {
     "required_scopes": ["PATTERN_FAMILY", "EXACT_NAMED_SHAPE"],
     "shape_dimensions": [

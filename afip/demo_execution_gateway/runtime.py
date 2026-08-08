@@ -36,6 +36,7 @@ from afip.lot_authority import calculate_lot_authority
 from afip.production_runtime_authority import reclaim_stale_lock
 from afip.live_mt5_snapshot_authority import publish_live_mt5_snapshot
 from afip.production_activation_runtime import ProductionActivationRuntime
+from afip.strategy_intelligence import ResearchPlanGate
 
 DEMO_EXECUTION = "DEMO_EXECUTION_ONLY"
 DEMO_TRADE_MODE = 0
@@ -75,6 +76,7 @@ class DemoProfilePolicy:
     maximum_concurrent_orders: int = 4
     maximum_lot_per_order: float = 0.03
     trading_mode_enforced: bool = False
+    research_plan_gate_enabled: bool = False
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> "DemoProfilePolicy":
@@ -112,6 +114,7 @@ class DemoProfilePolicy:
             magic=int(raw.get("magic", 26071001)),
             lot_per_unit=float(raw.get("lot_per_unit", 0.01)),
             trading_mode_enforced="trading_mode" in raw,
+            research_plan_gate_enabled=bool(raw.get("research_plan_gate_enabled", False)),
         )
 
     def validate(self) -> tuple[str, ...]:
@@ -183,6 +186,12 @@ class DemoGatewayReport:
     observed_trend_state: str = "NOT_EVALUATED"
     research_eligible: bool | None = None
     research_top_ranked: bool | None = None
+    research_plan_gate_enabled: bool = False
+    research_plan_gate_allowed: bool | None = None
+    research_plan_gate_reason: str = "NOT_EVALUATED"
+    market_structure_state: str = "NOT_EVALUATED"
+    market_zone_position: str = "NOT_EVALUATED"
+    market_pattern_name: str = "NOT_EVALUATED"
     balance: float = 0.0
     equity: float = 0.0
     base_lot: float = 0.01
@@ -1184,6 +1193,37 @@ class DemoExecutionGateway:
                     profile_trading_mode=mode_decision.mode, observed_market_regime=regime,
                     observed_trend_state=trend_state, research_eligible=research_eligible,
                     research_top_ranked=top_ranked,
+                    **verified_context,
+                )
+            plan_context = decision.get("market_context", result.get("market_context", {}))
+            if not isinstance(plan_context, Mapping):
+                plan_context = {}
+            if not plan_context:
+                plan_context = {
+                    "regime": regime, "trend_state": trend_state,
+                    "structure_state": decision.get("structure_state", ""),
+                    "zone_position": decision.get("zone_position", ""),
+                    "pattern_family": decision.get("pattern_family", ""),
+                    "pattern_name": decision.get("pattern_name", ""),
+                    "direction": action,
+                    "research_ready": False,
+                }
+            plan_evidence = decision.get("plan_research", result.get("plan_research", {}))
+            if not isinstance(plan_evidence, Mapping):
+                plan_evidence = {}
+            plan_gate = ResearchPlanGate().evaluate(action=action, context=plan_context, evidence=plan_evidence)
+            decision["research_plan_gate"] = plan_gate.as_dict()
+            if self.policy.research_plan_gate_enabled and not plan_gate.allowed:
+                return self._report(
+                    "WAITING", plan_gate.reason, account_trade_mode="DEMO", demo_verified=True,
+                    decision_action=action, decision_confidence=confidence,
+                    profile_trading_mode=mode_decision.mode, observed_market_regime=regime,
+                    observed_trend_state=trend_state, research_eligible=research_eligible,
+                    research_top_ranked=top_ranked, research_plan_gate_enabled=True,
+                    research_plan_gate_allowed=False, research_plan_gate_reason=plan_gate.reason,
+                    market_structure_state=str(plan_context.get("structure_state", "NOT_EVALUATED")),
+                    market_zone_position=str(plan_context.get("zone_position", "NOT_EVALUATED")),
+                    market_pattern_name=str(plan_context.get("pattern_name", "NOT_EVALUATED")),
                     **verified_context,
                 )
             if confidence < self.policy.minimum_confidence:

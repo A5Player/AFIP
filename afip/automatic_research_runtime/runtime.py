@@ -29,6 +29,7 @@ from afip.timeframe_registry import get_mt5_timeframe_code, get_supported_timefr
 from afip.historical_data_manager.timeframe_quality import GapRange, TimeframeDataQuality
 from afip.runtime_observatory import RuntimeProgressAuthority
 from afip.research_standardization import ResearchStandardizationCoordinator
+from afip.market_regime_v2 import MarketStructureContextAnalyzer
 
 _TIMEFRAMES = get_supported_timeframes(capability="chronological_replay")
 _SCHEMA_VERSION = "AFIP-RESEARCH-SCHEMA-V2"
@@ -131,6 +132,7 @@ class AutomaticResearchSummary:
     single_unit_profit_pattern_observations: int = 0
     initial_capital_pattern_observations: int = 0
     research_standards_updated: int = 0
+    market_structure_contexts: dict[str, dict[str, Any]] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -618,6 +620,23 @@ class AutomaticResearchRuntime:
             f"| freshness review {len(freshness_review)}"
         )
 
+        # This is a closed-bar, read-only snapshot used by the research-plan
+        # gate and dashboard. It is intentionally separate from execution and
+        # never invents a context for a timeframe without enough history.
+        bars_by_timeframe: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for item in bars:
+            bars_by_timeframe[str(item["timeframe"]).upper()].append(item)
+        context_analyzer = MarketStructureContextAnalyzer()
+        market_structure_contexts = {
+            timeframe: context_analyzer.analyze(bars_by_timeframe.get(timeframe, ()), timeframe=timeframe).as_dict()
+            for timeframe in _TIMEFRAMES
+        }
+        self._write_stage(
+            "CLASSIFY_MARKET_CONTEXT",
+            "closed_bar_market_structure_context_ready_for_research_plan_review",
+            market_structure_contexts=market_structure_contexts,
+        )
+
         processed = candidates = 0
         completed = False
         replay_evidence: dict[str, dict[str, Any]] = {}
@@ -628,10 +647,6 @@ class AutomaticResearchRuntime:
         if bars:
             # Run each timeframe independently so chronology never mixes unlike bars.
             dataset = AppendOnlyResearchDataset(self.output_root)
-            bars_by_timeframe: dict[str, list[dict[str, Any]]] = defaultdict(list)
-            for item in bars:
-                bars_by_timeframe[str(item["timeframe"]).upper()].append(item)
-
             for timeframe in _TIMEFRAMES:
                 candles = bars_by_timeframe.get(timeframe, [])
                 if not candles:
@@ -832,6 +847,7 @@ class AutomaticResearchRuntime:
             single_unit_profit_pattern_observations=int(standardization.get("single_unit_profit_observation_count", 0)),
             initial_capital_pattern_observations=int(standardization.get("initial_capital_observation_count", 0)),
             research_standards_updated=int(standardization.get("standards_updated", 0)),
+            market_structure_contexts=market_structure_contexts,
         )
         self._write_status(result)
         performance_elapsed = max(0.0, perf_counter() - performance_started)

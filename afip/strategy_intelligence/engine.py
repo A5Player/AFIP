@@ -130,6 +130,61 @@ class StrategyCandidate:
         return asdict(self)
 
 
+@dataclass(frozen=True)
+class ResearchPlanGateDecision:
+    """Fail-closed proof that a current plan has matching research evidence."""
+    allowed: bool
+    status: str
+    reason: str
+    market_context: Mapping[str, Any]
+    evidence_rank: int | None
+    evidence_sample_size: int
+    execution_authority: str = "NONE"
+
+    def as_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+class ResearchPlanGate:
+    """Validate plan context and ranking; it never decides or sends an order.
+
+    This is deliberately stricter than a generic signal flag. The evidence must
+    name the same chart pattern, regime, structure, and zone that the current
+    plan claims to use. Missing evidence is a WAIT, not an inferred approval.
+    """
+
+    REQUIRED_CONTEXT = ("regime", "trend_state", "structure_state", "zone_position", "pattern_family", "pattern_name")
+
+    def evaluate(self, *, action: str, context: Mapping[str, Any], evidence: Mapping[str, Any]) -> ResearchPlanGateDecision:
+        actual = {str(key): value for key, value in dict(context or {}).items()}
+        proof = {str(key): value for key, value in dict(evidence or {}).items()}
+        side = _text(action)
+        missing = tuple(name for name in self.REQUIRED_CONTEXT if not _text(actual.get(name)))
+        if missing or not bool(actual.get("research_ready", True)):
+            return ResearchPlanGateDecision(False, "WAIT", "market_context_incomplete_for_plan_research", actual, None, 0)
+        regime = _text(actual.get("regime"))
+        if regime in {"UNKNOWN", "INSUFFICIENT_DATA", "TRANSITION", ""}:
+            return ResearchPlanGateDecision(False, "WAIT", "market_regime_not_tradeable_for_research_plan", actual, None, 0)
+        expected_direction = _text(actual.get("direction"))
+        if expected_direction not in {side, "ANY"}:
+            return ResearchPlanGateDecision(False, "WAIT", "plan_direction_conflicts_with_market_context", actual, None, 0)
+        if not bool(proof.get("eligible", proof.get("research_eligible", False))):
+            return ResearchPlanGateDecision(False, "WAIT", "named_pattern_not_research_eligible", actual, None, 0)
+        for field in ("pattern_name", "pattern_family", "market_regime", "structure_state", "zone_position"):
+            expected = _text(actual.get("regime" if field == "market_regime" else field))
+            observed = _text(proof.get(field))
+            if not observed or observed != expected:
+                return ResearchPlanGateDecision(False, "WAIT", f"research_evidence_{field}_mismatch", actual, None, 0)
+        try:
+            rank = int(proof.get("rank", proof.get("research_rank")))
+            sample_size = int(proof.get("sample_size", 0) or 0)
+        except (TypeError, ValueError):
+            return ResearchPlanGateDecision(False, "WAIT", "research_rank_or_sample_invalid", actual, None, 0)
+        if rank < 1 or sample_size < 1:
+            return ResearchPlanGateDecision(False, "WAIT", "research_rank_or_sample_insufficient", actual, rank if rank >= 1 else None, max(0, sample_size))
+        return ResearchPlanGateDecision(True, "ELIGIBLE_FOR_PLAN_REVIEW", "exact_named_pattern_context_and_research_rank_match", actual, rank, sample_size)
+
+
 class StrategyIntelligenceEngine:
     """Ranks evidence-backed strategy templates. It never creates orders or final trade decisions."""
 

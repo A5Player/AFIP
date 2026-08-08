@@ -445,6 +445,7 @@ class ControlCenterRuntime:
             "single_unit_profit_pattern_observations": automatic.get("single_unit_profit_pattern_observations", 0),
             "initial_capital_pattern_observations": automatic.get("initial_capital_pattern_observations", 0),
             "research_standards_updated": automatic.get("research_standards_updated", 0),
+            "market_structure_contexts": automatic.get("market_structure_contexts", {}),
         }
         observatory = self._runtime_observatory(authority, runtime_truth, research_projection, dashboard, profiles)
         return {
