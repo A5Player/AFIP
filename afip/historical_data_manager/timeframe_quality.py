@@ -170,8 +170,11 @@ class TimeframeDataQuality:
         # inside a weekend remains subject to ordinary continuity checks.
         weekend_closure_allowed = (
             left.date() < right.date()
-            and left.weekday() not in {5, 6}
             and right.weekday() != 5
+            # A D1 feed can legitimately include a Saturday settlement bar.
+            # Sunday remains a known market closure in that representation.
+            # Intraday feeds retain the stricter synthetic-weekend safeguard.
+            and (timeframe == "D1" or left.weekday() not in {5, 6})
         )
         candidate = left + timedelta(seconds=expected)
         while candidate < right:

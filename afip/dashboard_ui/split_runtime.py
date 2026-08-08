@@ -465,6 +465,10 @@ class ThreeDashboardRuntime:
             valid = q.get("valid_bars", 0)
             gaps = q.get("gap_count", 0)
             missing = q.get("missing_bars", 0)
+            expected_ranges = q.get("expected_closure_gap_count", 0)
+            expected_bars = q.get("expected_closure_bars", 0)
+            unresolved_ranges = q.get("unexpected_gap_count", 0)
+            unresolved_bars = q.get("unexpected_missing_bars", 0)
             fresh = q.get("fresh")
             freshness = "FRESH" if fresh is True else "STALE" if fresh is False else "NOT_RECORDED"
             processed = r.get("bars_processed_this_run", 0)
@@ -476,7 +480,9 @@ class ThreeDashboardRuntime:
             integrity = q.get("integrity_status", "NOT_RECORDED")
             rows.append(
                 f'<tr><td><b>{escape(timeframe)}</b></td><td>{escape(str(available))}</td>'
-                f'<td>{escape(str(valid))}</td><td>{escape(str(gaps))} / {escape(str(missing))}</td>'
+                f'<td>{escape(str(valid))}</td><td>{escape(str(gaps))} / {escape(str(missing))}'
+                f'<br><small>Expected {escape(str(expected_ranges))} / {escape(str(expected_bars))} · '
+                f'Unresolved {escape(str(unresolved_ranges))} / {escape(str(unresolved_bars))}</small></td>'
                 f'<td>{escape(freshness)}</td><td>{escape(str(processed))}</td>'
                 f'<td>{escape(str(covered))} / {escape(str(r.get("available_bars", available)))}</td>'
                 f'<td>{escape(replay_status)}</td><td>{escape(str(integrity))}</td><td>{escape(eligibility)}</td></tr>'
@@ -484,7 +490,7 @@ class ThreeDashboardRuntime:
         return (
             '<div class="panel timeframe-status-panel"><div class="toolbar"><h3>🕒 Universal Timeframe Coverage</h3>'
             '<span class="status-pill">M1–D1</span></div>'
-            '<p class="small">Coverage, replay, gap, freshness, integrity and research eligibility from automatic_research_status.json.</p>'
+            '<p class="small">Raw gaps remain visible. Expected means configured session/holiday closure; unresolved means missing market evidence that still blocks baseline certification.</p>'
             '<div class="table-wrap"><table class="timeframe-status-table"><thead><tr>'
             '<th>TF</th><th>Available</th><th>Valid</th><th>Gaps / Missing</th><th>Freshness</th>'
             '<th>Processed</th><th>Covered</th><th>Replay</th><th>Integrity</th><th>Research</th>'
@@ -505,6 +511,10 @@ class ThreeDashboardRuntime:
             ("Historical lake duplicates", auto.get("historical_lake_duplicates", 0)),
             ("Gap ranges detected", auto.get("gap_ranges_detected", 0)),
             ("Missing bars detected", auto.get("missing_bars_detected", 0)),
+            ("Expected closure ranges", auto.get("expected_closure_ranges_detected", 0)),
+            ("Expected closure bars", auto.get("expected_closure_bars_detected", 0)),
+            ("Unresolved gap ranges", auto.get("unexpected_gap_ranges_detected", 0)),
+            ("Unresolved missing bars", auto.get("unexpected_missing_bars_detected", 0)),
             ("Backfill requested", auto.get("backfill_ranges_requested", 0)),
             ("Backfill returned", auto.get("backfill_bars_returned", 0)),
             ("Backfill accepted", auto.get("backfill_bars_accepted", 0)),

@@ -92,6 +92,17 @@ def test_configured_holiday_is_expected_and_preserved_as_evidence() -> None:
     assert "CONFIGURED_MARKET_CLOSURE" in evidence.gaps[0].reason_codes
 
 
+def test_d1_saturday_settlement_does_not_make_sunday_an_unresolved_gap() -> None:
+    engine = TimeframeDataQuality()
+    evidence = engine.evaluate(
+        [bar("D1", "2013-11-30T00:00:00Z"), bar("D1", "2013-12-02T00:00:00Z")],
+        now_utc=datetime(2013, 12, 2, tzinfo=timezone.utc),
+    )["D1"]
+    assert evidence.expected_closure_bars == 1
+    assert evidence.unexpected_missing_bars == 0
+    assert "WEEKEND_MARKET_CLOSURE" in evidence.gaps[0].reason_codes
+
+
 def test_research_segments_split_only_at_unexpected_gap() -> None:
     engine = TimeframeDataQuality()
     rows = [
