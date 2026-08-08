@@ -28,6 +28,42 @@ def test_research_certification_blocks_gaps(tmp_path: Path):
     assert "historical_gap_ranges_detected" in blockers
 
 
+def test_research_certification_ignores_expected_market_closures(tmp_path: Path):
+    runtime = PhaseVMajorRuntime(tmp_path)
+    ok, blockers = runtime._research_certified(
+        {
+            "usable_bars": 5000,
+            "replay_completed": True,
+            "gap_ranges_detected": 1618,
+            "missing_bars_detected": 17748,
+            "expected_closure_ranges_detected": 1618,
+            "expected_closure_bars_detected": 17748,
+            "unexpected_gap_ranges_detected": 0,
+            "unexpected_missing_bars_detected": 0,
+        },
+        runtime.config(),
+    )
+    assert ok is True
+    assert blockers == []
+
+
+def test_research_certification_blocks_unexpected_gaps_even_when_closures_exist(tmp_path: Path):
+    runtime = PhaseVMajorRuntime(tmp_path)
+    ok, blockers = runtime._research_certified(
+        {
+            "usable_bars": 5000,
+            "replay_completed": True,
+            "gap_ranges_detected": 1619,
+            "missing_bars_detected": 17749,
+            "unexpected_gap_ranges_detected": 1,
+            "unexpected_missing_bars_detected": 1,
+        },
+        runtime.config(),
+    )
+    assert ok is False
+    assert blockers == ["historical_gap_ranges_detected", "historical_missing_bars_detected"]
+
+
 def test_research_certification_accepts_complete_clean_dataset(tmp_path: Path):
     runtime = PhaseVMajorRuntime(tmp_path)
     ok, blockers = runtime._research_certified({"usable_bars": 5000, "replay_completed": True, "gap_ranges_detected": 0, "missing_bars_detected": 0}, runtime.config())

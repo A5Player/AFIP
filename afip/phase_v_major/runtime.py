@@ -76,15 +76,38 @@ class PhaseVMajorRuntime:
         return defaults
 
     def _research_certified(self, summary: Mapping[str, Any], config: Mapping[str, Any]) -> tuple[bool, list[str]]:
+        """Certify only unresolved OHLC continuity failures.
+
+        ``gap_ranges_detected`` remains a useful *raw* observability metric,
+        but it includes known market closures such as weekends.  A closed
+        market cannot supply an OHLC bar, so treating those ranges as missing
+        data indefinitely blocks historical certification.  New research
+        summaries provide unexpected-gap metrics; legacy summaries retain the
+        previous conservative raw-gap behaviour until they are refreshed.
+        """
         blockers: list[str] = []
         usable = int(summary.get("usable_bars", 0) or 0)
         if usable < int(config["minimum_usable_bars"]):
             blockers.append("minimum_usable_bars_not_met")
         if bool(config.get("require_replay_completion", True)) and not bool(summary.get("replay_completed", False)):
             blockers.append("historical_replay_not_complete")
-        if int(summary.get("gap_ranges_detected", 0) or 0) > 0:
+        has_unexpected_gap_evidence = "unexpected_gap_ranges_detected" in summary
+        raw_gap_ranges = (
+            summary.get("unexpected_gap_ranges_detected", 0)
+            if has_unexpected_gap_evidence
+            else summary.get("gap_ranges_detected", 0)
+        )
+        gap_ranges = int(raw_gap_ranges or 0)
+        has_unexpected_missing_evidence = "unexpected_missing_bars_detected" in summary
+        raw_missing_bars = (
+            summary.get("unexpected_missing_bars_detected", 0)
+            if has_unexpected_missing_evidence
+            else summary.get("missing_bars_detected", 0)
+        )
+        missing_bars = int(raw_missing_bars or 0)
+        if gap_ranges > 0:
             blockers.append("historical_gap_ranges_detected")
-        if int(summary.get("missing_bars_detected", 0) or 0) > 0:
+        if missing_bars > 0:
             blockers.append("historical_missing_bars_detected")
         return not blockers, blockers
 
