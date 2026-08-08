@@ -49,6 +49,7 @@ def render_control_center(project_root: str | Path = ".") -> str:
     authority = snapshot.get("runtime_authority") if isinstance(snapshot.get("runtime_authority"), Mapping) else {}
     research = snapshot.get("research") if isinstance(snapshot.get("research"), Mapping) else {}
     market_contexts = research.get("market_structure_contexts") if isinstance(research.get("market_structure_contexts"), Mapping) else {}
+    adverse_contexts = research.get("adversarial_market_behaviours") if isinstance(research.get("adversarial_market_behaviours"), Mapping) else {}
     trading_modes = snapshot.get("profile_trading_modes") if isinstance(snapshot.get("profile_trading_modes"), Mapping) else {}
     truth = snapshot.get("runtime_truth") if isinstance(snapshot.get("runtime_truth"), Mapping) else {}
     dashboard = snapshot.get("dashboard") if isinstance(snapshot.get("dashboard"), Mapping) else {}
@@ -85,7 +86,17 @@ def render_control_center(project_root: str | Path = ".") -> str:
             _text(context.get("zone_position")), _text(context.get("pattern_name")), _text(context.get("reason")),
         ) for timeframe, context in market_contexts.items() if isinstance(context, Mapping)
     ) or '<tr><td colspan="6">NOT_RECORDED</td></tr>'
+    adverse_context_rows = "".join(
+        '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(
+            _text(timeframe), _text(context.get("threat_state")), _text(context.get("pattern_name")),
+            _text(context.get("sweep_side")), _text(context.get("waiting_for")), _text(context.get("reason")),
+        ) for timeframe, context in adverse_contexts.items() if isinstance(context, Mapping)
+    ) or '<tr><td colspan="6">NOT_RECORDED</td></tr>'
     explain_cards = (
+        '<article class="wide"><h3>Adversarial Market Behaviour — No-Trade Protection</h3>'
+        '<p class="muted">Observable closed-bar behaviour only; no claim is made about participant intent. Threat states block new entries until the specified confirmation and exact research evidence exist.</p>'
+        '<table><thead><tr><th>Timeframe</th><th>Threat State</th><th>Named Pattern</th><th>Sweep Side</th><th>Waiting For</th><th>Reason</th></tr></thead>'
+        f'<tbody>{adverse_context_rows}</tbody></table></article>'
         '<article class="wide"><h3>Current Closed-Bar Market Context</h3>'
         '<p class="muted">Research-only context; it does not itself authorize entry.</p>'
         '<table><thead><tr><th>Timeframe</th><th>Regime</th><th>Structure</th><th>Zone</th><th>Named Pattern</th><th>Reason</th></tr></thead>'

@@ -2,5 +2,6 @@
 from .models import MarketRegimeComponent, MarketRegimeV2Report
 from .runtime import MarketRegimeV2Runtime
 from .context import MarketStructureContext, MarketStructureContextAnalyzer
+from .adversarial import AdversarialMarketBehaviour, AdversarialMarketBehaviourAnalyzer
 
-__all__=["MarketRegimeV2Runtime","MarketRegimeV2Report","MarketRegimeComponent","MarketStructureContext","MarketStructureContextAnalyzer"]
+__all__=["MarketRegimeV2Runtime","MarketRegimeV2Report","MarketRegimeComponent","MarketStructureContext","MarketStructureContextAnalyzer","AdversarialMarketBehaviour","AdversarialMarketBehaviourAnalyzer"]

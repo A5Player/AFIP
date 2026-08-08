@@ -154,6 +154,7 @@ class ResearchPlanGate:
     """
 
     REQUIRED_CONTEXT = ("regime", "trend_state", "structure_state", "zone_position", "pattern_family", "pattern_name")
+    BLOCKED_ADVERSE_STATES = {"SIDEWAY_COMPRESSION_NO_TRADE", "BREAKOUT_UNCONFIRMED", "POST_SWEEP_WAITING_CONFIRMATION", "INSUFFICIENT_DATA"}
 
     def evaluate(self, *, action: str, context: Mapping[str, Any], evidence: Mapping[str, Any]) -> ResearchPlanGateDecision:
         actual = {str(key): value for key, value in dict(context or {}).items()}
@@ -165,6 +166,11 @@ class ResearchPlanGate:
         regime = _text(actual.get("regime"))
         if regime in {"UNKNOWN", "INSUFFICIENT_DATA", "TRANSITION", ""}:
             return ResearchPlanGateDecision(False, "WAIT", "market_regime_not_tradeable_for_research_plan", actual, None, 0)
+        adverse = actual.get("adversarial_market_behaviour", actual.get("market_behaviour", {}))
+        adverse = adverse if isinstance(adverse, Mapping) else {}
+        adverse_state = _text(adverse.get("threat_state"))
+        if adverse_state in self.BLOCKED_ADVERSE_STATES:
+            return ResearchPlanGateDecision(False, "WAIT", f"adversarial_market_behaviour_{adverse_state.lower()}", actual, None, 0)
         expected_direction = _text(actual.get("direction"))
         if expected_direction not in {side, "ANY"}:
             return ResearchPlanGateDecision(False, "WAIT", "plan_direction_conflicts_with_market_context", actual, None, 0)

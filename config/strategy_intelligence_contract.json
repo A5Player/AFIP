@@ -18,6 +18,19 @@
     "fail_closed_when_context_or_exact_evidence_is_missing": true,
     "execution_authority": "NONE"
   },
+  "adversarial_market_behaviour_research": {
+    "enabled": true,
+    "observable_data_only": true,
+    "never_infers_participant_intent": true,
+    "blocked_new_entry_states": [
+      "SIDEWAY_COMPRESSION_NO_TRADE",
+      "BREAKOUT_UNCONFIRMED",
+      "POST_SWEEP_WAITING_CONFIRMATION",
+      "INSUFFICIENT_DATA"
+    ],
+    "post_sweep_policy": "RESEARCH_ONLY_UNTIL_EXACT_NAMED_PATTERN_RANK_AND_RETEST_CONFIRMATION",
+    "execution_authority": "NONE"
+  },
   "hierarchical_research": {
     "required_scopes": ["PATTERN_FAMILY", "EXACT_NAMED_SHAPE"],
     "shape_dimensions": [
