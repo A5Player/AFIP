@@ -34,6 +34,7 @@ from afip.market_regime_v2 import AdversarialMarketBehaviourAnalyzer, MarketStru
 
 _TIMEFRAMES = get_supported_timeframes(capability="chronological_replay")
 _SCHEMA_VERSION = "AFIP-RESEARCH-SCHEMA-V2"
+_MARKET_SESSION_CONFIG = "config/research_metrics/market_session_closure_policy.json"
 
 
 def _utc_now() -> str:
@@ -529,6 +530,31 @@ class AutomaticResearchRuntime:
         self.status_path.parent.mkdir(parents=True, exist_ok=True)
         self.status_path.write_text(json.dumps(summary.as_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
 
+    def _timeframe_quality_engine(self) -> TimeframeDataQuality:
+        """Build session-aware quality policy without inventing market hours.
+
+        The policy is explicit, versioned configuration for the configured
+        GOLD#/XM research feed.  If unavailable or invalid, quality checking
+        stays conservative and treats every non-weekend gap as unexpected.
+        """
+        path = self.root / _MARKET_SESSION_CONFIG
+        if not path.exists():
+            return TimeframeDataQuality()
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+            closure = value.get("daily_session_closure_utc")
+            timeframes = value.get("daily_session_closure_timeframes", ())
+            dates = value.get("expected_closure_dates", ())
+            if not isinstance(closure, list) or len(closure) != 2 or not isinstance(timeframes, list):
+                return TimeframeDataQuality()
+            return TimeframeDataQuality(
+                expected_closure_dates=dates if isinstance(dates, list) else (),
+                daily_session_closure_utc=(str(closure[0]), str(closure[1])),
+                daily_session_closure_timeframes=timeframes,
+            )
+        except (OSError, TypeError, ValueError, json.JSONDecodeError):
+            return TimeframeDataQuality()
+
     def run(
         self,
         *,
@@ -551,7 +577,7 @@ class AutomaticResearchRuntime:
         bars, files, scanned, rejected = self.discover_bars()
         self.observatory.update(state="RUNNING", stage="HISTORICAL_LOADING", activity="Historical file scan completed", files_scanned=files, records_scanned=scanned, ohlc_accepted=len(bars), rejected_records=rejected)
         self._report(f"      Files: {files} | Records: {scanned} | Usable OHLC: {len(bars)} | Non-OHLC: {rejected}")
-        quality_engine = TimeframeDataQuality()
+        quality_engine = self._timeframe_quality_engine()
         initial_quality = quality_engine.evaluate(bars)
         collection_reasons, collection_timeframes = self._mt5_collection_requirements(bars, initial_quality)
         mt5_attempted = False

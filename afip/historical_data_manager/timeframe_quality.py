@@ -7,7 +7,7 @@ provider-supplied backfill records without mutating existing records.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from afip.timeframe_registry import get_seconds, get_supported_timeframes, is_supported
@@ -97,6 +97,8 @@ class TimeframeDataQuality:
         *,
         freshness_multiplier: int = 3,
         expected_closure_dates: Iterable[str | date] = (),
+        daily_session_closure_utc: tuple[str, str] | None = None,
+        daily_session_closure_timeframes: Iterable[str] = (),
     ) -> None:
         self.freshness_multiplier = max(1, int(freshness_multiplier))
         closure_dates: set[date] = set()
@@ -109,13 +111,43 @@ class TimeframeDataQuality:
             except ValueError as exc:
                 raise ValueError(f"invalid expected closure date: {value!r}") from exc
         self.expected_closure_dates = frozenset(closure_dates)
+        self.daily_session_closure_utc = self._parse_daily_closure(daily_session_closure_utc)
+        self.daily_session_closure_timeframes = frozenset(
+            str(value).strip().upper() for value in daily_session_closure_timeframes if str(value).strip()
+        )
+
+    @staticmethod
+    def _parse_daily_closure(value: tuple[str, str] | None) -> tuple[time, time] | None:
+        if value is None:
+            return None
+        if len(value) != 2:
+            raise ValueError("daily_session_closure_utc requires (start_utc, end_utc)")
+        try:
+            start = time.fromisoformat(str(value[0]))
+            end = time.fromisoformat(str(value[1]))
+        except ValueError as exc:
+            raise ValueError("daily_session_closure_utc must use HH:MM or HH:MM:SS") from exc
+        if start == end:
+            raise ValueError("daily_session_closure_utc start and end must differ")
+        return start, end
+
+    def _within_daily_session_closure(self, timestamp: datetime, timeframe: str) -> bool:
+        window = self.daily_session_closure_utc
+        if window is None or timeframe not in self.daily_session_closure_timeframes:
+            return False
+        start, end = window
+        current = timestamp.timetz().replace(tzinfo=None)
+        return start <= current < end if start < end else current >= start or current < end
 
     def _expected_market_closure(
         self,
         timestamp: datetime,
         *,
+        timeframe: str,
         weekend_closure_allowed: bool,
     ) -> tuple[bool, str | None]:
+        if self._within_daily_session_closure(timestamp, timeframe):
+            return True, "CONFIGURED_DAILY_SESSION_CLOSURE"
         if weekend_closure_allowed and timestamp.weekday() in {5, 6}:
             return True, "WEEKEND_MARKET_CLOSURE"
         if timestamp.date() in self.expected_closure_dates:
@@ -145,6 +177,7 @@ class TimeframeDataQuality:
         while candidate < right:
             is_expected, reason = self._expected_market_closure(
                 candidate,
+                timeframe=timeframe,
                 weekend_closure_allowed=weekend_closure_allowed,
             )
             if is_expected:

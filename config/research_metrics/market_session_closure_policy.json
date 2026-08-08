@@ -1,0 +1,10 @@
+{
+  "policy_id": "AFIP-GOLD-XM-MARKET-SESSION-CLOSURE-V1",
+  "instrument": "GOLD#",
+  "timezone": "UTC",
+  "daily_session_closure_utc": ["23:58", "01:00"],
+  "daily_session_closure_timeframes": ["M1", "M5", "M15", "M30", "H1", "H4"],
+  "expected_closure_dates": [],
+  "evidence_basis": "Observed repeated weekday OHLC absence from approximately 23:58 UTC until 01:00 UTC; applies only to intraday feed quality classification.",
+  "execution_authority": "NONE"
+}

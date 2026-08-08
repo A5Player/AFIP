@@ -44,6 +44,25 @@ def test_weekend_closure_is_not_an_unexpected_h4_gap() -> None:
     assert evidence.gaps[0].backfill_eligible is False
 
 
+def test_configured_intraday_rollover_is_expected_but_d1_is_not_reclassified() -> None:
+    engine = TimeframeDataQuality(
+        daily_session_closure_utc=("23:58", "01:00"),
+        daily_session_closure_timeframes=("M1", "M5", "M15", "M30", "H1", "H4"),
+    )
+    intraday = engine.evaluate(
+        [bar("M1", "2026-08-03T23:58:00Z"), bar("M1", "2026-08-04T01:00:00Z")],
+        now_utc=datetime(2026, 8, 4, 1, tzinfo=timezone.utc),
+    )["M1"]
+    daily = engine.evaluate(
+        [bar("D1", "2026-08-03T00:00:00Z"), bar("D1", "2026-08-05T00:00:00Z")],
+        now_utc=datetime(2026, 8, 5, tzinfo=timezone.utc),
+    )["D1"]
+    assert intraday.unexpected_missing_bars == 0
+    assert intraday.gaps[0].classification == "EXPECTED_MARKET_CLOSURE"
+    assert "CONFIGURED_DAILY_SESSION_CLOSURE" in intraday.gaps[0].reason_codes
+    assert daily.unexpected_missing_bars == 1
+
+
 def test_weekday_gap_remains_backfill_eligible() -> None:
     engine = TimeframeDataQuality()
     original = [bar("H1", "2026-07-27T00:00:00Z"), bar("H1", "2026-07-27T03:00:00Z")]
