@@ -139,6 +139,10 @@ class AutomaticResearchSummary:
     backfill_ranges_requested: int = 0
     backfill_bars_returned: int = 0
     backfill_bars_accepted: int = 0
+    backfill_target_evidence: tuple[dict[str, Any], ...] = ()
+    backfill_resolved_ranges: int = 0
+    backfill_unresolved_ranges: int = 0
+    backfill_missing_bars_recovered: int = 0
     standardization_status: str = "WAITING"
     standardization_reason: str = "standardization_not_evaluated"
     atr_pattern_observations: int = 0
@@ -399,6 +403,55 @@ class AutomaticResearchRuntime:
                     selected.append(gap)
         return tuple(selected)
 
+    @staticmethod
+    def _backfill_target_evidence(
+        targets: Sequence[GapRange],
+        returned: Sequence[Mapping[str, Any]],
+        post_backfill_quality: Mapping[str, TimeframeDataQuality],
+    ) -> tuple[dict[str, Any], ...]:
+        """Explain the observed result of every bounded MT5 backfill request."""
+        evidence: list[dict[str, Any]] = []
+        for gap in targets:
+            timeframe = str(gap.timeframe).upper()
+            before_missing = int(getattr(gap, "unexpected_missing_bar_count", 0) or 0)
+            returned_in_range = sum(
+                1 for item in returned
+                if str(item.get("timeframe", "")).upper() == timeframe
+                and gap.after_timestamp_utc < str(item.get("timestamp_utc", "")) < gap.before_timestamp_utc
+            )
+            remaining = 0
+            quality = post_backfill_quality.get(timeframe)
+            if quality is not None:
+                for candidate in quality.gaps:
+                    overlaps = (
+                        candidate.after_timestamp_utc < gap.before_timestamp_utc
+                        and candidate.before_timestamp_utc > gap.after_timestamp_utc
+                    )
+                    if overlaps:
+                        remaining += int(getattr(candidate, "unexpected_missing_bar_count", 0) or 0)
+            recovered = max(0, before_missing - remaining)
+            if remaining == 0:
+                outcome = "RESOLVED"
+            elif returned_in_range == 0:
+                outcome = "NO_SOURCE_BARS_RETURNED"
+            elif recovered > 0:
+                outcome = "PARTIALLY_RESOLVED"
+            else:
+                outcome = "RETURNED_BARS_DID_NOT_CLOSE_GAP"
+            identifier = f"{timeframe}|{gap.after_timestamp_utc}|{gap.before_timestamp_utc}"
+            evidence.append({
+                "target_id": hashlib.sha256(identifier.encode("utf-8")).hexdigest()[:16],
+                "timeframe": timeframe,
+                "after_timestamp_utc": gap.after_timestamp_utc,
+                "before_timestamp_utc": gap.before_timestamp_utc,
+                "unexpected_missing_bars_before": before_missing,
+                "returned_bars_in_range": returned_in_range,
+                "unexpected_missing_bars_remaining": remaining,
+                "missing_bars_recovered": recovered,
+                "outcome": outcome,
+            })
+        return tuple(evidence)
+
     def collect_mt5_bars(self, maximum_per_timeframe: int = 5000) -> list[dict[str, Any]]:
         if os.name != "nt":
             return []
@@ -633,11 +686,13 @@ class AutomaticResearchRuntime:
 
         quality_evidence_objects = quality_engine.evaluate(bars)
         initial_gaps = self._unexpected_backfill_gaps(quality_evidence_objects)
+        requested_gaps = initial_gaps[:25]
         backfill_returned = backfill_accepted = 0
+        backfill_target_evidence: tuple[dict[str, Any], ...] = ()
         if collect_mt5_when_needed and initial_gaps:
             self._write_stage("AUTOMATIC_GAP_BACKFILL", "requesting_unexpected_mt5_historical_gaps")
-            self._report(f"      Automatic backfill: requesting up to {min(25, len(initial_gaps))} detected ranges")
-            returned = self.collect_mt5_gap_backfill(initial_gaps, maximum_requests=25)
+            self._report(f"      Automatic backfill: requesting {len(requested_gaps)} unresolved ranges")
+            returned = self.collect_mt5_gap_backfill(requested_gaps, maximum_requests=25)
             backfill_returned = len(returned)
             if returned:
                 result = quality_engine.backfill(
@@ -654,6 +709,9 @@ class AutomaticResearchRuntime:
                     appended, duplicates = self.persist_historical_bars(returned)
                     lake_appended += appended
                     lake_duplicates += duplicates
+            backfill_target_evidence = self._backfill_target_evidence(
+                requested_gaps, returned, quality_evidence_objects,
+            )
             self._report(f"      Automatic backfill: returned {backfill_returned} | accepted {backfill_accepted}")
         quality_evidence = {name: item.as_dict() for name, item in quality_evidence_objects.items()}
         gap_ranges_detected = sum(item.gap_count for item in quality_evidence_objects.values())
@@ -917,9 +975,13 @@ class AutomaticResearchRuntime:
             unexpected_gap_ranges_detected=unexpected_gap_ranges_detected,
             unexpected_missing_bars_detected=unexpected_missing_bars_detected,
             freshness_review_timeframes=freshness_review,
-            backfill_ranges_requested=min(25, len(initial_gaps)),
+            backfill_ranges_requested=len(requested_gaps),
             backfill_bars_returned=backfill_returned,
             backfill_bars_accepted=backfill_accepted,
+            backfill_target_evidence=backfill_target_evidence,
+            backfill_resolved_ranges=sum(item["outcome"] == "RESOLVED" for item in backfill_target_evidence),
+            backfill_unresolved_ranges=sum(item["outcome"] != "RESOLVED" for item in backfill_target_evidence),
+            backfill_missing_bars_recovered=sum(int(item["missing_bars_recovered"]) for item in backfill_target_evidence),
             standardization_status=str(standardization.get("status", "REVIEW")),
             standardization_reason=str(standardization.get("reason", "standardization_status_missing")),
             atr_pattern_observations=int(standardization.get("atr_observation_count", 0)),
