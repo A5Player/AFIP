@@ -45,7 +45,7 @@ class DashboardAuthority:
         record: Mapping[str, Any] | None = None,
         project_root: str | Path = ".",
     ) -> DashboardBuildResult:
-        from .split_runtime import ThreeDashboardRuntime
+        from .split_runtime import LIVE_STATUS_FILENAME, ThreeDashboardRuntime
         from .home import render_dashboard_home
         from .cross_market import render_cross_market_dashboard
         from .research_operations import render_research_operations
@@ -60,9 +60,18 @@ class DashboardAuthority:
         data = dict(record or default_dashboard_record())
         data["dashboard_data_contract"] = contract
         data["profiles"] = contract.get("profiles", [])
+        data["project_root"] = str(project_root)
         p1 = _atomic_text(directory / PROFILE_FILENAME, renderer.render_profiles_html(data))
         p2 = _atomic_text(directory / INTELLIGENCE_FILENAME, renderer.render_intelligence_html(data))
         p3 = _atomic_text(directory / RESEARCH_FILENAME, renderer.render_research_html(data, project_root))
+        # Keep the lightweight dashboard build contract compatible with legacy
+        # renderers used by integrations/tests.  The production renderer owns
+        # the live-status panel; a deliberately minimal renderer can still
+        # refresh the established three priority pages without gaining any new
+        # responsibility or authority.
+        render_live_status = getattr(renderer, "render_live_status_html", None)
+        if callable(render_live_status):
+            _atomic_text(directory / LIVE_STATUS_FILENAME, render_live_status(data, project_root))
         cross = _atomic_text(directory / CROSS_MARKET_FILENAME, render_cross_market_dashboard(project_root))
         operations = _atomic_text(directory / OPERATIONS_FILENAME, render_research_operations(project_root))
         control = _atomic_text(directory / CONTROL_CENTER_FILENAME, render_control_center(project_root))
@@ -84,7 +93,7 @@ class DashboardAuthority:
         This runs in a separate background process.  It reads existing JSON
         evidence only and has no MT5 or order authority.
         """
-        from .split_runtime import ThreeDashboardRuntime
+        from .split_runtime import LIVE_STATUS_FILENAME, ThreeDashboardRuntime
         from .home import render_dashboard_home
         from .research_operations import render_research_operations
         from .launcher import default_dashboard_record
@@ -93,6 +102,17 @@ class DashboardAuthority:
         directory.mkdir(parents=True, exist_ok=True)
         renderer = ThreeDashboardRuntime()
         data = dict(record or default_dashboard_record())
+        from afip.dashboard_data_contract import build_dashboard_contract
+        contract = build_dashboard_contract(project_root)
+        data["dashboard_data_contract"] = contract
+        data["profiles"] = contract.get("profiles", [])
+        data["project_root"] = str(project_root)
+        # The production renderer publishes the independently refreshed,
+        # read-only status document.  Keep this established lightweight-build
+        # contract compatible with minimal renderers used by integrations.
+        render_live_status = getattr(renderer, "render_live_status_html", None)
+        if callable(render_live_status):
+            _atomic_text(directory / LIVE_STATUS_FILENAME, render_live_status(data, project_root))
         result = {
             # Fast pages: home, research and data-loading/operations are refreshed
             # every fast cycle.  These renderers read existing JSON evidence only.

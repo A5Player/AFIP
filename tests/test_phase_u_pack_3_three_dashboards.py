@@ -23,7 +23,8 @@ def test_dashboard_1_contains_real_finance_and_icons():
     html=ThreeDashboardRuntime().render_profiles_html({"profiles":_profiles()})
     assert "100.00" in html and "404.00" in html
     assert "💰" in html and "🏦" in html and "📈" in html
-    assert 'http-equiv="refresh" content="5"' in html
+    assert '<meta http-equiv="refresh" content="5">' not in html
+    assert 'AFIP_LIVE_STATUS_POLL_V1' in html
 
 
 def test_dashboard_1_missing_finance_is_not_zero_or_sample():

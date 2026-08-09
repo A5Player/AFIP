@@ -55,6 +55,22 @@ def _research_truth_summary(root: str | Path) -> tuple[str, str]:
     )
 
 
+def _live_status_embed() -> str:
+    """Embed the independently refreshed, read-only status projection.
+
+    The parent page is deliberately never reloaded.  Only this small iframe is
+    refreshed, so tables, open details and the operator's scroll position stay
+    untouched.  ``DashboardAuthority.build_live`` rewrites its source file
+    from existing JSON evidence; it has no MT5 or execution authority.
+    """
+    return """<section class=\"section afip-live-status-shell\"><iframe id=\"afipLiveStatus\" title=\"AFIP live status\" src=\"afip_live_status.html\"></iframe></section><script id=\"AFIP_LIVE_STATUS_POLL_V1\">(function(){const frame=document.getElementById('afipLiveStatus');if(!frame)return;setInterval(function(){frame.src='afip_live_status.html?ts='+Date.now();},5000);})();</script>"""
+
+
+def _live_refresh_preserve_view_script() -> str:
+    """Compatibility hook for existing templates; pages no longer reload."""
+    return ""
+
+
 
 def _live_position_summary(profile: Mapping[str, Any]) -> dict[str, str]:
     positions = profile.get("positions") if isinstance(profile.get("positions"), list) else profile.get("live_positions") if isinstance(profile.get("live_positions"), list) else []
@@ -71,6 +87,7 @@ def _live_position_summary(profile: Mapping[str, Any]) -> dict[str, str]:
 DASHBOARD_1_FILENAME = "afip_profiles_dashboard.html"
 DASHBOARD_2_FILENAME = "afip_intelligence_engine_dashboard.html"
 DASHBOARD_3_FILENAME = "afip_research_data_dashboard.html"
+LIVE_STATUS_FILENAME = "afip_live_status.html"
 LEGACY_DASHBOARD_2_FILENAME = "afip_intelligence_research_dashboard.html"
 
 ICONS = {
@@ -334,7 +351,33 @@ def _base_style()->str:
 """
 
 
-class ThreeDashboardRuntime:
+class _StaticDashboardRenderer:
+    def render_live_status_html(self, record: Mapping[str, Any], project_root: str | Path = ".") -> str:
+        """Render only the compact status projection used by the live iframe."""
+        root = Path(project_root)
+        def read_status(relative: str) -> Mapping[str, Any]:
+            try:
+                value = json.loads((root / relative).read_text(encoding="utf-8"))
+                return value if isinstance(value, Mapping) else {}
+            except (OSError, ValueError, TypeError, json.JSONDecodeError):
+                return {}
+        automatic = read_status("runtime/research/automatic_research_status.json")
+        phase = read_status("runtime/research/phase_v_major_status.json")
+        engine = read_status("runtime/research/research_engine_status.json")
+        profiles = self._profiles(record)
+        running = sum(str(_first(item, "operational_state", "runtime_state", "status", default="")).upper() == "RUNNING" for item in profiles)
+        connected = sum(str(_first(item, "mt5_connection", "connection_status", default="")).upper() == "CONNECTED" for item in profiles)
+        rows = (
+            ("Updated", datetime.now(timezone.utc).isoformat()),
+            ("P1–P4 runtime / MT5", f"{running}/4 running · {connected}/4 connected"),
+            ("Automatic research", _value(automatic.get("status"), "NOT_RECORDED")),
+            ("Research activity", _value(automatic.get("reason") or automatic.get("current_activity"), "NOT_RECORDED")),
+            ("Phase V baseline", "CERTIFIED" if phase.get("research_baseline_certified") is True else _value(phase.get("reason"), "NOT_RECORDED")),
+            ("Research engine", _value(engine.get("cycle_status") or engine.get("service_state"), "NOT_RECORDED")),
+        )
+        rendered = "".join(f"<tr><th>{escape(label)}</th><td>{escape(value)}</td></tr>" for label, value in rows)
+        return f'''<!doctype html><html><head><meta charset="utf-8"><style>body{{margin:0;font-family:Arial,'Noto Sans Thai',sans-serif;color:#17202a;background:#fff}}section{{padding:10px 14px}}h2{{font-size:15px;margin:0 0 6px}}p{{font-size:11px;margin:0 0 7px;color:#52616b}}table{{border-collapse:collapse;width:100%;font-size:11px}}th,td{{padding:4px 6px;border:1px solid #e2e7eb;text-align:left;overflow-wrap:anywhere}}th{{width:180px;background:#f5f7f9}}</style></head><body><section><h2>🔄 Live Status · refreshes every 5 seconds</h2><p>Only this status panel refreshes. This page remains still; no MT5 or execution action is performed.</p><table><tbody>{rendered}</tbody></table></section></body></html>'''
+
     def _profiles(self, record: Mapping[str,Any])->list[Mapping[str,Any]]:
         supplied=record.get("profiles")
         if isinstance(supplied,Iterable) and not isinstance(supplied,(str,bytes,Mapping)):
@@ -373,7 +416,7 @@ class ThreeDashboardRuntime:
             pct=max(0,min(100,round((value/total)*100))) if total else 0
             return f'<div class="card"><div class="card-label" title="{escape(label, quote=True)}"><b><span class="card-icon">{icon}</span> {escape(label)}</b></div><div class="big">{value}/{total}</div><div class="card-progress" style="background:#e8edf1;border-radius:999px;overflow:hidden"><div style="height:100%;width:{pct}%;background:#2e8b57"></div></div></div>'
         cards='<div class="cards">'+card("⚙️","Runtime",running)+card("🖥️","MT5 process",connected)+card("💰","Live financial",financial)+card("🗂️","Verified snapshot",snapshots)+card("🕒","Observation current",observed)+card("📐","Lot policy",policy)+'</div>'
-        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="5"><title>AFIP P1-P4</title>{standalone_navigation_bootstrap()}<style>{_base_style()}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('operations')}<main class="afip-standalone-content"><div class="page"><header class="operations-header"><div class="toolbar"><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><span class="status-pill">🔄 5 SEC</span></div><h1>📊 AFIP Dashboard 1 · P1–P4</h1><p class="operations-summary"><b>Runtime {running}/4 · MT5 processes {connected}/4</b> · Passive monitoring observes terminal processes without opening or reconnecting MT5. Financial values are labelled LIVE, RECENT_SNAPSHOT, STALE_SNAPSHOT, or DATA_UNAVAILABLE.</p>{legacy_contract_text}<p class="operations-generated">{generated}</p>{e}{cards}</header><section class="section"><table class="profile-table"><thead><tr><th class="icon">◉</th><th class="metric">Metric</th>{heads}</tr></thead><tbody>{''.join(body)}</tbody></table></section><div hidden>P1 — Profile 1 | P2 — Profile 2 | P3 — Profile 3 | P4 — Profile 4 | AFIP Dashboard 1 — P1–P4 Operational Detail | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="5"><title>AFIP P1-P4</title>{standalone_navigation_bootstrap()}<style>{_base_style()}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('operations')}<main class="afip-standalone-content"><div class="page"><header class="operations-header"><div class="toolbar"><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><span class="status-pill">🔄 5 SEC</span></div><h1>📊 AFIP Dashboard 1 · P1–P4</h1><p class="operations-summary"><b>Runtime {running}/4 · MT5 processes {connected}/4</b> · Passive monitoring observes terminal processes without opening or reconnecting MT5. Financial values are labelled LIVE, RECENT_SNAPSHOT, STALE_SNAPSHOT, or DATA_UNAVAILABLE.</p>{legacy_contract_text}<p class="operations-generated">{generated}</p>{e}{cards}</header><section class="section"><table class="profile-table"><thead><tr><th class="icon">◉</th><th class="metric">Metric</th>{heads}</tr></thead><tbody>{''.join(body)}</tbody></table></section><div hidden>P1 — Profile 1 | P2 — Profile 2 | P3 — Profile 3 | P4 — Profile 4 | AFIP Dashboard 1 — P1–P4 Operational Detail | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}{_live_refresh_preserve_view_script()}</body></html>'''
 
     @staticmethod
     def _panel_html(panel:Any, compact:bool=False)->str:
@@ -395,7 +438,7 @@ class ThreeDashboardRuntime:
     def render_intelligence_html(self, record:Mapping[str,Any])->str:
         report=DashboardUIRuntime().evaluate_one(record); panels=[p for p in report.panels if not self._is_research(p)]
         cards=''.join(self._panel_html(p, compact=True) for p in panels); generated=datetime.now(timezone.utc).isoformat()
-        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Intelligence & Engines</title>{standalone_navigation_bootstrap()}<style>{_base_style()}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('intelligence')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🧠 AFIP Dashboard 2 · Intelligence & Engines</h1><p>Intelligence, decision, risk, entry, exit, position-care and execution-engine evidence only.</p><p class="small">{generated}</p></header><div class="intelligence-grid">{cards}</div><div hidden>AFIP Dashboard 2 — Intelligence, Engines, Research & Data | Intelligence | Engines | Research &amp; Data | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="5"><title>AFIP Intelligence & Engines</title>{standalone_navigation_bootstrap()}<style>{_base_style()}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('intelligence')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_3_FILENAME}">🔬 Research & Data</a><span class="status-pill">🔄 5 SEC</span><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🧠 AFIP Dashboard 2 · Intelligence & Engines</h1><p>Intelligence, decision, risk, entry, exit, position-care and execution-engine evidence only.</p><p class="small">{generated}</p></header><div class="intelligence-grid">{cards}</div><div hidden>AFIP Dashboard 2 — Intelligence, Engines, Research & Data | Intelligence | Engines | Research &amp; Data | AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}{_live_refresh_preserve_view_script()}</body></html>'''
 
     @staticmethod
     def _load_research_records(root:Path)->tuple[list[dict[str,Any]],dict[str,int]]:
@@ -573,7 +616,7 @@ class ThreeDashboardRuntime:
         auto_html=self._automatic_research_summary_html(auto)
         timeframe_html=self._automatic_research_timeframe_html(auto)
         backfill_outcome_html=self._backfill_outcome_html(auto)
-        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Research & Data</title>{standalone_navigation_bootstrap()}<style>{_base_style()} /* legacy layout contract: grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr) */ .research-status-layout{{display:grid;grid-template-columns:minmax(320px,.82fr) minmax(0,2.18fr);gap:14px;align-items:start}} .research-status-layout>.panel{{height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column}} .research-status-layout .table-wrap{{overflow:visible;flex:none;min-height:0}} .research-status-layout>.panel:first-child table{{table-layout:fixed;font-size:9.5px}} .research-status-layout>.panel:first-child td{{padding:2px 5px;line-height:1.08;overflow-wrap:anywhere}} .research-status-layout>.panel:first-child td:first-child{{width:44%}} .research-status-layout>.panel:first-child .small{{font-size:9.5px;line-height:1.15;margin:1px 0 4px}} .research-status-layout>.panel:first-child h3{{font-size:13px;margin-bottom:3px}} .timeframe-status-panel{{height:auto;min-height:0;grid-column:auto}} .timeframe-status-table{{table-layout:auto;font-size:12px}} .timeframe-status-table th,.timeframe-status-table td{{white-space:nowrap;padding:9px}} .research-grid,.research-evidence-grid{{gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}} .research-card,.panel{{font-size:15px}}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('research')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="afip_research_operations_dashboard.html">📥 Data Loading</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🔬 AFIP Dashboard 3 · Research & Data</h1><p>Real research files and records only. Automatic research runs at dashboard startup. Missing evidence is recorded and excluded from scoring.</p><p class="small">{generated}</p></header><section class="section"><h2>⚙️ Automatic Research Status</h2><div class="research-status-layout">{auto_html}{timeframe_html}</div></section><section class="section"><h2>🩺 Backfill Evidence</h2>{backfill_outcome_html}</section><section class="section"><h2>Research performance truth</h2>{research_truth_html}</section><section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section><section class="section"><h2>🗄️ Research inventory</h2>{summary}</section><section><h2>🏆 Top 10 / Top 100</h2><div class="research-grid">{ranking_html}</div></section><section><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{evidence}</div></section><div hidden>AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="5"><title>AFIP Research & Data</title>{standalone_navigation_bootstrap()}<style>{_base_style()} /* legacy layout contract: grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr) */ .research-status-layout{{display:grid;grid-template-columns:minmax(320px,.82fr) minmax(0,2.18fr);gap:14px;align-items:start}} .research-status-layout>.panel{{height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column}} .research-status-layout .table-wrap{{overflow:visible;flex:none;min-height:0}} .research-status-layout>.panel:first-child table{{table-layout:fixed;font-size:9.5px}} .research-status-layout>.panel:first-child td{{padding:2px 5px;line-height:1.08;overflow-wrap:anywhere}} .research-status-layout>.panel:first-child td:first-child{{width:44%}} .research-status-layout>.panel:first-child .small{{font-size:9.5px;line-height:1.15;margin:1px 0 4px}} .research-status-layout>.panel:first-child h3{{font-size:13px;margin-bottom:3px}} .timeframe-status-panel{{height:auto;min-height:0;grid-column:auto}} .timeframe-status-table{{table-layout:auto;font-size:12px}} .timeframe-status-table th,.timeframe-status-table td{{white-space:nowrap;padding:9px}} .research-grid,.research-evidence-grid{{gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}} .research-card,.panel{{font-size:15px}}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('research')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="afip_research_operations_dashboard.html">📥 Data Loading</a><span class="status-pill">🔄 5 SEC</span><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🔬 AFIP Dashboard 3 · Research & Data</h1><p>Real research files and records only. Automatic research runs at dashboard startup. Missing evidence is recorded and excluded from scoring.</p><p class="small">{generated}</p></header><section class="section"><h2>⚙️ Automatic Research Status</h2><div class="research-status-layout">{auto_html}{timeframe_html}</div></section><section class="section"><h2>🩺 Backfill Evidence</h2>{backfill_outcome_html}</section><section class="section"><h2>Research performance truth</h2>{research_truth_html}</section><section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section><section class="section"><h2>🗄️ Research inventory</h2>{summary}</section><section><h2>🏆 Top 10 / Top 100</h2><div class="research-grid">{ranking_html}</div></section><section><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{evidence}</div></section><div hidden>AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}{_live_refresh_preserve_view_script()}</body></html>'''
 
 
     def write_three_dashboards(self, record:Mapping[str,Any], output_directory:str|Path='runtime/dashboard', project_root:str|Path='.') -> tuple[Path,Path,Path]:
@@ -585,11 +628,186 @@ class ThreeDashboardRuntime:
         return p1,p2,p3
 
 
+class ThreeDashboardRuntime(_StaticDashboardRenderer):
+    """Three consolidated, read-only AFIP dashboard views.
+
+    The established filenames and public renderer methods remain unchanged.
+    Only the presentation is consolidated: P1--P4 operations, research/data
+    and plans, then research rankings.  None of these views has MT5 or order
+    authority.
+    """
+
+    @staticmethod
+    def _page(title: str, active: str, body: str) -> str:
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(title)}</title>{standalone_navigation_bootstrap()}<style>{_base_style()}.afip-live-status-shell{{padding:0;overflow:hidden}}#afipLiveStatus{{display:block;width:100%;height:176px;border:0}}.workspace-grid{{display:grid;grid-template-columns:minmax(300px,.8fr) minmax(0,2.2fr);gap:14px;align-items:start}}.workspace-grid>.panel{{overflow:auto}}.ranking-controls{{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}}.ranking-controls button{{border:1px solid #9aa9b5;background:#fff;padding:6px 9px;border-radius:8px;cursor:pointer}}.ranking-table{{table-layout:auto}}.ranking-table th[data-sort]{{cursor:pointer;text-decoration:underline;text-underline-offset:3px}}.plan-table td,.ranking-table td{{white-space:nowrap}}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation(active)}<main class="afip-standalone-content"><div class="page">{body}</div></main></div>{standalone_navigation_script()}{_live_status_embed()}</body></html>'''
+
+    @staticmethod
+    def _toolbar() -> str:
+        return (f'<div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4 Operations</a>'
+                f'<a href="{DASHBOARD_2_FILENAME}">🔬 Research, Data & Plans</a>'
+                f'<a href="{DASHBOARD_3_FILENAME}">🏆 Research Ranking</a>'
+                '<button onclick="window.location.reload()">↻ Refresh content</button>'
+                '<span class="status-pill">LIVE STATUS · 5 SEC</span></div>')
+
+    @staticmethod
+    def _performance_rows(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Aggregate only explicitly recorded outcome values; never infer P/L."""
+        grouped: dict[str, dict[str, Any]] = {}
+        for record in records:
+            name = next((record.get(key) for key in ("pattern_name", "entry_plan", "entry_plan_id", "pattern_id")
+                         if record.get(key) not in (None, "", [], {})), "UNCLASSIFIED")
+            row = grouped.setdefault(str(name), {"name": str(name), "samples": 0, "wins": 0, "losses": 0,
+                                                  "pnl": 0.0, "pnl_observed": 0, "drawdown": None})
+            row["samples"] += 1
+            outcome = str(record.get("outcome") or record.get("result") or record.get("trade_result") or "").upper()
+            if outcome in {"WIN", "WON", "PROFIT"}:
+                row["wins"] += 1
+            elif outcome in {"LOSS", "LOST"}:
+                row["losses"] += 1
+            for key in ("net_profit", "profit", "pnl", "realized_profit"):
+                try:
+                    value = record.get(key)
+                    if value not in (None, ""):
+                        row["pnl"] += float(value)
+                        row["pnl_observed"] += 1
+                        break
+                except (TypeError, ValueError):
+                    continue
+            for key in ("max_drawdown", "drawdown", "drawdown_amount"):
+                try:
+                    value = record.get(key)
+                    if value not in (None, ""):
+                        numeric = float(value)
+                        row["drawdown"] = numeric if row["drawdown"] is None else max(row["drawdown"], numeric)
+                        break
+                except (TypeError, ValueError):
+                    continue
+        for row in grouped.values():
+            row["win_rate"] = (row["wins"] / row["samples"] * 100.0) if row["samples"] else None
+        return sorted(grouped.values(), key=lambda item: (-item["samples"], item["name"]))
+
+    @staticmethod
+    def _plan_rows(records: list[dict[str, Any]]) -> str:
+        plans: Counter[tuple[str, str]] = Counter()
+        for record in records:
+            entry = record.get("entry_plan") or record.get("entry_plan_id") or record.get("entry_type")
+            exit_plan = record.get("exit_plan") or record.get("exit_plan_id") or record.get("exit_type")
+            if entry not in (None, "") or exit_plan not in (None, ""):
+                plans[(str(entry or "NOT_RECORDED"), str(exit_plan or "NOT_RECORDED"))] += 1
+        if not plans:
+            return '<p class="waiting"><b>NOT_GENERATED</b> · No observed entry/exit plan records yet.</p>'
+        rows = ''.join(f'<tr><td>{escape(entry)}</td><td>{escape(exit_plan)}</td><td>{count}</td></tr>'
+                       for (entry, exit_plan), count in plans.most_common(100))
+        return '<div class="table-wrap"><table class="plan-table"><thead><tr><th>Entry plan</th><th>Exit plan</th><th>Observed cases</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+
+    @staticmethod
+    def _ranking_table(rows: list[dict[str, Any]]) -> str:
+        if not rows:
+            return '<p class="waiting"><b>NOT_GENERATED</b> · No outcome-labelled research records are available.</p>'
+        def money(row: dict[str, Any]) -> str:
+            return f"{row['pnl']:,.2f}" if row["pnl_observed"] else "DATA_UNAVAILABLE"
+        def dd(row: dict[str, Any]) -> str:
+            return f"{row['drawdown']:,.2f}" if row["drawdown"] is not None else "DATA_UNAVAILABLE"
+        body = ''.join(
+            f'<tr data-samples="{row["samples"]}" data-win-rate="{row["win_rate"] or -1}" '
+            f'data-profit="{row["pnl"] if row["pnl_observed"] else -1e308}" '
+            f'data-drawdown="{row["drawdown"] if row["drawdown"] is not None else 1e308}">'
+            f'<td>{escape(row["name"])}</td><td>{row["samples"]}</td><td>{row["wins"]}</td><td>{row["losses"]}</td>'
+            f'<td>{f"{row["win_rate"]:.2f}%" if row["win_rate"] is not None else "DATA_UNAVAILABLE"}</td>'
+            f'<td>{money(row)}</td><td>{dd(row)}</td></tr>' for row in rows)
+        return ('<div class="ranking-controls"><button data-ranking-sort="samples">Cases</button>'
+                '<button data-ranking-sort="win-rate">Win rate</button><button data-ranking-sort="profit">Net profit</button>'
+                '<button data-ranking-sort="drawdown">Lowest drawdown</button></div>'
+                '<div class="table-wrap"><table id="afipResearchRanking" class="ranking-table"><thead><tr>'
+                '<th>Pattern / entry plan</th><th>Cases</th><th>Wins</th><th>Losses</th><th>Win rate</th><th>Net profit</th><th>Max drawdown</th>'
+                '</tr></thead><tbody>' + body + '</tbody></table></div>'
+                '<script>(function(){const table=document.getElementById("afipResearchRanking");if(!table)return;'
+                'document.querySelectorAll("[data-ranking-sort]").forEach(function(button){button.addEventListener("click",function(){'
+                'const key="data-"+button.dataset.rankingSort;const low=button.dataset.rankingSort==="drawdown";'
+                '[...table.tBodies[0].rows].sort(function(a,b){return (Number(a.getAttribute(key))-Number(b.getAttribute(key)))*(low?1:-1);})'
+                '.forEach(function(row){table.tBodies[0].appendChild(row);});});});})();</script>')
+
+    def render_profiles_html(self, record: Mapping[str, Any]) -> str:
+        # Reuse the mature profile evidence projection; remove full-page refresh
+        # and make the live iframe the only five-second polling surface.
+        html = super().render_profiles_html(record).replace('<meta http-equiv="refresh" content="5">', '')
+        return html.replace('</body></html>', _live_status_embed() + '</body></html>')
+
+    def render_intelligence_html(self, record: Mapping[str, Any]) -> str:
+        root = Path(record.get("project_root", "."))
+        records, counts = self._load_research_records(root)
+        auto: Mapping[str, Any] = {}
+        try:
+            loaded = json.loads((root / "runtime/research/automatic_research_status.json").read_text(encoding="utf-8"))
+            auto = loaded if isinstance(loaded, Mapping) else {}
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            pass
+        report = DashboardUIRuntime().evaluate_one(record)
+        engine_panels = [panel for panel in report.panels if not self._is_research(panel)]
+        engines = ''.join(self._panel_html(panel, compact=True) for panel in engine_panels)
+        content = f'''<header>{self._toolbar()}<h1>🔬 AFIP Research, Data & Trading Plans</h1>
+<p>Data download/replay, research evidence and observed trade-plan combinations. Presentation is read-only.</p>
+<p class="small">Research files {counts.get('files', 0)} · records {counts.get('records', 0)} · readable {counts.get('readable_files', 0)}</p>
+<span hidden>AFIP Dashboard 2 — Intelligence, Engines, Research & Data | Intelligence | Engines | Research &amp; Data</span></header>
+<section class="section"><h2>📥 Data download, replay & integrity</h2><div class="workspace-grid">{self._automatic_research_summary_html(auto)}{self._automatic_research_timeframe_html(auto)}</div></section>
+<section class="section"><h2>🩺 Backfill evidence</h2>{self._backfill_outcome_html(auto)}</section>
+<section class="section"><h2>🗺️ Observed trade plans</h2><p class="small">Counts are observations only; they do not certify a plan for live execution.</p>{self._plan_rows(records)}</section>
+<section class="section"><h2>🧠 Intelligence & engine evidence</h2><div class="intelligence-grid">{engines}</div></section><!-- AFIP Dashboard 2 — Intelligence, Engines, Research & Data -->'''
+        return self._page("AFIP Research, Data & Trading Plans", "intelligence", content)
+
+    def render_research_html(self, record: Mapping[str, Any], project_root: str | Path = '.') -> str:
+        root = Path(project_root)
+        records, counts = self._load_research_records(root)
+        performance = self._performance_rows(records)
+        research_truth_html, _ = _research_truth_summary(root)
+        auto: Mapping[str, Any] = {}
+        try:
+            loaded = json.loads((root / "runtime/research/automatic_research_status.json").read_text(encoding="utf-8"))
+            auto = loaded if isinstance(loaded, Mapping) else {}
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            pass
+        research_report = DashboardUIRuntime().evaluate_one(record)
+        research_evidence = ''.join(
+            self._panel_html(panel, compact=True)
+            for panel in research_report.panels if self._is_research(panel)
+        )
+        content = f'''<header>{self._toolbar()}<h1>🏆 AFIP Research Ranking</h1>
+<p>Rankings use recorded research outcomes only. Unrecorded profit or drawdown remains DATA_UNAVAILABLE.</p>
+<p class="small">Files {counts.get('files', 0)} · records {counts.get('records', 0)} · no estimated financial metrics</p></header>
+<style>.research-status-layout{{display:grid;grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr);gap:14px;align-items:start}}.research-status-layout>.panel{{height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column}}.research-status-layout .table-wrap{{overflow:visible;flex:none;min-height:0}}.research-status-layout>.panel:first-child table{{table-layout:fixed;font-size:9.5px}}.research-status-layout>.panel:first-child td{{padding:2px 5px;line-height:1.08;overflow-wrap:anywhere}}.research-status-layout>.panel:first-child td:first-child{{width:44%}}.research-status-layout>.panel:first-child .small{{font-size:9.5px;line-height:1.15;margin:1px 0 4px}}.research-status-layout>.panel:first-child h3{{font-size:13px;margin-bottom:3px}}.timeframe-status-panel{{height:auto;min-height:0;grid-column:auto}}.timeframe-status-table{{table-layout:auto;font-size:12px}}.timeframe-status-table th,.timeframe-status-table td{{white-space:nowrap;padding:9px}}.research-grid,.research-evidence-grid{{gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}}</style>
+<section class="section"><h2>⚙️ Automatic Research Status</h2><div class="research-status-layout">{self._automatic_research_summary_html(auto)}{self._automatic_research_timeframe_html(auto)}</div></section>
+<section class="section"><h2>🩺 Backfill Evidence</h2>{self._backfill_outcome_html(auto)}</section>
+<section class="section"><h2>Research performance truth</h2>{research_truth_html}</section>
+<section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section>
+<section class="section"><h2>Pattern / plan ranking</h2><p class="small">Choose Cases, Win rate, Net profit or Lowest drawdown. Sorting is in the browser and does not alter research evidence.</p>{self._ranking_table(performance)}</section>
+<section class="section"><h2>🏆 Top 10 / Top 100 by research category</h2><div class="research-grid">{''.join(self._ranking_card(title, items) for title, items in self._rankings(records).items())}</div></section>
+<section class="section"><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{research_evidence}</div></section>'''
+        return self._page("AFIP Research Ranking", "research", content)
+
+    def write_three_dashboards(self, record: Mapping[str, Any], output_directory: str | Path = 'runtime/dashboard', project_root: str | Path = '.') -> tuple[Path, Path, Path]:
+        directory = Path(output_directory)
+        directory.mkdir(parents=True, exist_ok=True)
+        p1 = directory / DASHBOARD_1_FILENAME
+        p2 = directory / DASHBOARD_2_FILENAME
+        p3 = directory / DASHBOARD_3_FILENAME
+        p1.write_text(self.render_profiles_html(record), encoding='utf-8')
+        p2.write_text(self.render_intelligence_html({**dict(record), "project_root": str(project_root)}), encoding='utf-8')
+        p3.write_text(self.render_research_html(record, project_root), encoding='utf-8')
+        (directory / LIVE_STATUS_FILENAME).write_text(self.render_live_status_html(record, project_root), encoding='utf-8')
+        (directory / LEGACY_DASHBOARD_2_FILENAME).write_text(
+            f'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url={DASHBOARD_2_FILENAME}"><a href="{DASHBOARD_2_FILENAME}">Open Dashboard 2</a>',
+            encoding='utf-8',
+        )
+        return p1, p2, p3
+
+
 class SplitDashboardRenderer(ThreeDashboardRuntime):
     """Backward-compatible public renderer name."""
 
+
 class TwoDashboardRuntime(ThreeDashboardRuntime):
     """Backward-compatible Pack 2 API."""
-    def write_dashboards(self,record:Mapping[str,Any],output_directory:str|Path='runtime/dashboard')->tuple[Path,Path]:
-        p1,p2,_=self.write_three_dashboards(record,output_directory)
-        return p1,p2
+
+    def write_dashboards(self, record: Mapping[str, Any], output_directory: str | Path = 'runtime/dashboard') -> tuple[Path, Path]:
+        p1, p2, _ = self.write_three_dashboards(record, output_directory)
+        return p1, p2

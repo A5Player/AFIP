@@ -20,7 +20,8 @@ def _record():
 def test_dashboard_one_is_separate_and_refreshes_every_five_seconds():
     html = TwoDashboardRuntime().render_profiles_html(_record())
     assert "AFIP Dashboard 1 — P1–P4 Operational Detail" in html
-    assert '<meta http-equiv="refresh" content="5">' in html
+    assert '<meta http-equiv="refresh" content="5">' not in html
+    assert 'AFIP_LIVE_STATUS_POLL_V1' in html
     assert all(f"P{i} — Profile {i}" in html for i in range(1, 5))
     assert DASHBOARD_2_FILENAME in html
 
@@ -30,6 +31,7 @@ def test_dashboard_two_is_manual_refresh_and_contains_categories():
     assert "AFIP Dashboard 2 — Intelligence, Engines, Research & Data" in html
     assert "window.location.reload()" in html
     assert 'http-equiv="refresh"' not in html
+    assert 'AFIP_LIVE_STATUS_POLL_V1' in html
     assert "Intelligence" in html
     assert "Engines" in html
     assert "Research &amp; Data" in html
