@@ -376,6 +376,29 @@ class AutomaticResearchRuntime:
             requested.extend(get_supported_timeframes(capability="historical_collection"))
         return tuple(dict.fromkeys(reasons)), tuple(dict.fromkeys(requested))
 
+    @staticmethod
+    def _unexpected_backfill_gaps(
+        quality: Mapping[str, TimeframeDataQuality],
+    ) -> tuple[GapRange, ...]:
+        """Return only unresolved gaps that can benefit from an MT5 backfill.
+
+        Expected market-session and historic-holiday closures are valid absence
+        evidence, not missing candles.  Asking MT5 to backfill them consumes
+        the bounded request budget and can starve genuine unexplained gaps.
+        """
+        selected: list[GapRange] = []
+        for timeframe in _TIMEFRAMES:
+            evidence = quality.get(timeframe)
+            if evidence is None:
+                continue
+            for gap in evidence.gaps:
+                unexpected = getattr(gap, "unexpected_missing_bar_count", None)
+                if unexpected is None:
+                    unexpected = getattr(gap, "missing_bar_count", 0)
+                if gap.backfill_eligible and int(unexpected or 0) > 0:
+                    selected.append(gap)
+        return tuple(selected)
+
     def collect_mt5_bars(self, maximum_per_timeframe: int = 5000) -> list[dict[str, Any]]:
         if os.name != "nt":
             return []
@@ -609,14 +632,10 @@ class AutomaticResearchRuntime:
             self._report(f"      Historical lake: appended {lake_appended} | duplicates {lake_duplicates}")
 
         quality_evidence_objects = quality_engine.evaluate(bars)
-        initial_gaps = tuple(
-            gap for timeframe in _TIMEFRAMES
-            for gap in quality_evidence_objects[timeframe].gaps
-            if gap.backfill_eligible
-        )
+        initial_gaps = self._unexpected_backfill_gaps(quality_evidence_objects)
         backfill_returned = backfill_accepted = 0
         if collect_mt5_when_needed and initial_gaps:
-            self._write_stage("AUTOMATIC_GAP_BACKFILL", "requesting_detected_mt5_historical_gaps")
+            self._write_stage("AUTOMATIC_GAP_BACKFILL", "requesting_unexpected_mt5_historical_gaps")
             self._report(f"      Automatic backfill: requesting up to {min(25, len(initial_gaps))} detected ranges")
             returned = self.collect_mt5_gap_backfill(initial_gaps, maximum_requests=25)
             backfill_returned = len(returned)
