@@ -518,6 +518,9 @@ class ThreeDashboardRuntime:
             ("Backfill requested", auto.get("backfill_ranges_requested", 0)),
             ("Backfill returned", auto.get("backfill_bars_returned", 0)),
             ("Backfill accepted", auto.get("backfill_bars_accepted", 0)),
+            ("Backfill resolved ranges", auto.get("backfill_resolved_ranges", 0)),
+            ("Backfill unresolved ranges", auto.get("backfill_unresolved_ranges", 0)),
+            ("Backfill missing bars recovered", auto.get("backfill_missing_bars_recovered", 0)),
             ("Freshness review", ', '.join(auto.get("freshness_review_timeframes", ())) or "NONE"),
             ("Live execution enabled", auto.get("live_execution_enabled", False)),
             ("Order send called", auto.get("order_send_called", False)),
@@ -525,6 +528,37 @@ class ThreeDashboardRuntime:
         rows=''.join(f'<tr><td>{escape(str(k))}</td><td>{escape(str(v))}</td></tr>' for k,v in values)
         status=str(auto.get("status","waiting"))
         return f'<div class="panel"><div class="toolbar"><h3>⚙️ Automatic Research Runtime</h3><span class="status-pill {escape(status.lower())}">{escape(status)}</span></div><p class="small">Research evidence only. It has no authority to change live trading policy.</p><div class="table-wrap"><table><tbody>{rows}</tbody></table></div></div>'
+
+    @staticmethod
+    def _backfill_outcome_html(auto: Mapping[str, Any]) -> str:
+        evidence = auto.get("backfill_target_evidence")
+        if not isinstance(evidence, list) or not evidence:
+            return '<div class="panel"><h3>🩺 Backfill Outcomes</h3><p class="waiting"><b>NOT_RECORDED</b> · Run automatic research to record the selected unresolved ranges and their MT5 result.</p></div>'
+        rows = []
+        for item in evidence:
+            if not isinstance(item, Mapping):
+                continue
+            rows.append(
+                '<tr>'
+                f'<td><b>{escape(str(item.get("timeframe", "UNKNOWN")))}</b></td>'
+                f'<td>{escape(str(item.get("after_timestamp_utc", "")))}</td>'
+                f'<td>{escape(str(item.get("before_timestamp_utc", "")))}</td>'
+                f'<td>{escape(str(item.get("unexpected_missing_bars_before", 0)))}</td>'
+                f'<td>{escape(str(item.get("returned_bars_in_range", 0)))}</td>'
+                f'<td>{escape(str(item.get("missing_bars_recovered", 0)))}</td>'
+                f'<td>{escape(str(item.get("unexpected_missing_bars_remaining", 0)))}</td>'
+                f'<td>{escape(str(item.get("outcome", "NOT_RECORDED")))}</td>'
+                '</tr>'
+            )
+        return (
+            '<div class="panel"><div class="toolbar"><h3>🩺 MT5 Backfill Outcome Evidence</h3>'
+            '<span class="status-pill">RESEARCH ONLY</span></div>'
+            '<p class="small">Only unexpected gaps are requested. No-source outcomes remain visible and continue to block baseline certification until independently evidenced.</p>'
+            '<div class="table-wrap"><table class="timeframe-status-table"><thead><tr>'
+            '<th>TF</th><th>After</th><th>Before</th><th>Missing before</th><th>MT5 returned</th>'
+            '<th>Recovered</th><th>Remaining</th><th>Outcome</th>'
+            '</tr></thead><tbody>' + ''.join(rows) + '</tbody></table></div></div>'
+        )
 
     def render_research_html(self, record:Mapping[str,Any], project_root:str|Path='.') -> str:
         root=Path(project_root); report=DashboardUIRuntime().evaluate_one(record); research_panels=[p for p in report.panels if self._is_research(p)]
@@ -538,7 +572,8 @@ class ThreeDashboardRuntime:
             except (OSError,json.JSONDecodeError): auto={}
         auto_html=self._automatic_research_summary_html(auto)
         timeframe_html=self._automatic_research_timeframe_html(auto)
-        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Research & Data</title>{standalone_navigation_bootstrap()}<style>{_base_style()} /* legacy layout contract: grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr) */ .research-status-layout{{display:grid;grid-template-columns:minmax(320px,.82fr) minmax(0,2.18fr);gap:14px;align-items:start}} .research-status-layout>.panel{{height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column}} .research-status-layout .table-wrap{{overflow:visible;flex:none;min-height:0}} .research-status-layout>.panel:first-child table{{table-layout:fixed;font-size:9.5px}} .research-status-layout>.panel:first-child td{{padding:2px 5px;line-height:1.08;overflow-wrap:anywhere}} .research-status-layout>.panel:first-child td:first-child{{width:44%}} .research-status-layout>.panel:first-child .small{{font-size:9.5px;line-height:1.15;margin:1px 0 4px}} .research-status-layout>.panel:first-child h3{{font-size:13px;margin-bottom:3px}} .timeframe-status-panel{{height:auto;min-height:0;grid-column:auto}} .timeframe-status-table{{table-layout:auto;font-size:12px}} .timeframe-status-table th,.timeframe-status-table td{{white-space:nowrap;padding:9px}} .research-grid,.research-evidence-grid{{gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}} .research-card,.panel{{font-size:15px}}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('research')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="afip_research_operations_dashboard.html">📥 Data Loading</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🔬 AFIP Dashboard 3 · Research & Data</h1><p>Real research files and records only. Automatic research runs at dashboard startup. Missing evidence is recorded and excluded from scoring.</p><p class="small">{generated}</p></header><section class="section"><h2>⚙️ Automatic Research Status</h2><div class="research-status-layout">{auto_html}{timeframe_html}</div></section><section class="section"><h2>Research performance truth</h2>{research_truth_html}</section><section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section><section class="section"><h2>🗄️ Research inventory</h2>{summary}</section><section><h2>🏆 Top 10 / Top 100</h2><div class="research-grid">{ranking_html}</div></section><section><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{evidence}</div></section><div hidden>AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
+        backfill_outcome_html=self._backfill_outcome_html(auto)
+        return f'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFIP Research & Data</title>{standalone_navigation_bootstrap()}<style>{_base_style()} /* legacy layout contract: grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr) */ .research-status-layout{{display:grid;grid-template-columns:minmax(320px,.82fr) minmax(0,2.18fr);gap:14px;align-items:start}} .research-status-layout>.panel{{height:auto;min-height:0;overflow:visible;display:flex;flex-direction:column}} .research-status-layout .table-wrap{{overflow:visible;flex:none;min-height:0}} .research-status-layout>.panel:first-child table{{table-layout:fixed;font-size:9.5px}} .research-status-layout>.panel:first-child td{{padding:2px 5px;line-height:1.08;overflow-wrap:anywhere}} .research-status-layout>.panel:first-child td:first-child{{width:44%}} .research-status-layout>.panel:first-child .small{{font-size:9.5px;line-height:1.15;margin:1px 0 4px}} .research-status-layout>.panel:first-child h3{{font-size:13px;margin-bottom:3px}} .timeframe-status-panel{{height:auto;min-height:0;grid-column:auto}} .timeframe-status-table{{table-layout:auto;font-size:12px}} .timeframe-status-table th,.timeframe-status-table td{{white-space:nowrap;padding:9px}} .research-grid,.research-evidence-grid{{gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}} .research-card,.panel{{font-size:15px}}{standalone_navigation_css()}</style></head><body><button class="afip-menu-toggle" id="afipMenuToggle">☰ Menu</button><div class="afip-standalone-shell">{standalone_navigation('research')}<main class="afip-standalone-content"><div class="page"><header><div class="toolbar"><a href="{DASHBOARD_1_FILENAME}">📊 P1–P4</a><a href="{DASHBOARD_2_FILENAME}">🧠 Intelligence & Engines</a><a href="afip_research_operations_dashboard.html">📥 Data Loading</a><button onclick="window.location.reload()">🔄 Refresh</button></div><h1>🔬 AFIP Dashboard 3 · Research & Data</h1><p>Real research files and records only. Automatic research runs at dashboard startup. Missing evidence is recorded and excluded from scoring.</p><p class="small">{generated}</p></header><section class="section"><h2>⚙️ Automatic Research Status</h2><div class="research-status-layout">{auto_html}{timeframe_html}</div></section><section class="section"><h2>🩺 Backfill Evidence</h2>{backfill_outcome_html}</section><section class="section"><h2>Research performance truth</h2>{research_truth_html}</section><section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section><section class="section"><h2>🗄️ Research inventory</h2>{summary}</section><section><h2>🏆 Top 10 / Top 100</h2><div class="research-grid">{ranking_html}</div></section><section><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{evidence}</div></section><div hidden>AFIP Dashboard — Milestone H Pack 9 | AFIP Dashboard — Milestone H Pack 10</div></div></main></div>{standalone_navigation_script()}</body></html>'''
 
 
     def write_three_dashboards(self, record:Mapping[str,Any], output_directory:str|Path='runtime/dashboard', project_root:str|Path='.') -> tuple[Path,Path,Path]:

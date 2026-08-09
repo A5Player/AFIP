@@ -15,6 +15,26 @@
     "2023-04-07", "2023-12-25", "2024-01-01", "2024-03-29", "2024-12-25",
     "2025-01-01", "2025-04-18", "2025-12-25", "2026-01-01", "2026-04-03"
   ],
-  "evidence_basis": "Observed D1 absence only on the listed historic closure dates (Christmas, New Year, Good Friday, and observed substitute closures), plus repeated weekday intraday absence from approximately 23:58 UTC until 01:00 UTC. No future dates are inferred.",
+  "observed_closure_windows": [
+    {"start_utc": "2026-03-09T22:30:00Z", "end_utc": "2026-03-10T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-10T22:30:00Z", "end_utc": "2026-03-11T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-11T22:30:00Z", "end_utc": "2026-03-12T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-12T22:30:00Z", "end_utc": "2026-03-13T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-13T22:30:00Z", "end_utc": "2026-03-14T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-16T22:30:00Z", "end_utc": "2026-03-17T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-17T22:30:00Z", "end_utc": "2026-03-18T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-18T22:30:00Z", "end_utc": "2026-03-19T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-19T22:30:00Z", "end_utc": "2026-03-20T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-20T22:30:00Z", "end_utc": "2026-03-21T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-23T22:30:00Z", "end_utc": "2026-03-24T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-24T22:30:00Z", "end_utc": "2026-03-25T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-25T22:30:00Z", "end_utc": "2026-03-26T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-26T22:30:00Z", "end_utc": "2026-03-27T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-03-27T22:30:00Z", "end_utc": "2026-03-28T00:00:00Z", "timeframes": ["M30", "H1"], "reason_code": "OBSERVED_HISTORIC_SESSION_CLOSURE"},
+    {"start_utc": "2026-05-25T21:00:00Z", "end_utc": "2026-05-26T01:00:00Z", "timeframes": ["M15", "M30", "H1"], "reason_code": "OBSERVED_HISTORIC_EARLY_CLOSE"},
+    {"start_utc": "2026-06-19T19:30:00Z", "end_utc": "2026-06-22T01:00:00Z", "timeframes": ["M15", "M30", "H1"], "reason_code": "OBSERVED_HISTORIC_EARLY_CLOSE"},
+    {"start_utc": "2026-07-03T19:30:00Z", "end_utc": "2026-07-06T01:00:00Z", "timeframes": ["M5", "M15", "M30", "H1"], "reason_code": "OBSERVED_HISTORIC_EARLY_CLOSE"}
+  ],
+  "evidence_basis": "Observed D1 absence only on the listed historic closure dates, observed weekday intraday absence around 23:58 UTC until 01:00 UTC, and only the bounded 2026 historic session/early-close windows listed above. No future dates or hours are inferred.",
   "execution_authority": "NONE"
 }

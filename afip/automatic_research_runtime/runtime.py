@@ -621,12 +621,14 @@ class AutomaticResearchRuntime:
             closure = value.get("daily_session_closure_utc")
             timeframes = value.get("daily_session_closure_timeframes", ())
             dates = value.get("expected_closure_dates", ())
+            observed_windows = value.get("observed_closure_windows", ())
             if not isinstance(closure, list) or len(closure) != 2 or not isinstance(timeframes, list):
                 return TimeframeDataQuality()
             return TimeframeDataQuality(
                 expected_closure_dates=dates if isinstance(dates, list) else (),
                 daily_session_closure_utc=(str(closure[0]), str(closure[1])),
                 daily_session_closure_timeframes=timeframes,
+                observed_closure_windows=observed_windows if isinstance(observed_windows, list) else (),
             )
         except (OSError, TypeError, ValueError, json.JSONDecodeError):
             return TimeframeDataQuality()

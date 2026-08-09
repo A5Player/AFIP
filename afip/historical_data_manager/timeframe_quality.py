@@ -89,6 +89,16 @@ class BackfillResult:
         return payload
 
 
+@dataclass(frozen=True)
+class ObservedClosureWindow:
+    """A bounded historic closure directly evidenced by the configured feed."""
+
+    start_utc: datetime
+    end_utc: datetime
+    timeframes: frozenset[str]
+    reason_code: str
+
+
 class TimeframeDataQuality:
     """Evaluate registered timeframe bars and safely merge backfill output."""
 
@@ -99,6 +109,7 @@ class TimeframeDataQuality:
         expected_closure_dates: Iterable[str | date] = (),
         daily_session_closure_utc: tuple[str, str] | None = None,
         daily_session_closure_timeframes: Iterable[str] = (),
+        observed_closure_windows: Iterable[Mapping[str, Any]] = (),
     ) -> None:
         self.freshness_multiplier = max(1, int(freshness_multiplier))
         closure_dates: set[date] = set()
@@ -115,6 +126,23 @@ class TimeframeDataQuality:
         self.daily_session_closure_timeframes = frozenset(
             str(value).strip().upper() for value in daily_session_closure_timeframes if str(value).strip()
         )
+        self.observed_closure_windows = tuple(
+            self._parse_observed_closure_window(value) for value in observed_closure_windows
+        )
+
+    @staticmethod
+    def _parse_observed_closure_window(value: Mapping[str, Any]) -> ObservedClosureWindow:
+        start = _parse_utc(value.get("start_utc"))
+        end = _parse_utc(value.get("end_utc"))
+        timeframes = frozenset(str(item).strip().upper() for item in value.get("timeframes", ()) if str(item).strip())
+        reason = str(value.get("reason_code", "OBSERVED_HISTORIC_MARKET_CLOSURE")).strip().upper()
+        if start is None or end is None or start >= end:
+            raise ValueError("observed closure window requires increasing UTC start_utc and end_utc")
+        if not timeframes:
+            raise ValueError("observed closure window requires one or more timeframes")
+        if not reason:
+            raise ValueError("observed closure window requires a reason_code")
+        return ObservedClosureWindow(start, end, timeframes, reason)
 
     @staticmethod
     def _parse_daily_closure(value: tuple[str, str] | None) -> tuple[time, time] | None:
@@ -146,6 +174,9 @@ class TimeframeDataQuality:
         timeframe: str,
         weekend_closure_allowed: bool,
     ) -> tuple[bool, str | None]:
+        for window in self.observed_closure_windows:
+            if timeframe in window.timeframes and window.start_utc <= timestamp < window.end_utc:
+                return True, window.reason_code
         if self._within_daily_session_closure(timestamp, timeframe):
             return True, "CONFIGURED_DAILY_SESSION_CLOSURE"
         if weekend_closure_allowed and timestamp.weekday() in {5, 6}:
