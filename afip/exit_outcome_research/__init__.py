@@ -7,6 +7,7 @@ from .runtime import (
     PositionOutcome,
     PositionResearchCase,
 )
+from .a16_contract import A16ResearchContext, candidate_policy_ids, validate_advisory_record
 
 __all__ = [
     "ExitAlternativeRecord",
@@ -15,4 +16,7 @@ __all__ = [
     "ExitResearchPolicy",
     "PositionOutcome",
     "PositionResearchCase",
+    "A16ResearchContext",
+    "candidate_policy_ids",
+    "validate_advisory_record",
 ]

@@ -7,5 +7,8 @@
   "rerun_old_patterns": false,
   "candidate_capital_source": "REPLAYED_MARGIN_RISK_DRAWDOWN_AND_TRANSACTION_COST",
   "outputs": ["technical_minimum_usd", "operational_capital_usd", "robust_capital_usd"],
-  "automatic_production_promotion_allowed": false
+  "automatic_production_promotion_allowed": false,
+  "decision_future_data_allowed": false,
+  "outcome_evaluation_requires_subsequent_closed_bars": true,
+  "outcome_evaluation_method": "BLIND_FORWARD_CLOSED_BAR_LABEL_AFTER_DECISION_TIME"
 }

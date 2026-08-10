@@ -56,6 +56,7 @@ class SingleUnitProfitObservation:
     transaction_cost_points: float
     cross_market_context_id: str
     future_data_used: bool = False
+    outcome_evaluation_uses_subsequent_closed_bars: bool = True
     data_quality_status: str = "PASS"
 
     def __post_init__(self) -> None:
@@ -78,6 +79,8 @@ class SingleUnitProfitObservation:
             raise ValueError("cross-market context is required")
         if self.future_data_used or self.data_quality_status != "PASS":
             raise ValueError("only leakage-free PASS profit evidence is eligible")
+        if not self.outcome_evaluation_uses_subsequent_closed_bars:
+            raise ValueError("outcome evaluation requires subsequent closed bars")
 
     @property
     def research_key(self) -> str:
@@ -139,6 +142,7 @@ class InitialCapitalObservation:
     cross_market_context_id: str
     lot: float = 0.01
     future_data_used: bool = False
+    outcome_evaluation_uses_subsequent_closed_bars: bool = True
     data_quality_status: str = "PASS"
 
     def __post_init__(self) -> None:
@@ -160,6 +164,8 @@ class InitialCapitalObservation:
             raise ValueError("cross-market context is required")
         if self.future_data_used or self.data_quality_status != "PASS":
             raise ValueError("only leakage-free PASS capital evidence is eligible")
+        if not self.outcome_evaluation_uses_subsequent_closed_bars:
+            raise ValueError("outcome evaluation requires subsequent closed bars")
 
     @property
     def research_key(self) -> str:

@@ -482,6 +482,7 @@ class ATRBufferPatternObservation:
     research_identity: PatternResearchIdentity | None = None
     shape_signature: PatternShapeSignature | None = None
     cross_market_context_id: str = ""
+    outcome_evaluation_uses_subsequent_closed_bars: bool = True
 
     def __post_init__(self) -> None:
         if not self.pattern_id.strip() or self.pattern_sequence <= 0 or not self.context_segment_id.strip():
@@ -490,8 +491,12 @@ class ATRBufferPatternObservation:
             raise ValueError("outcome must be WIN, LOSS, or FLAT")
         if not math.isfinite(float(self.result_points)):
             raise ValueError("result points must be finite")
-        if self.data_quality_status != "PASS" or self.future_data_used:
+        if self.future_data_used:
+            raise ValueError("decision evidence must be free of future data")
+        if self.data_quality_status != "PASS":
             raise ValueError("only leakage-free PASS research evidence is eligible")
+        if not self.outcome_evaluation_uses_subsequent_closed_bars:
+            raise ValueError("outcome evaluation requires subsequent closed bars")
 
     @property
     def research_key(self) -> str:

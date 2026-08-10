@@ -79,5 +79,8 @@
   "same_bar_resolution": "SL_FIRST",
   "data_quality_required": "PASS",
   "future_data_allowed": false,
+  "decision_future_data_allowed": false,
+  "outcome_evaluation_requires_subsequent_closed_bars": true,
+  "outcome_evaluation_method": "BLIND_FORWARD_CLOSED_BAR_LABEL_AFTER_DECISION_TIME",
   "standard_scope": "RESEARCH_ACTIVE_VERSIONED_APPEND_ONLY"
 }
