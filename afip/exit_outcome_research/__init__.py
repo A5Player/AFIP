@@ -9,6 +9,7 @@ from .runtime import (
 )
 from .a16_contract import A16ResearchContext, candidate_policy_ids, validate_advisory_record
 from .a16_core import A16ExitResearchRunner, A16PolicySet
+from .a16_r_ladder import RLadderProposal, RLadderResearch
 
 __all__ = [
     "ExitAlternativeRecord",
@@ -22,4 +23,6 @@ __all__ = [
     "validate_advisory_record",
     "A16ExitResearchRunner",
     "A16PolicySet",
+    "RLadderProposal",
+    "RLadderResearch",
 ]
