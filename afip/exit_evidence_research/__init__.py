@@ -7,6 +7,7 @@ from .runtime import (
     PolicyComparison,
     SegmentEvidenceSummary,
 )
+from .a16_evidence import A16ExitObservation, A16PolicyRanking, rank_a16_policies
 
 __all__ = [
     "ContextSegment",
@@ -15,4 +16,7 @@ __all__ = [
     "ExitEvidenceResearchEngine",
     "PolicyComparison",
     "SegmentEvidenceSummary",
+    "A16ExitObservation",
+    "A16PolicyRanking",
+    "rank_a16_policies",
 ]
