@@ -12,6 +12,7 @@ from .a16_bridge import outcome_to_a16_evidence
 from .a16_report import A16ResearchReport, build_a16_research_report
 from .a16_completion import A16ResearchCertification, A16ResearchCompletion
 from .a17_replay_intake import A17ReplayIntakeRun, A17ReplayResearchIntake
+from .a18_observability import A18ResearchRuntimeStatus, A18ResearchObservability
 
 __all__ = [
     "ContextSegment",
@@ -30,4 +31,6 @@ __all__ = [
     "A16ResearchCompletion",
     "A17ReplayIntakeRun",
     "A17ReplayResearchIntake",
+    "A18ResearchRuntimeStatus",
+    "A18ResearchObservability",
 ]
