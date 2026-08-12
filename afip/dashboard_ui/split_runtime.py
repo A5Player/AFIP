@@ -764,6 +764,17 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
             except (ValueError, TypeError, json.JSONDecodeError): pass
         return sorted(values, key=lambda item: int(item.get('research_rank', 10**9)))
 
+    @staticmethod
+    def _a18_research_status_html(root: Path) -> str:
+        path=root/'runtime'/'research'/'a18_research_runtime_status.jsonl'
+        try:
+            lines=[line for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
+            record=json.loads(lines[-1]).get('record',{}) if lines else {}
+        except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError): record={}
+        if not isinstance(record,Mapping) or not record:
+            return '<article class="panel"><h3>A18 Research Progress</h3><p><b>NOT_RECORDED</b> · No persisted research heartbeat.</p></article>'
+        return f'<article class="panel"><h3>A18 Research Progress</h3><p><b>{escape(str(record.get("status","INVALID")))}</b> · {escape(str(record.get("progress_current","?")))}/{escape(str(record.get("progress_total","?")))}</p><p>Heartbeat: {escape(str(record.get("heartbeat_at_utc","UNKNOWN")))}</p><p>Reason: {escape(str(record.get("reason_code","UNKNOWN")))}</p><p>Authority: RESEARCH_ONLY</p></article>'
+
     def render_profiles_html(self, record: Mapping[str, Any]) -> str:
         # Reuse the mature profile evidence projection; remove full-page refresh
         # and make the live iframe the only five-second polling surface.
@@ -819,6 +830,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>Research performance truth</h2>{research_truth_html}</section>
 <section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
+<section class="section"><h2>📡 A18 Research Runtime Status</h2>{self._a18_research_status_html(root)}</section>
 <section class="section"><h2>Pattern / plan ranking</h2><p class="small">Choose Cases, Win rate, Net profit or Lowest drawdown. Sorting is in the browser and does not alter research evidence.</p>{self._ranking_table(performance)}</section>
 <section class="section"><h2>🏆 Top 10 / Top 100 by research category</h2><div class="research-grid">{''.join(self._ranking_card(title, items) for title, items in self._rankings(records).items())}</div></section>
 <section class="section"><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{research_evidence}</div></section>'''
