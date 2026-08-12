@@ -9,6 +9,7 @@ from .runtime import (
 )
 from .a16_evidence import A16ExitObservation, A16PolicyRanking, rank_a16_policies
 from .a16_bridge import outcome_to_a16_evidence
+from .a16_report import A16ResearchReport, build_a16_research_report
 
 __all__ = [
     "ContextSegment",
@@ -21,4 +22,6 @@ __all__ = [
     "A16PolicyRanking",
     "rank_a16_policies",
     "outcome_to_a16_evidence",
+    "A16ResearchReport",
+    "build_a16_research_report",
 ]
