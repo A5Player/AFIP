@@ -752,6 +752,18 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<div class="table-wrap"><table><thead><tr><th>Policy</th><th>Samples</th><th>Expectancy after cost (R)</th><th>Win rate</th><th>MFE R</th><th>MAE R</th><th>Giveback R</th></tr></thead><tbody>'
                 + ''.join(rows) + '</tbody></table></div>')
 
+    @staticmethod
+    def _a16_rankings_from_dataset(root: Path) -> list[dict[str, Any]]:
+        path = root / 'runtime' / 'research' / 'a16_exit_policy_rankings.jsonl'
+        if not path.exists(): return []
+        values=[]
+        for line in path.read_text(encoding='utf-8').splitlines():
+            try:
+                envelope=json.loads(line); record=envelope.get('record', {})
+                if isinstance(record, Mapping): values.append(dict(record))
+            except (ValueError, TypeError, json.JSONDecodeError): pass
+        return sorted(values, key=lambda item: int(item.get('research_rank', 10**9)))
+
     def render_profiles_html(self, record: Mapping[str, Any]) -> str:
         # Reuse the mature profile evidence projection; remove full-page refresh
         # and make the live iframe the only five-second polling surface.
@@ -782,6 +794,8 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 
     def render_research_html(self, record: Mapping[str, Any], project_root: str | Path = '.') -> str:
         root = Path(project_root)
+        if not record.get("a16_policy_rankings"):
+            record = {**dict(record), "a16_policy_rankings": self._a16_rankings_from_dataset(root)}
         records, counts = self._load_research_records(root)
         performance = self._performance_rows(records)
         research_truth_html, _ = _research_truth_summary(root)

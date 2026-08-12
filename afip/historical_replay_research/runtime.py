@@ -215,6 +215,7 @@ class AppendOnlyResearchDataset:
         "milestone_t_certification_evidence", "milestone_t_closure_certifications",
         "milestone_t_final_handoffs",
         "continuity_dashboard_records",
+        "a16_exit_evidence_observations", "a16_exit_policy_rankings", "a16_exit_research_certifications",
     )
 
     def __init__(self, root: str | Path) -> None:
