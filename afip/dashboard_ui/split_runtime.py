@@ -727,6 +727,31 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '[...table.tBodies[0].rows].sort(function(a,b){return (Number(a.getAttribute(key))-Number(b.getAttribute(key)))*(low?1:-1);})'
                 '.forEach(function(row){table.tBodies[0].appendChild(row);});});});})();</script>')
 
+    @staticmethod
+    def _a16_exit_research_html(record: Mapping[str, Any]) -> str:
+        """Render supplied A16 rankings only; this presentation has no authority."""
+        rankings = record.get("a16_policy_rankings", ()) or ()
+        if not isinstance(rankings, (list, tuple)):
+            return '<p class="waiting"><b>NOT_GENERATED</b> · A16 ranking payload is invalid.</p>'
+        if not rankings:
+            return '<p class="waiting"><b>NOT_GENERATED</b> · A16 exit-policy research has not reached its minimum sample yet.</p>'
+        rows = []
+        for value in rankings:
+            if not isinstance(value, Mapping):
+                continue
+            rows.append('<tr><td>{}</td><td>{}</td><td>{:.4f}</td><td>{:.2%}</td><td>{:.4f}</td><td>{:.4f}</td><td>{:.4f}</td></tr>'.format(
+                escape(_value(value.get("policy_id"), "UNKNOWN")),
+                escape(_value(value.get("sample_size"), "DATA_UNAVAILABLE")),
+                float(value.get("expectancy_after_cost_r", 0.0)), float(value.get("win_rate", 0.0)),
+                float(value.get("average_mfe_r", 0.0)), float(value.get("average_mae_r", 0.0)),
+                float(value.get("average_giveback_r", 0.0)),
+            ))
+        if not rows:
+            return '<p class="waiting"><b>NOT_GENERATED</b> · No readable A16 ranking rows were supplied.</p>'
+        return ('<p class="small">Research-only · blind-forward outcomes · no automatic promotion · execution authority: NONE</p>'
+                '<div class="table-wrap"><table><thead><tr><th>Policy</th><th>Samples</th><th>Expectancy after cost (R)</th><th>Win rate</th><th>MFE R</th><th>MAE R</th><th>Giveback R</th></tr></thead><tbody>'
+                + ''.join(rows) + '</tbody></table></div>')
+
     def render_profiles_html(self, record: Mapping[str, Any]) -> str:
         # Reuse the mature profile evidence projection; remove full-page refresh
         # and make the live iframe the only five-second polling surface.
@@ -779,6 +804,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🩺 Backfill Evidence</h2>{self._backfill_outcome_html(auto)}</section>
 <section class="section"><h2>Research performance truth</h2>{research_truth_html}</section>
 <section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section>
+<section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
 <section class="section"><h2>Pattern / plan ranking</h2><p class="small">Choose Cases, Win rate, Net profit or Lowest drawdown. Sorting is in the browser and does not alter research evidence.</p>{self._ranking_table(performance)}</section>
 <section class="section"><h2>🏆 Top 10 / Top 100 by research category</h2><div class="research-grid">{''.join(self._ranking_card(title, items) for title, items in self._rankings(records).items())}</div></section>
 <section class="section"><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{research_evidence}</div></section>'''
