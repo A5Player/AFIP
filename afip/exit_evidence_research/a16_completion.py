@@ -40,3 +40,30 @@ class A16ResearchCompletion:
         )
         self.dataset.append("a16_exit_research_certifications", certification.as_dict())
         return report, certification
+
+    def rank_recorded_evidence(self) -> tuple[A16ResearchReport, A16ResearchCertification]:
+        """Rank already-recorded evidence without rewriting any observation.
+
+        This is the safe entry point for replay intake: observations are first
+        appended exactly once, while ranking/certification remains a separate,
+        append-only derived record.
+        """
+        observations = tuple(
+            A16ExitObservation(**dict(envelope["record"]))
+            for envelope in self.dataset.records("a16_exit_evidence_observations")
+        )
+        rankings = rank_a16_policies(observations, self.minimum_sample_size) if observations else ()
+        for item in rankings:
+            self.dataset.append("a16_exit_policy_rankings", asdict(item))
+        report = build_a16_research_report(rankings)
+        certification = A16ResearchCertification(
+            status="READY" if rankings else "WAIT",
+            reason="research_ranking_available" if rankings else "minimum_research_sample_not_met",
+            observation_count=len(observations),
+            ranking_count=len(rankings),
+            append_only_verified=all(self.dataset.verify(name) for name in (
+                "a16_exit_evidence_observations", "a16_exit_policy_rankings",
+            )),
+        )
+        self.dataset.append("a16_exit_research_certifications", certification.as_dict())
+        return report, certification
