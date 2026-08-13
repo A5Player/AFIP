@@ -18,6 +18,11 @@ from .a20_holding_exit import (
     A20HoldingExitRanking,
     A20HoldingExitResearch,
 )
+from .a21_holding_exit_producer import (
+    A21HoldingBucket,
+    A21HoldingExitEvidenceProducer,
+    A21ProductionResult,
+)
 
 __all__ = [
     "ContextSegment",
@@ -41,4 +46,7 @@ __all__ = [
     "A20HoldingExitObservation",
     "A20HoldingExitRanking",
     "A20HoldingExitResearch",
+    "A21HoldingBucket",
+    "A21HoldingExitEvidenceProducer",
+    "A21ProductionResult",
 ]
