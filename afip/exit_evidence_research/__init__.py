@@ -13,6 +13,11 @@ from .a16_report import A16ResearchReport, build_a16_research_report
 from .a16_completion import A16ResearchCertification, A16ResearchCompletion
 from .a17_replay_intake import A17ReplayIntakeRun, A17ReplayResearchIntake
 from .a18_observability import A18ResearchRuntimeStatus, A18ResearchObservability
+from .a20_holding_exit import (
+    A20HoldingExitObservation,
+    A20HoldingExitRanking,
+    A20HoldingExitResearch,
+)
 
 __all__ = [
     "ContextSegment",
@@ -33,4 +38,7 @@ __all__ = [
     "A17ReplayResearchIntake",
     "A18ResearchRuntimeStatus",
     "A18ResearchObservability",
+    "A20HoldingExitObservation",
+    "A20HoldingExitRanking",
+    "A20HoldingExitResearch",
 ]
