@@ -102,6 +102,11 @@ class A21HoldingExitEvidenceProducer:
             )
             observations.append(observation)
         self.research.record(observations)
+        for observation in observations:
+            source = observation.as_dict()
+            source["decision_timestamp_utc"] = context.decision_timestamp_utc
+            source["outcome_method"] = context.outcome_evaluation_method
+            self.dataset.append("a22_holding_exit_validation_observations", source)
         return A21ProductionResult(tuple(observations), self.research.rank_recorded())
 
     def _bucket(self, holding_bars: int) -> str:

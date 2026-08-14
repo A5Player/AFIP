@@ -219,6 +219,8 @@ class AppendOnlyResearchDataset:
         "a17_exit_replay_intake_runs",
         "a18_research_runtime_status",
         "a20_holding_exit_observations", "a20_holding_exit_rankings",
+        "a22_holding_exit_validation_observations", "a22_holding_exit_validation_results",
+        "a23_holding_exit_certifications",
     )
 
     def __init__(self, root: str | Path) -> None:

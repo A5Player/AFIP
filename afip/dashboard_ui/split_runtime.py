@@ -775,6 +775,29 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
             return '<article class="panel"><h3>A18 Research Progress</h3><p><b>NOT_RECORDED</b> · No persisted research heartbeat.</p></article>'
         return f'<article class="panel"><h3>A18 Research Progress</h3><p><b>{escape(str(record.get("status","INVALID")))}</b> · {escape(str(record.get("progress_current","?")))}/{escape(str(record.get("progress_total","?")))}</p><p>Heartbeat: {escape(str(record.get("heartbeat_at_utc","UNKNOWN")))}</p><p>Reason: {escape(str(record.get("reason_code","UNKNOWN")))}</p><p>Authority: RESEARCH_ONLY</p></article>'
 
+    @staticmethod
+    def _a22_holding_exit_validation_html(root: Path) -> str:
+        path=root/'runtime'/'research'/'a22_holding_exit_validation_results.jsonl'
+        try:
+            rows=[]
+            for line in path.read_text(encoding='utf-8').splitlines():
+                if not line.strip(): continue
+                value=json.loads(line).get('record',{})
+                if isinstance(value,Mapping): rows.append(dict(value))
+        except (OSError,ValueError,TypeError,KeyError,json.JSONDecodeError): rows=[]
+        if not rows:
+            return '<article class="panel"><h3>A22 Holding/Exit Validation</h3><p><b>NOT_GENERATED</b> · No walk-forward result recorded.</p><p>Execution authority: NONE</p></article>'
+        order={'ROBUST':0,'REJECTED':1,'WAIT':2};rows.sort(key=lambda x:(order.get(str(x.get('status')),9),str(x.get('result_id'))))
+        body=[]
+        for item in rows[:100]:
+            part=item.get('partition',{}) if isinstance(item.get('partition'),Mapping) else {}
+            body.append('<tr>'+''.join(f'<td>{escape(str(v))}</td>' for v in (
+                item.get('status','?'),part.get('policy_id','?'),part.get('holding_bucket_id','?'),
+                part.get('timeframe','?'),part.get('market_regime','?'),part.get('session_name','?'),
+                item.get('blind_forward_samples','?'),item.get('blind_forward_expectancy_r','DATA_UNAVAILABLE'),
+                item.get('out_of_sample_degradation_r','DATA_UNAVAILABLE'),item.get('reason','?')) )+'</tr>')
+        return '<article class="panel"><h3>A22 Holding/Exit Validation</h3><p>Read-only · no automatic promotion · execution authority: NONE</p><div class="table-wrap"><table><thead><tr><th>Status</th><th>Policy</th><th>Holding</th><th>TF</th><th>Regime</th><th>Session</th><th>Blind samples</th><th>Blind expectancy R</th><th>Degradation R</th><th>Reason</th></tr></thead><tbody>'+''.join(body)+'</tbody></table></div></article>'
+
     def render_profiles_html(self, record: Mapping[str, Any]) -> str:
         # Reuse the mature profile evidence projection; remove full-page refresh
         # and make the live iframe the only five-second polling surface.
@@ -831,6 +854,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
 <section class="section"><h2>📡 A18 Research Runtime Status</h2>{self._a18_research_status_html(root)}</section>
+<section class="section"><h2>⏱️ A20–A23 Holding & Exit Research</h2>{self._a22_holding_exit_validation_html(root)}</section>
 <section class="section"><h2>Pattern / plan ranking</h2><p class="small">Choose Cases, Win rate, Net profit or Lowest drawdown. Sorting is in the browser and does not alter research evidence.</p>{self._ranking_table(performance)}</section>
 <section class="section"><h2>🏆 Top 10 / Top 100 by research category</h2><div class="research-grid">{''.join(self._ranking_card(title, items) for title, items in self._rankings(records).items())}</div></section>
 <section class="section"><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{research_evidence}</div></section>'''
