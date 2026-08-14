@@ -855,10 +855,29 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
 <section class="section"><h2>📡 A18 Research Runtime Status</h2>{self._a18_research_status_html(root)}</section>
 <section class="section"><h2>⏱️ A20–A23 Holding & Exit Research</h2>{self._a22_holding_exit_validation_html(root)}</section>
+<section class="section"><h2>🎯 A24 TP Buffer & Volume-Aware Exit Research</h2>{self._a24_tp_volume_html(root)}</section>
 <section class="section"><h2>Pattern / plan ranking</h2><p class="small">Choose Cases, Win rate, Net profit or Lowest drawdown. Sorting is in the browser and does not alter research evidence.</p>{self._ranking_table(performance)}</section>
 <section class="section"><h2>🏆 Top 10 / Top 100 by research category</h2><div class="research-grid">{''.join(self._ranking_card(title, items) for title, items in self._rankings(records).items())}</div></section>
 <section class="section"><h2>📚 Research systems & dataset evidence</h2><div class="research-evidence-grid">{research_evidence}</div></section>'''
         return self._page("AFIP Research Ranking", "research", content)
+
+    def _a24_tp_volume_html(self, root: Path) -> str:
+        rows = []
+        path = root / 'runtime/research/a24_tp_volume_summaries.jsonl'
+        try:
+            for line in path.read_text(encoding='utf-8').splitlines():
+                envelope = json.loads(line); item = envelope.get('record', envelope)
+                if isinstance(item, Mapping): rows.append(item)
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            pass
+        body = ''.join('<tr>'+''.join(f'<td>{escape(str(v))}</td>' for v in (
+            item.get('recommended_action','?'), item.get('timeframe','?'),
+            item.get('market_regime','?'), item.get('session_name','?'),
+            item.get('sample_size','?'), item.get('expectancy_after_cost_r','DATA_UNAVAILABLE'),
+            item.get('average_holding_seconds','DATA_UNAVAILABLE')))+'</tr>' for item in rows[:100])
+        if not body:
+            body = '<tr><td colspan="7">DATA_UNAVAILABLE — no eligible A24 outcome summary</td></tr>'
+        return '<article class="panel"><h3>A24 TP Approach Buffer + MT5 Tick Volume</h3><p>Research-only advisory · no order sent · no automatic promotion · execution authority: NONE</p><div class="table-wrap"><table><thead><tr><th>Action</th><th>TF</th><th>Regime</th><th>Session</th><th>Samples</th><th>Expectancy R</th><th>Avg hold sec</th></tr></thead><tbody>'+body+'</tbody></table></div></article>'
 
     def write_three_dashboards(self, record: Mapping[str, Any], output_directory: str | Path = 'runtime/dashboard', project_root: str | Path = '.') -> tuple[Path, Path, Path]:
         directory = Path(output_directory)

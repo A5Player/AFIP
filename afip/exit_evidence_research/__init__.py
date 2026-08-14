@@ -30,6 +30,14 @@ from .a22_walk_forward import (
     A22WalkForwardWindow,
 )
 from .a23_completion import A23HoldingExitCertification, A23HoldingExitCompletion
+from .a24_tp_volume import (
+    A24ActionSummary,
+    A24AdvisoryDecision,
+    A24DecisionContext,
+    A24OutcomeEvidence,
+    A24TPVolumePolicy,
+    A24TPVolumeResearch,
+)
 
 __all__ = [
     "ContextSegment",
@@ -62,4 +70,10 @@ __all__ = [
     "A22WalkForwardWindow",
     "A23HoldingExitCertification",
     "A23HoldingExitCompletion",
+    "A24ActionSummary",
+    "A24AdvisoryDecision",
+    "A24DecisionContext",
+    "A24OutcomeEvidence",
+    "A24TPVolumePolicy",
+    "A24TPVolumeResearch",
 ]
