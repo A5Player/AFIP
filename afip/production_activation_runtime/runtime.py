@@ -20,6 +20,8 @@ from afip.complete_trade_plan import (
     PositionCarePlan,
 )
 from afip.engine.trade_lifecycle_engine import TradeLifecycleEngine
+from afip.exit_evidence_research.a24_tp_volume import A24DecisionContext, A24TPVolumeResearch
+from afip.historical_replay_research import AppendOnlyResearchDataset
 from afip.position_care_runtime import PositionCareSnapshot, PositionCareSupervisor
 
 
@@ -60,6 +62,9 @@ class ProductionActivationRuntime:
         self.ledger_path = self.activation_root / "activation_ledger.jsonl"
         self.lifecycle = TradeLifecycleEngine()
         self.care = PositionCareSupervisor()
+        self.a24_research = A24TPVolumeResearch(
+            AppendOnlyResearchDataset(self.runtime_root / "research")
+        )
 
     @staticmethod
     def _identity(*parts: Any) -> str:
@@ -287,6 +292,11 @@ class ProductionActivationRuntime:
             )
             care = self.care.evaluate(plan=plan, snapshot=snapshot)
             action_result = self._execute_position_action(mt5=mt5, position=position, decision=care)
+            a24_advisory = self._observe_a24_tp_volume(
+                mt5=mt5, position=position, plan=plan, plan_payload=plan_payload,
+                snapshot=snapshot, risk_points=risk_points,
+                intelligence=current_intelligence or {},
+            )
             record = {
                 "ticket": ticket,
                 "execution_trace_id": execution_trace_id,
@@ -295,6 +305,7 @@ class ProductionActivationRuntime:
                 "position_care": care.as_dict(),
                 "intelligence_context": intelligence_context,
                 "mt5_action": action_result,
+                "a24_tp_volume_advisory": a24_advisory,
                 "profit_management_plan": dict(ticket_profit_plan),
                 "profit_management_thresholds": {
                     "break_even_trigger_r": break_even_trigger_r,
@@ -329,6 +340,138 @@ class ProductionActivationRuntime:
         }
         _atomic_json(self.activation_root / "position_care_status.json", result)
         return result
+
+    def _observe_a24_tp_volume(
+        self, *, mt5: Any, position: Any, plan: CompleteTradePlan,
+        plan_payload: Mapping[str, Any], snapshot: PositionCareSnapshot,
+        risk_points: float, intelligence: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        """Append one A24 advisory for the latest closed H1 bar.
+
+        The advisory is deliberately isolated from ``_execute_position_action``.
+        Missing or malformed research inputs fail closed without interrupting
+        certified position care, and no value returned here can reach MT5 order
+        check/send methods.
+        """
+        unavailable = {
+            "status": "DATA_UNAVAILABLE", "research_only": True,
+            "execution_authority": "NONE", "no_order_sent": True,
+        }
+        if risk_points <= 0 or snapshot.current_take_profit_price <= 0:
+            return {**unavailable, "reason": "initial_risk_or_take_profit_unavailable"}
+        rates_reader = getattr(mt5, "copy_rates_from_pos", None)
+        timeframe = getattr(mt5, "TIMEFRAME_H1", None)
+        if not callable(rates_reader) or timeframe is None:
+            return {**unavailable, "reason": "closed_h1_reader_unavailable"}
+        try:
+            # Position zero is the forming candle. A24 decisions may consume
+            # only bars one and older so future/incomplete data cannot leak in.
+            raw_rows = rates_reader(self.profile.symbol, timeframe, 1, 21)
+            rows = [] if raw_rows is None else list(raw_rows)
+            candles = sorted(
+                (self._rate_mapping(row) for row in rows),
+                key=lambda row: int(row.get("time", 0) or 0),
+            )
+        except Exception:
+            return {**unavailable, "reason": "closed_h1_read_failed"}
+        if len(candles) < 2:
+            return {**unavailable, "reason": "closed_h1_history_insufficient"}
+        latest = candles[-1]
+        previous = candles[:-1]
+        volumes = [max(0.0, float(row.get("tick_volume", row.get("real_volume", 0.0)) or 0.0))
+                   for row in previous]
+        ranges: list[float] = []
+        for index, row in enumerate(candles):
+            high = float(row.get("high", 0.0) or 0.0)
+            low = float(row.get("low", 0.0) or 0.0)
+            prior_close = float(candles[index - 1].get("close", 0.0) or 0.0) if index else 0.0
+            values = (high - low, abs(high - prior_close), abs(low - prior_close)) if index else (high - low,)
+            ranges.append(max(values))
+        symbol_info = mt5.symbol_info(self.profile.symbol)
+        point = max(float(_value(symbol_info, "point", 0.01) or 0.01), 1e-12)
+        high = float(latest.get("high", 0.0) or 0.0)
+        low = float(latest.get("low", 0.0) or 0.0)
+        close = float(latest.get("close", 0.0) or 0.0)
+        candle_range = max(0.0, high - low)
+        favorable_wick = (max(0.0, high - close) if snapshot.direction == "BUY"
+                          else max(0.0, close - low))
+        observed_at = datetime.fromtimestamp(
+            int(latest.get("time", 0) or 0), tz=timezone.utc
+        ) if int(latest.get("time", 0) or 0) > 0 else datetime.now(timezone.utc).replace(microsecond=0)
+        regime = self._a24_regime(intelligence)
+        try:
+            context = A24DecisionContext(
+                research_case_id=f"{plan.plan_id}:TICKET-{snapshot.ticket}",
+                decision_timestamp_utc=observed_at.isoformat(), direction=snapshot.direction,
+                current_price=snapshot.current_price,
+                target_price=snapshot.current_take_profit_price, point_size=point,
+                initial_risk_points=risk_points,
+                atr_points=(sum(ranges) / len(ranges)) / point,
+                spread_points=max(0.0, float(_value(symbol_info, "spread", 0.0) or 0.0)),
+                tick_volume=max(0.0, float(latest.get("tick_volume", latest.get("real_volume", 0.0)) or 0.0)),
+                volume_baseline=(sum(volumes) / len(volumes)) if volumes else 0.0,
+                volume_sample_size=len(volumes),
+                favorable_wick_ratio=(favorable_wick / candle_range) if candle_range > 0 else 0.0,
+                unrealized_r=snapshot.favorable_points / risk_points,
+                maximum_favorable_r=self._maximum_favorable_r(
+                    ticket=int(snapshot.ticket), current_favorable_points=snapshot.favorable_points,
+                    risk_points=risk_points,
+                ),
+                position_units=max(1, len([ticket for ticket in plan_payload.get("tickets", ()) if ticket])),
+                holding_bars=max(0, snapshot.holding_seconds // 3600), timeframe="H1",
+                market_regime=regime, session_name=self._utc_session(observed_at.hour),
+                event_window="NOT_CONNECTED", calendar_context="NOT_CONNECTED",
+                decision_uses_closed_bar_data_only=True, future_data_used=False,
+            )
+            decision = self.a24_research.advise(context)
+        except ValueError as exc:
+            if "already exists" in str(exc):
+                return {**unavailable, "status": "DUPLICATE_SUPPRESSED",
+                        "reason": "latest_closed_h1_already_observed"}
+            return {**unavailable, "reason": "a24_context_invalid", "detail": str(exc)}
+        except Exception as exc:
+            return {**unavailable, "reason": "a24_append_failed", "detail": type(exc).__name__}
+        return {"status": "RECORDED", **decision.as_dict()}
+
+    @staticmethod
+    def _rate_mapping(value: Any) -> dict[str, Any]:
+        if isinstance(value, Mapping):
+            return dict(value)
+        if hasattr(value, "_asdict"):
+            return dict(value._asdict())
+        return {name: getattr(value, name) for name in
+                ("time", "open", "high", "low", "close", "tick_volume", "real_volume")
+                if hasattr(value, name)}
+
+    @staticmethod
+    def _a24_regime(intelligence: Mapping[str, Any]) -> str:
+        modular = intelligence.get("modular_intelligence", {}) if isinstance(intelligence, Mapping) else {}
+        regime = modular.get("market_regime", {}) if isinstance(modular, Mapping) else {}
+        return str(regime.get("regime", regime.get("market_regime", "UNCLASSIFIED"))) or "UNCLASSIFIED"
+
+    @staticmethod
+    def _utc_session(hour: int) -> str:
+        if 7 <= hour < 12:
+            return "LONDON"
+        if 12 <= hour < 17:
+            return "LONDON_NEW_YORK_OVERLAP"
+        if 17 <= hour < 22:
+            return "NEW_YORK"
+        return "ASIA_OR_OFF_HOURS"
+
+    def _maximum_favorable_r(self, *, ticket: int, current_favorable_points: float,
+                              risk_points: float) -> float:
+        maximum = max(0.0, current_favorable_points)
+        if self.ledger_path.exists():
+            try:
+                for line in self.ledger_path.read_text(encoding="utf-8").splitlines():
+                    row = json.loads(line)
+                    if row.get("event") == "POSITION_CARE" and int(row.get("ticket", 0) or 0) == ticket:
+                        position = row.get("position_snapshot", {})
+                        maximum = max(maximum, float(position.get("favorable_points", 0.0) or 0.0))
+            except (OSError, ValueError, TypeError):
+                pass
+        return maximum / risk_points if risk_points > 0 else 0.0
 
     def _reconcile_closed_positions(self, *, mt5: Any, open_tickets: set[int]) -> list[dict[str, Any]]:
         """Record broker-closed certified tickets for research only.
