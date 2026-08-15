@@ -452,12 +452,29 @@ class _StaticDashboardRenderer:
                 if path.suffix.lower()=='.jsonl':
                     for line in path.read_text(encoding='utf-8',errors='replace').splitlines():
                         if line.strip():
-                            obj=json.loads(line); records.append(obj if isinstance(obj,dict) else {'value':obj,'source_file':rel}); counts['records']+=1
+                            obj=json.loads(line)
+                            if isinstance(obj,dict) and isinstance(obj.get('record'),dict):
+                                value=dict(obj['record'])
+                                value['_record_sequence']=obj.get('record_sequence')
+                                value['_chain_checksum']=obj.get('chain_checksum')
+                            elif isinstance(obj,dict): value=dict(obj)
+                            else: value={'value':obj}
+                            value['_source_file']=rel
+                            value['_dataset_name']=path.stem
+                            value['_research_category']=ThreeDashboardRuntime._research_category(path.stem)
+                            records.append(value); counts['records']+=1
                 else:
                     obj=json.loads(path.read_text(encoding='utf-8',errors='replace'))
                     if isinstance(obj,list):
-                        for item in obj: records.append(item if isinstance(item,dict) else {'value':item,'source_file':rel}); counts['records']+=1
-                    elif isinstance(obj,dict): records.append(obj); counts['records']+=1
+                        for item in obj:
+                            value=dict(item) if isinstance(item,dict) else {'value':item}
+                            value['_source_file']=rel;value['_dataset_name']=path.stem
+                            value['_research_category']=ThreeDashboardRuntime._research_category(path.stem)
+                            records.append(value);counts['records']+=1
+                    elif isinstance(obj,dict):
+                        value=dict(obj);value['_source_file']=rel;value['_dataset_name']=path.stem
+                        value['_research_category']=ThreeDashboardRuntime._research_category(path.stem)
+                        records.append(value);counts['records']+=1
                 counts['readable_files']+=1
             except (OSError,json.JSONDecodeError,UnicodeError): counts['unreadable_files']+=1
         return records,dict(counts)
@@ -650,11 +667,118 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<span class="status-pill">LIVE STATUS · 5 SEC</span></div>')
 
     @staticmethod
+    def _research_category(dataset_name: str) -> str:
+        name = str(dataset_name).strip().lower()
+        rules = (
+            ("EXIT, HOLDING & TP", ("exit", "holding", "position_outcome", "position_lifecycle", "a16_", "a17_", "a20_", "a21_", "a22_", "a23_", "a24_")),
+            ("CAPITAL, RISK & PROFIT", ("capital", "single_unit_profit", "profit", "risk", "drawdown", "financial")),
+            ("ENTRY, PATTERN & STRUCTURE", ("pattern", "staggered_entry", "atr_buffer", "market_regime", "structure", "setup")),
+            ("DATA, REPLAY & QUALITY", ("historical", "replay", "snapshot", "candidate", "timeline", "backfill", "timeframe", "data_quality", "mt5_historical", "coverage")),
+            ("PLANS, RANKING & CERTIFICATION", ("ranking", "plan", "promotion", "certification", "standard", "selection", "comparison", "evaluation")),
+            ("RUNTIME & OBSERVABILITY", ("runtime", "observability", "continuity", "checkpoint", "dashboard", "status", "recovery")),
+        )
+        for category, tokens in rules:
+            if any(token in name for token in tokens):
+                return category
+        return "OTHER RESEARCH EVIDENCE"
+
+    @classmethod
+    def _research_catalogue(cls, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        grouped: dict[tuple[str, str], dict[str, Any]] = {}
+        for record in records:
+            dataset = str(record.get("_dataset_name", "UNKNOWN"))
+            category = str(record.get("_research_category", cls._research_category(dataset)))
+            row = grouped.setdefault((category, dataset), {
+                "category": category, "dataset": dataset, "records": 0,
+                "outcomes": 0, "ranked": 0, "chained": 0,
+            })
+            row["records"] += 1
+            if any(record.get(key) not in (None, "") for key in
+                   ("outcome", "result", "trade_result", "realized_r", "net_realized_r", "realized_profit")):
+                row["outcomes"] += 1
+            if any(record.get(key) not in (None, "") for key in
+                   ("research_rank", "rank", "overall_rank", "eligible_rank")):
+                row["ranked"] += 1
+            if record.get("_chain_checksum") not in (None, ""):
+                row["chained"] += 1
+        return sorted(grouped.values(), key=lambda item: (item["category"], item["dataset"]))
+
+    @classmethod
+    def _research_catalogue_html(cls, records: list[dict[str, Any]]) -> str:
+        catalogue = cls._research_catalogue(records)
+        if not catalogue:
+            return '<p class="waiting"><b>DATA_UNAVAILABLE</b> · No persisted research dataset was found.</p>'
+        categories: dict[str, list[dict[str, Any]]] = {}
+        for item in catalogue:
+            categories.setdefault(item["category"], []).append(item)
+        summary_rows = ''.join(
+            f'<tr><td><b>{escape(category)}</b></td><td>{len(items)}</td>'
+            f'<td>{sum(item["records"] for item in items)}</td>'
+            f'<td>{sum(item["outcomes"] for item in items)}</td>'
+            f'<td>{sum(item["ranked"] for item in items)}</td></tr>'
+            for category, items in categories.items()
+        )
+        details = []
+        for category, items in categories.items():
+            rows = ''.join(
+                f'<tr><td>{escape(item["dataset"])}</td><td>{item["records"]}</td>'
+                f'<td>{item["outcomes"]}</td><td>{item["ranked"]}</td>'
+                f'<td>{"APPEND_ONLY_CHAINED" if item["chained"] == item["records"] else "MIXED_OR_PLAIN_JSON"}</td></tr>'
+                for item in items
+            )
+            details.append(
+                f'<details><summary>{escape(category)} · {len(items)} datasets</summary>'
+                '<div class="table-wrap"><table><thead><tr><th>Dataset</th><th>Records</th>'
+                '<th>Outcome evidence</th><th>Ranked records</th><th>Persistence</th></tr></thead>'
+                f'<tbody>{rows}</tbody></table></div></details>'
+            )
+        return ('<div class="table-wrap"><table><thead><tr><th>Research category</th><th>Datasets</th>'
+                '<th>Records</th><th>Outcome evidence</th><th>Ranked records</th></tr></thead>'
+                f'<tbody>{summary_rows}</tbody></table></div>' + ''.join(details))
+
+    @staticmethod
+    def _recorded_rankings_html(records: list[dict[str, Any]]) -> str:
+        rows = []
+        for record in records:
+            rank = next((record.get(key) for key in ("research_rank", "overall_rank", "eligible_rank", "rank")
+                         if record.get(key) not in (None, "")), None)
+            if rank is None:
+                continue
+            identity = next((record.get(key) for key in
+                             ("policy_id", "pattern_name", "pattern_id", "plan_id", "recommended_action", "result_id")
+                             if record.get(key) not in (None, "")), "UNIDENTIFIED")
+            rows.append({
+                "category": record.get("_research_category", "OTHER RESEARCH EVIDENCE"),
+                "dataset": record.get("_dataset_name", "UNKNOWN"), "rank": rank,
+                "identity": identity, "samples": record.get("sample_size", record.get("blind_forward_samples", "DATA_UNAVAILABLE")),
+                "expectancy": record.get("expectancy_after_cost_r", record.get("blind_forward_expectancy_r", "DATA_UNAVAILABLE")),
+                "status": record.get("status", record.get("research_state", "RECORDED")),
+            })
+        def rank_key(item: dict[str, Any]) -> tuple[str, float, str]:
+            try: numeric = float(item["rank"])
+            except (TypeError, ValueError): numeric = 1e308
+            return str(item["category"]), numeric, str(item["identity"])
+        rows.sort(key=rank_key)
+        if not rows:
+            return '<p class="waiting"><b>NOT_GENERATED</b> · No explicit persisted research-rank field is available.</p>'
+        body = ''.join('<tr>'+''.join(f'<td>{escape(str(value))}</td>' for value in (
+            item["category"], item["dataset"], item["rank"], item["identity"],
+            item["samples"], item["expectancy"], item["status"]))+'</tr>' for item in rows[:200])
+        return ('<p class="small">Ranks shown here are persisted source values; the dashboard does not calculate promotion authority.</p>'
+                '<div class="table-wrap"><table><thead><tr><th>Category</th><th>Dataset</th><th>Recorded rank</th>'
+                '<th>Policy / pattern / plan</th><th>Samples</th><th>Expectancy R</th><th>Status</th></tr></thead>'
+                f'<tbody>{body}</tbody></table></div>')
+
+    @staticmethod
     def _performance_rows(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Aggregate only explicitly recorded outcome values; never infer P/L."""
         grouped: dict[str, dict[str, Any]] = {}
         for record in records:
-            name = next((record.get(key) for key in ("pattern_name", "entry_plan", "entry_plan_id", "pattern_id")
+            has_outcome = any(record.get(key) not in (None, "") for key in
+                              ("outcome", "result", "trade_result", "realized_r", "net_realized_r", "realized_profit"))
+            if not has_outcome:
+                continue
+            name = next((record.get(key) for key in ("pattern_name", "entry_plan", "entry_plan_id", "pattern_id", "policy_id", "recommended_action")
                          if record.get(key) not in (None, "", [], {})), "UNCLASSIFIED")
             row = grouped.setdefault(str(name), {"name": str(name), "samples": 0, "wins": 0, "losses": 0,
                                                   "pnl": 0.0, "pnl_observed": 0, "drawdown": None})
@@ -852,6 +976,8 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🩺 Backfill Evidence</h2>{self._backfill_outcome_html(auto)}</section>
 <section class="section"><h2>Research performance truth</h2>{research_truth_html}</section>
 <section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section>
+<section class="section"><h2>🧭 All Research · Category Overview</h2><p class="small">Every readable persisted research dataset grouped by purpose. Counts are evidence inventory, not trading approval.</p>{self._research_catalogue_html(records)}</section>
+<section class="section"><h2>🥇 Recorded Rankings Across All Categories</h2>{self._recorded_rankings_html(records)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
 <section class="section"><h2>📡 A18 Research Runtime Status</h2>{self._a18_research_status_html(root)}</section>
 <section class="section"><h2>⏱️ A20–A23 Holding & Exit Research</h2>{self._a22_holding_exit_validation_html(root)}</section>
