@@ -830,6 +830,41 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 f'<tbody>{rows}</tbody></table></div><p>P1–P4 NOT_DECIDED · Execution authority NONE</p></article>')
 
     @staticmethod
+    def _a38_research_readiness_html(root: Path) -> str:
+        path = root / "runtime/research/a38_research_readiness/a38_research_readiness.json"
+        try:
+            report = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            return ('<article class="panel"><h3>A38 Research Readiness &amp; Demo Eligibility</h3>'
+                    '<p class="waiting"><b>BLOCKED_RESEARCH_EVIDENCE_INCOMPLETE</b> · A38 report is not generated.</p>'
+                    '<p>Demo authorized: false · Live authorized: false · Execution authority: NONE</p></article>')
+        summary = report.get("summary", {}) if isinstance(report, Mapping) else {}
+        metrics = ''.join('<div class="card"><div>'+escape(label)+'</div><div class="big">'+escape(str(value))+'</div></div>'
+                          for label, value in (("A32 rows", summary.get("a32_rows", 0)),
+                          ("A33 eligible", summary.get("a33_eligible_balanced_rows", 0)),
+                          ("A35 ATR eligible", summary.get("a35_eligible_atr_buffer_rows", 0)),
+                          ("A36 candidates", summary.get("a36_cross_market_candidate_count", 0)),
+                          ("Missing reports", summary.get("missing_report_count", 0))))
+        blockers = report.get("blocking_reasons", ()) or ("NONE — manual review only",)
+        blocker_html = ''.join(f'<li>{escape(str(value))}</li>' for value in blockers)
+        cards = []
+        for row in report.get("candidates", ())[:100]:
+            if not isinstance(row, Mapping):
+                continue
+            cards.append('<article class="research-card panel">'
+                         f'<h3>🏆 {escape(str(row.get("candidate_family","?")))} · Rank {escape(str(row.get("rank","?")))}</h3>'
+                         f'<p>📈 <b>{escape(str(row.get("pattern","?")))}</b> · {escape(str(row.get("timeframe","?")))} · {escape(str(row.get("direction","?")))}</p>'
+                         f'<p>🧪 Samples {escape(str(row.get("samples",0)))} · Win {escape(str(row.get("win_rate_pct","?")))}% · Expectancy {escape(str(row.get("expectancy_r","?")))}R · PF {escape(str(row.get("profit_factor","?")))}</p>'
+                         f'<p>🛡️ DD {escape(str(row.get("max_drawdown_r","?")))}R · WF {escape(str(row.get("walk_forward_passes",0)))}/{escape(str(row.get("walk_forward_windows",0)))}</p>'
+                         f'<p>📏 SL distance {escape(str(row.get("sl_distance_points","?")))} points = {escape(str(row.get("sl_price_distance","?")))} price · TP distance {escape(str(row.get("tp_distance_points","?")))} points = {escape(str(row.get("tp_price_distance","?")))} price</p>'
+                         '<p class="waiting">✅ Research eligible · ⛔ Demo prohibited pending separate approval · ⛔ Live prohibited</p></article>')
+        return ('<article class="panel"><h3>A38 Research Readiness &amp; Demo Eligibility</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b></p><p><b>GOLD# unit:</b> {escape(str(report.get("point_definition","1 point = 0.01 GOLD# price distance")))}. SL/TP values below are distances from entry—not the current GOLD# price.</p><div class="cards">{metrics}</div>'
+                f'<h4>Blocking reasons</h4><ul>{blocker_html}</ul><p><b>Next action:</b> {escape(str(report.get("next_required_action","UNKNOWN")))}</p>'
+                '<p>P1–P4 NOT_DECIDED · Demo authorized: false · Live authorized: false · Execution authority: NONE</p></article>'
+                f'<div class="research-grid">{"".join(cards)}</div>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1104,6 +1139,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🥇 Recorded Rankings Across All Categories</h2>{self._recorded_rankings_html(records)}</section>
 <section class="section"><h2>🔗 Research Pipeline Coverage</h2>{self._a29_pipeline_coverage_html(root)}</section>
 <section class="section"><h2>♻️ Continuous Research Runtime</h2>{self._a37_continuous_research_html(root)}</section>
+<section class="section"><h2>🧭 A38 Research Readiness &amp; Demo Eligibility</h2>{self._a38_research_readiness_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>

@@ -58,6 +58,10 @@ class ContinuousResearchPipeline:
             "A36": [research / "a36_cross_market_capital/a36_collection.json",
                     *list((research / "a36_cross_market_capital/bars").glob("*_H1.json")),
                     research / "a35_atr_buffer/a35_atr_buffer_campaign.json"],
+            "A38": [research / "a32_real_backtest/a32_real_backtest_campaign.json",
+                    research / "a33_multi_objective_ranking/a33_multi_objective_ranking.json",
+                    research / "a35_atr_buffer/a35_atr_buffer_campaign.json",
+                    research / "a36_cross_market_capital/a36_cross_market_capital_report.json"],
         }
 
     def _acquire(self) -> bool:
@@ -137,6 +141,17 @@ class ContinuousResearchPipeline:
             if config.get("run_a36_offline_analysis") and signatures["A36"] != previous_signatures.get("A36"):
                 from tools.afip_a36_cross_market_capital import analyze
                 stages.append(self._stage("A36_OFFLINE_CROSS_MARKET", lambda: analyze(self.root)))
+
+            # Recalculate the signature after upstream stages may have written reports.
+            a38_signature = self._signature(inputs["A38"])
+            signatures["A38"] = a38_signature
+            if a38_signature != previous_signatures.get("A38"):
+                from tools.afip_a38_research_readiness_gate import build_report, write_outputs
+                def a38() -> dict[str, Any]:
+                    result = build_report(self.root)
+                    write_outputs(result, self.root)
+                    return result
+                stages.append(self._stage("A38_RESEARCH_READINESS", a38))
 
             from tools.afip_a29_research_pipeline_coverage import build_report as a29_report
             def a29() -> dict[str, Any]:
