@@ -62,6 +62,7 @@ class ContinuousResearchPipeline:
                     research / "a33_multi_objective_ranking/a33_multi_objective_ranking.json",
                     research / "a35_atr_buffer/a35_atr_buffer_campaign.json",
                     research / "a36_cross_market_capital/a36_cross_market_capital_report.json"],
+            "A39": [research / "a33_multi_objective_ranking/a33_multi_objective_ranking.json"],
         }
 
     def _acquire(self) -> bool:
@@ -152,6 +153,16 @@ class ContinuousResearchPipeline:
                     write_outputs(result, self.root)
                     return result
                 stages.append(self._stage("A38_RESEARCH_READINESS", a38))
+
+            a39_signature = self._signature(inputs["A39"])
+            signatures["A39"] = a39_signature
+            if a39_signature != previous_signatures.get("A39"):
+                from tools.afip_a39_a33_blocker_diagnostics import build_report, write_outputs
+                def a39() -> dict[str, Any]:
+                    result = build_report(self.root)
+                    write_outputs(result, self.root)
+                    return result
+                stages.append(self._stage("A39_A33_BLOCKER_DIAGNOSTICS", a39))
 
             from tools.afip_a29_research_pipeline_coverage import build_report as a29_report
             def a29() -> dict[str, Any]:

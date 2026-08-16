@@ -865,6 +865,40 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 f'<div class="research-grid">{"".join(cards)}</div>')
 
     @staticmethod
+    def _a39_blocker_diagnostics_html(root: Path) -> str:
+        path = root / "runtime/research/a39_a33_blocker_diagnostics/a39_a33_blocker_diagnostics.json"
+        try:
+            report = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            return ('<article class="panel"><h3>A39 A33 Eligibility Blocker Diagnostics</h3>'
+                    '<p class="waiting"><b>NOT_GENERATED</b> · Run A39 after A33.</p>'
+                    '<p>Threshold change: false · Execution authority: NONE</p></article>')
+        summary = report.get("summary", {}) if isinstance(report, Mapping) else {}
+        metrics = ''.join('<div class="card"><div>'+escape(label)+'</div><div class="big">'+escape(str(value))+'</div></div>'
+                          for label, value in (("Balanced rows", summary.get("balanced_rows", 0)),
+                          ("Metric pass", summary.get("metric_gate_pass_rows", 0)),
+                          ("Walk-forward 3/4", summary.get("walk_forward_3_of_4_rows", 0)),
+                          ("Eligible", summary.get("eligible_rows", 0))))
+        blockers = ''.join('<tr><td>'+escape(str(item.get("reason", "?")))+'</td><td>'+escape(str(item.get("rows", 0)))+'</td></tr>'
+                           for item in report.get("blocker_counts", ()) if isinstance(item, Mapping))
+        candidates = []
+        for row in report.get("nearest_blocked_candidates", ())[:12]:
+            if not isinstance(row, Mapping):
+                continue
+            reasons = ", ".join(str(value) for value in row.get("eligibility_reasons", ())) or "NONE"
+            candidates.append('<article class="research-card panel">'
+                              f'<h3>🔎 Rank {escape(str(row.get("rank","?")))} · {escape(str(row.get("pattern","?")))}</h3>'
+                              f'<p>{escape(str(row.get("timeframe","?")))} · {escape(str(row.get("direction","?")))} · RR 1:{escape(str(row.get("planned_rr","?")))}</p>'
+                              f'<p>Samples {escape(str(row.get("samples",0)))} · Win {escape(str(row.get("win_rate_pct","?")))}% · Expectancy {escape(str(row.get("expectancy_r","?")))}R · PF {escape(str(row.get("profit_factor","?")))}</p>'
+                              f'<p>DD {escape(str(row.get("max_drawdown_r","?")))}R · WF {escape(str(row.get("walk_forward_passes",0)))}/{escape(str(row.get("walk_forward_windows",0)))}</p>'
+                              f'<p class="waiting"><b>Blocked:</b> {escape(reasons)}</p></article>')
+        return ('<article class="panel"><h3>A39 A33 Eligibility Blocker Diagnostics</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · Threshold change false · Execution authority NONE</p>'
+                f'<div class="cards">{metrics}</div><p><b>Next:</b> {escape(str(report.get("next_required_action","UNKNOWN")))}</p>'
+                '<div class="table-wrap"><table><thead><tr><th>Blocker</th><th>Rows</th></tr></thead><tbody>'
+                f'{blockers}</tbody></table></div></article><div class="research-grid">{"".join(candidates)}</div>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1140,6 +1174,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🔗 Research Pipeline Coverage</h2>{self._a29_pipeline_coverage_html(root)}</section>
 <section class="section"><h2>♻️ Continuous Research Runtime</h2>{self._a37_continuous_research_html(root)}</section>
 <section class="section"><h2>🧭 A38 Research Readiness &amp; Demo Eligibility</h2>{self._a38_research_readiness_html(root)}</section>
+<section class="section"><h2>🧪 A39 A33 Eligibility Blocker Diagnostics</h2>{self._a39_blocker_diagnostics_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
