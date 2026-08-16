@@ -1,0 +1,23 @@
+{
+  "schema_version": "a31-daily-participation-research-policy.v1",
+  "research_only": true,
+  "execution_authority": "NONE",
+  "automatic_profile_assignment": false,
+  "automatic_production_promotion_allowed": false,
+  "trade_count_unit": "SETUP",
+  "broker_orders_and_units_reported_separately": true,
+  "chronological_split_percent": {"train": 60, "validation": 20, "blind_forward": 20},
+  "ranking_partition": "BLIND_FORWARD",
+  "policies": ["SKIP_OR_TOP_1", "TOP_0_TO_3", "TOP_0_TO_5", "TOP_0_TO_10", "ONE_PER_SESSION", "ONE_PER_PATTERN_FAMILY", "DYNAMIC_DAILY_BUDGET", "SAFETY_BOUNDED_UNCAPPED"],
+  "units": {
+    "win_rate_percent": "%",
+    "expectancy_r_per_setup": "R/setup",
+    "net_result_r": "R",
+    "profit_factor_ratio": "ratio_no_unit",
+    "maximum_drawdown_r": "R",
+    "setup_count": "setups",
+    "broker_order_count": "orders",
+    "unit_count": "units",
+    "time": "UTC/day"
+  }
+}

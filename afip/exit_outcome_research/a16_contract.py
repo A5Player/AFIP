@@ -22,6 +22,7 @@ class A16ResearchContext:
     decision_future_data_allowed: bool = False
     outcome_evaluation_requires_subsequent_closed_bars: bool = True
     outcome_evaluation_method: str = "BLIND_FORWARD_CLOSED_BAR_LABEL_AFTER_DECISION_TIME"
+    decision_score_percent: float | None = None
 
     def __post_init__(self) -> None:
         if not all(str(getattr(self, n)).strip() for n in ("pattern_id", "pattern_family", "plan_id", "decision_timestamp_utc", "market_regime", "session_name", "session_phase", "event_window", "calendar_context", "execution_cost_evidence")):
@@ -30,6 +31,8 @@ class A16ResearchContext:
             raise ValueError("A16 decision context must not use future data")
         if not self.outcome_evaluation_uses_subsequent_closed_bars or not self.outcome_evaluation_requires_subsequent_closed_bars:
             raise ValueError("A16 outcome must be blind-forward closed-bar labelled")
+        if self.decision_score_percent is not None and not 0 <= self.decision_score_percent <= 100:
+            raise ValueError("A16 decision score must be a percentage from 0 to 100")
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)

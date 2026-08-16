@@ -106,6 +106,8 @@ class A21HoldingExitEvidenceProducer:
             source = observation.as_dict()
             source["decision_timestamp_utc"] = context.decision_timestamp_utc
             source["outcome_method"] = context.outcome_evaluation_method
+            source["decision_score_percent"] = context.decision_score_percent
+            source["pattern_family"] = context.pattern_family
             self.dataset.append("a22_holding_exit_validation_observations", source)
         return A21ProductionResult(tuple(observations), self.research.rank_recorded())
 

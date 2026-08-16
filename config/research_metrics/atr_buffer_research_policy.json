@@ -64,11 +64,17 @@
     "minimum_buffer_points": 0,
     "maximum_buffer_points": 1500,
     "unit_step_points": 1,
-    "sl_atr_multipliers": [1.0],
-    "tp_atr_multipliers": [1.0],
-    "sl_operators": ["PLUS"],
+    "sl_atr_multipliers": [1.0, 1.5, 2.0],
+    "tp_atr_multipliers": [1.0, 2.0, 3.0],
+    "sl_operators": ["PLUS", "MINUS"],
     "tp_operators": ["PLUS", "MINUS"],
-    "streaming_chunk_size": 5000
+    "streaming_chunk_size": 5000,
+    "minimum_effective_sl_points": 500,
+    "a35_coarse_buffer_points": [-200, 0, 200],
+    "a35_holding_bars": [4, 8, 16, 32],
+    "a35_atr_period": 14,
+    "a35_round_trip_cost_points": 35,
+    "a35_walk_forward_required": "3_OF_4"
   },
   "selection_order": [
     "win_rate_confidence_95_low_desc",

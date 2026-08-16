@@ -770,6 +770,111 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 f'<tbody>{body}</tbody></table></div>')
 
     @staticmethod
+    def _a29_pipeline_coverage_html(root: Path) -> str:
+        path = root / "runtime" / "research" / "a29_research_pipeline_coverage.json"
+        try:
+            report = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            return ('<article class="panel"><h3>A29 Research Pipeline Coverage</h3>'
+                    '<p class="waiting"><b>NOT_GENERATED</b> · Run the A29 read-only audit to map producer, evidence, outcome, ranking and dashboard coverage.</p></article>')
+        categories = report.get("categories", ()) if isinstance(report, Mapping) else ()
+        datasets = report.get("datasets", ()) if isinstance(report, Mapping) else ()
+        summary = ''.join(f'<div class="card"><div>{escape(label)}</div><div class="big">{escape(str(value))}</div></div>' for label, value in (
+            ("Registered datasets", report.get("registered_datasets", 0)),
+            ("Static producers", report.get("datasets_with_static_producer", 0)),
+            ("Evidence datasets", report.get("datasets_with_evidence", 0)),
+            ("Outcome datasets", report.get("datasets_with_outcomes", 0)),
+            ("Ranking datasets", report.get("datasets_with_rankings", 0)),
+        ))
+        category_rows = ''.join('<tr>'+''.join(f'<td>{escape(str(value))}</td>' for value in (
+            item.get("category", "UNKNOWN"), item.get("datasets", 0), item.get("with_producer", 0),
+            item.get("with_evidence", 0), item.get("records", 0), item.get("outcome_records", 0),
+            item.get("ranked_records", 0), item.get("specialized_dashboard", 0)))+'</tr>'
+            for item in categories if isinstance(item, Mapping))
+        grouped: dict[str, list[Mapping[str, Any]]] = {}
+        for item in datasets:
+            if isinstance(item, Mapping): grouped.setdefault(str(item.get("category", "UNKNOWN")), []).append(item)
+        details = []
+        state_order = {"EVIDENCE_RECORDED": 0, "CODE_READY_NO_EVIDENCE": 1,
+                       "EVIDENCE_WITHOUT_STATIC_PRODUCER_REFERENCE": 2, "REGISTRY_ONLY_OR_DYNAMIC_PRODUCER": 3}
+        for category, items in sorted(grouped.items()):
+            items.sort(key=lambda item: (state_order.get(str(item.get("state")), 9), str(item.get("dataset"))))
+            rows = ''.join('<tr>'+''.join(f'<td>{escape(str(value))}</td>' for value in (
+                item.get("dataset", "?"), item.get("state", "?"), item.get("record_count", 0),
+                item.get("outcome_record_count", 0), item.get("ranked_record_count", 0),
+                "YES" if item.get("producer_connected") else "NO/STATIC_UNRESOLVED",
+                "SPECIALIZED" if item.get("specialized_dashboard_connected") else "INVENTORY"))+'</tr>' for item in items)
+            details.append(f'<details><summary>{escape(category)} · {len(items)} datasets</summary><div class="table-wrap"><table><thead><tr><th>Dataset</th><th>State</th><th>Records</th><th>Outcomes</th><th>Ranked</th><th>Producer</th><th>Dashboard</th></tr></thead><tbody>{rows}</tbody></table></div></details>')
+        return ('<article class="panel"><h3>A29 Research Pipeline Coverage</h3>'
+                '<p>Read-only source/evidence audit · static unresolved does not prove a missing runtime producer · execution authority: NONE</p>'
+                f'<div class="cards">{summary}</div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Datasets</th><th>Producers</th><th>With evidence</th><th>Records</th><th>Outcomes</th><th>Ranked</th><th>Specialized UI</th></tr></thead><tbody>{category_rows}</tbody></table></div>'
+                + ''.join(details) + '</article>')
+
+    @staticmethod
+    def _a30_decision_matrix_html(root: Path) -> str:
+        path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
+        try:
+            report = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            return '<p class="waiting"><b>NOT_GENERATED</b> · Run the A30 generator to build the trader-facing matrix.</p>'
+        rows = [item for item in report.get("rows", ()) if isinstance(item, Mapping)] if isinstance(report, Mapping) else []
+        def value(item: Mapping[str, Any], key: str, unit: str = "") -> str:
+            raw=item.get(key,"DATA_UNAVAILABLE")
+            if raw in (None,"","DATA_UNAVAILABLE"): return "ยังไม่มีผล Backtest จริง"
+            text=str(raw).replace("_"," ")
+            return f"{text}{unit}"
+        cards=[]
+        for item in rows:
+            rank=value(item,"evidence_order");pattern=value(item,"pattern");timeframe=value(item,"timeframe")
+            cards.append(
+              '<article class="a30-rank-card">'
+              f'<div class="a30-rank-head"><span class="a30-rank-badge">🏆 อันดับ {escape(rank)}</span><div><h3>📈 {escape(pattern)}</h3><p>{escape(timeframe)} · {escape(value(item,"direction"))}</p></div></div>'
+              f'<div class="a30-line"><b>🧭 บริบทตลาด</b><span>แนวโน้ม/Regime: {escape(value(item,"market_regime"))} · วิธีเข้า: {escape(value(item,"entry_policy"))}</span></div>'
+              f'<div class="a30-line"><b>🛡️ แผน SL / TP / Holding</b><span>SL ATR±Buffer: {escape(value(item,"sl_atr_buffer"))} · TP ATR±Buffer: {escape(value(item,"tp_atr_buffer"))} · เวลาถือ: {escape(value(item,"holding_time"))}</span></div>'
+              f'<div class="a30-line"><b>💰 ผลตอบแทน</b><span>Win rate: {escape(value(item,"win_rate","%"))} · Expectancy: {escape(value(item,"expectancy_r"," R/Setup"))} · Profit factor: {escape(value(item,"profit_factor"," เท่า"))} · Drawdown: {escape(value(item,"max_drawdown"," R"))}</span></div>'
+              f'<div class="a30-line"><b>📊 หลักฐาน</b><span>ตัวอย่าง: {escape(value(item,"samples"," Setup"))} · MFE: {escape(value(item,"average_mfe_atr"," ATR"))} · MAE: {escape(value(item,"average_mae_atr"," ATR"))} · Whipsaw: {escape(value(item,"whipsaw_rate_percent","%"))}</span></div>'
+              f'<div class="a30-line"><b>✅ การตรวจสอบ</b><span>Walk-forward: {escape(value(item,"walk_forward_status"))} · Blind-forward: {escape(value(item,"blind_forward_status"))} · Evidence: {escape(value(item,"evidence_tier"))}</span></div>'
+              f'<div class="a30-reason"><b>💡 สถานะ/เหตุผล:</b> {escape(value(item,"reason"))}</div>'
+              '</article>')
+        return ('<style>.a30-rank-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.a30-rank-card{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid #d8e2ef;border-radius:16px;padding:18px;box-shadow:0 6px 18px rgba(15,36,64,.08)}.a30-rank-head{display:flex;gap:14px;align-items:center;border-bottom:1px solid #e4ebf3;padding-bottom:12px;margin-bottom:8px}.a30-rank-head h3{margin:0;font-size:19px}.a30-rank-head p{margin:4px 0 0;color:#53657a}.a30-rank-badge{background:#173d69;color:#fff;border-radius:999px;padding:8px 12px;font-weight:700;white-space:nowrap}.a30-line{display:grid;grid-template-columns:190px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed #e1e7ef;line-height:1.45}.a30-line b{color:#163b66}.a30-reason{margin-top:10px;background:#fff7db;border-left:4px solid #e6ae17;padding:10px;border-radius:8px;line-height:1.45}.a30-legend{background:#eef6ff;border:1px solid #cfe2fa;border-radius:12px;padding:14px;margin:12px 0}.a30-unavailable{background:#fff2f2;border:1px solid #efcaca;border-radius:12px;padding:13px;margin:10px 0}@media(max-width:1100px){.a30-rank-list{grid-template-columns:1fr}.a30-line{grid-template-columns:1fr}}</style>'
+                '<span hidden>Graph / pattern · SL ATR±Buffer · TP ATR±Buffer · Holding time · Win rate · Drawdown</span>'
+                '<div class="a30-legend"><b>📘 วิธีอ่านหน่วย:</b> Win rate = เปอร์เซ็นต์ (%) · Expectancy = R ต่อ Setup · Drawdown = R · Profit factor = อัตราส่วนไม่มีหน่วย · MFE/MAE = เท่าของ ATR · Buffer = points เมื่อมีผล Backtest ระบุ</div>'
+                '<div class="a30-unavailable"><b>⚠️ ความจริงของข้อมูล:</b> ช่องที่เขียนว่า “ยังไม่มีผล Backtest จริง” หมายถึงยังไม่มี closed-position outcome ของ segment เดียวกัน ระบบไม่สร้างตัวเลขประมาณขึ้นมาแทน</div>'
+                f'<p class="small">รายการ {escape(str(report.get("row_count",len(rows))))} อันดับ · Profile selection {escape(str(report.get("profile_strategy_selection","NOT_DECIDED")))} · Execution authority {escape(str(report.get("execution_authority","NONE")))}</p>'
+                f'<div class="a30-rank-list">{"".join(cards)}</div>')
+
+    @staticmethod
+    def _a31_daily_participation_html(root: Path) -> str:
+        report_path=root/"runtime/research/a31_daily_participation_report.json"
+        ranking_path=root/"runtime/research/a31_daily_participation_rankings.jsonl"
+        try: report=json.loads(report_path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError): report={"status":"NOT_GENERATED"}
+        rows=[]
+        try:
+            for line in ranking_path.read_text(encoding="utf-8").splitlines():
+                value=json.loads(line);item=value.get("record",value)
+                if isinstance(item,Mapping):rows.append(item)
+        except (OSError,ValueError,TypeError,json.JSONDecodeError): pass
+        if not rows:
+            return (f'<article class="panel"><h3>A31 Daily Participation Research</h3><p><b>{escape(str(report.get("status","NOT_GENERATED")))}</b></p>'
+                    '<p>ยังไม่มี scored closed-position outcomes ที่ใช้จัดอันดับจริง ระบบจึงไม่สร้างตัวเลขสมมติ</p>'
+                    '<p class="small">หน่วยหลัก: Win rate = % · Expectancy = R ต่อ Setup · Drawdown = R · Profit factor = อัตราส่วนไม่มีหน่วย · จำนวนเทรดนับ Setup แยกจาก Broker orders และ Units</p></article>')
+        rows.sort(key=lambda x:(str(x.get("source_exit_policy_id","")),int(x.get("research_rank",999999))))
+        cards=[]
+        for item in rows[:100]:
+            win=item.get("win_rate_percent");expectancy=item.get("expectancy_r_per_setup");pf=item.get("profit_factor_ratio")
+            cards.append('<article class="panel">'
+              f'<h3>อันดับ {escape(str(item.get("research_rank","?")))} · {escape(str(item.get("policy_id","?")))}</h3>'
+              f'<p><b>Exit/Holding policy:</b> {escape(str(item.get("source_exit_policy_id","?")))}</p>'
+              f'<p><b>ผล Blind-forward:</b> Win rate {escape(str(win))}% · Expectancy {escape(str(expectancy))} R/Setup · Net {escape(str(item.get("net_result_r")))} R</p>'
+              f'<p><b>ความเสี่ยง:</b> Maximum drawdown {escape(str(item.get("maximum_drawdown_r")))} R · Profit factor {escape(str(pf))} เท่า (ไม่มีหน่วย)</p>'
+              f'<p><b>การเข้าตลาด:</b> {escape(str(item.get("selected_setups")))} Setups ใน {escape(str(item.get("trading_days")))} วันเทรด · ไม่เทรด {escape(str(item.get("no_trade_days")))} วัน</p>'
+              f'<p><b>คำสั่งจริงที่จำลอง:</b> {escape(str(item.get("broker_orders")))} Broker orders · {escape(str(item.get("units")))} Units</p>'
+              f'<p><b>ค่าเฉลี่ย:</b> {escape(str(item.get("average_setups_per_calendar_day")))} Setup/วันทั้งหมด · {escape(str(item.get("average_setups_per_trading_day")))} Setup/วันเทรด</p>'
+              '<p class="small">Research only · Profile selection NOT_DECIDED · Execution authority NONE</p></article>')
+        return '<div class="research-grid">'+''.join(cards)+'</div>'
+
+    @staticmethod
     def _performance_rows(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Aggregate only explicitly recorded outcome values; never infer P/L."""
         grouped: dict[str, dict[str, Any]] = {}
@@ -978,6 +1083,9 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>Research-to-trading connection audit</h2><p>SHOW TRUTH · NEVER INVENT METRICS</p><p>Execution gate from research: RESEARCH_ONLY</p></section>
 <section class="section"><h2>🧭 All Research · Category Overview</h2><p class="small">Every readable persisted research dataset grouped by purpose. Counts are evidence inventory, not trading approval.</p>{self._research_catalogue_html(records)}</section>
 <section class="section"><h2>🥇 Recorded Rankings Across All Categories</h2>{self._recorded_rankings_html(records)}</section>
+<section class="section"><h2>🔗 Research Pipeline Coverage</h2>{self._a29_pipeline_coverage_html(root)}</section>
+<section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
+<section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
 <section class="section"><h2>📡 A18 Research Runtime Status</h2>{self._a18_research_status_html(root)}</section>
 <section class="section"><h2>⏱️ A20–A23 Holding & Exit Research</h2>{self._a22_holding_exit_validation_html(root)}</section>
