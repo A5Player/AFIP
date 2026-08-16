@@ -899,6 +899,20 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 f'{blockers}</tbody></table></div></article><div class="research-grid">{"".join(candidates)}</div>')
 
     @staticmethod
+    def _a40_time_session_html(root: Path) -> str:
+        path = root / "runtime/research/a40_time_session_outcomes/a40_time_session_foundation.json"
+        try: report = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            return '<article class="panel"><h3>A40 Time/Session Foundation</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        coverage = report.get("coverage", {})
+        cards = ''.join(f'<div class="card"><div>{escape(name.replace("_"," ").title())}</div><div class="big">{len(values) if isinstance(values, Mapping) else 0}</div></div>' for name,values in coverage.items())
+        return ('<article class="panel"><h3>A40 Chronological Time/Session Outcome Foundation</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · usable {escape(str(report.get("usable_closed_outcomes",0)))} · rejected {escape(str(report.get("rejected_records",0)))}</p>'
+                '<p>Chronological 60/20/20 · recorded session context only · no inferred profitability · no-trade valid</p>'
+                f'<div class="cards">{cards}</div><p><b>Next:</b> {escape(str(report.get("next_required_action","UNKNOWN")))}</p>'
+                '<p>P1–P4 NOT_DECIDED · Demo false · Live false · Execution authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1175,6 +1189,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>♻️ Continuous Research Runtime</h2>{self._a37_continuous_research_html(root)}</section>
 <section class="section"><h2>🧭 A38 Research Readiness &amp; Demo Eligibility</h2>{self._a38_research_readiness_html(root)}</section>
 <section class="section"><h2>🧪 A39 A33 Eligibility Blocker Diagnostics</h2>{self._a39_blocker_diagnostics_html(root)}</section>
+<section class="section"><h2>🕒 A40 Chronological Time/Session Foundation</h2>{self._a40_time_session_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
