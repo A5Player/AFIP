@@ -1085,12 +1085,14 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
             return f"{row['pnl']:,.2f}" if row["pnl_observed"] else "DATA_UNAVAILABLE"
         def dd(row: dict[str, Any]) -> str:
             return f"{row['drawdown']:,.2f}" if row["drawdown"] is not None else "DATA_UNAVAILABLE"
+        def win_rate(row: dict[str, Any]) -> str:
+            return f"{row['win_rate']:.2f}%" if row["win_rate"] is not None else "DATA_UNAVAILABLE"
         body = ''.join(
             f'<tr data-samples="{row["samples"]}" data-win-rate="{row["win_rate"] or -1}" '
             f'data-profit="{row["pnl"] if row["pnl_observed"] else -1e308}" '
             f'data-drawdown="{row["drawdown"] if row["drawdown"] is not None else 1e308}">'
             f'<td>{escape(row["name"])}</td><td>{row["samples"]}</td><td>{row["wins"]}</td><td>{row["losses"]}</td>'
-            f'<td>{f"{row["win_rate"]:.2f}%" if row["win_rate"] is not None else "DATA_UNAVAILABLE"}</td>'
+            f'<td>{win_rate(row)}</td>'
             f'<td>{money(row)}</td><td>{dd(row)}</td></tr>' for row in rows)
         return ('<div class="ranking-controls"><button data-ranking-sort="samples">Cases</button>'
                 '<button data-ranking-sort="win-rate">Win rate</button><button data-ranking-sort="profit">Net profit</button>'
