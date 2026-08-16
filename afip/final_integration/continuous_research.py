@@ -67,6 +67,8 @@ class ContinuousResearchPipeline:
                     research / "a20_holding_exit_observations.jsonl"],
             "A40": [research / "a22_holding_exit_validation_observations.jsonl"],
             "A42": [research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
+            "A43": [research / "a42_selective_trading_rankings/a42_selective_trading_rankings.json",
+                    research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
         }
 
     def _acquire(self) -> bool:
@@ -189,6 +191,13 @@ class ContinuousResearchPipeline:
                 def a42() -> dict[str, Any]:
                     result = build_report(self.root); write_outputs(result, self.root); return result
                 stages.append(self._stage("A42_SELECTIVE_TRADING_RANKINGS", a42))
+
+            signatures["A43"] = self._signature(inputs["A43"])
+            if signatures["A43"] != previous_signatures.get("A43"):
+                from tools.afip_a43_ultimate_selective_setup_validation import build_report, write_outputs
+                def a43() -> dict[str, Any]:
+                    result = build_report(self.root); write_outputs(result, self.root); return result
+                stages.append(self._stage("A43_ULTIMATE_SELECTIVE_SETUP_VALIDATION", a43))
 
             from tools.afip_a29_research_pipeline_coverage import build_report as a29_report
             def a29() -> dict[str, Any]:

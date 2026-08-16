@@ -944,6 +944,21 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<p>P1–P4 NOT_DECIDED · Demo false · Live false · Execution authority NONE</p></article>')
 
     @staticmethod
+    def _a43_ultimate_validation_html(root: Path) -> str:
+        path=root/"runtime/research/a43_ultimate_selective_setup_validation/a43_ultimate_selective_setup_validation.json"
+        try: report=json.loads(path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError):
+            return '<article class="panel"><h3>A43 Ultimate Validation</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        winner=report.get("frozen_winner") or {};parts=winner.get("partitions",{}) if isinstance(winner,Mapping) else {}
+        val=parts.get("VALIDATION",{}) if isinstance(parts,Mapping) else {};blind=parts.get("BLIND_FORWARD",{}) if isinstance(parts,Mapping) else {}
+        reasons=', '.join(str(x) for x in winner.get("blind_audit_reasons",())) if isinstance(winner,Mapping) else ""
+        return ('<article class="panel"><h3>A43 Ultimate 0–1 Setup Blind Audit</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · Frozen winner {escape(str(report.get("frozen_winner_rule_id","NONE")))}</p>'
+                f'<p>Validation: N {escape(str(val.get("samples",0)))} · Win {escape(str(val.get("win_rate_pct","?")))}% · Exp {escape(str(val.get("expectancy_r","?")))}R</p>'
+                f'<p>Blind: N {escape(str(blind.get("samples",0)))} · Win {escape(str(blind.get("win_rate_pct","?")))}% · Exp {escape(str(blind.get("expectancy_r","?")))}R · Reasons {escape(reasons or "NONE")}</p>'
+                '<p>First chronological match/day · no blind fallback · no-trade valid · P1–P4 NOT_DECIDED · authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1223,6 +1238,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🌉 A41 Historical Closed-Outcome Producer Bridge</h2>{self._a41_closed_outcome_bridge_html(root)}</section>
 <section class="section"><h2>🕒 A40 Chronological Time/Session Foundation</h2>{self._a40_time_session_html(root)}</section>
 <section class="section"><h2>🏅 A42 Selective Trading Rankings</h2>{self._a42_selective_rankings_html(root)}</section>
+<section class="section"><h2>🥇 A43 Ultimate 0–1 Setup Blind Audit</h2>{self._a43_ultimate_validation_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
