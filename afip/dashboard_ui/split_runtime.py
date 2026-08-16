@@ -899,6 +899,19 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 f'{blockers}</tbody></table></div></article><div class="research-grid">{"".join(candidates)}</div>')
 
     @staticmethod
+    def _a41_closed_outcome_bridge_html(root: Path) -> str:
+        path = root / "runtime/research/a41_historical_closed_outcome_bridge/a41_historical_closed_outcome_bridge.json"
+        try: report = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            return '<article class="panel"><h3>A41 Closed-Outcome Bridge</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        reasons = ''.join(f'<tr><td>{escape(str(k))}</td><td>{escape(str(v))}</td></tr>' for k,v in report.get("rejection_reasons",{}).items())
+        return ('<article class="panel"><h3>A41 Historical Closed-Outcome Producer Bridge</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · raw {escape(str(report.get("raw_directional_candidates",0)))} · unique {escape(str(report.get("unique_candidates",0)))} · eligible {escape(str(report.get("eligible_unique_candidates",0)))} · produced {escape(str(report.get("produced_cases",0)))} · remaining {escape(str(report.get("remaining_selected_cases",0)))}</p>'
+                '<p>Replay-generation dedupe · confidence ≥60 · 24 timeframe-bar UTC cooldown · no outcome peeking · A41 v1 quarantined</p>'
+                f'<div class="table-wrap"><table><thead><tr><th>Blocker</th><th>Count</th></tr></thead><tbody>{reasons}</tbody></table></div>'
+                '<p>Research only · Demo false · Live false · Execution authority NONE</p></article>')
+
+    @staticmethod
     def _a40_time_session_html(root: Path) -> str:
         path = root / "runtime/research/a40_time_session_outcomes/a40_time_session_foundation.json"
         try: report = json.loads(path.read_text(encoding="utf-8"))
@@ -1189,6 +1202,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>♻️ Continuous Research Runtime</h2>{self._a37_continuous_research_html(root)}</section>
 <section class="section"><h2>🧭 A38 Research Readiness &amp; Demo Eligibility</h2>{self._a38_research_readiness_html(root)}</section>
 <section class="section"><h2>🧪 A39 A33 Eligibility Blocker Diagnostics</h2>{self._a39_blocker_diagnostics_html(root)}</section>
+<section class="section"><h2>🌉 A41 Historical Closed-Outcome Producer Bridge</h2>{self._a41_closed_outcome_bridge_html(root)}</section>
 <section class="section"><h2>🕒 A40 Chronological Time/Session Foundation</h2>{self._a40_time_session_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>

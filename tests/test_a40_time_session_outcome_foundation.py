@@ -29,3 +29,12 @@ def test_a40_outputs_and_dashboard(tmp_path):
 def test_a40_source_has_no_execution_calls():
  t=(Path(__file__).parents[1]/"tools/afip_a40_time_session_outcome_foundation.py").read_text()
  assert "MetaTrader5" not in t and ".order_send(" not in t and ".order_check(" not in t
+
+def test_a40_quarantines_superseded_a41_v1_and_groups_policy_variants(tmp_path):
+ d=AppendOnlyResearchDataset(tmp_path/"runtime/research")
+ base={"decision_timestamp_utc":"2026-01-05T10:00:00Z","policy_id":"ATR","timeframe":"H1","pattern_family":"P","market_regime":"BUY","session_name":"LONDON","net_realized_r":1,"future_data_used":False,"outcome_evaluation_uses_subsequent_closed_bars":True}
+ d.append("a22_holding_exit_validation_observations",{**base,"research_case_id":"A41-OLD"})
+ d.append("a22_holding_exit_validation_observations",{**base,"research_case_id":"A41-V2-NEW","selection_policy_version":"A41_V2_DEDUP_CONF60_COOLDOWN24","candidate_group_id":"A41-V2-NEW","policy_variant_is_independent_trade":False})
+ r=build_report(tmp_path)
+ assert r["usable_closed_outcomes"]==1 and r["rejection_reasons"]["A41_V1_SUPERSEDED_NO_SELECTION_PROVENANCE"]==1
+ assert r["normalized_outcomes"][0]["candidate_group_id"]=="A41-V2-NEW"

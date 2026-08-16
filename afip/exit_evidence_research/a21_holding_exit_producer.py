@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from datetime import datetime
-from typing import Iterable
+from typing import Any, Iterable, Mapping
 
 from afip.exit_outcome_research import A16ExitResearchRunner, A16PolicySet, A16ResearchContext
 from afip.exit_outcome_research.runtime import ExitPolicyExperimentRunner, PositionResearchCase
@@ -53,16 +53,21 @@ class A21HoldingExitEvidenceProducer:
         self.dataset = dataset
         self.buckets = values
         self.research = A20HoldingExitResearch(dataset, minimum_sample_size)
+        self._recorded_case_ids = {
+            str(envelope["record"].get("research_case_id", ""))
+            for envelope in self.dataset.records("a20_holding_exit_observations")
+        }
 
     def produce(self, *, case: PositionResearchCase, policy_set: A16PolicySet,
                 candles: Iterable[ReplayCandle | dict[str, object]], context: A16ResearchContext,
-                timeframe: str, execution_cost_r: float, swap_cost_per_second_r: float = 0.0) -> A21ProductionResult:
+                timeframe: str, execution_cost_r: float, swap_cost_per_second_r: float = 0.0,
+                provenance: Mapping[str, Any] | None = None,
+                rank_after_produce: bool = True) -> A21ProductionResult:
         if not timeframe.strip():
             raise ValueError("timeframe is required")
         if execution_cost_r < 0 or swap_cost_per_second_r < 0:
             raise ValueError("research costs cannot be negative")
-        if any(envelope["record"].get("research_case_id") == case.position_case_id
-               for envelope in self.dataset.records("a20_holding_exit_observations")):
+        if case.position_case_id in self._recorded_case_ids:
             raise ValueError("holding/exit evidence for this research case already exists")
         bars = tuple(value if isinstance(value, ReplayCandle) else ReplayCandle.from_mapping(value)
                      for value in candles)
@@ -108,8 +113,14 @@ class A21HoldingExitEvidenceProducer:
             source["outcome_method"] = context.outcome_evaluation_method
             source["decision_score_percent"] = context.decision_score_percent
             source["pattern_family"] = context.pattern_family
+            source["direction"] = case.direction
+            source["entry_price"] = case.entry_price
+            source["initial_risk_distance"] = policy_set.initial_risk_distance
+            source.update(dict(provenance or {}))
             self.dataset.append("a22_holding_exit_validation_observations", source)
-        return A21ProductionResult(tuple(observations), self.research.rank_recorded())
+        self._recorded_case_ids.add(case.position_case_id)
+        rankings = self.research.rank_recorded() if rank_after_produce else ()
+        return A21ProductionResult(tuple(observations), rankings)
 
     def _bucket(self, holding_bars: int) -> str:
         return next(item.bucket_id for item in self.buckets

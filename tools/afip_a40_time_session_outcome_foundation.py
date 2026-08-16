@@ -49,6 +49,9 @@ def build_report(project_root: str | Path) -> dict[str, Any]:
     seen: set[str] = set()
     for envelope in envelopes:
         row = dict(envelope.get("record", {}))
+        if str(row.get("research_case_id", "")).startswith("A41-") and row.get("selection_policy_version") != "A41_V2_DEDUP_CONF60_COOLDOWN24":
+            rejected["A41_V1_SUPERSEDED_NO_SELECTION_PROVENANCE"] += 1
+            continue
         stamp = _time(row.get("decision_timestamp_utc"))
         result_r = _number(row.get("net_realized_r"))
         if stamp is None:
@@ -85,6 +88,9 @@ def build_report(project_root: str | Path) -> dict[str, Any]:
             "direction": str(row.get("direction", "UNCLASSIFIED")),
             "policy_id": required["policy_id"],
             "research_case_id": str(row.get("research_case_id", "UNCLASSIFIED")),
+            "candidate_group_id": str(row.get("candidate_group_id", row.get("research_case_id", "UNCLASSIFIED"))),
+            "policy_variant_is_independent_trade": bool(row.get("policy_variant_is_independent_trade", False)),
+            "selection_policy_version": str(row.get("selection_policy_version", "LEGACY_NON_A41_SOURCE")),
             "decision_score_percent": _number(row.get("decision_score_percent")),
             "net_realized_r": result_r,
             "mfe_r": _number(row.get("mfe_r")),

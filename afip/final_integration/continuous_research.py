@@ -63,6 +63,8 @@ class ContinuousResearchPipeline:
                     research / "a35_atr_buffer/a35_atr_buffer_campaign.json",
                     research / "a36_cross_market_capital/a36_cross_market_capital_report.json"],
             "A39": [research / "a33_multi_objective_ranking/a33_multi_objective_ranking.json"],
+            "A41": [automatic / "snapshots.jsonl", automatic / "candidates.jsonl",
+                    research / "a20_holding_exit_observations.jsonl"],
             "A40": [research / "a22_holding_exit_validation_observations.jsonl"],
         }
 
@@ -165,6 +167,14 @@ class ContinuousResearchPipeline:
                     return result
                 stages.append(self._stage("A39_A33_BLOCKER_DIAGNOSTICS", a39))
 
+            if signatures["A41"] != previous_signatures.get("A41"):
+                from tools.afip_a41_historical_closed_outcome_bridge import build_report, write_outputs
+                def a41() -> dict[str, Any]:
+                    result = build_report(self.root); write_outputs(result, self.root); return result
+                stages.append(self._stage("A41_HISTORICAL_CLOSED_OUTCOME_BRIDGE", a41))
+
+            # A41 may have appended A22 outcomes in this cycle.
+            signatures["A40"] = self._signature(inputs["A40"])
             if signatures["A40"] != previous_signatures.get("A40"):
                 from tools.afip_a40_time_session_outcome_foundation import build_report, write_outputs
                 def a40() -> dict[str, Any]:
