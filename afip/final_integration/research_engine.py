@@ -36,11 +36,14 @@ class UnifiedResearchEngine:
             from afip.phase_v_major import PhaseVMajorRuntime
             result = PhaseVMajorRuntime(self.root).run_once()
             result = result.as_dict() if hasattr(result, "as_dict") else dict(result)
+            from .continuous_research import ContinuousResearchPipeline
+            continuous = ContinuousResearchPipeline(self.root).run_once()
             return self._write(
                 cycle_status="READY",
                 reason="research_cycle_complete",
                 current_activity="Research cycle complete; service remains active",
                 phase_v=result,
+                a37_continuous_research=continuous,
                 updated_at_utc=utc_now(),
             )
         except Exception as exc:

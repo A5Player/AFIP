@@ -811,6 +811,25 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 + ''.join(details) + '</article>')
 
     @staticmethod
+    def _a37_continuous_research_html(root: Path) -> str:
+        path = root / "runtime/research/a37_continuous_research_status.json"
+        try:
+            report = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            return ('<article class="panel"><h3>A37 Continuous Research Pipeline</h3>'
+                    '<p class="waiting"><b>NOT_STARTED</b> · Start the canonical AFIP runtime; no separate scheduler is required.</p>'
+                    '<p>Execution authority: NONE</p></article>')
+        rows = ''.join('<tr>'+''.join(f'<td>{escape(str(value))}</td>' for value in (
+            item.get("stage", "?"), item.get("status", "?"),
+            item.get("duration_seconds", 0), item.get("reason", "")))+'</tr>'
+            for item in report.get("stages", ()) if isinstance(item, Mapping))
+        return ('<article class="panel"><h3>A37 Continuous Research Pipeline</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · Cycle {escape(str(report.get("cycle_result","UNKNOWN")))} · Updated {escape(str(report.get("updated_at_utc","UNKNOWN")))}</p>'
+                '<p>Heavy campaigns run only after evidence changes and the configured cooldown expires. A36 here is offline analysis only.</p>'
+                '<div class="table-wrap"><table><thead><tr><th>Stage</th><th>Status</th><th>Seconds</th><th>Reason</th></tr></thead>'
+                f'<tbody>{rows}</tbody></table></div><p>P1–P4 NOT_DECIDED · Execution authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1084,6 +1103,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🧭 All Research · Category Overview</h2><p class="small">Every readable persisted research dataset grouped by purpose. Counts are evidence inventory, not trading approval.</p>{self._research_catalogue_html(records)}</section>
 <section class="section"><h2>🥇 Recorded Rankings Across All Categories</h2>{self._recorded_rankings_html(records)}</section>
 <section class="section"><h2>🔗 Research Pipeline Coverage</h2>{self._a29_pipeline_coverage_html(root)}</section>
+<section class="section"><h2>♻️ Continuous Research Runtime</h2>{self._a37_continuous_research_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>

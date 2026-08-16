@@ -1,6 +1,7 @@
 """Generate A31 daily participation evidence from recorded A22 outcomes."""
 from __future__ import annotations
 from datetime import datetime, timezone
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -20,6 +21,14 @@ def build(project_root:Path)->dict:
         return {"schema":"afip.a31.daily_participation.v1","status":"WAITING_FOR_SCORED_CLOSED_OUTCOMES",
           "source_records":len(records),"usable_records":0,"reason":"A31 requires decision-time score plus later closed-position R outcome.",
           "profile_strategy_selection":"NOT_DECIDED","execution_authority":"NONE","orders_sent":False}
+    snapshot_id=hashlib.sha256(json.dumps(usable,sort_keys=True,default=str,separators=(",",":")).encode()).hexdigest()
+    previous=[dict(x["record"]) for x in dataset.records("a31_daily_participation_rankings")]
+    if any(x.get("source_snapshot_id")==snapshot_id for x in previous):
+        return {"schema":"afip.a31.daily_participation.v1","generated_at_utc":datetime.now(timezone.utc).isoformat(),
+          "status":"ALREADY_CURRENT","source_snapshot_id":snapshot_id,"source_records":len(records),
+          "usable_records":len(usable),"profile_strategy_selection":"NOT_DECIDED",
+          "automatic_profile_assignment":False,"automatic_research_promotion":False,
+          "execution_authority":"NONE","orders_sent":False}
     timestamps=sorted({_time(x["decision_timestamp_utc"]) for x in usable})
     train_at=timestamps[max(0,int(len(timestamps)*.6)-1)];validation_at=timestamps[max(0,int(len(timestamps)*.8)-1)]
     grouped={}
@@ -36,11 +45,11 @@ def build(project_root:Path)->dict:
               broker_order_count=int(row.get("broker_order_count",1)),unit_count=int(row.get("position_units",1))))
         results=engine.evaluate(observations)
         for item in results:
-            payload={"source_exit_policy_id":source_policy,**item.as_dict()};dataset.append("a31_daily_participation_results",payload);all_results.append(payload)
+            payload={"source_snapshot_id":snapshot_id,"source_exit_policy_id":source_policy,**item.as_dict()};dataset.append("a31_daily_participation_results",payload);all_results.append(payload)
         for item in engine.rank_blind_forward(results):
-            payload={"source_exit_policy_id":source_policy,**item};dataset.append("a31_daily_participation_rankings",payload);all_rankings.append(payload)
+            payload={"source_snapshot_id":snapshot_id,"source_exit_policy_id":source_policy,**item};dataset.append("a31_daily_participation_rankings",payload);all_rankings.append(payload)
     return {"schema":"afip.a31.daily_participation.v1","generated_at_utc":datetime.now(timezone.utc).isoformat(),"status":"COMPLETE",
-      "source_records":len(records),"usable_records":len(usable),"result_rows":len(all_results),"ranking_rows":len(all_rankings),
+      "source_snapshot_id":snapshot_id,"source_records":len(records),"usable_records":len(usable),"result_rows":len(all_results),"ranking_rows":len(all_rankings),
       "train_end_utc":train_at.isoformat(),"validation_end_utc":validation_at.isoformat(),"profile_strategy_selection":"NOT_DECIDED",
       "automatic_profile_assignment":False,"automatic_research_promotion":False,"execution_authority":"NONE","orders_sent":False,
       "units":{"win_rate_percent":"%","expectancy_r_per_setup":"R/setup","net_result_r":"R","profit_factor_ratio":"ratio (no unit)","maximum_drawdown_r":"R","selected_setups":"setups","broker_orders":"orders","units":"0.01-lot units as recorded"}}

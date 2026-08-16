@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "minimum_heavy_interval_seconds": 3600,
+  "run_a31": true,
+  "run_a32_a33": true,
+  "run_a35": true,
+  "run_a36_offline_analysis": true,
+  "profile_strategy_selection": "NOT_DECIDED",
+  "automatic_profile_assignment": false,
+  "execution_authority": "NONE"
+}
