@@ -38,3 +38,12 @@ def test_a40_quarantines_superseded_a41_v1_and_groups_policy_variants(tmp_path):
  r=build_report(tmp_path)
  assert r["usable_closed_outcomes"]==1 and r["rejection_reasons"]["A41_V1_SUPERSEDED_NO_SELECTION_PROVENANCE"]==1
  assert r["normalized_outcomes"][0]["candidate_group_id"]=="A41-V2-NEW"
+
+def test_a40_partition_never_splits_policy_variants_of_one_candidate(tmp_path):
+ d=AppendOnlyResearchDataset(tmp_path/"runtime/research")
+ for case in range(5):
+  for policy in ("ATR","FIXED_TP"):
+   d.append("a22_holding_exit_validation_observations",{"decision_timestamp_utc":f"2026-01-0{case+1}T00:00:00Z","research_case_id":f"CASE-{case}","candidate_group_id":f"CASE-{case}","policy_id":policy,"timeframe":"H1","pattern_family":"P","market_regime":"BUY","session_name":"LONDON","net_realized_r":1,"future_data_used":False,"outcome_evaluation_uses_subsequent_closed_bars":True})
+ r=build_report(tmp_path);parts={}
+ for row in r["normalized_outcomes"]:parts.setdefault(row["candidate_group_id"],set()).add(row["chronological_partition"])
+ assert all(len(values)==1 for values in parts.values())

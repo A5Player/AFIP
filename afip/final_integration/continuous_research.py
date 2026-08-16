@@ -66,6 +66,7 @@ class ContinuousResearchPipeline:
             "A41": [automatic / "snapshots.jsonl", automatic / "candidates.jsonl",
                     research / "a20_holding_exit_observations.jsonl"],
             "A40": [research / "a22_holding_exit_validation_observations.jsonl"],
+            "A42": [research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
         }
 
     def _acquire(self) -> bool:
@@ -180,6 +181,14 @@ class ContinuousResearchPipeline:
                 def a40() -> dict[str, Any]:
                     result = build_report(self.root); write_outputs(result, self.root); return result
                 stages.append(self._stage("A40_TIME_SESSION_FOUNDATION", a40))
+
+            # A40 may have atomically refreshed the normalized candidate-group source.
+            signatures["A42"] = self._signature(inputs["A42"])
+            if signatures["A42"] != previous_signatures.get("A42"):
+                from tools.afip_a42_selective_trading_rankings import build_report, write_outputs
+                def a42() -> dict[str, Any]:
+                    result = build_report(self.root); write_outputs(result, self.root); return result
+                stages.append(self._stage("A42_SELECTIVE_TRADING_RANKINGS", a42))
 
             from tools.afip_a29_research_pipeline_coverage import build_report as a29_report
             def a29() -> dict[str, Any]:

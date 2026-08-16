@@ -926,6 +926,24 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<p>P1–P4 NOT_DECIDED · Demo false · Live false · Execution authority NONE</p></article>')
 
     @staticmethod
+    def _a42_selective_rankings_html(root: Path) -> str:
+        path=root/"runtime/research/a42_selective_trading_rankings/a42_selective_trading_rankings.json"
+        try: report=json.loads(path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError):
+            return '<article class="panel"><h3>A42 Selective Trading Rankings</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        summary=report.get("summary",{})
+        cards=''.join(f'<div class="card"><div>{escape(str(k).replace("_"," ").title())}</div><div class="big">{escape(str(v))}</div></div>' for k,v in summary.items())
+        rows=[]
+        for rank,item in enumerate(report.get("standard_ranking",())[:10],1):
+            validation=item.get("validation",{});blind=item.get("blind_forward",{})
+            rows.append('<tr>'+''.join(f'<td>{escape(str(v))}</td>' for v in (rank,item.get("dimension"),item.get("key"),item.get("planned_rr"),item.get("minimum_sl_points_observed"),validation.get("win_rate_pct"),validation.get("expectancy_r"),validation.get("max_drawdown_r"),blind.get("samples"),blind.get("expectancy_r")))+'</tr>')
+        return ('<article class="panel"><h3>A42 Standard / Balanced / Session / Ultimate Rankings</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · candidate groups {escape(str(report.get("candidate_groups",0)))} · policy outcomes {escape(str(report.get("source_policy_outcomes",0)))}</p>'
+                '<p>TRAIN + 4 windows · VALIDATION confirmation · BLIND audit only · daily first-N chronological · no-trade valid</p>'
+                f'<div class="cards">{cards}</div><div class="table-wrap"><table><thead><tr><th>Rank</th><th>Dimension</th><th>Key</th><th>RR</th><th>SL pts</th><th>Val Win%</th><th>Val Exp R</th><th>Val DD R</th><th>Blind N</th><th>Blind Exp R</th></tr></thead><tbody>{"".join(rows) or "<tr><td colspan=10>NO ELIGIBLE ROW</td></tr>"}</tbody></table></div>'
+                '<p>P1–P4 NOT_DECIDED · Demo false · Live false · Execution authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1204,6 +1222,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🧪 A39 A33 Eligibility Blocker Diagnostics</h2>{self._a39_blocker_diagnostics_html(root)}</section>
 <section class="section"><h2>🌉 A41 Historical Closed-Outcome Producer Bridge</h2>{self._a41_closed_outcome_bridge_html(root)}</section>
 <section class="section"><h2>🕒 A40 Chronological Time/Session Foundation</h2>{self._a40_time_session_html(root)}</section>
+<section class="section"><h2>🏅 A42 Selective Trading Rankings</h2>{self._a42_selective_rankings_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>

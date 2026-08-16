@@ -92,6 +92,8 @@ def build_report(project_root: str | Path) -> dict[str, Any]:
             "policy_variant_is_independent_trade": bool(row.get("policy_variant_is_independent_trade", False)),
             "selection_policy_version": str(row.get("selection_policy_version", "LEGACY_NON_A41_SOURCE")),
             "decision_score_percent": _number(row.get("decision_score_percent")),
+            "entry_price": _number(row.get("entry_price")),
+            "initial_risk_distance": _number(row.get("initial_risk_distance")),
             "net_realized_r": result_r,
             "mfe_r": _number(row.get("mfe_r")),
             "mae_r": _number(row.get("mae_r")),
@@ -108,10 +110,15 @@ def build_report(project_root: str | Path) -> dict[str, Any]:
         seen.add(item["outcome_id"])
         normalized.append(item)
     normalized.sort(key=lambda row: (row["decision_timestamp_utc"], row["outcome_id"]))
-    count = len(normalized)
-    train_end = int(count * .6)
-    validation_end = int(count * .8)
-    for index, row in enumerate(normalized):
+    # Keep every policy variant for one candidate in the same chronological
+    # partition.  A policy outcome is not an independent trade and partition
+    # boundaries must never split a candidate group.
+    group_order = list(dict.fromkeys(row["candidate_group_id"] for row in normalized))
+    group_index = {group_id: index for index, group_id in enumerate(group_order)}
+    train_end = int(len(group_order) * .6)
+    validation_end = int(len(group_order) * .8)
+    for row in normalized:
+        index = group_index[row["candidate_group_id"]]
         row["chronological_partition"] = ("TRAIN" if index < train_end else
                                             "VALIDATION" if index < validation_end else "BLIND_FORWARD")
     coverage = {
@@ -122,6 +129,7 @@ def build_report(project_root: str | Path) -> dict[str, Any]:
         "patterns": dict(sorted(Counter(row["pattern_family"] for row in normalized).items())),
         "regimes": dict(sorted(Counter(row["market_regime"] for row in normalized).items())),
     }
+    count = len(normalized)
     status = "READY_FOR_SELECTIVE_RANKING_RESEARCH" if normalized else "WAITING_FOR_SCORED_CLOSED_OUTCOMES"
     return {
         "schema": "afip.a40.time_session_outcome_foundation.v1",
