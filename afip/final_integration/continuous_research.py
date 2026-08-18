@@ -74,6 +74,8 @@ class ContinuousResearchPipeline:
                     research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
             "A45": [research / "a42_selective_trading_rankings/a42_selective_trading_rankings.json",
                     research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
+            "A46": [research / "a45_future_preblind_qualification/a45_future_preblind_qualification.json",
+                    research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
         }
 
     def _acquire(self) -> bool:
@@ -214,6 +216,15 @@ class ContinuousResearchPipeline:
                     write_outputs(result, self.root)
                     return result
                 stages.append(self._stage("A45_FUTURE_PREBLIND_QUALIFICATION", a45))
+
+            signatures["A46"] = self._signature(inputs["A46"])
+            if signatures["A46"] != previous_signatures.get("A46"):
+                from tools.afip_a46_prospective_cohort_monitor import build_report, write_outputs
+                def a46() -> dict[str, Any]:
+                    result = build_report(self.root)
+                    write_outputs(result, self.root)
+                    return result
+                stages.append(self._stage("A46_PROSPECTIVE_COHORT_DATA_FLOW_AUDIT", a46))
 
             # A44 owns only a prospective, sealed cohort for a winner frozen
             # before its cutoff by A43 or the completed A45 protocol.

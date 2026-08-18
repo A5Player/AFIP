@@ -986,6 +986,19 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<p>Blind never selects the winner · NO_TRADE · authority NONE</p></article>')
 
     @staticmethod
+    def _a46_prospective_monitor_html(root: Path) -> str:
+        path=root/"runtime/research/a46_prospective_cohort_monitor/a46_prospective_cohort_monitor.json"
+        try: report=json.loads(path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError):
+            return '<article class="panel"><h3>A46 Prospective Cohort Monitor</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        rows=''.join('<tr>'+''.join(f'<td>{escape(str(value))}</td>' for value in (item.get("rule_id"),item.get("independent_days",0),item.get("minimum_required_days",15),item.get("remaining_days",15),item.get("latest_matching_timestamp_utc")))+'</tr>' for item in report.get("rule_coverage",()) if isinstance(item,Mapping))
+        return ('<article class="panel"><h3>A46 Prospective Cohort Monitoring &amp; Data-Flow Audit</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · future source rows {escape(str(report.get("future_source_rows_in_window",0)))} · latest {escape(str(report.get("latest_future_source_timestamp_utc") or "NONE"))}</p>'
+                f'<p>Source inactivity {escape(str(report.get("source_inactivity_hours")))} hours · contract errors {escape(str(len(report.get("contract_errors",()))))}</p>'
+                f'<div class="table-wrap"><table><thead><tr><th>Frozen rule</th><th>Days</th><th>Required</th><th>Remaining</th><th>Latest match</th></tr></thead><tbody>{rows or "<tr><td colspan=5>WAITING</td></tr>"}</tbody></table></div>'
+                '<p>Outcome metrics accessed False · exposed False · NO_TRADE · authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1270,6 +1283,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🥇 A43 Ultimate 0–1 Setup Blind Audit</h2>{self._a43_ultimate_validation_html(root)}</section>
 <section class="section"><h2>🔒 A44 Future Blind Cohort Accumulator</h2>{self._a44_future_blind_cohort_html(root)}</section>
 <section class="section"><h2>🧊 A45 Future Pre-Blind Qualification</h2>{self._a45_future_preblind_html(root)}</section>
+<section class="section"><h2>📡 A46 Prospective Cohort Data-Flow Audit</h2>{self._a46_prospective_monitor_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
