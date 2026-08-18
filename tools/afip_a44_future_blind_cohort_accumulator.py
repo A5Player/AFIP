@@ -111,8 +111,12 @@ def build_report(project_root: str | Path, now_utc: datetime | None = None) -> t
     out = root / OUTPUT
     previous = _load_json(out / "a44_future_blind_cohort_accumulator.json")
     a43 = _load_json(root / "runtime/research/a43_ultimate_selective_setup_validation/a43_ultimate_selective_setup_validation.json")
-    winner = a43.get("frozen_winner") if isinstance(a43.get("frozen_winner"), dict) else None
-    winner_id = a43.get("frozen_winner_rule_id")
+    a45 = _load_json(root / "runtime/research/a45_future_preblind_qualification/a45_future_preblind_qualification.json")
+    a45_ready = a45.get("status") == "FROZEN_PREBLIND_WINNER_READY_FOR_NEW_BLIND"
+    winner = (a45.get("frozen_preblind_winner") if a45_ready else a43.get("frozen_winner"))
+    winner = winner if isinstance(winner, dict) else None
+    winner_id = a45.get("frozen_preblind_winner_rule_id") if a45_ready else a43.get("frozen_winner_rule_id")
+    winner_authority = "A45_PROSPECTIVE_PREBLIND" if a45_ready else "A43_HISTORICAL_PREBLIND"
     generated = (now_utc or datetime.now(timezone.utc)).astimezone(timezone.utc).isoformat()
 
     if not winner or not winner_id:
@@ -121,6 +125,7 @@ def build_report(project_root: str | Path, now_utc: datetime | None = None) -> t
             "generated_at_utc": generated,
             "status": "BLOCKED_NO_PREBLIND_FROZEN_WINNER",
             "source_a43_status": a43.get("status", "MISSING"),
+            "source_a45_status": a45.get("status", "MISSING"),
             "frozen_winner_rule_id": None,
             "cutoff_timestamp_utc": None,
             "source_contract_signature_sha256": None,
@@ -171,6 +176,8 @@ def build_report(project_root: str | Path, now_utc: datetime | None = None) -> t
         "generated_at_utc": generated,
         "status": summary["status"],
         "source_a43_status": a43.get("status", "MISSING"),
+        "source_a45_status": a45.get("status", "MISSING"),
+        "frozen_winner_authority": winner_authority,
         "frozen_winner_rule_id": winner_id,
         "frozen_winner_rule": {key: winner.get(key) for key in ("rule_id", "dimension", "key", "policy_id", "planned_rr", "minimum_sl_points_observed")},
         "cutoff_timestamp_utc": cutoff,

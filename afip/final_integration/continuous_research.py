@@ -70,6 +70,9 @@ class ContinuousResearchPipeline:
             "A43": [research / "a42_selective_trading_rankings/a42_selective_trading_rankings.json",
                     research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
             "A44": [research / "a43_ultimate_selective_setup_validation/a43_ultimate_selective_setup_validation.json",
+                    research / "a45_future_preblind_qualification/a45_future_preblind_qualification.json",
+                    research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
+            "A45": [research / "a42_selective_trading_rankings/a42_selective_trading_rankings.json",
                     research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
         }
 
@@ -201,8 +204,19 @@ class ContinuousResearchPipeline:
                     result = build_report(self.root); write_outputs(result, self.root); return result
                 stages.append(self._stage("A43_ULTIMATE_SELECTIVE_SETUP_VALIDATION", a43))
 
-            # A44 owns only a prospective, sealed cohort for the winner A43
-            # froze before the cutoff.  It has no execution authority.
+            # A45 accumulates a fixed-window prospective qualification cohort.
+            # Metrics remain sealed until its predeclared end timestamp.
+            signatures["A45"] = self._signature(inputs["A45"])
+            if signatures["A45"] != previous_signatures.get("A45"):
+                from tools.afip_a45_future_preblind_qualification import build_report, write_outputs
+                def a45() -> dict[str, Any]:
+                    result = build_report(self.root)
+                    write_outputs(result, self.root)
+                    return result
+                stages.append(self._stage("A45_FUTURE_PREBLIND_QUALIFICATION", a45))
+
+            # A44 owns only a prospective, sealed cohort for a winner frozen
+            # before its cutoff by A43 or the completed A45 protocol.
             signatures["A44"] = self._signature(inputs["A44"])
             if signatures["A44"] != previous_signatures.get("A44"):
                 from tools.afip_a44_future_blind_cohort_accumulator import build_report, write_outputs

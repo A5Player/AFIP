@@ -69,3 +69,16 @@ def test_a44_outputs_and_contains_no_execution_api(tmp_path: Path) -> None:
     assert all(path.exists() for path in write_outputs(report, rows, tmp_path))
     text = (Path(__file__).parents[1] / "tools/afip_a44_future_blind_cohort_accumulator.py").read_text()
     assert "MetaTrader5" not in text and ".order_send(" not in text
+
+
+def test_a44_accepts_only_a45_completed_preblind_winner(tmp_path: Path) -> None:
+    _seed_a43(tmp_path, winner=False)
+    out=tmp_path/"runtime/research/a45_future_preblind_qualification";out.mkdir(parents=True)
+    rule={"rule_id":"POLICY_HOUR_UTC:FIXED_TP|3","dimension":"POLICY_HOUR_UTC","key":"FIXED_TP|3",
+          "policy_id":"FIXED_TP","planned_rr":2.0,"minimum_sl_points_observed":500.0}
+    out.joinpath("a45_future_preblind_qualification.json").write_text(json.dumps({
+        "status":"FROZEN_PREBLIND_WINNER_READY_FOR_NEW_BLIND","frozen_preblind_winner_rule_id":rule["rule_id"],
+        "frozen_preblind_winner":rule}),encoding="utf-8")
+    report,_=build_report(tmp_path,datetime(2026,12,31,tzinfo=timezone.utc))
+    assert report["frozen_winner_rule_id"]==rule["rule_id"]
+    assert report["frozen_winner_authority"]=="A45_PROSPECTIVE_PREBLIND"

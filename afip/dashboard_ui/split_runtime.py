@@ -972,6 +972,20 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<p>Future closed outcomes only · historical exposed Blind never reused · NO_TRADE · authority NONE</p></article>')
 
     @staticmethod
+    def _a45_future_preblind_html(root: Path) -> str:
+        path=root/"runtime/research/a45_future_preblind_qualification/a45_future_preblind_qualification.json"
+        try: report=json.loads(path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError):
+            return '<article class="panel"><h3>A45 Future Pre-Blind Qualification</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        evaluations=report.get("rule_evaluations",()) if isinstance(report,Mapping) else ()
+        rows=''.join('<tr>'+''.join(f'<td>{escape(str(value))}</td>' for value in (item.get("rule_id"),item.get("independent_days",0),item.get("minimum_required_days",15),item.get("sealed",True)))+'</tr>' for item in evaluations if isinstance(item,Mapping))
+        return ('<article class="panel"><h3>A45 Prospective Pre-Blind Qualification</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · frozen winner {escape(str(report.get("frozen_preblind_winner_rule_id") or "NONE"))}</p>'
+                f'<p>Cutoff {escape(str(report.get("cutoff_timestamp_utc","?")))} · fixed end {escape(str(report.get("qualification_end_timestamp_utc","?")))} · metrics sealed {escape(str(report.get("metrics_sealed",True)))}</p>'
+                f'<div class="table-wrap"><table><thead><tr><th>Frozen rule</th><th>Days</th><th>Required</th><th>Sealed</th></tr></thead><tbody>{rows or "<tr><td colspan=4>WAITING</td></tr>"}</tbody></table></div>'
+                '<p>Blind never selects the winner · NO_TRADE · authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1255,6 +1269,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🏅 A42 Selective Trading Rankings</h2>{self._a42_selective_rankings_html(root)}</section>
 <section class="section"><h2>🥇 A43 Ultimate 0–1 Setup Blind Audit</h2>{self._a43_ultimate_validation_html(root)}</section>
 <section class="section"><h2>🔒 A44 Future Blind Cohort Accumulator</h2>{self._a44_future_blind_cohort_html(root)}</section>
+<section class="section"><h2>🧊 A45 Future Pre-Blind Qualification</h2>{self._a45_future_preblind_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
