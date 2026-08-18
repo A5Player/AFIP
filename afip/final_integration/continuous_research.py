@@ -69,6 +69,8 @@ class ContinuousResearchPipeline:
             "A42": [research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
             "A43": [research / "a42_selective_trading_rankings/a42_selective_trading_rankings.json",
                     research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
+            "A44": [research / "a43_ultimate_selective_setup_validation/a43_ultimate_selective_setup_validation.json",
+                    research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
         }
 
     def _acquire(self) -> bool:
@@ -198,6 +200,17 @@ class ContinuousResearchPipeline:
                 def a43() -> dict[str, Any]:
                     result = build_report(self.root); write_outputs(result, self.root); return result
                 stages.append(self._stage("A43_ULTIMATE_SELECTIVE_SETUP_VALIDATION", a43))
+
+            # A44 owns only a prospective, sealed cohort for the winner A43
+            # froze before the cutoff.  It has no execution authority.
+            signatures["A44"] = self._signature(inputs["A44"])
+            if signatures["A44"] != previous_signatures.get("A44"):
+                from tools.afip_a44_future_blind_cohort_accumulator import build_report, write_outputs
+                def a44() -> dict[str, Any]:
+                    result, accepted = build_report(self.root)
+                    write_outputs(result, accepted, self.root)
+                    return result
+                stages.append(self._stage("A44_FUTURE_BLIND_COHORT_ACCUMULATOR", a44))
 
             from tools.afip_a29_research_pipeline_coverage import build_report as a29_report
             def a29() -> dict[str, Any]:

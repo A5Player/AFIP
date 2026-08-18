@@ -959,6 +959,19 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<p>First chronological match/day · no blind fallback · no-trade valid · P1–P4 NOT_DECIDED · authority NONE</p></article>')
 
     @staticmethod
+    def _a44_future_blind_cohort_html(root: Path) -> str:
+        path=root/"runtime/research/a44_future_blind_cohort_accumulator/a44_future_blind_cohort_accumulator.json"
+        try: report=json.loads(path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError):
+            return '<article class="panel"><h3>A44 Future Blind Cohort</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        cohort=report.get("cohort",{}) if isinstance(report,Mapping) else {}
+        return ('<article class="panel"><h3>A44 Prospective Sealed Blind Cohort</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · Frozen winner {escape(str(report.get("frozen_winner_rule_id") or "NONE"))}</p>'
+                f'<p>Independent days {escape(str(cohort.get("independent_trading_days",0)))} / {escape(str(cohort.get("minimum_required_days",15)))} · remaining {escape(str(cohort.get("remaining_days",15)))} · metrics sealed {escape(str(cohort.get("metrics_sealed",True)))}</p>'
+                f'<p>Prospective cutoff {escape(str(report.get("cutoff_timestamp_utc") or "WAITING_FOR_FROZEN_WINNER"))}</p>'
+                '<p>Future closed outcomes only · historical exposed Blind never reused · NO_TRADE · authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1241,6 +1254,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🕒 A40 Chronological Time/Session Foundation</h2>{self._a40_time_session_html(root)}</section>
 <section class="section"><h2>🏅 A42 Selective Trading Rankings</h2>{self._a42_selective_rankings_html(root)}</section>
 <section class="section"><h2>🥇 A43 Ultimate 0–1 Setup Blind Audit</h2>{self._a43_ultimate_validation_html(root)}</section>
+<section class="section"><h2>🔒 A44 Future Blind Cohort Accumulator</h2>{self._a44_future_blind_cohort_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
