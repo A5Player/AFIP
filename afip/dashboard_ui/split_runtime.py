@@ -999,6 +999,20 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<p>Outcome metrics accessed False · exposed False · NO_TRADE · authority NONE</p></article>')
 
     @staticmethod
+    def _a47_intermittent_catchup_html(root: Path) -> str:
+        path=root/"runtime/research/a47_intermittent_prospective_catchup/a47_intermittent_prospective_catchup.json"
+        try: report=json.loads(path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError):
+            return '<article class="panel"><h3>A47 Intermittent Catch-Up</h3><p class="waiting">NOT_GENERATED</p><p>Manual one-shot only · authority NONE</p></article>'
+        rows=''.join('<tr>'+''.join(f'<td>{escape(str(value))}</td>' for value in (item.get("timeframe"),item.get("return_code"),item.get("payload",{}).get("result",{}).get("status","UNKNOWN")))+'</tr>' for item in report.get("backfill_results",()) if isinstance(item,Mapping))
+        offline=report.get("offline_pipeline",{}) if isinstance(report.get("offline_pipeline"),Mapping) else {}
+        return ('<article class="panel"><h3>A47 Intermittent Prospective Catch-Up</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · profile {escape(str(report.get("profile","?")))} · machine may shut down {escape(str(report.get("operator_may_close_after_completion",False)))}</p>'
+                f'<p>A45 unchanged {escape(str(report.get("a45_protocol_unchanged",False)))} · A46 {escape(str(offline.get("a46_status","NOT_RUN")))} · future rows {escape(str(offline.get("future_source_rows_in_window",0)))}</p>'
+                f'<div class="table-wrap"><table><thead><tr><th>Timeframe</th><th>Return</th><th>Provider</th></tr></thead><tbody>{rows or "<tr><td colspan=3>WAITING</td></tr>"}</tbody></table></div>'
+                '<p>Existing resumable provider · manual MT5 only · no auto-launch · NO_TRADE · authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1284,6 +1298,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🔒 A44 Future Blind Cohort Accumulator</h2>{self._a44_future_blind_cohort_html(root)}</section>
 <section class="section"><h2>🧊 A45 Future Pre-Blind Qualification</h2>{self._a45_future_preblind_html(root)}</section>
 <section class="section"><h2>📡 A46 Prospective Cohort Data-Flow Audit</h2>{self._a46_prospective_monitor_html(root)}</section>
+<section class="section"><h2>🌙 A47 Intermittent Catch-Up</h2>{self._a47_intermittent_catchup_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>
