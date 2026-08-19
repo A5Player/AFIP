@@ -1013,6 +1013,18 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
                 '<p>Existing resumable provider · manual MT5 only · no auto-launch · NO_TRADE · authority NONE</p></article>')
 
     @staticmethod
+    def _a48_prospective_certification_html(root: Path) -> str:
+        path=root/"runtime/research/a48_prospective_final_certification/a48_prospective_final_certification.json"
+        try: report=json.loads(path.read_text(encoding="utf-8"))
+        except (OSError,ValueError,TypeError,json.JSONDecodeError):
+            return '<article class="panel"><h3>A48 Prospective Final Certification</h3><p class="waiting">NOT_GENERATED</p><p>Execution authority NONE</p></article>'
+        return ('<article class="panel"><h3>A48 Prospective Final Certification Gate</h3>'
+                f'<p><b>{escape(str(report.get("status","UNKNOWN")))}</b> · winner {escape(str(report.get("frozen_preblind_winner_rule_id") or "NONE"))}</p>'
+                f'<p>Audit pass {escape(str(report.get("audit_pass")))} · recommendation {escape(str(report.get("final_research_recommendation","NO_TRADE")))}</p>'
+                f'<p>Reasons {escape(", ".join(report.get("audit_reasons",())) or "NONE")}</p>'
+                '<p>Future-only Blind · no fallback · research only · authority NONE</p></article>')
+
+    @staticmethod
     def _a30_decision_matrix_html(root: Path) -> str:
         path = root / "runtime" / "research" / "a30_research_decision_matrix.json"
         try:
@@ -1299,6 +1311,7 @@ class ThreeDashboardRuntime(_StaticDashboardRenderer):
 <section class="section"><h2>🧊 A45 Future Pre-Blind Qualification</h2>{self._a45_future_preblind_html(root)}</section>
 <section class="section"><h2>📡 A46 Prospective Cohort Data-Flow Audit</h2>{self._a46_prospective_monitor_html(root)}</section>
 <section class="section"><h2>🌙 A47 Intermittent Catch-Up</h2>{self._a47_intermittent_catchup_html(root)}</section>
+<section class="section"><h2>🎓 A48 Prospective Final Certification</h2>{self._a48_prospective_certification_html(root)}</section>
 <section class="section"><h2>📊 A30 Research Decision Matrix</h2>{self._a30_decision_matrix_html(root)}</section>
 <section class="section"><h2>📅 A31 Daily Participation & Setup Budget</h2>{self._a31_daily_participation_html(root)}</section>
 <section class="section"><h2>🪜 A16 Exit Path & R-ladder Research</h2>{self._a16_exit_research_html(record)}</section>

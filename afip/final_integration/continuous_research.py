@@ -76,6 +76,9 @@ class ContinuousResearchPipeline:
                     research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
             "A46": [research / "a45_future_preblind_qualification/a45_future_preblind_qualification.json",
                     research / "a40_time_session_outcomes/a40_normalized_closed_outcomes.jsonl"],
+            "A48": [research / "a45_future_preblind_qualification/a45_future_preblind_qualification.json",
+                    research / "a44_future_blind_cohort_accumulator/a44_future_blind_cohort_accumulator.json",
+                    research / "a44_future_blind_cohort_accumulator/a44_sealed_future_blind_cohort.jsonl"],
         }
 
     def _acquire(self) -> bool:
@@ -236,6 +239,15 @@ class ContinuousResearchPipeline:
                     write_outputs(result, accepted, self.root)
                     return result
                 stages.append(self._stage("A44_FUTURE_BLIND_COHORT_ACCUMULATOR", a44))
+
+            signatures["A48"] = self._signature(inputs["A48"])
+            if signatures["A48"] != previous_signatures.get("A48"):
+                from tools.afip_a48_prospective_final_certification import build_report, write_outputs
+                def a48() -> dict[str, Any]:
+                    result = build_report(self.root)
+                    write_outputs(result, self.root)
+                    return result
+                stages.append(self._stage("A48_PROSPECTIVE_FINAL_CERTIFICATION", a48))
 
             from tools.afip_a29_research_pipeline_coverage import build_report as a29_report
             def a29() -> dict[str, Any]:
